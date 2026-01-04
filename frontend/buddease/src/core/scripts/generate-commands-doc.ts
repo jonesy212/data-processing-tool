@@ -1,4 +1,4 @@
-// generate-commands-doc.ts
+generate-commands-doc.ts
 import { StructureValidator } from '@/core/generators/corrections/StructureValidator';
 import fs from 'fs';
 import path from 'path';
@@ -142,7 +142,7 @@ function getScriptPurpose(name: string, command: string): string {
   return purposeMap[name] || `Runs: ${command.split(' ')[0]}`;
 }
 
-// Run if called directly
+Run if called directly
 if (require.main === module) {
   generateCommandsDoc();
 }

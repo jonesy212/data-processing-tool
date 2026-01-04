@@ -1,9 +1,9 @@
-// iOsIcons.ts
-// iosIcons.ts
+iOsIcons.ts
+iosIcons.ts
 import { IconLoader, createIconLoader } from "@/core/components/icons/IconLoader";
 
-// iOS IO
-// App Store Icon
+iOS IO
+App Store Icon
 export const loadAppStoreIcon: IconLoader = createIconLoader(
     "path/to/app-store-icon.png",
     "App Store Icon"
@@ -34,7 +34,7 @@ export const loadAppStoreIcon: IconLoader = createIconLoader(
   );
   
   
-// Share Icon
+Share Icon
 export const loadShareIcon: IconLoader = createIconLoader(
     "path/to/share-icon.png",
     "Share Icon"

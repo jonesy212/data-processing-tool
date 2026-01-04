@@ -1,4 +1,4 @@
-// ScreenSharingEndpoints.ts
+ScreenSharingEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ScreenSharingEndpoints extends EndpointCategoryConfig {

@@ -1,11 +1,11 @@
-// ProjectOwnerApi.ts
+ProjectOwnerApi.ts
 
 import { ProjectOwnerActions } from "@/core/actions/ProjectOwnerActions";
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Project, ProjectData } from '@/core/models/projects/Project';

@@ -1,10 +1,10 @@
 // ApiCrypto.ts
 
 import internalApiService from '@/core/api/ApiClient'; // Import the internal service
-import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { headersConfig } from "@/core/components/shared/SharedHeaders";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AxiosError } from "axios";
 
@@ -138,7 +138,7 @@ const handleCryptoApiErrorAndNotify = (
 };
 
 // STRATEGY: Use internalApiService for CRUD operations with notifications
-// Use direct axiosInstance for simple data fetching without notifications
+// Use direct internalApiService for simple data fetching without notifications
 
 export const fetchCryptoData = async (): Promise<any> => {
   try {
@@ -229,12 +229,12 @@ export const updateCrypto = async (
   }
 };
 
-// STRATEGY: Use direct axiosInstance for data fetching where you don't want notifications
+// STRATEGY: Use direct internalApiService for data fetching where you don't want notifications
 // or for external API calls
 
 export const fetchHistoricalData = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/historical-data`
     );
     return response.data;
@@ -250,7 +250,7 @@ export const fetchHistoricalData = async (cryptoId: string): Promise<any> => {
 
 export const fetchCryptoNews = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/news`
     );
     return response.data;
@@ -266,7 +266,7 @@ export const fetchCryptoNews = async (cryptoId: string): Promise<any> => {
 
 export const getPricePrediction = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/price-prediction`
     );
     return response.data;
@@ -282,7 +282,7 @@ export const getPricePrediction = async (cryptoId: string): Promise<any> => {
 
 export const fetchCryptoTransactions = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/transactions`
     );
     return response.data;
@@ -298,7 +298,7 @@ export const fetchCryptoTransactions = async (cryptoId: string): Promise<any> =>
 
 export const fetchExchangeRates = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/exchange-rates`
     );
     return response.data;
@@ -314,7 +314,7 @@ export const fetchExchangeRates = async (): Promise<any> => {
 
 export const fetchPricingData = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}/pricing-data`);
+    const response = await internalApiService.get(`${API_BASE_URL}/pricing-data`);
     return response.data;
   } catch (error) {
     handleCryptoApiErrorAndNotify(
@@ -328,8 +328,8 @@ export const fetchPricingData = async (): Promise<any> => {
 
 export const getCurrentPrice = async (): Promise<number> => {
   try {
-    // Using direct axiosInstance for external API calls
-    const response = await axiosInstance.get("URL_TO_YOUR_API_ENDPOINT_HERE");
+    // Using direct internalApiService for external API calls
+    const response = await internalApiService.get("URL_TO_YOUR_API_ENDPOINT_HERE");
     const currentPrice = response.data.currentPrice;
     return currentPrice;
   } catch (error) {
@@ -338,10 +338,10 @@ export const getCurrentPrice = async (): Promise<number> => {
   }
 };
 
-// Additional data fetching functions using direct axiosInstance
+// Additional data fetching functions using direct internalApiService
 export const fetchMarketCap = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/market-cap`
     );
     return response.data;
@@ -357,7 +357,7 @@ export const fetchMarketCap = async (cryptoId: string): Promise<any> => {
 
 export const fetchSocialSentiment = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/social-sentiment`
     );
     return response.data;
@@ -375,7 +375,7 @@ export const fetchSocialSentiment = async (cryptoId: string): Promise<any> => {
 
 export const fetchCommunityDiscussions = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/community-discussions`
     );
     return response.data;
@@ -391,7 +391,7 @@ export const fetchCommunityDiscussions = async (cryptoId: string): Promise<any> 
 
 export const fetchTechnicalAnalysis = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/technical-analysis`
     );
     return response.data;
@@ -408,7 +408,7 @@ export const fetchTechnicalAnalysis = async (cryptoId: string): Promise<any> => 
 // Function to fetch market trend for a crypto
 export const fetchMarketTrend = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/market-trend`
     );
     return response.data;
@@ -425,7 +425,7 @@ export const fetchMarketTrend = async (cryptoId: string): Promise<any> => {
 // Function to fetch trading volume for a crypto
 export const fetchTradingVolume = async (cryptoId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/trading-volume`
     );
     return response.data;
@@ -444,7 +444,7 @@ export const fetchCommunitySentiment = async (
   cryptoId: string
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/community-sentiment`
     );
     return response.data;
@@ -463,7 +463,7 @@ export const fetchSocialImpactAnalysis = async (
   cryptoId: string
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/social-impact-analysis`
     );
     return response.data;
@@ -482,7 +482,7 @@ export const fetchGlobalAdoptionTrends = async (
   cryptoId: string
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/${cryptoId}/global-adoption-trends`
     );
     return response.data;
@@ -501,7 +501,7 @@ export const fetchUserContributionRewards = async (
   userId: string
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/users/${userId}/contribution-rewards`
     );
     return response.data;
@@ -518,7 +518,7 @@ export const fetchUserContributionRewards = async (
 // Function to fetch market data related to cryptocurrencies
 export const fetchMarketData = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/market-data`
     );
     return response.data;
@@ -535,7 +535,7 @@ export const fetchMarketData = async (): Promise<any> => {
 // Function to fetch portfolio summary
 export const fetchPortfolioSummary = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/portfolio-summary`
     );
     return response.data;
@@ -552,7 +552,7 @@ export const fetchPortfolioSummary = async (): Promise<any> => {
 // Function to fetch top gaining cryptocurrencies
 export const fetchTopGainers = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/top-gainers`
     );
     return response.data;
@@ -569,7 +569,7 @@ export const fetchTopGainers = async (): Promise<any> => {
 // Function to fetch top losing cryptocurrencies
 export const fetchTopLosers = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/top-losers`
     );
     return response.data;
@@ -586,7 +586,7 @@ export const fetchTopLosers = async (): Promise<any> => {
 // Function to fetch listings of cryptocurrency exchanges
 export const fetchExchangeListings = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/crypto/exchange-listings`
     );
     return response.data;

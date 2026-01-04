@@ -1,4 +1,4 @@
-// SourceFileErrorScanner.ts
+SourceFileErrorScanner.ts
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';

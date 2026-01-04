@@ -1,9 +1,7 @@
 // ConfigurationManagement.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-
 
 interface ConfigurationManagement<
   T extends BaseDataEntity,
@@ -13,11 +11,9 @@ interface ConfigurationManagement<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  // Strict type-safe single entity
   applyStoreConfig(snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void;
-
   handleSnapshotConfig(config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void;
-
-  // Flexible union type for components dealing with multiple entities
-  applyUnionConfig?(snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion, any, any>): void;
+  // other config-related methods
 }
+
+export type { ConfigurationManagement };

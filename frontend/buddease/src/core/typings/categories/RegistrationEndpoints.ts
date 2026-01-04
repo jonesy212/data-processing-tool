@@ -1,4 +1,4 @@
-// RegistrationEndpoints.ts
+RegistrationEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface RegistrationEndpoints extends EndpointCategoryConfig {

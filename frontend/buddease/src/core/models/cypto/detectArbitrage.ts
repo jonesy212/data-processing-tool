@@ -1,6 +1,5 @@
 // detectArbitrage.ts
-import { CryptoData, ParsedData } from "@/core/dataIntegration/parseData";
-// Function to detect arbitrage opportunities based on price disparities and other factors
+import type { CryptoData, ParsedData } from "@/core/dataIntegration/parseData";
 
 
 // Function to detect arbitrage opportunities based on price disparities and other factors
@@ -29,7 +28,7 @@ export const detectArbitrage = <T extends CryptoData>(
 };
 
 
-// Function to set a threshold for identifying potential arbitrage opportunities
+Function to set a threshold for identifying potential arbitrage opportunities
 const setThreshold = <T extends CryptoData>(
   parsedData: ParsedData<T>[],
   threshold: number

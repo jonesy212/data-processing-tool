@@ -1,4 +1,4 @@
-// DynamicComponentsContext.tsx
+DynamicComponentsContext.tsx
 import React, { createContext, useContext, useState } from 'react';
 interface DynamicConfigActionType {
   type: string; // Action type string
@@ -6,7 +6,7 @@ interface DynamicConfigActionType {
   
 }
 
-// Define a specific type or interface for dynamicConfig
+Define a specific type or interface for dynamicConfig
 interface DynamicConfigType {
   prop1: string;
   prop2: string;

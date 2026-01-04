@@ -1,11 +1,11 @@
-// LoginContainer.tsx
+LoginContainer.tsx
 import Dashboard from "@/core/pages/dashboards/RecruiterSeekerDashboard";
 import LoginForm from "@/core/pages/forms/LoginForm";
 import { performLogin } from "@/core/pages/forms/utils/CommonLoginLogic";
 import React, { lazy, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Define a custom type for require.context
+Define a custom type for require.context
 interface RequireContext extends NodeRequire {
   keys(): string[];
   <T>(id: string): T;
@@ -27,14 +27,14 @@ const importDashboard = (path: string) =>
     () => import(`@/core/pages/dashboards/${path}`) as Promise<DashboardModule>
   );
 
-// Get all files matching the pattern in the 'dashboards' directory
+Get all files matching the pattern in the 'dashboards' directory
 const dashboardContext = (require as RequireContext).context(
   "@/core/pages/dashboards",
   true,
   /\.tsx$/
 );
 
-// Dynamically import all dashboards
+Dynamically import all dashboards
 const dashboards: { [key: string]: React.ComponentType<any> } = {};
 dashboardContext.keys().forEach((key: any) => {
   const dashboardName = key.replace(/^\.\/(.+)\/(.+)\.tsx$/, "$2");

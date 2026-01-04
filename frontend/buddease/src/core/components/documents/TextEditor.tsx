@@ -1,4 +1,4 @@
-// TextEditor.tsx
+TextEditor.tsx
 import { ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
 import {
     DocumentBuilderConfig,

@@ -1,4 +1,4 @@
-// ApiConfigComponent.tsx
+ApiConfigComponent.tsx
 
 import { ComponentActions } from '@/core/actions/ComponentActions';
 import ApiConfig from "@/core/api/ApiConfigService";
@@ -42,23 +42,23 @@ import {
     TrackerProps
 } from "@/core/typings/entities/TrackerEntity";
 
-// ✅ Plugin & Callback Registry imports
+✅ Plugin & Callback Registry imports
 import { CallbackRegistry } from '@/core/libraries/eventSystem/callbackRegistry';
 import { PluginManager } from "@/core/plugins/PluginManager";
 
 
-// ===============================================
-// ✅ PLUGIN + CALLBACK BOOTSTRAP
-// ===============================================
+===============================================
+✅ PLUGIN + CALLBACK BOOTSTRAP
+===============================================
 const callbackRegistry = new CallbackRegistry();
 const pluginManager = new PluginManager(callbackRegistry);
 
-// Load plugins ONCE
+Load plugins ONCE
 pluginManager.loadAll();
 
-// ===============================================
-// ✅ COMPONENT
-// ===============================================
+===============================================
+✅ COMPONENT
+===============================================
 const ApiConfigComponent: React.FC = () => {
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]);

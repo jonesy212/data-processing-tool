@@ -1,4 +1,4 @@
-// NFTConversionComponent.tsx
+NFTConversionComponent.tsx
 
 import NFTService from '@/core/components/nft/NFTService';
 import { observer } from 'mobx-react';

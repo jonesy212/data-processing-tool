@@ -1,68 +1,188 @@
 // route.ts
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
+import PizZip from "pizzip";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+  }
+  
   try {
-    const { searchParams } = new URL(request.url);
-    const accessToken = searchParams.get('accessToken');
-
-    if (!accessToken) {
-      return NextResponse.json(
-        { error: 'Access token is required' },
-        { status: 400 }
-      );
-    }
-
-    // Get sites/user info from Wix
-    const response = await fetch('https://api.wix.com/v1/sites', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    });
-
-    if (!response.ok) throw new Error('Failed to fetch sites');
-
-    const sitesData = await response.json();
-
-    return NextResponse.json({
-      success: true,
-      sites: sitesData.sites || [],
-      user: sitesData.user
-    });
-  } catch (error: any) {
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
+  } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch sites: ' + error.message },
+      { error: 'Failed to read from cache' },
       { status: 500 }
     );
   }
 }
 
-// POST - Create new site
 export async function POST(request: NextRequest) {
   try {
-    const { accessToken, siteData } = await request.json();
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
 
-    const response = await fetch('https://api.wix.com/v1/sites', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(siteData),
-    });
 
-    if (!response.ok) throw new Error('Failed to create site');
 
-    const newSite = await response.json();
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
 
-    return NextResponse.json({
-      success: true,
-      site: newSite,
-      message: 'Site created successfully'
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
+    
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Site creation failed: ' + error.message },
+      { 
+        success: false, 
+        error: error.message 
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
+    }
+  } catch (error) {
+    console.error("Error generating document:", error);
+    return NextResponse.json(
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
+
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
+
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
+}
+
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
+}
+
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
       { status: 500 }
     );
   }

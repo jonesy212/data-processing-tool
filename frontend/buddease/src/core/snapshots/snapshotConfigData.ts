@@ -1,1 +1,1 @@
-// snapshotConfigData.ts
+snapshotConfigData.ts

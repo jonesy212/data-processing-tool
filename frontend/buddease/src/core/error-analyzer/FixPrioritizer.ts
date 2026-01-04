@@ -1,4 +1,4 @@
-// src/app/error-analyzer/FixPrioritizer.ts
+src/app/error-analyzer/FixPrioritizer.ts
 
 import { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
 import { FixPrioritizationRule, PrioritizationContext } from '@/core/error-analyzer/index';

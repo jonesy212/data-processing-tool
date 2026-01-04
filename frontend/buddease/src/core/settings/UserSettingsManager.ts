@@ -1,5 +1,5 @@
-// UserSettingsManager.ts
-// Create a compatibility layer
+UserSettingsManager.ts
+Create a compatibility layer
 class UserSettingsManager implements UserSettings {
   // Domain properties
   identity: UserIdentity;
@@ -45,5 +45,5 @@ class UserSettingsManager implements UserSettings {
   }
 }
 
-// Usage
+Usage
 const userSettings = new UserSettingsManager(yourExistingSettingsObject);

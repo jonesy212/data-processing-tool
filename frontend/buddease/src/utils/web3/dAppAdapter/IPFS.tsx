@@ -1,12 +1,12 @@
 // Import necessary libraries or modules
 import { getConfigsData } from '@/core/api/getConfigsApi';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { ipfsConfig } from '@/core/config/ipfsConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { documentOptions } from '@/core/hooks/userScenarioCreation';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import { useAuth } from '@/core/state/context/AuthContext';
-import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/core/typings/entities/ExtendedDappEntity';
+import type { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/core/typings/entities/ExtendedDappEntity';
 import { CustomDAppAdapter } from '@/utils/web3/dAppAdapter/DApp';
 import { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { ethers } from 'ethers';
@@ -14,10 +14,10 @@ import { create } from 'ipfs-core';
 import { PoolConfig } from 'mysql';
 
 
-// Get configs data and handle the case where it returns undefined
+Get configs data and handle the case where it returns undefined
 const extendedProps: ExtendedDappProps | undefined = await getConfigsData();
 
-// Extend the existing DAppAdapterConfig interface
+Extend the existing DAppAdapterConfig interface
 interface ExtendedDappProps extends DappProps {
   ipfsConfig: typeof ipfsConfig;
   ethereumRpcUrl: string; // Add ethereumRpcUrl property
@@ -269,7 +269,7 @@ export class ExtendedDAppAdapter<
   }
 }
 
-// Usage example
+Usage example
 const baseConfig = {
   appName: "Extended Project Management App",
   appVersion: "2.0",
@@ -308,10 +308,10 @@ const extendedConfig: ExtendedDAppAdapterConfig<ExtendedDappEntity, ExtendedDapp
 
 const extendedDApp = new ExtendedDAppAdapter(extendedConfig);
 
-// Now you can use extendedDApp for rendering and utilize the new IPFS-related functionality
+Now you can use extendedDApp for rendering and utilize the new IPFS-related functionality
 extendedDApp.enableRealtimeCollaboration().enableChatFunctionality();
 
-// Store a file on IPFS and Ethereum
+Store a file on IPFS and Ethereum
 const fileContent = Buffer.from("Hello, IPFS and Ethereum!");
 extendedDApp.storeFileOnIPFS(fileContent).then((ipfsHash) => {
   console.log(`File stored on IPFS with hash: ${ipfsHash}`);

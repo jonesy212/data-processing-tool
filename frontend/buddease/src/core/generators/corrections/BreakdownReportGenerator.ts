@@ -1,4 +1,4 @@
-// BreakdownReportGenerator.ts
+BreakdownReportGenerator.ts
 import { ComponentBreakdown, ComprehensiveBreakdown, InterfaceBreakdown, MethodBreakdown } from '@/core/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer';
 import { CorrectionReport } from '@/core/generators/corrections/CorrectionGenerator';
 

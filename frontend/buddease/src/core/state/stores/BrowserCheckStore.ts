@@ -1,9 +1,9 @@
-// BrowserCheckStore.ts
+BrowserCheckStore.ts
 import BrowserBehaviorManager, { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
 import { isBrowser } from "@/utils/isBrowser";
 import { action, makeAutoObservable } from "mobx";
 
-// Define the state interface for better TypeScript support
+Define the state interface for better TypeScript support
 interface BrowserCheckState {
   browserKey: string | null;
   isInitialized: boolean;
@@ -261,13 +261,13 @@ class BrowserCheckStore {
   }
 }
 
-// ============ HOOK IMPLEMENTATION - EXACTLY LIKE TOOLBARSTORE ============
+============ HOOK IMPLEMENTATION - EXACTLY LIKE TOOLBARSTORE ============
 
 /**
  * Hook for using the BrowserCheckStore - EXACT PATTERN AS useToolbarStore
  */
 export const useBrowserCheckStore = () => new BrowserCheckStore();
 
-// Export types
+Export types
 export type { BrowserBehaviorConfig, BrowserCheckState };
 export default BrowserCheckStore;

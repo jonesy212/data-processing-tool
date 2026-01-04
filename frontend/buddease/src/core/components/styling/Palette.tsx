@@ -1,8 +1,8 @@
 // Palette.tsx
-import { Highlight } from "@/core/documents/NoteData";
+import type { Highlight } from "@/core/documents/NoteData";
 import React from "react";
 
-import { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
+import type { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
 import ColorPicker from "./ColorPicker";
 
 interface HighlightColor {

@@ -1,4 +1,4 @@
-// DetailsList.tsx
+DetailsList.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import CommonDetails from "@/core/models/CommonData";
 import { Data } from '@/core/models/data/Data';

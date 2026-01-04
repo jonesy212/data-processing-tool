@@ -1,5 +1,5 @@
-// useVerifiableCredential.ts
-// hooks/useVerifiableCredential.ts
+useVerifiableCredential.ts
+hooks/useVerifiableCredential.ts
 
 import { useState } from 'react';
 

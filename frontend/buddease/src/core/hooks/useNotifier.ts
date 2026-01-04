@@ -1,4 +1,4 @@
-// useNotifier.ts
+useNotifier.ts
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 

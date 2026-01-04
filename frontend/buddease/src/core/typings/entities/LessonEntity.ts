@@ -1,5 +1,5 @@
-// LessonEntity.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+LessonEntity.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import {
     BaseEntityProperties,
     SharedStatusFlags,

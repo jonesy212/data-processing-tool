@@ -1,5 +1,5 @@
-// makeRoadmapsFromAnalysis.ts
-// scripts/makeRoadmapsFromAnalysis.ts
+makeRoadmapsFromAnalysis.ts
+scripts/makeRoadmapsFromAnalysis.ts
 
 import { RoadmapAudience } from '@/core/server/repository/roadmapMapper';
 import fs from 'fs';
@@ -52,7 +52,7 @@ const audienceConfig: Record<RoadmapAudience, {
   }
 };
 
-// Generate roadmaps for all audiences
+Generate roadmaps for all audiences
 for (const [audience, config] of Object.entries(audienceConfig)) {
   const { jsonPath, mdPath } = roadmapMapper.buildAndWriteRoadmap(
     analysis, 

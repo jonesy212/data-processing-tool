@@ -1,5 +1,5 @@
-// DirectoryExplorer.tsx
-// DirectoryExplorer.ts
+DirectoryExplorer.tsx
+DirectoryExplorer.ts
 import { generateAppResponse, getAppContext } from '@/core/state/context/AppContextHelper';
 
 class DirectoryExplorer {
@@ -45,5 +45,5 @@ class DirectoryExplorer {
     }
   }
 
-// Export the DirectoryExplorer class
+Export the DirectoryExplorer class
 export default DirectoryExplorer;

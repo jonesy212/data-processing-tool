@@ -1,197 +1,189 @@
 // route.ts
-// app/api/databaseRaequest/route.ts
-import { databaseConfig } from '@/core/config/endpoints/databaseConfig';
-import performDatabaseOperation from "@/core/server/database/DatabaseOperations";
-import isValidAuthToken from "@/core/server/security/AuthValidation";
-import { NextResponse } from 'next/server';
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
+import { NextRequest, NextResponse } from 'next/server';
+import PizZip from "pizzip";
 
-/**
- * Handles POST requests for database operations.
- *
- * @remarks/
- * This function expects a JSON payload with `authToken` and `databaseQuery`.
- * It validates the `authToken` and then performs a database operation using the provided `databaseQuery`.
- *
- * @param request - The incoming POST request.
- * @returns - A JSON response with the result of the database operation or an error message.
- *
- * @throws Will throw an error if the database operation fails.
- * @throws Will throw an error if the `authToken` is invalid.
- */
-
-export async function POST(request: Request) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+  }
+  
   try {
-    const { authToken, databaseQuery, operationType } = await request.json();
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to read from cache' },
+      { status: 500 }
+    );
+  }
+}
 
-    // Validate required fields
-    if (!authToken || !databaseQuery) {
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
       return NextResponse.json(
-        { error: 'Missing required fields: authToken and databaseQuery are required' },
+        { error: 'Key and data are required' },
         { status: 400 }
       );
     }
-
-    if (!isValidAuthToken(authToken)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const databaseResult = await performDatabaseOperation(
-      operationType || 'query', // Default to 'query' if not specified
-      databaseConfig,
-      databaseQuery
-    );
-
-    return NextResponse.json({ result: databaseResult });
-
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Database API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to write to cache' },
       { status: 500 }
     );
   }
 }
 
 
-export async function GET(request: Request) {
+
+export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const authToken = searchParams.get('authToken');
-    const query = searchParams.get('query');
-    const operationType = searchParams.get('operationType') || 'query';
-
-    // Validate required parameters
-    if (!authToken) {
-      const errorResponse = NextResponse.json(
-        { error: 'Missing required parameter: authToken' },
-        { status: 400 }
-      );
-      // Add security headers even to error responses
-      Object.entries(createSecurityHeaders()).forEach(([key, value]) => {
-        errorResponse.headers.set(key, value);
-      });
-      return errorResponse;
-    }
-
-    if (!query) {
-      return NextResponse.json(
-        { error: 'Missing required parameter: query' },
-        { status: 400 }
-      );
-    }
-
-    // Validate authentication token using your validation function
-    if (!isValidAuthToken(authToken)) {
-      const errorResponse = NextResponse.json(
-        { 
-          error: 'Unauthorized - Invalid authentication token',
-          details: 'Token must be 36 characters long and contain only alphanumeric characters and hyphens'
-        },
-        { status: 401 }
-      );
-      Object.entries(createSecurityHeaders()).forEach(([key, value]) => {
-        errorResponse.headers.set(key, value);
-      });
-      return errorResponse;
-    }
-
-    // Parse additional parameters if provided
-    const params = searchParams.get('params');
-    let queryParams: any[] = [];
+    const { key, data } = await request.json();
     
-    if (params) {
-      try {
-        queryParams = JSON.parse(params);
-        if (!Array.isArray(queryParams)) {
-          return NextResponse.json(
-            { error: 'Invalid params format - must be a JSON array' },
-            { status: 400 }
-          );
-        }
-      } catch (parseError) {
-        return NextResponse.json(
-          { error: 'Invalid params format - must be valid JSON' },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Validate that GET requests only allow read operations
-    const upperCaseQuery = query.toUpperCase().trim();
-    const isReadOperation = upperCaseQuery.startsWith('SELECT') || 
-                           upperCaseQuery.startsWith('WITH') ||
-                           upperCaseQuery.startsWith('SHOW') ||
-                           upperCaseQuery.startsWith('EXPLAIN') ||
-                           upperCaseQuery.startsWith('DESCRIBE');
-
-    const isDangerousOperation = upperCaseQuery.startsWith('INSERT') || 
-                                upperCaseQuery.startsWith('UPDATE') || 
-                                upperCaseQuery.startsWith('DELETE') ||
-                                upperCaseQuery.startsWith('DROP') ||
-                                upperCaseQuery.startsWith('CREATE') ||
-                                upperCaseQuery.startsWith('ALTER') ||
-                                upperCaseQuery.startsWith('TRUNCATE') ||
-                                upperCaseQuery.startsWith('GRANT') ||
-                                upperCaseQuery.startsWith('REVOKE');
-
-    if (!isReadOperation) {
+    if (!key || data === undefined) {
       return NextResponse.json(
-        { error: 'GET requests are only allowed for read operations (SELECT, SHOW, EXPLAIN, etc.)' },
-        { status: 405 }
+        { error: 'Key and data are required' },
+        { status: 400 }
       );
     }
-
-    if (isDangerousOperation) {
-      return NextResponse.json(
-        { error: 'Dangerous operations are not allowed via GET requests' },
-        { status: 403 }
-      );
-    }
-
-    // Perform database operation
-    const databaseResult = await performDatabaseOperation(
-      operationType,
-      databaseConfig,
-      query,
-      queryParams
-    );
-
-        // Create successful response with security headers
-    const successResponse = NextResponse.json({ 
-      success: true, 
-      result: databaseResult,
-      timestamp: new Date().toISOString(),
-      queryType: 'read'
-    });
-
-    // Add security headers to successful response
-    Object.entries(createSecurityHeaders()).forEach(([key, value]) => {
-      successResponse.headers.set(key, value);
-    });
-
-    return successResponse;
-
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('GET Database API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
     
-    // ✅ NEW ERROR HANDLING WITH SECURITY HEADERS
-    // Create error response
-    const errorResponse = NextResponse.json(
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
+    });
+  } catch (error: any) {
+    return NextResponse.json(
       { 
-        error: 'Database operation failed',
-        details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        success: false, 
+        error: error.message 
       },
       { status: 500 }
     );
+  }
+}
 
-    // Add security headers to error response
-    Object.entries(createSecurityHeaders()).forEach(([key, value]) => {
-      errorResponse.headers.set(key, value);
-    });
 
-    return errorResponse;
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
+    }
+  } catch (error) {
+    console.error("Error generating document:", error);
+    return NextResponse.json(
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
+
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
+
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
+}
+
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
+}
+
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
+      { status: 500 }
+    );
   }
 }

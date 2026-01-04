@@ -1,8 +1,8 @@
-// PriceApiService.ts
-// PriceApiService.ts// priceService.ts
+PriceApiService.ts
+PriceApiService.ts// priceService.ts
 import axiosInstance from '@/core/api/csrfToken';
 
-// Types
+Types
 export interface MarketPrice {
   symbol: string;
   price: number;
@@ -43,7 +43,7 @@ export interface ExchangeRate {
   timestamp: Date;
 }
 
-// Cache for prices to avoid excessive API calls
+Cache for prices to avoid excessive API calls
 const priceCache = new Map<string, { price: MarketPrice; timestamp: number }>();
 const CACHE_DURATION = 30000; // 30 seconds cache
 
@@ -439,15 +439,15 @@ class PriceService {
   }
 }
 
-// Export singleton instance
+Export singleton instance
 export const priceService = PriceService.getInstance();
 
-// Export individual functions for convenience
+Export individual functions for convenience
 export {
     getMarketPrice, PriceService
 };
 
-// Convenience function that matches your original import
+Convenience function that matches your original import
 async function getMarketPrice(symbol: string): Promise<number> {
   return priceService.getMarketPrice(symbol);
 }

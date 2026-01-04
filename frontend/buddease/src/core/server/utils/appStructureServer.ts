@@ -1,8 +1,8 @@
-// appStructureServer.ts
+appStructureServer.ts
 import { FileSystemService } from '@/core/config/appStructure/AppStructure';
 import * as fs from 'fs/promises';
 
-// Server-specific file system implementation
+Server-specific file system implementation
 export const nodeFileSystem: FileSystemService = {
   readdir: fs.readdir,
   stat: async (filePath) => {
@@ -20,12 +20,12 @@ export const nodeFileSystem: FileSystemService = {
   }
 };
 
-// Server-side factory function
+Server-side factory function
 export function createServerAppStructure(type: "backend" | "frontend" = "frontend"): AppStructure {
   return new AppStructure(type, nodeFileSystem);
 }
 
-// Server-side usage example
+Server-side usage example
 export async function getServerAppStructure() {
   try {
     const appStructure = createServerAppStructure("frontend");

@@ -1,4 +1,4 @@
-// GlobalCollaborationEndpoints.ts
+GlobalCollaborationEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface GlobalCollaborationEndpoints extends EndpointCategoryConfig {

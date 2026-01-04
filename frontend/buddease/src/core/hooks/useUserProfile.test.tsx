@@ -1,4 +1,4 @@
-// useUserProfile.test.tsx
+useUserProfile.test.tsx
 import useUserProfile from '@/core/hooks/useUserProfile';
 import { act, renderHook } from '@testing-library/react-hooks';
 

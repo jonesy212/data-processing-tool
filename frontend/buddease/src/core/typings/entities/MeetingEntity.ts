@@ -1,8 +1,8 @@
-// MeetingEntity.ts
-import { BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+MeetingEntity.ts
+import type { BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// Define the actual MeetingEntity interface
+Define the actual MeetingEntity interface
 interface MeetingEntity extends BaseEntity {
   
   title: string;
@@ -27,7 +27,7 @@ interface MeetingEntity extends BaseEntity {
   actionItems?: string[]; // Action item IDs or descriptions
 }
 
-// Meeting-specific type parameters
+Meeting-specific type parameters
 type MeetingK = MeetingEntity;
 type MeetingMeta = DefaultMeta<MeetingEntity, MeetingK> & {
   timezone?: string;
@@ -40,7 +40,7 @@ type MeetingAttachment = Attachment;
 type MeetingExcludedFields = DefaultExcludedFields<MeetingEntity> | "participants" | "organizer" | "recordingUrl";
 type MeetingIncludedFields = keyof MeetingEntity;
 
-// Meeting parameters container
+Meeting parameters container
 type MeetingBaseParams = {
   T: MeetingEntity;
   K: MeetingK;

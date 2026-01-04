@@ -1,10 +1,10 @@
 // parseData.ts
 
-// Function to parse and process the received data
+Function to parse and process the received data
 import useSearchPagination from '@/core/hooks/commHooks/useSearchPagination';
 import ProjectDetails from '@/core/models/projects/Project';
 
-// Define a separate interface for cryptocurrency-specific data
+Define a separate interface for cryptocurrency-specific data
 export interface CryptoData {
   cryptocurrencyPair: string;
   price: number;
@@ -17,11 +17,11 @@ export interface CryptoData {
   pricesDisparityPercentage?: number;
 }
 
-// Define a generic interface for parsed data to handle various data types
+Define a generic interface for parsed data to handle various data types
 export interface ParsedData<T extends object> {
   id: string,
   filter: string,
-//  appName: strinig,
+ appName: strinig,
 
   data: T; // Generic field to hold different types of data
   pageNumber: number; // Optional field to store page number from PDF
@@ -32,7 +32,7 @@ export interface ParsedData<T extends object> {
   text?: string;
 }
 
-// Function to parse and process the received data
+Function to parse and process the received data
 export const parseData = <T extends object>(
   data: T[],
   threshold: number,
@@ -62,7 +62,7 @@ export const parseData = <T extends object>(
   // Return the parsed data
   return parsedData;
 };
-// Function to calculate the price disparity
+Function to calculate the price disparity
 const calculatePriceDisparity = (
   currentPrice: number,
   averagePrice: number,

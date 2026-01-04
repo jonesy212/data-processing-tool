@@ -41,7 +41,7 @@ const DynamicSpacingAndLayout: React.FC<DynamicSpacingAndLayoutProps> = ({ dynam
     </View>
   );
 };
-// Static content rendering function
+Static content rendering function
 const renderStaticContent = ({ margin, padding, border }: SpacingAndLayoutProps) => {
   return (
     <View style={{ margin: margin as any, padding: padding as any, borderWidth: border as any }}>
@@ -53,7 +53,7 @@ const renderStaticContent = ({ margin, padding, border }: SpacingAndLayoutProps)
   );
 };
 
-// Dynamic content rendering function
+Dynamic content rendering function
 const renderDynamicContent = (
   { margin, padding, border }: SpacingAndLayoutProps,
   documents: any[],
@@ -78,7 +78,7 @@ const renderDynamicContent = (
   );
 };
 
-// Android-specific content component
+Android-specific content component
 const AndroidSpecificContent = () => {
   return (
     <View>
@@ -88,7 +88,7 @@ const AndroidSpecificContent = () => {
   );
 };
 
-// iOS-specific content component
+iOS-specific content component
 const IOSSpecificContent = () => {
   return (
     <View>

@@ -1,6 +1,6 @@
-// updateBranding.ts
-//updateBranding.ts
-// Function to check and update branding preferences
+updateBranding.ts
+updateBranding.ts
+Function to check and update branding preferences
 
 const initializeBranding = async () => {
   const brand: Brand = {

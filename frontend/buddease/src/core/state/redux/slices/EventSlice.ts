@@ -1,4 +1,4 @@
-// EventSlice.ts
+EventSlice.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { AppThunk } from "@/core/configs/appThunk";
@@ -7,7 +7,7 @@ import { RootState } from "@/core/state/redux/slices/RootSlice";
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { fetchEvents } from "./SecurityEventSlice";
 
-// Define the initial state for the EventSlice
+Define the initial state for the EventSlice
 interface EventState {
   events: CustomEventExtension[]
   selectedEventId: string | null;
@@ -22,7 +22,7 @@ const initialState: EventState = {
   error: null,
 };
 
-// Create the EventSlice using createSlice
+Create the EventSlice using createSlice
 export const useEventManagerSlice = createSlice({
   name: "event",
   initialState,
@@ -89,7 +89,7 @@ export const useEventManagerSlice = createSlice({
   },
 });
 
-// Add additional methods to the slice
+Add additional methods to the slice
 export const eventSliceActions = {
   // Method to fetch events from an external API
   fetchEvents: (): AppThunk => async (dispatch: Dispatch) => {
@@ -112,14 +112,14 @@ export const eventSliceActions = {
   // Add more methods as needed
 };
 
-// Export the reducer and actions
+Export the reducer and actions
 export const { addEvent, removeEvent, removeAllEvents } =
   useEventManagerSlice.actions;
 
-// Define a selector function to access the event state
+Define a selector function to access the event state
 export const selectEvents = (state: RootState) => state.eventManager.events;
 export const selectEventLoading = (state: RootState) => state.eventManager.loading;
 export const selectEventError = (state: RootState) => state.eventManager.error;
-// Export the reducer
+Export the reducer
 export default useEventManagerSlice.reducer;
 export type { EventState };

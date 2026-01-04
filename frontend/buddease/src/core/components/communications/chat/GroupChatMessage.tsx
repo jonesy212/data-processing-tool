@@ -1,4 +1,4 @@
-// GroupChatMessage.tsx
+GroupChatMessage.tsx
 import ChatCard from '@/core/components/cards/ChatCard';
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';

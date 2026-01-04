@@ -1,5 +1,5 @@
 // newsConfig.ts
-import { NewsEndpoints } from '@/core/typings/categories/NewsEndpoints';
+import type { NewsEndpoints } from '@/core/typings/categories/NewsEndpoints';
 
 export const newsConfig: NewsEndpoints = {
   list: { path: "/news", method: "GET" },

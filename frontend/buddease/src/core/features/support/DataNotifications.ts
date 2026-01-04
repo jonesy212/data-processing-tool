@@ -1,4 +1,4 @@
-// DataNotifications.ts
+DataNotifications.ts
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 const DATA_NOTIFICATIONS = {
   ...NOTIFICATION_MESSAGES  ,

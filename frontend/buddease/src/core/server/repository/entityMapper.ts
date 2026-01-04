@@ -1,7 +1,7 @@
-// entityMapper.ts
-// server/repository/mappers/userMapper.ts
+entityMapper.ts
+server/repository/mappers/userMapper.ts
 
-import { DefaultExcludedFields } from '@/core/config/BaseConfig';
+import type { DefaultExcludedFields } from '@/core/config/BaseConfig';
 import { CacheData } from '@/core/generators/GenerateCache'; // adjust import as needed
 
 /**

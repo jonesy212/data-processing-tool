@@ -1,15 +1,14 @@
 // ApiCalendar.ts
 import internalApiService from '@/core/api/ApiClient';
 import { handleApiError } from '@/core/api/ApiLogs';
-import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import {
     CalendarEvent,
     useCalendarContext
 } from '@/core/calendar/CalendarEvent';
 import { SimpleCalendarEvent } from '@/core/components/calendar/CalendarContext';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CalendarNotificationTypes } from '@/core/features/support/NotificationTypes';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
@@ -203,7 +202,7 @@ class CalendarApiService <
   async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     try {
       // Make a GET request to the API endpoint with documentId
-      const response = await axiosInstance.get<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
+      const response = await internalApiService.get<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
 
       // Extract the data from the response
       const calendarEvents = response.data;
@@ -219,7 +218,7 @@ class CalendarApiService <
   async fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>> {
     try {
       // Make a GET request to the API endpoint
-      const response = await axiosInstance.get<Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>(`${API_BASE_URL}/calendar/events/data`);
+      const response = await internalApiService.get<Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>(`${API_BASE_URL}/calendar/events/data`);
 
       // Extract the data from the response
       const calendarEventsData = response.data;
@@ -254,8 +253,8 @@ async fetchGoogleCalendarEvents(): Promise<any> {
     const googleCalendarApiEndpoint = "https://www.googleapis.com/calendar/v3/events";
     const accessToken = process.env.FRONTEND_API_ACCESS_TOKEN;
 
-    // ✅ axiosInstance for external APIs
-    const response: AxiosResponse = await axiosInstance.get(
+    // ✅ internalApiService for external APIs
+    const response: AxiosResponse = await internalApiService.get(
       googleCalendarApiEndpoint,
       {
         headers: {

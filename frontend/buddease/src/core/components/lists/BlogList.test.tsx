@@ -1,4 +1,4 @@
-// BlogList.test.tsx
+BlogList.test.tsx
 import { render, } from '@testing-library/react';
 
 import BlogList from '@/core/components/lists/BlogList';

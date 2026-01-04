@@ -1,5 +1,5 @@
-// database.ts
-// In a separate file: src/app/actions/database.ts
+database.ts
+In a separate file: src/app/actions/database.ts
 'use server';
 
 import { PostgresDatabaseService } from '@/core/server/database/PostgresDatabaseService';

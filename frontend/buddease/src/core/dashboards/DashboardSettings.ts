@@ -1,5 +1,5 @@
-// DashboardSettings.ts
-// Define the DashboardPreferenceEnum to represent various dashboard preferences
+DashboardSettings.ts
+Define the DashboardPreferenceEnum to represent various dashboard preferences
 export enum DashboardPreferenceEnum {
   Theme = 'Theme',
   Layout = 'Layout',
@@ -75,7 +75,7 @@ interface WidgetPreferences {
   };
 }
 
-// Example usage
+Example usage
 const userDashboardSettings: DashboardSettings = {
   theme: 'dark',
   layout: 'grid',

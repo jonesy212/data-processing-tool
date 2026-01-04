@@ -1,6 +1,6 @@
-  import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+  import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig'
 import { AppEntity } from "@/core/typings/entities/AppEntity";
 
   export function storeTempData<

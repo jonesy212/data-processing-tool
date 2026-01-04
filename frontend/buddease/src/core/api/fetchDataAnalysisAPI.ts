@@ -1,5 +1,5 @@
-// fetchDataAnalysisAPI.ts
-// dataAnalysisSagas.ts
+fetchDataAnalysisAPI.ts
+dataAnalysisSagas.ts
 import { DataAnalysisActions } from "@/core/actions/DataAnalysisActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { DataAnalysis } from "@/core/projects/DataAnalysisPhase/DataAnalysis";
@@ -7,7 +7,7 @@ import { dataAnalysisService } from "@/core/typings/phases/dataAnalysisTypes";
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
-// Replace 'yourApiEndpoint' with the actual API endpoint
+Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchDataAnalysisAPI = () => axios.get('/api/data-analysis');
 
 
@@ -25,7 +25,7 @@ function* fetchDataAnalysisSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for fetchDataAnalysisRequestSaga
+Implementation for fetchDataAnalysisRequestSaga
 function* fetchDataAnalysisRequestSaga(): Generator<Effect, void, any> {
   try {
     yield put(DataAnalysisActions.fetchDataAnalysisRequest());
@@ -39,7 +39,7 @@ function* fetchDataAnalysisRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for fetchDataAnalysisSuccessSaga
+Implementation for fetchDataAnalysisSuccessSaga
 function* fetchDataAnalysisSuccessSaga(
   action: ReturnType<typeof DataAnalysisActions.fetchDataAnalysisSuccess>
 ): Generator<Effect, void, any> {
@@ -61,7 +61,7 @@ function* fetchDataAnalysisSuccessSaga(
   }
 }
 
-// Other sagas can be added similarly
+Other sagas can be added similarly
 
 
 export const dataAnalysisSagas = [

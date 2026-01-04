@@ -1,4 +1,4 @@
-// LoginFormStore.ts
+LoginFormStore.ts
 import { makeAutoObservable } from "mobx";
 
 class LoginFormStore {

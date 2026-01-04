@@ -1,4 +1,4 @@
-// BlogAndContentEditorWrapper.tsx
+BlogAndContentEditorWrapper.tsx
 import { BlogActions } from '@/core/actions/BlogAction';
 import { blogApiService } from '@/core/api/BlogAPI';
 import BlogAndContentEditor from '@/core/components/models/content/BlogAndContentEditor'; // Import the BlogAndContentEditor component

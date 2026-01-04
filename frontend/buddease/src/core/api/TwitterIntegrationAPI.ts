@@ -1,13 +1,13 @@
-// TwitterIntegrationAPI.ts
+TwitterIntegrationAPI.ts
 
-// Import necessary modules and types
+Import necessary modules and types
 import axiosInstance from '@/core/api/csrfToken';
 import { headersConfig } from '@/core/components/shared/SharedHeaders'; // Assuming you have shared headers configuration
 
-// Define the base URL for Twitter API
+Define the base URL for Twitter API
 const TWITTER_API_BASE_URL = 'https://api.twitter.com/1.1';
 
-// Define your Twitter access token
+Define your Twitter access token
 const TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN; // Make sure to set this environment variable
 
 
@@ -23,7 +23,7 @@ interface TwitterUserDetails {
 
 
 
-// Define the Twitter API module
+Define the Twitter API module
 const TwitterIntegrationAPI = {
 
   async fetchTweets(userId: string): Promise<any[]> {
@@ -134,5 +134,5 @@ const TwitterIntegrationAPI = {
   // Add more methods for other Twitter API functionalities as needed
 };
 
-// Export the TwitterIntegrationAPI module
+Export the TwitterIntegrationAPI module
 export default TwitterIntegrationAPI;

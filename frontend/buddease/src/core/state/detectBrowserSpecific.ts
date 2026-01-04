@@ -1,4 +1,4 @@
-// detectBrowserSpecific.ts
+detectBrowserSpecific.ts
 import { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
 
 const detectBrowserSpecific = (): BrowserBehaviorConfig["browserSpecific"] => {

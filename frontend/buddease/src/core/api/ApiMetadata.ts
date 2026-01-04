@@ -1,14 +1,14 @@
-// ApiMetadata.ts
-// External API calls for metadata operations
+ApiMetadata.ts
+External API calls for metadata operations
 
 import internalApiService from "@/core/api/ApiClient";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from "@/core/api/endpointConfigurations";
 import HeadersConfig from "@/core/api/headers/HeadersConfig";
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
@@ -17,7 +17,7 @@ import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const API_BASE_URL = endpoints.metadata;
 
-// Define a function to create headers using the provided configuration
+Define a function to create headers using the provided configuration
 export const createMetadataHeaders = (): typeof HeadersConfig => {
   return {
     "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export const createMetadataHeaders = (): typeof HeadersConfig => {
   };
 };
 
-// Metadata Notification Messages
+Metadata Notification Messages
 interface MetadataNotificationMessages {
   [key: string]: string;
   
@@ -78,7 +78,7 @@ interface MetadataNotificationMessages {
   GENERIC_METADATA_ERROR: string;
 }
 
-// Helper function to get message with fallback
+Helper function to get message with fallback
 const getMetadataNotificationMessage = (key: keyof MetadataNotificationMessages): string => {
   const message = NOTIFICATION_MESSAGES.Metadata?.[key as keyof typeof NOTIFICATION_MESSAGES.Metadata];
   if (message) return message;
@@ -583,7 +583,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
   }
 }
 
-// Create the internal API service instance
+Create the internal API service instance
 const internalMetadataApiService = new MetadataApiService(useNotification, metadataNotificationMessages);
 
 export default internalMetadataApiService;

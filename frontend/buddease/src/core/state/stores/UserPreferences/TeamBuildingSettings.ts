@@ -1,5 +1,5 @@
-// TeamBuildingSettings.ts
-// src/app/state/stores/UserPreferences/UserPreferencesStore.ts
+TeamBuildingSettings.ts
+src/app/state/stores/UserPreferences/UserPreferencesStore.ts
 
 import { action, makeObservable, observable } from 'mobx';
 

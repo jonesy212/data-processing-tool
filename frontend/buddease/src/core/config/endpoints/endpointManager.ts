@@ -1,8 +1,8 @@
-// endpointManager.ts
+endpointManager.ts
 import { EndpointConfigurations } from '@/core/config/EndpointConfig';
 import { BasicChannels } from '@/core/notifications/NotificationChannelHelper';
 
-// Import ALL configs
+Import ALL configs
 import { analyticsConfig } from '@/core/config/endpoints/analyticsConfig';
 import { apiEndpointConfig } from '@/core/config/endpoints/apiEndpointConfig';
 import { apiWebBaseConfig } from '@/core/config/endpoints/apiWebBaseConfig';
@@ -81,15 +81,15 @@ import { versionConfig } from '@/core/config/endpoints/versionConfig';
 import { videosConfig } from '@/core/config/endpoints/videosConfig';
 import { webConfig } from '@/core/config/endpoints/webConfig';
 
-// Import notification channels config (new)
+Import notification channels config (new)
 import { notificationsConfig } from '@/core/config/endpoints/notificationsConfig';
 import { NotificationChannelManager } from '@/core/notifications/NotificationChannelManager';
 
 import { WebhookSettings } from '@/core/settings/Reminder';
 
-// ============================================================================
-// TYPES
-// ============================================================================
+============================================================================
+TYPES
+============================================================================
 
 type EndpointGroup = keyof EndpointConfigurations;
 
@@ -103,9 +103,9 @@ interface EndpointManagerOptions {
   };
 }
 
-// ============================================================================
-// ENDPOINT CONFIG MANAGER
-// ============================================================================
+============================================================================
+ENDPOINT CONFIG MANAGER
+============================================================================
 
 class EndpointConfigManager {
   private configMap = new Map<EndpointGroup, any>();
@@ -403,7 +403,7 @@ class EndpointConfigManager {
   return this.notificationChannelManager;
 }
 
-// Helper method to sanitize channel settings
+Helper method to sanitize channel settings
 private sanitizeChannelSettings(channel: BasicChannels, settings: any): any {
   switch(channel) {
     case 'email':
@@ -447,7 +447,7 @@ private sanitizeChannelSettings(channel: BasicChannels, settings: any): any {
   }
 }
 
-// Helper method for advanced channels
+Helper method for advanced channels
   private setAdvancedChannelFromPreferences(channel: string, settings: any) {
     const advancedChannels = ['chat', 'calendar', 'audioCall', 'videoCall', 'screenShare'];
   
@@ -472,11 +472,11 @@ private sanitizeChannelSettings(channel: BasicChannels, settings: any): any {
   }
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+============================================================================
+EXPORTS
+============================================================================
 
-// Create singleton instance
+Create singleton instance
 const endpointManager = new EndpointConfigManager({
   autoRegister: true,
   logger: {
@@ -487,11 +487,11 @@ const endpointManager = new EndpointConfigManager({
   }
 });
 
-// Export manager and configurations
+Export manager and configurations
 export const endpointConfigurations = endpointManager.getEndpointConfigurations();
 export const notificationChannelManager = endpointManager.getNotificationManager();
 
-// Export individual configs for backward compatibility
+Export individual configs for backward compatibility
 export {
     analyticsConfig, apiEndpointConfig, apiWebBaseConfig, authConfig, batchConfig, blogsConfig,
     calendarConfig,
@@ -517,5 +517,5 @@ export {
     userRolesNFTConfig, usersConfig, userSettingsConfig, versionConfig, videosConfig, webConfig
 };
 
-// Export types
+Export types
     export type { EndpointGroup, EndpointManagerOptions };

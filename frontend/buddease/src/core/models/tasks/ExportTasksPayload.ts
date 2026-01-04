@@ -1,7 +1,7 @@
-// ExportTasksPayload.ts
+ExportTasksPayload.ts
 import { Task } from "@/core/models/tasks/Task";
 
-// ExportTasksPayload.tsx
+ExportTasksPayload.tsx
 interface ExportTasksPayload {
     tasks: Task[]; // Array of tasks to be exported
     format: ExportFormat; // Format in which tasks should be exported

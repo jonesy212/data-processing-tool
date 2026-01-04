@@ -1,4 +1,4 @@
-// CriteriaType.ts
+CriteriaType.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/core/communications/LanguageEnum";
 import FormatEnum from "@/core/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";
@@ -17,12 +17,12 @@ import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import { IdeaCreationPhaseEnum } from "@/core/users/userJourney/IdeaCreationPhase";
 
 export type PriorityValue = string | PriorityTypeEnum | null | undefined;
-// -------------------
-// Priority Types
-// -------------------
+-------------------
+Priority Types
+-------------------
 type ValidPriority = "low" | "medium" | "high" | "scheduled" | "completed";
 
-// Define CriteriaType incorporating FilterCriteria
+Define CriteriaType incorporating FilterCriteria
 export type CriteriaType = {
   startDate?: Date;
   filterBy?: string;

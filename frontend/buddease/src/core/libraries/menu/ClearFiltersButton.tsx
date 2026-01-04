@@ -1,4 +1,4 @@
-// ClearFiltersButton.tsx
+ClearFiltersButton.tsx
 import { ButtonProps } from "@/core/libraries/ui/buttons/ReusableButton";
 import React from "react";
 

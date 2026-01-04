@@ -1,5 +1,6 @@
-// UserVisualPreferences.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+UserVisualPreferences.ts
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface UserVisualPreferencesState {
   fontSize: number;

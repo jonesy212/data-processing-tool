@@ -1,5 +1,5 @@
-// Reporting.ts
-// Generate reports summarizing the findings and insights from the data analysis, allowing users to make informed decisions.
+Reporting.ts
+Generate reports summarizing the findings and insights from the data analysis, allowing users to make informed decisions.
 
 import { Report } from "@/core/documents/Report";
 import { generateReportFilename, validateReport } from "@/utils/reportUtils";

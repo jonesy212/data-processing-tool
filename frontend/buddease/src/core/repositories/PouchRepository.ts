@@ -1,4 +1,4 @@
-// app/repositories/IndexedDBRepository.ts
+app/repositories/IndexedDBRepository.ts
 import { DomainObject } from '@/core/typings/DomainObject';
 
 export class IndexedDBRepository {

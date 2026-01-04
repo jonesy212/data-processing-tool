@@ -1,11 +1,11 @@
-// ChatApi.ts
+ChatApi.ts
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { ChatRoom } from '@/core/communications/ChatRoom';
 import ChatMessage from "@/core/components/communications/chat/ChatMessage";
 import Group from "@/core/components/communications/chat/Group";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PrivacySettings } from "@/core/settings/PrivacySettings";
 import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
 import { uiStore } from '@/core/state/stores/UIStore';

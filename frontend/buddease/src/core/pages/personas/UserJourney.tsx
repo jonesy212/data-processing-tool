@@ -1,5 +1,5 @@
-// UserJourney.tsx
-// UserJourneyManager.tsx
+UserJourney.tsx
+UserJourneyManager.tsx
 import { TempUserData } from '@/core/models/phases/Phase';
 import React, { useState } from "react";
 import { OnboardingPhase } from "./UserJourneyManager";

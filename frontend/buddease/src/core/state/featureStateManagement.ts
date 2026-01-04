@@ -1,5 +1,5 @@
-// featureStateManagement.ts
-// Example MobX Store for a Feature
+featureStateManagement.ts
+Example MobX Store for a Feature
 import { makeAutoObservable } from "mobx";
 
 class FeatureStore {
@@ -57,6 +57,6 @@ class FeatureStore {
   }
 }
 
-// Export instance of FeatureStore
+Export instance of FeatureStore
 const featureStore = new FeatureStore();
 export default featureStore;

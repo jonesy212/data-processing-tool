@@ -1,4 +1,4 @@
-// DevEndpoints.ts
+DevEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DevEndpoints extends EndpointCategoryConfig {

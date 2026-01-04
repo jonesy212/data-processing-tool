@@ -1,5 +1,5 @@
-// BrowserCheck.tsx
-// components/BroswerCheck.tsx
+BrowserCheck.tsx
+components/BroswerCheck.tsx
 import React from 'react';
 
 interface BrowserCheckProps {

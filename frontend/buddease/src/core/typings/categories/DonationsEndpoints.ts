@@ -1,4 +1,4 @@
-// DonationsEndpoints.ts
+DonationsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DonationsEndpoints extends EndpointCategoryConfig {

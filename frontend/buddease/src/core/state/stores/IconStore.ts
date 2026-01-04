@@ -1,4 +1,4 @@
-// IconStore.ts
+IconStore.ts
 import { BaseStoreWithCallbacks } from '@/core/libraries/eventSystem/BaseStoreWithCallbacks';
 import { makeAutoObservable } from 'mobx';
 
@@ -105,6 +105,6 @@ export class IconStoreImpl extends BaseStoreWithCallbacks implements IconStore {
   }
 }
 
-// Create and export singleton instance
+Create and export singleton instance
 export const iconStore = new IconStoreImpl();
 export default iconStore;

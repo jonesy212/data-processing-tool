@@ -1,4 +1,4 @@
-// CollaborationToolsEndpoints.ts
+CollaborationToolsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface CollaborationToolsEndpoints extends EndpointCategoryConfig {

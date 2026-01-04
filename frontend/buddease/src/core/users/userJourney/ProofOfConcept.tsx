@@ -1,4 +1,4 @@
-// ProofOfConcept.tsx
+ProofOfConcept.tsx
 import React from 'react';
 
 const ProofOfConcept: React.FC = () => {

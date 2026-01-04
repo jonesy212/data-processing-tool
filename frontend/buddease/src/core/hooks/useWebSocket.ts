@@ -1,11 +1,11 @@
-// useWebSocket.ts
+useWebSocket.ts
 import { csrfToken } from "@/core/api/csrfToken";
 import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
 
 
-// Define the type DefaultEventsMap
+Define the type DefaultEventsMap
 type DefaultEventsMap = {
   // Define the events map as per your application's requirements
   message: any;
@@ -96,13 +96,13 @@ export default useWebSocket;
 export type { WebSocketReturnType };
 
 
-// sendMessage:
-// Use sendMessage when you want to send a generic message through the WebSocket connection.
-// This function is suitable for sending any type of message, such as text, JSON objects, or binary data.
-// Examples of usage include sending chat messages, notifications, or any custom data that doesn't require specific handling on the server side.
+sendMessage:
+Use sendMessage when you want to send a generic message through the WebSocket connection.
+This function is suitable for sending any type of message, such as text, JSON objects, or binary data.
+Examples of usage include sending chat messages, notifications, or any custom data that doesn't require specific handling on the server side.
 
 
-// sendWebSocketMessage:
-// Use sendWebSocketMessage when you need to send a message that corresponds to a specific WebSocket event or action defined in your server-side WebSocket implementation.
-// This function is ideal for sending messages that trigger predefined server-side actions or events.
-// Examples of usage include subscribing to a channel, sending document changes, requesting data updates, or any other WebSocket-related actions that are part of your application's communication protocol.
+sendWebSocketMessage:
+Use sendWebSocketMessage when you need to send a message that corresponds to a specific WebSocket event or action defined in your server-side WebSocket implementation.
+This function is ideal for sending messages that trigger predefined server-side actions or events.
+Examples of usage include subscribing to a channel, sending document changes, requesting data updates, or any other WebSocket-related actions that are part of your application's communication protocol.

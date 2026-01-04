@@ -1,11 +1,11 @@
-// DynamicNotificationMessage.tsx
-// Define the type for dynamic notification message
+DynamicNotificationMessage.tsx
+Define the type for dynamic notification message
 type DynamicNotificationMessage = string | ((errorType: string, details: string) => string);
 
-// Example usage:
+Example usage:
 const dynamicMessage: DynamicNotificationMessage = "This is a static message";
 
-// Function that takes a dynamic message
+Function that takes a dynamic message
 const handleMessage = (message: DynamicNotificationMessage, errorType: string, details: string): string => {
   if (typeof message === 'string') {
     return message;
@@ -14,7 +14,7 @@ const handleMessage = (message: DynamicNotificationMessage, errorType: string, d
   }
 };
 
-// Example usage:
+Example usage:
 const errorType = "ErrorType";
 const details = "ErrorDetails";
 

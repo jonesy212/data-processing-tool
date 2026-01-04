@@ -1,4 +1,4 @@
-// EnterprisePrompt.tsx
+EnterprisePrompt.tsx
 class EnterprisePrompt {
   private title: string;
   private description: string;
@@ -62,7 +62,7 @@ class EnterprisePrompt {
   }
 }
 
-// Define the user journey function
+Define the user journey function
 const executeUserJourney = (prompt: EnterprisePrompt) => {
   console.log(
     "User Journey: Configuring Secure Authentication for Enterprise Application"
@@ -105,7 +105,7 @@ const executeUserJourney = (prompt: EnterprisePrompt) => {
   });
 };
 
-// Example usage
+Example usage
 const enterprisePrompt = new EnterprisePrompt(
   "Configure Secure Authentication for Enterprise Application",
   "This prompt guides users through the process of configuring secure authentication for an enterprise application using industry best practices.",

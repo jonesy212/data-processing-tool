@@ -1,8 +1,8 @@
-// ThemeManagerServiceContext.tsx
+ThemeManagerServiceContext.tsx
 import themeSettings, { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
 import React, { createContext, useContext, useState } from "react";
 
-// Define the type for ThemeManagerServiceProps
+Define the type for ThemeManagerServiceProps
 interface ThemeManagerServiceProps {
   setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;
   setSecondaryColor: React.Dispatch<React.SetStateAction<string>>;
@@ -12,10 +12,10 @@ interface ThemeManagerServiceProps {
   
 }
 
-// Create a context for the theme manager service
+Create a context for the theme manager service
 const ThemeManagerServiceContext = createContext<ThemeManagerServiceProps | undefined>(undefined);
 
-// Custom hook to consume the theme manager service
+Custom hook to consume the theme manager service
 export const useThemeManagerService = (): ThemeManagerServiceProps => {
   const context = useContext(ThemeManagerServiceContext);
   if (!context) {
@@ -24,7 +24,7 @@ export const useThemeManagerService = (): ThemeManagerServiceProps => {
   return context;
 };
 
-// ThemeManagerServiceProvider component to provide the theme manager service
+ThemeManagerServiceProvider component to provide the theme manager service
 export const ThemeManagerServiceProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

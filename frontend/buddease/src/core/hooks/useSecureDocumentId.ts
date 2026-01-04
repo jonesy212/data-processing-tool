@@ -1,4 +1,4 @@
-// useSecureDocumentId.ts
+useSecureDocumentId.ts
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
 import UserRoles, { UserRoleEnum } from '@/core/models/UserRoles';
 import { useAuth } from '@/core/state/context/AuthContext';

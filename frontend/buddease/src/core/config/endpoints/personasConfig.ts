@@ -1,4 +1,4 @@
-// personasConfig.ts
+personasConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { PersonasEndpoints } from '@/core/typings/categories/PersonasEndpoints';
 

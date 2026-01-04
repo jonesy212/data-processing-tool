@@ -1,4 +1,4 @@
-// src/app/error-analyzer/ReportGenerator.ts
+src/app/error-analyzer/ReportGenerator.ts
 import { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
 import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import fs from 'fs';

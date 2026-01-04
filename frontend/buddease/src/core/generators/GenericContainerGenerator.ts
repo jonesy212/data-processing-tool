@@ -1,30 +1,30 @@
-// GenericContainerGenerator.ts
+GenericContainerGenerator.ts
 
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { AxiosError } from 'axios';
 
-// Define a generic container interface
+Define a generic container interface
 interface Container<T> {
   data: T;
   isActive: boolean;
   // Add more properties and methods as needed
 }
 
-// Define a type for container configuration
+Define a type for container configuration
 type ContainerConfig<T> = {
   name: string;
   generate: () => Container<T>;
   isActive: boolean;
 };
 
-// Define a type for the generator props
+Define a type for the generator props
 type ContainerGeneratorProps<T> = {
   initialConfigs: ContainerConfig<T>[];
   onError?: (error: AxiosError<unknown>, errorMessage: string) => void;
 };
 
-// Container generator function
+Container generator function
 const createContainer = <T>(props: ContainerGeneratorProps<T>) => {
   // Use a Map to store the containers with better key support
   const containers: Map<string, Container<T>> = new Map();

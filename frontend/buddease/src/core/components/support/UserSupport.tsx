@@ -1,4 +1,4 @@
-// UserSupport.tsx
+UserSupport.tsx
 import { loadDuckDuckGoIcon, loadLinkedInIcon, loadXIcon, loadYandexIcon } from '@/core/components/icons/IconLoader'; // Adjust the path accordingly
 import LazyIcon from '@/core/components/LazyIconProps'; // Adjust the path accordingly
 import { useStore } from '@/core/hooks/useStore';

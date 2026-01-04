@@ -1,0 +1,171 @@
+// CalendarEvent.ts
+//CalendarEvent.ts
+import { Label } from '@/core/branding/BrandingSettings';
+import { Team } from "@/core/components/teams/Team";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import { useMeta } from "@/core/config/useMeta";
+import { useMetadata } from "@/core/config/useMetadata";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import { CommonData } from "@/core/models/CommonData";
+import { Member } from '@/core/models/members/Member';
+import { Phase } from "@/core/models/phases/Phase";
+import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
+import { CalendarEventWithCriteria } from "@/core/pages/searches/FilterCriteria";
+import { ReminderSettings } from '@/core/settings/Reminder';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { data } from "@/core/snapshots/SnapshotWithCriteria";
+import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
+;
+
+import { Attendee } from "@/core/components/calendar/Attendee";
+import { TagsRecord } from '@/core/models/tracker/Tag';
+import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import { CommonEvent } from "@/core/state/stores/CommonEvent";
+import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/core/typings/entities/AppMetadataEntity";
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
+import { createLatestVersion } from '@/core/versions/createLatestVersion';
+
+type CalendarEventBase = BaseDataEntity & {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  description?: string;
+  location?: string;
+  isAllDay?: boolean;
+  recurrenceRule?: string;
+  timeZone: string;
+};
+
+
+
+// Calendar-specific validation: endDate must be after startDate
+interface CalendarEventMeta extends DefaultMeta<CalendarEventBase, CalendarEventBase> {
+  validation: {
+    isDateRangeValid: boolean;
+    isWithinBusinessHours: boolean;
+    hasNoSchedulingConflicts: boolean;
+    isRecurrenceRuleValid: boolean;
+    areTimezonesConsistent: boolean;
+  };
+  scheduling: {
+    requiresConfirmation: boolean;
+    maxAttendees: number;
+    allowedDurations: number[]; // in minutes
+    bufferTime: number; // minutes between events
+  };
+  notifications: {
+    sendInvites: boolean;
+    sendUpdates: boolean;
+    sendCancellations: boolean;
+    reminderSettings: ReminderSettings;
+  };
+}
+
+interface CalendarEvent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+>
+  extends CommonEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+  {
+  id: string;
+  title: string;
+  content: string;
+  topics: string[];
+  //remove if conficting
+  category?: Category;
+  description?: string;
+
+  highlights: string[];
+  load?: () => void;
+  files: any[];
+  type?: NotificationType;
+  locked?: boolean;
+  action?: string;
+  changes?: string[];
+  date: string | Date | undefined;
+  tags?: string[] | TagsRecord<T>; 
+  meta: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+
+  options?: {
+    // ...
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+    additionalDocumentOptions?: DocumentOptions;
+    additionalOptionsLabel?: string;
+    // ...  
+  };
+  documentPhase?: WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;   // Add more properties if needed
+  status?: AllStatus;
+  isCompleted?: boolean;
+  isActive?: boolean;
+  rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
+  priority?: string | AllStatus | null;
+  location?: string;
+  host?: boolean | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  guestSpeakers?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  participants: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  hosts?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  attendees?: Attendee[];
+  color?: string;
+  isImportant?: boolean;
+  teamMemberId: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"];
+
+  reminder?: string;
+  pinned?: boolean;
+  archived?: boolean;
+  documentReleased?: boolean;
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
+
+  getData?: () => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+
+  then?: <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T  
+  >(
+    callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
+  ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+}
+
+// Destructure `latestVersion` with a default value
+const { latestVersion = createLatestVersion<VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
+const area = fetchUserAreaDimensions().toString()
+const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
+const currentMeta: AppStructuredMetadata = useMeta(area)
+
+
+const calendarEvent: CalendarEventEntity = {
+  date: undefined,
+  meta: undefined,
+  rsvpStatus: "notResponded",
+  participants: [],
+  teamMemberId: "",
+  id: "",
+  title: "",
+  content: "",
+  topics: [],
+  highlights: [],
+  files: [],
+  label: {} as Label,
+  createdBy: undefined,
+  currentMeta: currentMeta, 
+  currentMetadata: currentMetadata,
+  latestVersion
+}
+
+export { calendarEvent };
+export type { CalendarEvent };
+

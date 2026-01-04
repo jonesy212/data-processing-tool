@@ -1,4 +1,4 @@
-// IdentityManagement.ts
+IdentityManagement.ts
 class IdentityManagement {
     constructor() {
       // Initialize identity management configuration

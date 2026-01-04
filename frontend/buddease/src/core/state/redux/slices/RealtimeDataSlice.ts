@@ -1,7 +1,8 @@
-// RealtimeDataSlice.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+RealtimeDataSlice.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { RealtimeData } from '@/core/typings/realtimeTypes';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 
 interface RealtimeDataEntity extends BaseDataEntity {
@@ -22,17 +23,17 @@ type AppRealtimeData = RealtimeData<
 >;
 
 
-// Define interface for the state
+Define interface for the state
 export interface RealtimeDataState {
   realtimeDataList: AppRealtimeData[];
 }
 
-// Define initial state
+Define initial state
 export const initialState: RealtimeDataState = {
   realtimeDataList: [],
 };
 
-// Create slice
+Create slice
 export const useRealtimeDataSlice = createSlice({
   name: 'realtimeData',
   initialState,
@@ -60,15 +61,15 @@ export const useRealtimeDataSlice = createSlice({
   },
 });
 
-// Export actions
+Export actions
 export const {
   addRealtimeData,
   updateRealtimeData,
   removeRealtimeData
 } = useRealtimeDataSlice.actions;
 
-// Export selector for accessing the realtime data list from the state
+Export selector for accessing the realtime data list from the state
 export const selectRealtimeDataList = (state: { realtimeData: RealtimeDataState }) => state.realtimeData.realtimeDataList;
 
-// Export reducer for the realtime data slice
+Export reducer for the realtime data slice
 export default useRealtimeDataSlice.reducer;

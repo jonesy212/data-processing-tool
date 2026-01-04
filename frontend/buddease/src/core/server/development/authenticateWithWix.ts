@@ -1,7 +1,7 @@
-// authenticateWithWix.ts
+authenticateWithWix.ts
 
 
-// Function to authenticate with Wix API
+Function to authenticate with Wix API
 async function makeAuthenticationRequest(): Promise<string> {
   const clientId = process.env.WIX_API_KEY;
   const clientSecret = process.env.WIX_API_SECRET;
@@ -39,7 +39,7 @@ type PageData = {
   }>;
 };
 
-// Function to authenticate with Wix API
+Function to authenticate with Wix API
 async function authenticateWithWix() {
     // Make API request to obtain access token using authentication credentials
     const accessToken = await makeAuthenticationRequest(); // Implement this function

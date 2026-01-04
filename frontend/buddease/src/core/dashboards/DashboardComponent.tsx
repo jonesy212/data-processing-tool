@@ -1,5 +1,5 @@
-// DashboardComponent.tsx
-// DashboardComponent.ts
+DashboardComponent.tsx
+DashboardComponent.ts
 import React from "react";
 
 import MediaDashboard from "@/core/components/socialMedia/MediaDashboard";

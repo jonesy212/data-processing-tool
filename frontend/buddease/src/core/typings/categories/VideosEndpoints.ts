@@ -1,4 +1,4 @@
-// VideosEndpoints.ts
+VideosEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface VideosEndpoints extends EndpointCategoryConfig {

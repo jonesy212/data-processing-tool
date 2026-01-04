@@ -1,4 +1,4 @@
-// NotificationChannelHelperImpl.ts
+NotificationChannelHelperImpl.ts
 import {
     BasicNotificationChannels,
     NotificationChannelHelper,

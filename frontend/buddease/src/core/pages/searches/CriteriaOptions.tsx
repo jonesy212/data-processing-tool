@@ -1,5 +1,5 @@
-// CriteriaOptions.tsx
-// CriteriaOptions.ts
+CriteriaOptions.tsx
+CriteriaOptions.ts
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
 import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/core/components/phases/FeedbackPhase";
@@ -159,7 +159,7 @@ export type {
     UserEngagementCriteria
 };
 
-// Example usage
+Example usage
 const criteria: ProjectManagementComprehensiveCriteria = {
   communicationType: CommunicationTypeEnum.VIDEO,
   currentPhase: ProjectPhaseTypeEnum.Development,

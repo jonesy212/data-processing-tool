@@ -54,6 +54,8 @@ const PaletteManager: React.FC = () => {
           <h3>{palette.name}</h3>
           <Palette
             colors={palette.colors}
+            highlights={palette.highlights}
+            highlightColor={palette.highlightColor}
             swatches={palette.colors.map((color, colorIndex) => ({
               key: colorIndex,
               color,

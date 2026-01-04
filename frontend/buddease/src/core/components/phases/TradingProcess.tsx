@@ -1,4 +1,4 @@
-// TradingProcess.tsx
+TradingProcess.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import React, { useState } from "react";
 
@@ -435,7 +435,7 @@ const handleConfirmation = async (tradeData: any) => {
     }
   }
 };
-// Helper functions for trading error handling
+Helper functions for trading error handling
 const getTradingErrorPriority = (errorType: string): string => {
   const highPriorityErrors = [
     'INSUFFICIENT_FUNDS_ERROR',

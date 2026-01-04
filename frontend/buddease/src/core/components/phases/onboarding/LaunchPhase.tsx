@@ -1,4 +1,4 @@
-// LaunchPhase.tsx
+LaunchPhase.tsx
 import React from 'react';
 
 interface LaunchPhaseProps {

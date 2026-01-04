@@ -1,9 +1,9 @@
-// determineFileCategory.tsx
+determineFileCategory.tsx
 import * as snapshotApi from '@/core/api/SnapshotApi';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { FileCategory } from "@/core/documents/FileType";
-import { Attachment } from '@/core/documents/attachment/Attachment';
-// Utility function to determine file category based on categoryName
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+Utility function to determine file category based on categoryName
 function determineFileCategory(categoryName: string): FileCategory {
   // Implement logic to determine file category based on the provided categoryName
   // For simplicity, this example assumes a direct mapping, but you can expand this logic
@@ -71,7 +71,7 @@ function determineFileCategory(categoryName: string): FileCategory {
   }
 }
 
-// Example implementation of fetching snapshot data based on category
+Example implementation of fetching snapshot data based on category
 async function fetchFileSnapshotData<
   T extends BaseDataEntity,
   K extends T = T,

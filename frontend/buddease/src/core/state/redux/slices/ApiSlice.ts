@@ -1,11 +1,11 @@
-// ApiSlice.ts
+ApiSlice.ts
 import ApiConfig from '@/core/api/ApiConfigService';
 import CommunicationAPI from "@/core/api/CommunicationAPI";
 import { Label } from '@/core/branding/BrandingSettings';
 import { CrossCulturalCommunication, Language, TimeZone } from "@/core/communications/Language";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/core/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/core/interfaces/provider/CloudStorageProvider";
 import { Data } from '@/core/models/data/Data';
@@ -17,8 +17,8 @@ import { AnalyticsTool } from "@/core/projects/DataAnalysisPhase/AnalyticsTool";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { addTask } from "./TaskSlice";
@@ -354,9 +354,9 @@ export const useApiManagerSlice = createSlice({
     },
     
 
-// Update the trackRevenue reducer
+Update the trackRevenue reducer
 
-// Update the trackRevenue reducer
+Update the trackRevenue reducer
 trackRevenue: (state, action: PayloadAction<Revenue>) => {
   // Calculate total revenue by summing up all completed payments
   const totalRevenue = state.payments
@@ -579,7 +579,7 @@ trackRevenue: (state, action: PayloadAction<Revenue>) => {
   },
 });
 
-// Export actions
+Export actions
 export const {
   updateApiConfigName,
   updateApiConfigUrl,
@@ -641,7 +641,7 @@ export const {
   leverageCommunicationAPIs,
 } = useApiManagerSlice.actions;
 
-// Extend the method to mark tasks as complete
+Extend the method to mark tasks as complete
 function convertToWritableMetadata<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -735,7 +735,7 @@ export const markTaskAsComplete = (taskId: string, title: string) => async (disp
     ]
   }));
 }
-// Extend the method to mark todos as complete
+Extend the method to mark todos as complete
 export const markTodoAsComplete = (todoId: string, title: string) => async (dispatch: any) => {
   dispatch(addTask({
     id: todoId,
@@ -791,11 +791,11 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
 };
 
 
-// Export selector for accessing the API configurations from the state
+Export selector for accessing the API configurations from the state
 export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
   state.apiManager.apiConfigs;
 
-// Export reducer for the API manager slice
+Export reducer for the API manager slice
 export default useApiManagerSlice.reducer;
 
 export type { ApiManagerState };

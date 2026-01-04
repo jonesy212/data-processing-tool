@@ -1,5 +1,5 @@
-// createBaseDataEntity.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+createBaseDataEntity.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 
 
 function createBaseDataEntity<T extends BaseDataEntity>(overrides?: Partial<T>): T {
@@ -20,7 +20,7 @@ function createBaseDataEntity<T extends BaseDataEntity>(overrides?: Partial<T>):
 }
 
 
-// Alternative version with more customization options
+Alternative version with more customization options
 function createBaseDataEntityWithOptions<
   T extends BaseDataEntity,
   K extends T = T,
@@ -41,7 +41,7 @@ function createBaseDataEntityWithOptions<
   return { ...baseEntity, ...options } as T;
 }
 
-// Simple version for common use cases
+Simple version for common use cases
 function createSimpleBaseDataEntity<T extends BaseDataEntity>(
   id?: string,
   metadata?: any

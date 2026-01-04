@@ -1,4 +1,4 @@
-// VideoPanel.tsx
+VideoPanel.tsx
 import React from "react";
 
 const VideoPanel: React.FC = () => {

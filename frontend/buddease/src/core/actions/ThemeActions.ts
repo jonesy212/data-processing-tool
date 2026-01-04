@@ -1,6 +1,6 @@
 // ThemeActions.ts
-import { Theme } from "@/core/libraries/ui/theme/Theme";
-import { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
+import type { Theme } from "@/core/libraries/ui/theme/Theme";
+import type { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
 import { createAction } from "@reduxjs/toolkit";
 
 export const ThemeActions = {
@@ -44,5 +44,5 @@ export const ThemeActions = {
   // Brand Icon, Brand Name
   setBrandIcon: createAction<string>("setBrandIcon"),
   setBrandName: createAction<string>("setBrandName"),
-  setHeaderColorFailure: create<string>('setHeaderColorFailure')
+  setHeaderColorFailure: createAction<string>('setHeaderColorFailure')
 };

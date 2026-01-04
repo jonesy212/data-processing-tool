@@ -1,4 +1,4 @@
-// SearchContext.tsx
+SearchContext.tsx
 import React, { ReactNode, createContext, useContext, useState } from 'react';
 
 interface SearchContextProps {

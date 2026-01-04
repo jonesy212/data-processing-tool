@@ -1,4 +1,4 @@
-// VersionGenerator.tsx
+VersionGenerator.tsx
 
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 
@@ -31,13 +31,13 @@ interface VersionResult {
   info: any; // Replace 'any' with the type of versionInfo object if available
 }
 
-// Define the getCurrentAppInfo function outside the VersionGenerator class
+Define the getCurrentAppInfo function outside the VersionGenerator class
 
 export const getCurrentAppInfo = (): { versionNumber: string; appVersion: string } => { 
   // Retrieve appVersion and versionNumber using UniqueIDGenerator 
 const appVersion = UniqueIDGenerator.generateAppVersion(); 
 const versionNumber = UniqueIDGenerator.generateVersionNumber(); 
-// Return an object containing the current appVersion and versionNumber return 
+Return an object containing the current appVersion and versionNumber return 
   return { versionNumber, 
     appVersion 
   }; 

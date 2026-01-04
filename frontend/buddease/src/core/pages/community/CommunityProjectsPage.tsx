@@ -1,5 +1,5 @@
-// CommunityProjectsPage.tsx
-// app/pages/community/CommunityProjectsPage.tsx
+CommunityProjectsPage.tsx
+app/pages/community/CommunityProjectsPage.tsx
 import { Team } from '@/core/components/teams/Team';
 import ListGenerator from '@/core/generators/ListGenerator';
 import { CommunityData } from '@/core/models/CommunityData';
@@ -11,7 +11,7 @@ interface CommunityProjectsPageProps {
     community: CommunityData;
 }
 
-// Utility function to transform teams into DetailsItem<Data> array
+Utility function to transform teams into DetailsItem<Data> array
 const transformTeamsToDetailsItems = (teams: Team[]): DetailsItem<Team>[] => {
   return teams.map(team => ({
     id: team.id,

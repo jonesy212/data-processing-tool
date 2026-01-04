@@ -1,4 +1,4 @@
-// PhaseDashboard.tsx
+PhaseDashboard.tsx
 import React from 'react';
 
 import EmailSetupForm from "@/core/components/communications/email/EmailSetUpForm";
@@ -55,7 +55,7 @@ const PhaseDashboard: React.FC = () => {
   );
 };
 
-// Utility function to get phase title
+Utility function to get phase title
 const getPhaseTitle = (phase: OnboardingPhase): string => {
   switch (phase) {
     case OnboardingPhase.WELCOME:

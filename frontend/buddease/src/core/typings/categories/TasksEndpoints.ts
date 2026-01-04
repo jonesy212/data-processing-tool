@@ -1,4 +1,4 @@
-// TasksEndpoints.ts
+TasksEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 

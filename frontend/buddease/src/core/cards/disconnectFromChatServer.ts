@@ -1,4 +1,4 @@
-// disconnectFromChatServer.ts
+disconnectFromChatServer.ts
 
 import { AquaChat } from '@/core/components/communications/chat/AquaChat';
 import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';

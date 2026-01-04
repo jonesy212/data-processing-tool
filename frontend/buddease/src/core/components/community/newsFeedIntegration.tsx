@@ -1,5 +1,5 @@
-// newsFeedIntegration.tsx
-// Example function to update state with news feed data
+newsFeedIntegration.tsx
+Example function to update state with news feed data
 
 import internalApiService from '@/core/api/ApiClient';
 import { updateFilteredNewsUI } from '@/core/features/news/updateFilteredNewsUI';
@@ -10,10 +10,10 @@ import { categorizeNews, identifyTrendingTopics } from "@/core/components/commun
 
 import { useState } from "react";
 
-// Example state hook declaration
+Example state hook declaration
 const [newsFeedState, setNewsFeedState] = useState<any>(null);
 
-// Function to update the news feed state
+Function to update the news feed state
 const setNewsFeed = (newsFeedData: any): void => {
   try {
     // Check if newsFeedData is valid (optional, depending on your use case)
@@ -53,7 +53,7 @@ const setNewsFeed = (newsFeedData: any): void => {
   }
 };
 
-// Example function to analyze news feed data
+Example function to analyze news feed data
 const analyzeNewsFeed = async (newsFeedData: any): Promise<void> => {
   try {
     // Check if newsFeedData is valid (optional, depending on your use case)
@@ -103,7 +103,7 @@ const analyzeNewsFeed = async (newsFeedData: any): Promise<void> => {
   }
 };
 
-// Example function to calculate sentiment score
+Example function to calculate sentiment score
 const calculateSentimentScore = async (text: string): Promise<number> => {
   try {
     // Perform actual sentiment analysis API call
@@ -133,14 +133,14 @@ const calculateSentimentScore = async (text: string): Promise<number> => {
   }
 };
 
-// Example function to generate news summary or insights
+Example function to generate news summary or insights
 const generateNewsSummary = (newsFeedData: any): string => {
   // Implement actual summary generation logic
   // Example: Generate summary or insights based on news feed data
   return 'Today\'s top news stories'; // Replace with actual summary generation
 };
 
-// Example function to save analytics results or trigger additional actions
+Example function to save analytics results or trigger additional actions
 const saveAnalyticsResults = (
   sentimentScore: number,
   categorizedNews: string[],
@@ -162,7 +162,7 @@ const saveAnalyticsResults = (
   });
 };
 
-// Example function to fetch more news
+Example function to fetch more news
 const fetchMoreNews = async (): Promise<void> => {
   try {
     // Simulate fetching news asynchronously (replace with actual fetch logic)
@@ -197,7 +197,7 @@ const fetchMoreNews = async (): Promise<void> => {
   }
 };
 
-// Example function to process additional news data
+Example function to process additional news data
 const processAdditionalNews = (additionalNews: any): void => {
   // Implement actual processing logic (update state, store data, etc.)
   // Example: Update news feed state with additional news
@@ -210,14 +210,14 @@ const processAdditionalNews = (additionalNews: any): void => {
   filterNewsFeed(additionalNews);
 };
 
-// Example function to update news feed state with additional news
+Example function to update news feed state with additional news
 const updateNewsFeedState = (additionalNews: any): void => {
   // Replace 'newsFeedState' with your actual state variable
   setNewsFeedState((prevNewsFeed: any) => [...prevNewsFeed, ...additionalNews]);
   console.log('Updated news feed state with additional news:', additionalNews);
 };
 
-// Example function to analyze sentiment of news articles
+Example function to analyze sentiment of news articles
 const analyzeSentiment = (newsData: any): void => {
   try {
     // Simulate sentiment analysis (replace with actual logic)
@@ -256,7 +256,7 @@ const analyzeSentiment = (newsData: any): void => {
   }
 };
 
-// Example function to simulate sentiment analysis
+Example function to simulate sentiment analysis
 const simulateSentimentAnalysis = (newsData: any): Record<string, number> => {
   // Simulate sentiment analysis scores (replace with actual logic)
   const sentimentScores = {
@@ -267,14 +267,14 @@ const simulateSentimentAnalysis = (newsData: any): Record<string, number> => {
   return sentimentScores;
 };
 
-// Example function to update UI with sentiment analysis results
+Example function to update UI with sentiment analysis results
 const updateSentimentAnalysisUI = (sentimentScores: Record<string, number>): void => {
   // Implement actual UI update logic based on sentiment scores
   console.log('Updating UI with sentiment analysis results:', sentimentScores);
   // Example: Update sentiment analysis component or dashboard
 };
 
-// Example function to store sentiment analysis results
+Example function to store sentiment analysis results
 const storeSentimentAnalysisResults = (newsData: any, sentimentScores: Record<string, number>): void => {
   try {
     // Example: Store sentiment analysis results (replace with actual storage logic)
@@ -304,7 +304,7 @@ const storeSentimentAnalysisResults = (newsData: any, sentimentScores: Record<st
   }
 };
 
-// Example function to filter news feed based on user preferences
+Example function to filter news feed based on user preferences
 const filterNewsFeed = (newsData: any): void => {
   try {
     // Simulate filtering logic (replace with actual filtering logic)
@@ -343,7 +343,7 @@ const filterNewsFeed = (newsData: any): void => {
   }
 };
 
-// Example function to simulate filtering news feed
+Example function to simulate filtering news feed
 const simulateFiltering = (newsData: any): any[] => {
   // Simulate filtering logic (replace with actual filtering implementation)
   const filteredNews = newsData.filter((news: any) => {
@@ -353,7 +353,7 @@ const simulateFiltering = (newsData: any): any[] => {
   return filteredNews;
 };
 
-// Example function to store filtered news (optional)
+Example function to store filtered news (optional)
 const storeFilteredNews = (filteredNews: any[]): void => {
   try {
     // Example: Store filtered news (replace with actual storage logic)

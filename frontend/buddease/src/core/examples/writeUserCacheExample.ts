@@ -1,6 +1,6 @@
-// writeUserCacheExample.ts
+writeUserCacheExample.ts
 
-// Usage writeUserCacheExample:
+Usage writeUserCacheExample:
 export const writeUserCache = async (
   req: Request,
   res: Response,
@@ -23,24 +23,24 @@ export const writeUserCache = async (
 };
 
 
-// Basic usage
+Basic usage
 await writeCache('user123', fetchUserData());
 
-// With custom options
+With custom options
 await writeCache('user123', fetchUserData(), {
   filePath: 'cache/custom_path.json',
   delay: 500,
   notifyOnSuccess: false
 });
 
-// Using the helper function
+Using the helper function
 await writeUserCache(req, res);
 await writeUserCache(req, res, 'specific-user-id');
 
 
 
 
-// Example usage
+Example usage
 const exampleUsage = async (key: string) => {
   const cache = await readAndLogCache(key);
 

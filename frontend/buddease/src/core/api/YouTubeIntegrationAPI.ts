@@ -1,4 +1,4 @@
-// YouTubeIntegrationAPI.ts
+YouTubeIntegrationAPI.ts
     // Import necessary modules and types
     import axiosInstance from '@/core/api/csrfToken';
 import { headersConfig } from '@/core/components/shared/SharedHeaders'; // Assuming you have shared headers configuration

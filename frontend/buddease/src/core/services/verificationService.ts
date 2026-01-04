@@ -1,4 +1,4 @@
-// verificationService.ts
+verificationService.ts
 
 /**
  * Service for verifying verifiable credentials.

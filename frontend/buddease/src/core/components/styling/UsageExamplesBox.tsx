@@ -1,15 +1,16 @@
 // UsageExamplesBox.tsx
 import React from "react";
 
-import { DocxGeneratorOptions } from "@/core/generators/docxGenerator";
-import useLayoutGenerator, { DocumentGenerationResult } from "@/core/hooks/GenerateUserLayout";
-import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
+import type { DocxGeneratorOptions } from "@/core/generators/docxGenerator";
+import useLayoutGenerator from "@/core/hooks/GenerateUserLayout";
+import  type { DocumentGenerationResult } from "@/core/hooks/GenerateUserLayout";
+import type { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import DynamicInputFields from "@/core/hooks/userInterface/DynamicInputFieldsProps";
-import { AnimatedComponentRef } from "@/core/libraries/animations/AnimationComponent";
+import type { AnimatedComponentRef } from "@/core/libraries/animations/AnimationComponent";
 import AnimationControls from "@/core/libraries/animations/AnimationControls";
 import DynamicSelectionControls from "@/core/libraries/animations/DynamicSelectionControls";
-import { Data } from '@/core/models/data/Data';
-import { T } from '@/core/models/data/dataStoreMethods';
+import type { Data } from '@/core/models/data/Data';
+import type { T } from '@/core/models/data/dataStoreMethods';
 import AnimatedDashboard from "@/core/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/core/pages/layouts/CommonLayout";
 import { DashboardLayout } from "@/core/pages/layouts/DashboardLayout";
@@ -98,10 +99,14 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
   // Usage example for Dark Mode Toggle Phase Hook
 const darkModeToggleExample: AsyncHook<T> = {
   condition: async () => true, // Example condition
-  asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
+  asyncEffect: async ({ idleTimeoutId, startIdleTimeout, }: {
+    idleTimeoutId: Timeout | null;
+    startIdleTimeout: (timeoutDuration: number,
+    onTimeout: () => void) => void;
+  }) => { /* Example asyncEffect */ }, // Example asyncEffect
   isActive: false, // Example isActive
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Set as undefined
-  resetIdleTimeout: () => {}, // Provide a default function or adjust as needed
+  resetIdleTimeout: async () => {}, // Provide a default function or adjust as needed
   idleTimeoutId: null, // Provide a default value or adjust as needed
   startIdleTimeout: () => {}, // Provide a default function or adjust as needed
   cleanup: undefined, // Set as undefined
@@ -230,6 +235,7 @@ const darkModeToggleExample: AsyncHook<T> = {
         swatches={colorSwatches}
         colorCodingEnabled={false}
         brandingSwatches={[]}
+        colors={colors}
       />
 
       <h2>Notification Bar Phase Hook Example</h2>

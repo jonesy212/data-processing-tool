@@ -1,7 +1,7 @@
-// StoreKeyGenerator.ts
-// store_key_generator.ts
+StoreKeyGenerator.ts
+store_key_generator.ts
 
-// Function to generate a unique store key
+Function to generate a unique store key
 const generateStoreKey = (storeName: string): string => {
     // Your logic to generate a unique key, for example:
     const uniqueIdentifier = Math.random().toString(36).substring(2, 15);
@@ -14,9 +14,9 @@ const generateStoreKey = (storeName: string): string => {
 
 
   // Example usage in cache management
-// import generateStoreKey from '@/core/state/stores/StoreGenerator';
+import generateStoreKey from '@/core/state/stores/StoreGenerator';
 
 const storeName = 'YourStore';
 const storeKey = generateStoreKey(storeName);
 
-// Now, storeKey is a unique identifier for 'YourStore'
+Now, storeKey is a unique identifier for 'YourStore'

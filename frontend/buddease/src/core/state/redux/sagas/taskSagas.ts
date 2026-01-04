@@ -1,4 +1,4 @@
-// taskSagas.ts
+taskSagas.ts
 import { TaskActions } from "@/core/actions/TaskActions";
 import EXTENDED_NOTIFICATION_MESSAGES from "@/core/features/support/ExtendedNotificationMessages";
 import { Task } from "@/core/models/tasks/Task";
@@ -6,7 +6,7 @@ import { taskService } from "@/core/services/TaskService";
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
-// Replace 'yourApiEndpoint' with the actual API endpoint
+Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTasksAPI = () => axios.get('/api/tasks');
 
 function* addTaskSaga(
@@ -144,7 +144,7 @@ function* fetchTasksSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for fetchTasksRequestSaga
+Implementation for fetchTasksRequestSaga
 function* fetchTasksRequestSaga(): Generator<Effect, void, any> {
   try {
     yield put(TaskActions.fetchTasksRequest());
@@ -158,7 +158,7 @@ function* fetchTasksRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for completeAllTasksRequestSaga
+Implementation for completeAllTasksRequestSaga
 function* completeAllTasksRequestSaga(): Generator<Effect, void, any> {
   try {
     // Use taskService to mark all tasks as complete
@@ -170,7 +170,7 @@ function* completeAllTasksRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for fetchTasksSuccessSaga
+Implementation for fetchTasksSuccessSaga
 function* fetchTasksSuccessSaga(
   action: ReturnType<typeof TaskActions.fetchTasksSuccess>
 ): Generator<Effect, void, any> {
@@ -250,7 +250,7 @@ function resetStateVariables() {
   return TaskActions.resetTaskState(); // Uses the actual action creator
 }
 
-// Define your fetchUpdatedData function
+Define your fetchUpdatedData function
 function* fetchUpdatedData(taskId: number): Generator<Effect, void, any> {
   try {
     yield put(TaskActions.fetchTasksRequest());
@@ -262,18 +262,18 @@ function* fetchUpdatedData(taskId: number): Generator<Effect, void, any> {
   }
 }
 
-// Define your updateData action creator
+Define your updateData action creator
 function updateData<T>(data: T) {
   return { type: "UPDATE_DATA_ACTION_TYPE", payload: data };
 }
 
-// Define your resetCompleteAllTasksState action creator
+Define your resetCompleteAllTasksState action creator
 function resetCompleteAllTasksState() {
   return { type: "RESET_COMPLETE_ALL_TASKS_STATE_ACTION_TYPE" }; // Replace with your actual action type
 }
 
 
-// Implementation for updateTasksSuccessSaga
+Implementation for updateTasksSuccessSaga
 function* updateTasksSuccessSaga(
   action: ReturnType<typeof TaskActions.updateTasksSuccess>
 ): Generator<Effect, void, any> {
@@ -287,7 +287,7 @@ function* updateTasksSuccessSaga(
 }
 
 
-// Implementation for fetchTasksFailureSaga
+Implementation for fetchTasksFailureSaga
 function* fetchTasksFailureSaga(
   action: ReturnType<typeof TaskActions.fetchTasksFailure>
 ): Generator<Effect, void, any> {
@@ -301,7 +301,7 @@ function* fetchTasksFailureSaga(
 }
 
 
-// Implementation for completeAllTasksFailureSaga
+Implementation for completeAllTasksFailureSaga
 function* completeAllTasksFailureSaga(action: ReturnType<typeof TaskActions.completeAllTasksFailure>): Generator<Effect, void, any> {
   try {
     // You can handle the failure action as needed

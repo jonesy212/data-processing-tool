@@ -1,5 +1,5 @@
-// clientUserJourney.ts
-// User Journey Process
+clientUserJourney.ts
+User Journey Process
 
 import { useTenantStore } from "@/core/state/stores/TenantStore";
 

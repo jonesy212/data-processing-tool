@@ -1,4 +1,4 @@
-// MentorshipRequest.tsx
+MentorshipRequest.tsx
 import React from "react";
 
 interface MentorshipRequest {
@@ -23,7 +23,7 @@ interface MentorshipRequest {
   }
 
 
-// Assuming MentorshipRequest interface exists somewhere
+Assuming MentorshipRequest interface exists somewhere
 interface MentorshipRequest {
   menteeId: string;
   mentorId: string;

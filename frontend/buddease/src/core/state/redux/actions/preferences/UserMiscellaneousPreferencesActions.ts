@@ -1,5 +1,6 @@
-// UserMiscellaneousPreferencesActions.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+UserMiscellaneousPreferencesActions.ts
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface UserMiscellaneousPreferencesState {
   preferredLanguage: string;

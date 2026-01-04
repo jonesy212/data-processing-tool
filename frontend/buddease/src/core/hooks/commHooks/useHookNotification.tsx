@@ -1,5 +1,5 @@
-// useHookNotification.tsx
-// useHookNotification.ts
+useHookNotification.tsx
+useHookNotification.ts
 import { NotificationContext, NotificationContextProps } from '@/core/state/context/NotificationContext';
 import { useContext } from 'react';
 

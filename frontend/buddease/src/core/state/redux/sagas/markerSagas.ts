@@ -1,4 +1,4 @@
-// markerSagas.ts
+markerSagas.ts
 import { markerService } from '@/core/components/marker/MarkerService';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { Marker } from '@/core/models/data/Marker';
@@ -7,7 +7,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Effect, call, put, takeLatest } from 'redux-saga/effects';
 
 
-// Replace 'yourApiEndpoint' with the actual API endpoint
+Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchMarkersAPI = () => axios.get('/api/markers');
 
 function* fetchMarkersSaga(): Generator<Effect, void, any> {
@@ -54,7 +54,7 @@ function* removeMarkerSaga(action: ReturnType<typeof MarkerActions.deleteMarker>
   }
 }
 
-// Other sagas related to marker actions can be added similarly
+Other sagas related to marker actions can be added similarly
 
 export function* watchMarkerSagas() {
   yield takeLatest(MarkerActions.fetchMarkersRequest.type, fetchMarkersSaga);

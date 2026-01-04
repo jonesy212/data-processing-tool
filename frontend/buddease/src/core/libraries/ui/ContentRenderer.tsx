@@ -1,4 +1,4 @@
-// ContentRenderer.tsx
+ContentRenderer.tsx
 import { isProject, isTask } from "@/core/libraries/ui/ContentHelpers";
 import { StatusType } from "@/core/models/data/StatusType";
 import { Project, ProjectDetails } from '@/core/models/projects/Project';

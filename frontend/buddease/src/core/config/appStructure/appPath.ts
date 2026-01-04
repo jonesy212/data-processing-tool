@@ -1,4 +1,4 @@
-// appPath.ts
+appPath.ts
 import * as path from "path";
 
 import {

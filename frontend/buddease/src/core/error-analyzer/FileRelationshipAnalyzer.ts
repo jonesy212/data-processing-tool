@@ -1,4 +1,4 @@
-// src/app/error-analyzer/FileRelationshipAnalyzer.ts
+src/app/error-analyzer/FileRelationshipAnalyzer.ts
 import { FixPlan, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import path from 'path';

@@ -1,5 +1,5 @@
-// stopBackgroundChatAudio.ts
-// Define the BackgroundChatAudio class
+stopBackgroundChatAudio.ts
+Define the BackgroundChatAudio class
 class BackgroundChatAudio {
   private audioElement: HTMLAudioElement;
   isPlaying: boolean = false;
@@ -40,17 +40,17 @@ class BackgroundChatAudio {
   }
 }
 
-// Example usage:
+Example usage:
 const audioSrc = 'path/to/background-audio.mp3';
 const backgroundChatAudio = new BackgroundChatAudio(audioSrc);
 
-// To play the background chat audio
+To play the background chat audio
 backgroundChatAudio.play();
 
-// To stop the background chat audio
+To stop the background chat audio
 backgroundChatAudio.stop();
 
-// Function to stop background chat audio
+Function to stop background chat audio
 const stopBackgroundChatAudio = () => {
   // Check if background chat audio is currently playing
   if (backgroundChatAudio.isPlaying) {

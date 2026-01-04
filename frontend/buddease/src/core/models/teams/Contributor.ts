@@ -1,6 +1,6 @@
-// Contributor.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+Contributor.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Member } from '@/core/models/members/Member';
 import { Project } from '@/core/models/projects/Project';
 

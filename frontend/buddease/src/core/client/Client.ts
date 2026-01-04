@@ -1,12 +1,12 @@
-// Client.ts
-import { Pool, QueryResult } from 'pg';
+Client.ts
+import type { Pool } from 'pg';
 
 import internalApiService from '@/core/api/ApiClient';
-import { ClientInformation } from '@/core/client/ClientInformation';
+import type { ClientInformation } from '@/core/client/ClientInformation';
 import { mapLanguageToEnum } from '@/core/communications/Language';
 import { DatabasePool } from '@/core/server/database/DatabasePool';
 
-// Define the structure for ClientConfig
+Define the structure for ClientConfig
 export interface ClientConfig {
   clientId: string;
   clientName: string;
@@ -17,7 +17,7 @@ export interface ClientConfig {
   // Add other properties as needed
 }
 
-// Define the Client class
+Define the Client class
 export class Client {
   private config: ClientConfig;
   private pool: Pool; // Change from 'private client: any;' to 'private pool: Pool;'
@@ -145,7 +145,7 @@ export class Client {
   // Add other methods as needed
 }
 
-// Example usage
+Example usage
 const clientConfig: ClientConfig = {
   clientId: "123",
   clientName: "Example Corp",

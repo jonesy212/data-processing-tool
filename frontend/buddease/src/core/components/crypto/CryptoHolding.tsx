@@ -1,4 +1,4 @@
-// CryptoHolding.tsx
+CryptoHolding.tsx
 interface CryptoHolding {
     id: string;
     currency: string;

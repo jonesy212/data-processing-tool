@@ -1,4 +1,4 @@
-// HostScreen.tsx
+HostScreen.tsx
 import React from 'react';
 
 const HostScreen: React.FC = () => {

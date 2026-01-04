@@ -1,5 +1,5 @@
-// AppTreeService.ts
-// AppTreeService.ts - Enhanced Version
+AppTreeService.ts
+AppTreeService.ts - Enhanced Version
 import appTreeApiService from '@/core/api/appTreeApi';
 import DirectoryExplorer from '@/core/pages/dashboards/DirectoryExplorer';
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';

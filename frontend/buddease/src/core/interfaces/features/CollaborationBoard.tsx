@@ -1,4 +1,4 @@
-// CollaborationBoard.tsx
+CollaborationBoard.tsx
 import { ResponsiveDesign } from '@/core/components/styling/ResponsiveDesign';
 import CommunicationSection from '@/core/interfaces/features/CommunicationSection';
 import ContentCreationSection from '@/core/interfaces/features/ContentCreationSection';

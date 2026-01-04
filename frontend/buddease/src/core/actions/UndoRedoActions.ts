@@ -1,5 +1,5 @@
 // UndoRedoActions.ts
-import { BranchingHistoryPayload, HistoryItem } from "@/core/state/redux/sagas/UndoRedoSaga";
+import type { BranchingHistoryPayload, HistoryItem } from "@/core/state/redux/sagas/UndoRedoSaga";
 import { createAction } from "@reduxjs/toolkit";
 
 export const UndoRedoActions = {

@@ -1,10 +1,10 @@
-// BackendStructure.ts
-// app/server/database/BackendStructure.ts
+BackendStructure.ts
+app/server/database/BackendStructure.ts
 import getAppPath from "@/core/config/appStructure/appPath";
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import { frontend } from "@/core/config/appStructure/FrontendStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { hashString } from "@/core/generators/HashUtils";
@@ -378,16 +378,16 @@ const state: Record<string, SecureField<any>> = {
   baseUrl: SecureFieldManager.createField("https://example.com", true),
 };
 
-// Security Audit Instance
+Security Audit Instance
 const audit = new SecurityAudit();
 const findings = audit.conductAudit(state);
 audit.reviewFindings(findings);
 
-// Sanitizing state for a user with limited permissions
+Sanitizing state for a user with limited permissions
 const sanitizedState = SecureFieldManager.sanitizeMetadata(state, "user", false);
 console.log("Sanitized State:", sanitizedState);
 
-// Sanitizing state for an admin
+Sanitizing state for an admin
 const sanitizedAdminState = SecureFieldManager.sanitizeMetadata(state, "admin", true);
 console.log("Sanitized Admin State:", sanitizedAdminState);
 

@@ -1,4 +1,4 @@
-// VideoEditingPanel.tsx
+VideoEditingPanel.tsx
 import React from "react";
 
 interface VideoEditingPanelProps {

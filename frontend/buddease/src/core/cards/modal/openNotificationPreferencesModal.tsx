@@ -1,4 +1,4 @@
-// openNotificationPreferencesModal.tsx
+openNotificationPreferencesModal.tsx
 import { ChatSettingsModal } from '@/core/cards/modal/ChatSettingsModal';
 import { ModalGenerator } from "@/core/generators/GenerateModal";
 import { useState } from "react";

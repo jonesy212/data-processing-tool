@@ -1,4 +1,4 @@
-// CorrectionList.tsx
+CorrectionList.tsx
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import React, { useEffect, useState } from 'react';
 

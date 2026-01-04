@@ -1,9 +1,9 @@
 // scripts/QualityChecksScript.ts
+import type { ProjectConfig } from '@/core/config/ProjectConfig';
 import { exec } from 'child_process';
-import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
-import { ProjectConfig } from '@/app/config/ProjectConfig';
+import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 

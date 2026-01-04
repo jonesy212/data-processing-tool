@@ -1,4 +1,4 @@
-// CalendarEventTrendDetectionResult.ts
+CalendarEventTrendDetectionResult.ts
 import { EventTrendType } from "@/core/models/data/EventPriorityClassification";
 
 interface CalendarEventTrendDetectionResult {

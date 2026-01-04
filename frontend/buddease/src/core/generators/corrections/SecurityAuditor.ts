@@ -1,4 +1,4 @@
-// SecurityAuditor.ts
+SecurityAuditor.ts
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionMessageGenerator } from '@/core/generators/corrections/CorrectionMessageGenerator';

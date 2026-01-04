@@ -1,6 +1,6 @@
-// getDocumentNameFromEditorState.ts
+getDocumentNameFromEditorState.ts
 
-// Example function to get the document name
+Example function to get the document name
 const getDocumentNameFromEditorState = (editorState) => {
   const contentState = editorState.getCurrentContent();
   const plainText = contentState.getPlainText();

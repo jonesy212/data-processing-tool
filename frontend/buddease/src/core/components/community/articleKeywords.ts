@@ -1,6 +1,6 @@
-// articleKeywords.ts
+articleKeywords.ts
 
-// Example function to categorize news articles
+Example function to categorize news articles
 const categorizeNews = (newsFeedData: any): string[] => {
   const categories: Set<string> = new Set();
 
@@ -45,7 +45,7 @@ const categorizeNews = (newsFeedData: any): string[] => {
   return Array.from(categories);
 };
 
-// Example specific keyword functions (replace with your actual implementations)
+Example specific keyword functions (replace with your actual implementations)
 const containsKeywordsForProjectManagement = (
   title: string,
   content: string
@@ -243,7 +243,7 @@ const containsKeywordsForRegulatoryUpdates = (
   );
 };
 
-// Function to check if the article contains project management keywords
+Function to check if the article contains project management keywords
 const containsProjectManagementKeywords = (
   title: string,
   content: string
@@ -264,7 +264,7 @@ const containsProjectManagementKeywords = (
   );
 };
 
-// Function to check if the article contains technology-related keywords
+Function to check if the article contains technology-related keywords
 const containsTechnologyKeywords = (
   title: string,
   content: string
@@ -285,7 +285,7 @@ const containsTechnologyKeywords = (
   );
 };
 
-// Function to check if the article contains cryptocurrency-related keywords
+Function to check if the article contains cryptocurrency-related keywords
 const containsCryptoKeywords = (title: string, content: string): boolean => {
   const cryptoKeywords = [
     "cryptocurrency",
@@ -303,7 +303,7 @@ const containsCryptoKeywords = (title: string, content: string): boolean => {
   );
 };
 
-// Function to check if the article contains blockchain-related keywords
+Function to check if the article contains blockchain-related keywords
 const containsBlockchainKeywords = (
   title: string,
   content: string
@@ -322,7 +322,7 @@ const containsBlockchainKeywords = (
   );
 };
 
-// Function to check if the article contains digital transformation-related keywords
+Function to check if the article contains digital transformation-related keywords
 const containsDigitalTransformationKeywords = (
   title: string,
   content: string
@@ -341,7 +341,7 @@ const containsDigitalTransformationKeywords = (
   );
 };
 
-// Function to check if the article contains remote work-related keywords
+Function to check if the article contains remote work-related keywords
 const containsRemoteWorkKeywords = (
   title: string,
   content: string
@@ -360,7 +360,7 @@ const containsRemoteWorkKeywords = (
   );
 };
 
-// Function to check if the article contains agile methodology-related keywords
+Function to check if the article contains agile methodology-related keywords
 const containsAgileKeywords = (title: string, content: string): boolean => {
   const agileKeywords = [
     "agile methodology",
@@ -376,7 +376,7 @@ const containsAgileKeywords = (title: string, content: string): boolean => {
   );
 };
 
-// Function to check if the article contains cryptocurrency trends-related keywords
+Function to check if the article contains cryptocurrency trends-related keywords
 const containsCryptocurrencyKeywords = (
   title: string,
   content: string
@@ -395,7 +395,7 @@ const containsCryptocurrencyKeywords = (
   );
 };
 
-// Function to check if the article contains tech industry insights-related keywords
+Function to check if the article contains tech industry insights-related keywords
 const containsTechIndustryKeywords = (
   title: string,
   content: string
@@ -414,7 +414,7 @@ const containsTechIndustryKeywords = (
   );
 };
 
-// Function to check if the article contains healthcare technology-related keywords
+Function to check if the article contains healthcare technology-related keywords
 const containsHealthTechKeywords = (
   title: string,
   content: string
@@ -433,7 +433,7 @@ const containsHealthTechKeywords = (
   );
 };
 
-// Function to check if the article contains e-commerce strategies-related keywords
+Function to check if the article contains e-commerce strategies-related keywords
 const containsEcommerceKeywords = (title: string, content: string): boolean => {
   const ecommerceKeywords = [
     "e-commerce strategies",
@@ -449,7 +449,7 @@ const containsEcommerceKeywords = (title: string, content: string): boolean => {
   );
 };
 
-// Function to check if the article contains regulatory updates-related keywords
+Function to check if the article contains regulatory updates-related keywords
 const containsRegulatoryUpdatesKeywords = (
   title: string,
   content: string
@@ -468,7 +468,7 @@ const containsRegulatoryUpdatesKeywords = (
   );
 };
 
-// Example function to identify trending topics
+Example function to identify trending topics
 const identifyTrendingTopics = (newsFeedData: any): string[] => {
   // Example: Identify trending topics from news feed
   const trendingTopics: string[] = [];
@@ -491,7 +491,7 @@ const identifyTrendingTopics = (newsFeedData: any): string[] => {
   return Array.from(new Set(trendingTopics));
 };
 
-// Function to check if the article contains climate change-related keywords
+Function to check if the article contains climate change-related keywords
 const containsClimateChangeKeywords = (
   title: string,
   content: string
@@ -510,7 +510,7 @@ const containsClimateChangeKeywords = (
   );
 };
 
-// Function to check if the article contains economy-related keywords
+Function to check if the article contains economy-related keywords
 const containsEconomyKeywords = (title: string, content: string): boolean => {
   const economyKeywords = [
     "economy",
@@ -526,7 +526,7 @@ const containsEconomyKeywords = (title: string, content: string): boolean => {
   );
 };
 
-// Function to check if the article contains COVID-19-related keywords
+Function to check if the article contains COVID-19-related keywords
 const containsCOVID19Keywords = (title: string, content: string): boolean => {
   const covid19Keywords = ["covid-19", "coronavirus", "pandemic", "vaccine"];
   const normalizedTitle = title.toLowerCase();

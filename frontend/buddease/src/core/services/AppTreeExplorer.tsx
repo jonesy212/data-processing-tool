@@ -1,5 +1,5 @@
-// AppTreeExplorer.ts
-// AppTreeExplorer.tsx
+AppTreeExplorer.ts
+AppTreeExplorer.tsx
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import EnhancedTreeView from "@/core/pages/dashboards/EnhancedTreeView";
 import TreeView from "@/core/pages/dashboards/TreeView";
@@ -376,7 +376,7 @@ const AppTreeExplorer: React.FC = () => {
   );
 };
 
-// Analysis View Component
+Analysis View Component
 const AnalysisView: React.FC<{ report: any }> = ({ report }) => {
   return (
     <div className="analysis-view">
@@ -410,7 +410,7 @@ const AnalysisView: React.FC<{ report: any }> = ({ report }) => {
   );
 };
 
-// Search Results Panel Component
+Search Results Panel Component
 const SearchResultsPanel: React.FC<{ results: any }> = ({ results }) => {
   return (
     <div className="search-results-panel">

@@ -1,4 +1,4 @@
-// ClientEndpoints.ts
+ClientEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ClientEndpoints extends EndpointCategoryConfig {

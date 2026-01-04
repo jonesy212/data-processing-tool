@@ -5,8 +5,8 @@ import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages'
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import ParticipantData from '@/core/hooks/dataHooks/RealtimeUpdatesComponent';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
-import { User } from '@/core/users/User';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { User } from '@/core/users/User';
 import { AxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -30,7 +30,7 @@ const EnhancedVideoControlToolbar = () => {
         ToolbarActions.toggleFeature({
           feature: "videoRecording",
           isEnabled: false,
-          userId: {} as User,
+          userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         })
       );
       notify({
@@ -51,7 +51,7 @@ const EnhancedVideoControlToolbar = () => {
         ToolbarActions.toggleFeature({
           feature: "videoRecording",
           isEnabled: true,
-          userId: {} as User,
+          userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         })
       );
       notify({
@@ -73,7 +73,7 @@ const EnhancedVideoControlToolbar = () => {
     if (isVideoStreamingEnabled) {
       // Video streaming feature is already enabled, so we need to disable it
       dispatch(ToolbarActions.disableVideoStreaming());
-      dispatch(ToolbarActions.toggleFeature({ feature: 'videoStreaming', isEnabled: false, userId: {} as User }));
+      dispatch(ToolbarActions.toggleFeature({ feature: 'videoStreaming', isEnabled: false, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }));
       
       notify({
         id: "videoStreamingDisabled",
@@ -89,7 +89,7 @@ const EnhancedVideoControlToolbar = () => {
     } else {
       // Video streaming feature is not enabled, so we need to enable it
       dispatch(ToolbarActions.enableVideoStreaming());
-      dispatch(ToolbarActions.toggleFeature({ feature: 'videoStreaming', isEnabled: true, userId: {} as User}));
+      dispatch(ToolbarActions.toggleFeature({ feature: 'videoStreaming', isEnabled: true, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>}));
       
       notify({
         id: "videoStreamingEnabled",
@@ -110,7 +110,7 @@ const EnhancedVideoControlToolbar = () => {
     if (isQualitySettingsEnabled) {
       // Quality settings feature is already enabled, so we need to disable it
       dispatch(ToolbarActions.disableQualitySettings());
-      dispatch(ToolbarActions.toggleFeature({ feature: 'qualitySettings', isEnabled: false, userId: {} as User }));
+      dispatch(ToolbarActions.toggleFeature({ feature: 'qualitySettings', isEnabled: false, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }));
       
       notify({
         id: "qualitySettingsDisabled",
@@ -126,7 +126,7 @@ const EnhancedVideoControlToolbar = () => {
     } else {
       // Quality settings feature is not enabled, so we need to enable it
       dispatch(ToolbarActions.enableQualitySettings());
-      dispatch(ToolbarActions.toggleFeature({ feature: 'qualitySettings', isEnabled: true, userId: {} as User}));
+      dispatch(ToolbarActions.toggleFeature({ feature: 'qualitySettings', isEnabled: true, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>}));
       
       notify({
         id: "qualitySettingsEnabled",
@@ -147,7 +147,7 @@ const EnhancedVideoControlToolbar = () => {
     if (isScreenSharingEnabled) {
       // Screen sharing feature is already enabled, so we need to stop screen sharing
       dispatch(ToolbarActions.stopScreenSharing());
-      dispatch(ToolbarActions.toggleFeature({ feature: 'screenSharing', isEnabled: false, userId: {} as User }));
+      dispatch(ToolbarActions.toggleFeature({ feature: 'screenSharing', isEnabled: false, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }));
       
       notify({
         id: "screenSharingStopped",
@@ -163,7 +163,7 @@ const EnhancedVideoControlToolbar = () => {
     } else {
       // Screen sharing feature is not enabled, so we need to start screen sharing
       dispatch(ToolbarActions.startScreenSharing());
-      dispatch(ToolbarActions.toggleFeature({ feature: 'screenSharing', isEnabled: true, userId: {} as User }));
+      dispatch(ToolbarActions.toggleFeature({ feature: 'screenSharing', isEnabled: true, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }));
       
       notify({
         id: "screenSharingStarted",
@@ -199,10 +199,10 @@ const EnhancedVideoControlToolbar = () => {
         });
       } else {
         // Participant management feature is not enabled, so we need to enable it
-        dispatch(ToolbarActions.toggleFeature({ feature: 'participantManagement', isEnabled: true, userId: {} as User }));
+        dispatch(ToolbarActions.toggleFeature({ feature: 'participantManagement', isEnabled: true, userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }));
 
         // Fetch participant data before proceeding with participant management actions
-        const participantData = dispatch(ToolbarActions.fetchParticipantData({ userId: {} as User, participantData: {} as typeof ParticipantData }));
+        const participantData = dispatch(ToolbarActions.fetchParticipantData({ userId: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, participantData: {} as typeof ParticipantData }));
         
         // Use the fetched participant data as needed
         console.log('Participant data:', participantData);

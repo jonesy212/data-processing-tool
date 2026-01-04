@@ -1,8 +1,8 @@
-// usePhaseManagement.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+usePhaseManagement.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Phase, PhaseData } from '@/core/models/phases/Phase';
-import { BackupRecord } from '@/core/models/phases/PhaseBackupSystem';
+import { BackupRecord } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 import { useCallback, useState } from 'react';
 
 

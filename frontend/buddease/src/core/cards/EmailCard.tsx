@@ -1,5 +1,5 @@
-// EmailCard.tsx
-// components/EmailCard.tsx
+EmailCard.tsx
+components/EmailCard.tsx
 import React from 'react';
 
 interface EmailCardProps {

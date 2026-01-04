@@ -1,4 +1,4 @@
-// clearIntervalTimer.ts
+clearIntervalTimer.ts
 
 /**
  * Clears the interval timer identified by the provided timerId.

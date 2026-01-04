@@ -1,8 +1,8 @@
-// appStructureClient.ts
-// Client-side file 
+appStructureClient.ts
+Client-side file 
 import AppStructure, { FileSystemService } from '@/core/config/appStructure/AppStructure';
 
-// Browser-compatible file system (using API calls)
+Browser-compatible file system (using API calls)
 export const browserFileSystem: FileSystemService = {
   readdir: async (dir) => {
     const response = await fetch(`/api/files?path=${encodeURIComponent(dir)}`);

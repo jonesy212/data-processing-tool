@@ -1,12 +1,12 @@
 // ImportFixerService.ts
 import { applyAppSpecificRules } from '@/core/error-analyzer/rules/app-specific-rules';
-import { ComplexFix, Correction, ImportCorrection } from '@/core/generators/corrections/CorrectionGenerator';
-import { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
-import { ConfirmationService } from '@/core/services/ConfirmationService';
+import type { ComplexFix, Correction, ImportCorrection } from '@/core/generators/corrections/CorrectionGenerator';
+import type { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
+import type { ConfirmationService } from '@/core/services/ConfirmationService';
 import { ConsoleConfirmationService } from '@/core/services/ConsoleConfirmationService';
 import { FileConfirmationService } from '@/core/services/FileConfirmationService';
 import { InteractiveConfirmationService } from '@/core/services/InteractiveConfirmationService';
-import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
+import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 
 import fs from 'fs';
 import path from 'path';
@@ -24,14 +24,39 @@ type DebugMode = 'none' | 'basic' | 'detailed' | 'verbose';
 
 
 export interface ImportFix {
-    filePath: string;
-    originalLine: string;
-    newLine: string;
-    missingTypes: string[];
-    targetImportPath: string;
-    reason?: string;
-    confidence?: 'high' | 'medium' | 'low';
-    confidenceScore: number;
+    filePath: string;           // File needing fix
+    originalLine: string;       // Original import line
+    newLine: string;           // Proposed fixed line
+    missingTypes: string[];    // Types missing type-only import
+    targetImportPath: string;  // Module being imported from
+    file?: string;
+    line?: number
+    typeName?: string
+    // Additional properties for better analysis
+    reason?: string;           // Why fix is needed
+    confidence?: 'high' | 'medium' | 'low'; // Fix confidence
+    confidenceScore: number;   // Numeric confidence (0-100)
+    
+    // New suggested properties:
+    fixType?: 'add-type-keyword' | 'split-import' | 'change-to-type' | 'namespace-to-type';
+    backupFilePath?: string;   // Where backup is stored
+    affectedExports?: string[]; // Exports that use these types
+    dependencies?: string[];   // Files that depend on this import
+    autoFixable?: boolean;     // Whether it can be auto-fixed
+    validationRules?: string[]; // Rules to validate fix
+    
+    // From previous suggestions:
+    lineNumber?: number;       // Line number in file
+    errorCode?: string;        // TS error code (e.g., 'TS1371')
+    fileDependencies?: string[]; // Files that import this one
+    rollbackStrategy?: 'full' | 'partial' | 'validate-first';
+    
+    // Metadata
+    createdAt?: Date;
+    appliedAt?: Date;
+    appliedBy?: string;
+    status?: 'pending' | 'applied' | 'rolled-back' | 'failed';
+    fixId?: string;           // Unique identifier for tracking
 }
 
 export interface ParsedImport {
@@ -51,6 +76,61 @@ interface FileInfo {
   size?: number;          // Add new
   extension?: string;     // Add new
 }
+
+
+
+
+
+export interface BaseImportFix {
+    filePath: string;
+    originalLine: string;
+    newLine: string;
+    missingTypes: string[];
+    targetImportPath: string;
+    reason?: string;
+    confidence?: 'high' | 'medium' | 'low';
+    confidenceScore: number;
+    lineNumber: number;
+}
+
+export interface TypeKeywordFix extends BaseImportFix {
+    fixType: 'add-type-keyword';
+    // Specific to adding type keyword
+    canBeMerged?: boolean;
+    existingTypeImports?: string[];
+}
+
+export interface SplitImportFix extends BaseImportFix {
+    fixType: 'split-import';
+    // Specific to splitting imports
+    typeImports: string[];
+    valueImports: string[];
+    willCreateNewLines: boolean;
+}
+
+export interface NamespaceImportFix extends BaseImportFix {
+    fixType: 'namespace-to-type';
+    namespaceName: string;
+    isDefaultExport?: boolean;
+}
+
+// Union type
+export type ImportFixVariant = TypeKeywordFix | SplitImportFix | NamespaceImportFix;
+
+// Helper type guard
+export function isTypeKeywordFix(fix: ImportFixVariant): fix is TypeKeywordFix {
+    return fix.fixType === 'add-type-keyword';
+}
+
+export function isSplitImportFix(fix: ImportFixVariant): fix is SplitImportFix {
+    return fix.fixType === 'split-import';
+}
+
+
+
+
+
+
 
 
 export class ImportFixerService {

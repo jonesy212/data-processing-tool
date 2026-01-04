@@ -1,5 +1,5 @@
-// CalendarEventAgendaItem.tsx
-// CalendarEventAgendaItem.ts
+CalendarEventAgendaItem.tsx
+CalendarEventAgendaItem.ts
 interface CalendarEventAgendaItem {
     id: string;
     title: string;

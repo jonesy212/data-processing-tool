@@ -1,4 +1,4 @@
-// TeamSlice.ts
+TeamSlice.ts
 import TeamData from "@/core/components/models/teams/TeamData";
 import { CollaborationPreferences } from "@/core/interfaces/settings/CollaborationPreferences";
 import { Project } from '@/core/models/projects/Project';
@@ -237,7 +237,7 @@ export const useTeamManagerSlice = createSlice({
   },
 });
 
-// Export actions
+Export actions
 export const {
   // Basic team management actions
   updateTeamName,
@@ -267,7 +267,7 @@ export const {
   updateTeamCollaborationPreferences: updateCollaborationPreferences,
 } = useTeamManagerSlice.actions;
 
-// Export selector for accessing the teams from the state
+Export selector for accessing the teams from the state
 export const selectTeams = (state: { teams: TeamManagerState }) =>
   state.teams.teams;
 
@@ -276,12 +276,12 @@ export const selectParticipantData = (state: RootState) =>
   state.collaborationManager.participantData;
 
 
-// Example selector using createSelector
+Example selector using createSelector
 export const selectParticipants = createSelector(
   selectParticipantData,
   (participantData) => participantData
 );
-// Export reducer for the team entity slice
+Export reducer for the team entity slice
 export default useTeamManagerSlice.reducer;
 
 

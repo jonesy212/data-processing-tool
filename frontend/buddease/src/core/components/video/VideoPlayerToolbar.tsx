@@ -1,4 +1,4 @@
-// VideoPlayerToolbar.tsx
+VideoPlayerToolbar.tsx
 import ToolbarItem from "@/core/components/documents/ToolbarItem";
 import React from "react";
 

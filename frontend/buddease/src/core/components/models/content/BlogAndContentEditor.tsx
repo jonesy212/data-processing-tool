@@ -1,4 +1,4 @@
-// BlogAndContentEditor.tsx
+BlogAndContentEditor.tsx
 import { DetailsItemCommon } from "@/core/generators/ListGenerator";
 import { EditorState } from "draft-js";
 

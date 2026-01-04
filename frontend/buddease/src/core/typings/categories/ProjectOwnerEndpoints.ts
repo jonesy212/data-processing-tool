@@ -1,4 +1,4 @@
-// ProjectOwnerEndpoints.ts
+ProjectOwnerEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ProjectOwnerEndpoints extends EndpointCategoryConfig {

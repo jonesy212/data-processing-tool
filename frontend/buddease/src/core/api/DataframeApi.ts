@@ -1,4 +1,4 @@
-// DataframeApi.ts
+DataframeApi.ts
 import axiosInstance from "@/core/api/csrfToken";
 
 const API_BASE_URL = "/api/data-frame";
@@ -84,4 +84,4 @@ const DataFrameAPI = {
 };
 
 export default DataFrameAPI;
-// Add more functions as needed for your specific use cases
+Add more functions as needed for your specific use cases

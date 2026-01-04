@@ -1,0 +1,509 @@
+# BUGGY FILES REPORT
+# Generated: Sat Jan  3 02:16:38 CST 2026
+#
+
+=== SnapshotConfigBuilder.ts ===
+Path: src/core/snapshots/SnapshotConfigBuilder.ts
+Backup: SnapshotConfigBuilder.ts.backup-1767237367073
+Bug count: 1
+Bug lines:
+  Line 44: // ... from (not a sentence)
+Sample buggy lines:
+  1:// SnapshotConfigBuilder.ts
+  44:// ✅ Simulated Data Source that expands from params tuple
+  75:// Master builder (factory companion)
+Size:      174 lines
+
+=== createSnapshotStoreOptions.ts ===
+Path: src/core/snapshots/createSnapshotStoreOptions.ts
+Backup: createSnapshotStoreOptions.ts.backup-1767237367170
+Bug count: 2
+Bug lines:
+  Line 1377: // with TypeScript keyword
+  Line 1414: // with TypeScript keyword
+Sample buggy lines:
+  1:// createSnapshotStoreOptions.ts
+  1377:// const handleSingleSnapshot = <
+  1385://   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+Size:     1574 lines
+
+=== useSnapshotStore.tsx ===
+Path: src/core/snapshots/useSnapshotStore.tsx
+Backup: useSnapshotStore.tsx.backup-1767237367094
+Bug count: 121
+Bug lines:
+  Line 1206: // with TypeScript keyword
+  Line 1224: // with TypeScript keyword
+  Line 1262: // with TypeScript keyword
+  Line 1263: // with TypeScript keyword
+  Line 1267: // with TypeScript keyword
+  Line 1271: // with TypeScript keyword
+  Line 1277: // with TypeScript keyword
+  Line 1279: // with TypeScript keyword
+  Line 1281: // with TypeScript keyword
+  Line 1295: // with TypeScript keyword
+  Line 1360: // with TypeScript keyword
+  Line 1364: // with TypeScript keyword
+  Line 1365: // with TypeScript keyword
+  Line 1371: // with TypeScript keyword
+  Line 1372: // with TypeScript keyword
+  Line 1375: // with TypeScript keyword
+  Line 1376: // with TypeScript keyword
+  Line 1379: // with TypeScript keyword
+  Line 1380: // with TypeScript keyword
+  Line 1382: // with TypeScript keyword
+  Line 1405: // ... from (not a sentence)
+  Line 1406: // with TypeScript keyword
+  Line 1408: // with TypeScript keyword
+  Line 1409: // with TypeScript keyword
+  Line 1411: // with TypeScript keyword
+  Line 1412: // with TypeScript keyword
+  Line 1413: // with TypeScript keyword
+  Line 1414: // with TypeScript keyword
+  Line 1415: // with TypeScript keyword
+  Line 1416: // with TypeScript keyword
+  Line 1419: // with TypeScript keyword
+  Line 1428: // with TypeScript keyword
+  Line 1440: // with TypeScript keyword
+  Line 1441: // with TypeScript keyword
+  Line 1460: // with TypeScript keyword
+  Line 1474: // with TypeScript keyword
+  Line 1494: // with TypeScript keyword
+  Line 1496: // with TypeScript keyword
+  Line 1508: // with TypeScript keyword
+  Line 1512: // with TypeScript keyword
+  Line 1524: // with TypeScript keyword
+  Line 1534: // with TypeScript keyword
+  Line 1562: // with TypeScript keyword
+  Line 1634: // with TypeScript keyword
+  Line 1637: // ... from (not a sentence)
+  Line 1639: // with TypeScript keyword
+  Line 1640: // with TypeScript keyword
+  Line 1641: // with TypeScript keyword
+  Line 1643: // with TypeScript keyword
+  Line 1676: // with TypeScript keyword
+  Line 1716: // with TypeScript keyword
+  Line 1756: // with TypeScript keyword
+  Line 1770: // with TypeScript keyword
+  Line 1772: // with TypeScript keyword
+  Line 1816: // with TypeScript keyword
+  Line 1822: // with TypeScript keyword
+  Line 1837: // with TypeScript keyword
+  Line 1856: // with TypeScript keyword
+  Line 1866: // with TypeScript keyword
+  Line 1870: // with TypeScript keyword
+  Line 1911: // with TypeScript keyword
+  Line 1982: // with TypeScript keyword
+  Line 1983: // with TypeScript keyword
+  Line 1984: // with TypeScript keyword
+  Line 1999: // with TypeScript keyword
+  Line 2004: // with TypeScript keyword
+  Line 2013: // with TypeScript keyword
+  Line 2023: // with TypeScript keyword
+  Line 2025: // ... from (not a sentence)
+  Line 2026: // with TypeScript keyword
+  Line 2030: // with TypeScript keyword
+  Line 2040: // with TypeScript keyword
+  Line 2051: // with TypeScript keyword
+  Line 2058: // with TypeScript keyword
+  Line 2070: // with TypeScript keyword
+  Line 2090: // with TypeScript keyword
+  Line 2102: // with TypeScript keyword
+  Line 2129: // with TypeScript keyword
+  Line 2136: // with TypeScript keyword
+  Line 2147: // with TypeScript keyword
+  Line 2155: // with TypeScript keyword
+  Line 2171: // with TypeScript keyword
+  Line 2181: // with TypeScript keyword
+  Line 2204: // with TypeScript keyword
+  Line 2222: // with TypeScript keyword
+  Line 2225: // with TypeScript keyword
+  Line 2903: // with TypeScript keyword
+  Line 2938: // ... from (not a sentence)
+  Line 2951: // with TypeScript keyword
+  Line 2959: // with TypeScript keyword
+  Line 2960: // ... from (not a sentence)
+  Line 2961: // ... from (not a sentence)
+  Line 4144: // with TypeScript keyword
+  Line 4149: // ... from (not a sentence)
+  Line 4150: // ... from (not a sentence)
+  Line 4161: // with TypeScript keyword
+  Line 4163: // ... from (not a sentence)
+  Line 4164: // with TypeScript keyword
+  Line 4174: // with TypeScript keyword
+  Line 4179: // with TypeScript keyword
+  Line 4184: // with TypeScript keyword
+  Line 4189: // with TypeScript keyword
+  Line 4203: // with TypeScript keyword
+  Line 4226: // with TypeScript keyword
+  Line 4310: // with TypeScript keyword
+  Line 4311: // with TypeScript keyword
+  Line 4316: // ... from (not a sentence)
+  Line 4317: // with TypeScript keyword
+  Line 4318: // with TypeScript keyword
+  Line 4325: // with TypeScript keyword
+  Line 4330: // with TypeScript keyword
+  Line 4331: // with TypeScript keyword
+  Line 4340: // with TypeScript keyword
+  Line 4341: // with TypeScript keyword
+  Line 4345: // with TypeScript keyword
+  Line 4346: // with TypeScript keyword
+  Line 4354: // with TypeScript keyword
+  Line 4360: // with TypeScript keyword
+  Line 4364: // with TypeScript keyword
+  Line 4490: // with TypeScript keyword
+  Line 4493: // with TypeScript keyword
+Sample buggy lines:
+  1:// useSnapshotStore.tsx
+  1184:// However, for complex objects, we might need more specific dependencies:
+  1205:// // Create the snapshot store
+Size:     4573 lines
+
+=== convertSnapshotToItem.ts ===
+Path: src/core/snapshots/convertSnapshotToItem.ts
+Backup: convertSnapshotToItem.ts.backup-1767233994817
+Bug count: 6
+Bug lines:
+  Line 2: // ... from (not a sentence)
+  Line 3: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 9: // with TypeScript keyword
+Sample buggy lines:
+  1:// convertSnapshotToItem.ts
+  2:// import { Data } from '@/core/models/data/Data';
+  3:// import type {  Snapshot } from '@/core/snapshots/Snapshot';
+Size:       31 lines
+
+=== convertSnapshotsArray.ts ===
+Path: src/core/snapshots/convertSnapshotsArray.ts
+Backup: convertSnapshotsArray.ts.backup-1767237368589
+Bug count: 18
+Bug lines:
+  Line 2: // ... from (not a sentence)
+  Line 3: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 10: // ... from (not a sentence)
+  Line 11: // ... from (not a sentence)
+  Line 12: // ... from (not a sentence)
+  Line 13: // ... from (not a sentence)
+  Line 16: // with TypeScript keyword
+  Line 25: // with TypeScript keyword
+  Line 37: // with TypeScript keyword
+  Line 38: // with TypeScript keyword
+  Line 40: // with TypeScript keyword
+  Line 52: // with TypeScript keyword
+  Line 54: // with TypeScript keyword
+  Line 56: // with TypeScript keyword
+  Line 74: // with TypeScript keyword
+Sample buggy lines:
+  1:// convertSnapshotsArray.ts
+  2:// import { SnapshotData } from '@/core/snapshots/SnapshotData';
+  3:// import { Attachment } from '@/core/documents/attachment/Attachment';
+Size:      148 lines
+
+=== SnapshotStoreConfig.ts ===
+Path: src/core/snapshots/SnapshotStoreConfig.ts
+Backup: SnapshotStoreConfig.ts.backup-1767237367105
+Bug count: 1
+Bug lines:
+  Line 1051: // with TypeScript keyword
+Sample buggy lines:
+  1:// SnapshotStoreConfig.ts
+  1051:// const snapshotStoreConfigInstance: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null; // Or populate as needed
+Size:     4273 lines
+
+=== createSnapshotExample.ts ===
+Path: src/core/snapshots/createSnapshotExample.ts
+Backup: createSnapshotExample.ts.backup-1767237368660
+Bug count: 8
+Bug lines:
+  Line 2: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 13: // with TypeScript keyword
+  Line 18: // with TypeScript keyword
+Sample buggy lines:
+  1:// createSnapshotExample.ts
+  2:// import { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
+  4:// import type {  Snapshot } from '@/core/snapshots/Snapshot';
+Size:       55 lines
+
+=== RetrieveSnapshotData.tsx ===
+Path: src/core/snapshots/RetrieveSnapshotData.tsx
+Backup: RetrieveSnapshotData.tsx.backup-1767237365433
+Bug count: 16
+Bug lines:
+  Line 3: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 13: // with TypeScript keyword
+  Line 16: // with TypeScript keyword
+  Line 34: // with TypeScript keyword
+  Line 44: // with TypeScript keyword
+  Line 45: // with TypeScript keyword
+  Line 47: // with TypeScript keyword
+  Line 50: // ... from (not a sentence)
+  Line 52: // ... from (not a sentence)
+  Line 53: // with TypeScript keyword
+Sample buggy lines:
+  1:// RetrieveSnapshotData.tsx
+  2:// // //RetrieveSnapshotData.tsx
+  3:// import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+Size:      253 lines
+
+=== addToSnapshotList.tsx ===
+Path: src/core/snapshots/addToSnapshotList.tsx
+Backup: addToSnapshotList.tsx.backup-1767237365440
+Bug count: 15
+Bug lines:
+  Line 1: // ... from (not a sentence)
+  Line 3: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 10: // ... from (not a sentence)
+  Line 11: // ... from (not a sentence)
+  Line 12: // ... from (not a sentence)
+  Line 13: // ... from (not a sentence)
+  Line 14: // ... from (not a sentence)
+  Line 17: // with TypeScript keyword
+  Line 33: // with TypeScript keyword
+  Line 106: // with TypeScript keyword
+Sample buggy lines:
+  1:// import type { Attachment } from '@/core/documents/attachment/Attachment'
+  3:// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+  5:// import { IHydrateResult } from "mobx-persist";
+Size:      133 lines
+
+=== SnapshotStore.tsx ===
+Path: src/core/snapshots/SnapshotStore.tsx
+Backup: SnapshotStore.tsx.backup-1767237367558
+Bug count: 2
+Bug lines:
+  Line 6736: // with TypeScript keyword
+  Line 6757: // with TypeScript keyword
+Sample buggy lines:
+  1:// SnapshotStore.tsx
+  257:// For store creation factory
+  1393:// Add these properties to your class
+Size:     6763 lines
+
+=== SnapshohtDevConfigs.ts ===
+Path: src/core/snapshots/SnapshohtDevConfigs.ts
+Backup: SnapshohtDevConfigs.ts.backup-1767237367707
+Bug count: 14
+Bug lines:
+  Line 4: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 10: // ... from (not a sentence)
+  Line 13: // with TypeScript keyword
+  Line 31: // with TypeScript keyword
+  Line 63: // with TypeScript keyword
+  Line 88: // with TypeScript keyword
+  Line 96: // with TypeScript keyword
+  Line 117: // with TypeScript keyword
+  Line 161: // with TypeScript keyword
+Sample buggy lines:
+  1:// SnapshohtDevConfigs.ts
+  2:// //SnapshohtDevConfigs.ts
+  4:// import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+Size:      171 lines
+
+=== LocalStorageSnapshotStore.tsx ===
+Path: src/core/snapshots/LocalStorageSnapshotStore.tsx
+Backup: LocalStorageSnapshotStore.tsx.backup-1767237367082
+Bug count: 1
+Bug lines:
+  Line 614: // with TypeScript keyword
+Sample buggy lines:
+  1:// LocalStorageSnapshotStore.tsx
+  135:// Update SnapshotStoreUnion to use K
+  154:// Update SnapshotsObject to use K
+Size:     1757 lines
+
+=== MetaDataOptions.ts ===
+Path: src/core/config/MetaDataOptions.ts
+Backup: MetaDataOptions.ts.backup-1767237367721
+Bug count: 2
+Bug lines:
+  Line 757: // with TypeScript keyword
+  Line 1093: // with TypeScript keyword
+Sample buggy lines:
+  1:// MetaDataOptions.ts
+  87:// Version-related properties
+  116:// Status/access control properties
+Size:     1126 lines
+
+=== MetaEntity.ts ===
+Path: src/core/typings/entities/MetaEntity.ts
+Backup: MetaEntity.ts.backup-1767237368624
+Bug count: 1
+Bug lines:
+  Line 96: // with TypeScript keyword
+Sample buggy lines:
+  1:// MetaEntity.ts
+  17:// 1. Define your base metadata entity (adjust according to your actual base entity)
+  27:// 2. Type definitions with 6 parameters
+Size:      114 lines
+
+=== SnapshotContext.tsx ===
+Path: src/core/state/context/SnapshotContext.tsx
+Backup: SnapshotContext.tsx.backup-1767237367748
+Bug count: 7
+Bug lines:
+  Line 270: // with TypeScript keyword
+  Line 294: // with TypeScript keyword
+  Line 297: // with TypeScript keyword
+  Line 518: // with TypeScript keyword
+  Line 540: // with TypeScript keyword
+  Line 543: // with TypeScript keyword
+  Line 580: // with TypeScript keyword
+Sample buggy lines:
+  1:// SnapshotContext.tsx
+  71:// Create the context with default values
+  246:// Custom hook to use the SnapshotContext
+Size:      799 lines
+
+=== ProjectStore.ts ===
+Path: src/core/state/stores/ProjectStore.ts
+Backup: ProjectStore.ts.backup-1767233995187
+Bug count: 1
+Bug lines:
+  Line 232: // with TypeScript keyword
+Sample buggy lines:
+  1:// ProjectStore.ts
+  232:// export class NotificationStore {
+  233://   notifications: Record<string, NotificationData> = {};
+Size:      254 lines
+
+=== CalendarManagerStore.tsx ===
+Path: src/core/state/stores/CalendarManagerStore.tsx
+Backup: CalendarManagerStore.tsx.backup-1767237367758
+Bug count: 1
+Bug lines:
+  Line 116: // with TypeScript keyword
+Sample buggy lines:
+  1:// CalendarManagerStore.tsx
+  2:// CalendarEvent.tsx
+  116:// export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
+Size:     1322 lines
+
+=== DocumentSlice.tsx ===
+Path: src/core/state/redux/slices/DocumentSlice.tsx
+Backup: DocumentSlice.tsx.backup-1767237366021
+Bug count: 1
+Bug lines:
+  Line 1787: // with TypeScript keyword
+Sample buggy lines:
+  1:// DocumentSlice.tsx
+  1274:// Define mergeStructures function with proper generic type parameters
+  1295:// Create an async thunk for deleting a document
+Size:     5181 lines
+
+=== useSnapshotManager.ts ===
+Path: src/core/hooks/useSnapshotManager.ts
+Backup: useSnapshotManager.ts.backup-1767237367770
+Bug count: 6
+Bug lines:
+  Line 785: // with TypeScript keyword
+  Line 793: // with TypeScript keyword
+  Line 795: // ... from (not a sentence)
+  Line 799: // with TypeScript keyword
+  Line 804: // with TypeScript keyword
+  Line 820: // with TypeScript keyword
+Sample buggy lines:
+  1:// useSnapshotManager.ts
+  46:// Use type intersection instead of interface extension
+  194:// Define the async hook configuration
+Size:      823 lines
+
+=== SnapshotActions.tsx ===
+Path: src/core/actions/SnapshotActions.tsx
+Backup: SnapshotActions.tsx.backup-1767237367779
+Bug count: 2
+Bug lines:
+  Line 1093: // with TypeScript keyword
+  Line 1106: // with TypeScript keyword
+Sample buggy lines:
+  1:// SnapshotActions.tsx
+  2:// snapshots/SnapshotActions.ts
+  106:// Define generic action types
+Size:     1484 lines
+
+=== SnapshotApi.ts ===
+Path: src/core/api/SnapshotApi.ts
+Backup: SnapshotApi.ts.backup-1767237367781
+Bug count: 1
+Bug lines:
+  Line 187: // with TypeScript keyword
+Sample buggy lines:
+  1:// SnapshotApi.ts
+  12:// Core models and types
+  23:// API and HTTP related
+Size:     3177 lines
+
+=== GenerateUniqueIds.ts ===
+Path: src/core/generators/GenerateUniqueIds.ts
+Backup: GenerateUniqueIds.ts.backup-1767237366045
+Bug count: 1
+Bug lines:
+  Line 950: // with TypeScript keyword
+Sample buggy lines:
+  1:// GenerateUniqueIds.ts
+  27:// Extract notify function from useNotification hook
+  938:// Dynamically set the FetchOptions using properties from the `area` object
+Size:      988 lines
+
+=== DocumentOptions.ts ===
+Path: src/core/documents/DocumentOptions.ts
+Backup: DocumentOptions.ts.backup-1767237365552
+Bug count: 1
+Bug lines:
+  Line 643: // with TypeScript keyword
+Sample buggy lines:
+  1:// DocumentOptions.ts
+  134:// Define the interface for DocumentBuilderOptions extending DocumentOptions
+  149:// Define a function to create default DocumentBuilderOptions
+Size:     1145 lines
+
+=== DocumentGeneratorMethods.ts ===
+Path: src/core/documents/DocumentGeneratorMethods.ts
+Backup: DocumentGeneratorMethods.ts.backup-1767237365848
+Bug count: 1
+Bug lines:
+  Line 965: // with TypeScript keyword
+Sample buggy lines:
+  1:// DocumentGeneratorMethods.ts
+  83:// Example of a function to fetch text content from a database
+  85:// Example of a function to download text content from cloud storage
+Size:      977 lines
+
+=== DAppAdapterConfig.ts ===
+Path: src/utils/web3/dAppAdapter/DAppAdapterConfig.ts
+Backup: DAppAdapterConfig.ts.backup-1767237366908
+Bug count: 2
+Bug lines:
+  Line 437: // with TypeScript keyword
+  Line 438: // with TypeScript keyword
+Sample buggy lines:
+  20:// FLUENCE_API_KEY EXPORT
+  436:// ✅ Access configurations like this:
+  437:// const fluenceConfig = dappProps.configurations.fluenceConfig;
+Size:      438 lines

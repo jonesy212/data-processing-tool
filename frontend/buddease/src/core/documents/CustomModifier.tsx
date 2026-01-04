@@ -1,4 +1,4 @@
-// CustomModifier.tsx
+CustomModifier.tsx
 import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { ContentBlock, ContentState, DraftInlineStyle, EditorState, Modifier, SelectionState } from "draft-js";
 
@@ -40,10 +40,10 @@ class CustomModifier extends Modifier {
   }
 }
 
-// Now you can use CustomModifier.setInlineStyle in your component
-// Assuming editorState and onEditorStateChange are defined in the same scope
+Now you can use CustomModifier.setInlineStyle in your component
+Assuming editorState and onEditorStateChange are defined in the same scope
 
-// Now you can use CustomModifier.setInlineStyle in your component
+Now you can use CustomModifier.setInlineStyle in your component
 const handleFontSizeChange = (newFontSize: ThemeConfigProps["fontSize"], editorState: EditorState, onEditorStateChange: (editorState: EditorState) => void) => {
   const currentContent = editorState.getCurrentContent();
   const selection = editorState.getSelection();
@@ -67,17 +67,17 @@ const handleFontSizeChange = (newFontSize: ThemeConfigProps["fontSize"], editorS
 };
 
 
-// Define editorState and onEditorStateChange
+Define editorState and onEditorStateChange
 let editorState: EditorState = EditorState.createEmpty(); // Initialize the editor state
 const onEditorStateChange = (newEditorState: EditorState) => {
   // Update the editor state
   editorState = newEditorState;
 };
 
-// Define the new font size
+Define the new font size
 const newFontSize = "16px"; // Example font size
 
-// Call handleFontSizeChange with the appropriate arguments
+Call handleFontSizeChange with the appropriate arguments
 handleFontSizeChange(newFontSize, editorState, onEditorStateChange);
 
 export default CustomModifier;

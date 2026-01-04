@@ -1,6 +1,6 @@
-// refreshUI.ts
-// refreshUI.js
-// Reusable refreshUI function
+refreshUI.ts
+refreshUI.js
+Reusable refreshUI function
 function refreshUI(updates: {
     stroke?: { width: number; color: string };
     strokeWidth?: number;
@@ -84,7 +84,7 @@ function refreshUI(updates: {
     },
   };
   
-// Function to refresh UI for a specific file
+Function to refresh UI for a specific file
 const refreshUIForFile = (fileId: number) => {
     // Step 1: Get the file element in the UI (assuming each file has an element with the file ID)
     const fileElement = document.getElementById(`file-${fileId}`);

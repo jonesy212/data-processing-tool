@@ -1,4 +1,4 @@
-// FocusManager.ts
+FocusManager.ts
 class FocusManager {
     private static instance: FocusManager;
     private focusableElements: HTMLElement[];

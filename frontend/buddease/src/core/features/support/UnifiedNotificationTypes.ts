@@ -1,5 +1,5 @@
-// UnifiedNotificationTypes.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+UnifiedNotificationTypes.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { NOTIFICATION_TYPES } from '@/core/features/support/NotificationTypes';
 import {
     ActivityActionEnum, ActivityTypeEnum, BookmarkStatus,
@@ -32,7 +32,7 @@ export type NotificationType =
 export type MainNotificationType = NotificationType;
 
 
-// DataTypeEnums.ts
+DataTypeEnums.ts
 export const DataTypeEnums = {
   Notification: NotificationTypeEnum,
   Document: DocumentTypeEnum,
@@ -76,10 +76,10 @@ export const DataTypeEnums = {
 
 
 
-// Create a type for the entire structure
+Create a type for the entire structure
 export type DataTypeEnums = typeof DataTypeEnums;
 
-// Helper type to extract all possible values (optional)
+Helper type to extract all possible values (optional)
 export type AllEnumValues = {
   [K in keyof DataTypeEnums]: DataTypeEnums[K] extends object
   ? DataTypeEnums[K][keyof DataTypeEnums[K]]

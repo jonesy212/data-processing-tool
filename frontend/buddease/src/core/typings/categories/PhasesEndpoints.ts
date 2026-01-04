@@ -1,4 +1,4 @@
-// PhasesEndpoints.ts
+PhasesEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface PhasesEndpoints extends EndpointCategoryConfig {

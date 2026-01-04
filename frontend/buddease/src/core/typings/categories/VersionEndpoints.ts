@@ -1,4 +1,4 @@
-// VersionEndpoints.ts
+VersionEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface VersionEndpoints extends EndpointCategoryConfig {

@@ -1,5 +1,5 @@
-// BlogAction.ts
-// blogActions.ts
+BlogAction.ts
+blogActions.ts
 import { BlogPost } from "@/core/pages/blog/BlogPost";
 import { BlogComment } from "@/core/state/redux/slices/BlogSlice";
 import { createAction } from "@reduxjs/toolkit";

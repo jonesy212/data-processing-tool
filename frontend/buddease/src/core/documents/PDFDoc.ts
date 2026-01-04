@@ -1,10 +1,10 @@
-// PDFDoc.ts
-// import { PDFDocument as PdfLibDocument, rgb } from '@/core/documents/editing/PDFDocument';
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+PDFDoc.ts
+import { PDFDocument as PdfLibDocument, rgb } from '@/core/documents/editing/PDFDocument';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PDFDocument } from '@/core/documents/editing/PDFDocument';
 
-// PDFDocument Implementation
+PDFDocument Implementation
 class PDFDoc<
   T extends BaseDataEntity,
   K extends T = T,
@@ -60,7 +60,7 @@ class PDFDoc<
 }
 
 
-// Creating and using a PDFDocument
+Creating and using a PDFDocument
 const pdfDoc = new PDFDoc('path/to/pdf', 'PDF Title', 'Author Name');
 pdfDoc.printInfo();
 pdfDoc.addText('Hello, World!').then(() => {

@@ -3,8 +3,8 @@ import CalendarEventTimingOptimization, {
     ExtendedCalendarEvent,
 } from "@/core/calendar/CalendarEventTimingOptimization";
 import { tasksDataSource } from "@/core/components/models/tasks/TaskDataSource";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';

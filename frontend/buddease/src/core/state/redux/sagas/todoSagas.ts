@@ -1,4 +1,4 @@
-// todoSagas.ts
+todoSagas.ts
 import { Effect, call, put, select, takeLatest } from "@/core/state/redux/sagas/UndoRedoSaga";
 import axios, { AxiosResponse } from "axios";
 
@@ -6,7 +6,7 @@ import { TodoActions } from "@/core/actions/TodoActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Todo } from "@/core/todos/Todo";
 
-// Replace 'yourApiEndpoint' with the actual API endpoint
+Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTodosAPI = () => axios.get("/api/todos");
 
 function* addTodoSaga(
@@ -174,7 +174,7 @@ function* batchAssignTodosSaga(
     );
   }
 }
-// Implementation for fetchTodosRequestSaga
+Implementation for fetchTodosRequestSaga
 function* fetchTodosRequestSaga(): Generator<Effect, void, any> {
   try {
     yield put(TodoActions.fetchTodosRequest());
@@ -187,7 +187,7 @@ function* fetchTodosRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for completeAllTodosRequestSaga
+Implementation for completeAllTodosRequestSaga
 function* completeAllTodosRequestSaga(): Generator<Effect, void, any> {
   try {
     // Assuming there is an endpoint to mark all todos as complete
@@ -199,7 +199,7 @@ function* completeAllTodosRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for fetchTodosSuccessSaga
+Implementation for fetchTodosSuccessSaga
 function* fetchTodosSuccessSaga(
   action: ReturnType<typeof TodoActions.fetchTodosSuccess>
 ): Generator<Effect, void, any> {
@@ -239,7 +239,7 @@ function* completeAllTodosSuccessSaga(): Generator<Effect, void, any> {
   }
 }
 
-// Implementation for updateTodosSuccessSaga
+Implementation for updateTodosSuccessSaga
 function* updateTodosSuccessSaga(
   action: ReturnType<typeof TodoActions.updateTodosSuccess>
 ): Generator<Effect, void, any> {
@@ -257,7 +257,7 @@ function* updateTodosSuccessSaga(
   }
 }
 
-// Implementation for fetchTodosFailureSaga
+Implementation for fetchTodosFailureSaga
 function* fetchTodosFailureSaga(
   action: ReturnType<typeof TodoActions.fetchTodosFailure>
 ): Generator<Effect, void, any> {
@@ -270,7 +270,7 @@ function* fetchTodosFailureSaga(
   }
 }
 
-// Implementation for completeAllTodosFailureSaga
+Implementation for completeAllTodosFailureSaga
 function* completeAllTodosFailureSaga(
   action: ReturnType<typeof TodoActions.completeAllTodosFailure>
 ): Generator<Effect, void, any> {

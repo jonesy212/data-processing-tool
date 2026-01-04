@@ -2,7 +2,7 @@
 // Integration.ts
 
 import { addReport, fetchReports, removeReport } from "@/core/api/ApiReport";
-import { DataProcessingResult } from "@/core/api/service/DataProcessingService";
+import type { DataProcessingResult } from "@/core/api/service/DataProcessingService";
 import DataProcessingComponent from '@/core/components/models/data/DataProcessingComponent';
 import Visualization from '@/core/hooks/userInterface/Visualization';
 import { dataset } from "@/core/todos/tasks/DataSetModel";

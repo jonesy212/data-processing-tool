@@ -1,10 +1,10 @@
-// UIPhaseHooks.tsx
+UIPhaseHooks.tsx
 import { UIActions } from "@/core/actions/UIActions";
 import UserService from "@/core/api/ApiUser";
 import { endpoints } from '@/core/api/endpointConfigurations';
 import * as userApi from "@/core/api/UsersApi";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/core/features/support/NotificationMessagesFactory";
 import useNotificationBar from "@/core/hooks/commHooks/useNotificationBar";

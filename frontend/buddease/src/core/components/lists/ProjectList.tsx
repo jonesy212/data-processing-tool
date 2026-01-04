@@ -1,4 +1,4 @@
-// ProjectList.tsx
+ProjectList.tsx
 import { TaskDetails } from "@/core/models/tasks/Task";
 import { ValidPriority } from '@/core/pages/searches/CriteriaType';
 import { useProjectManager } from "@/core/state/stores/hooks/useProjectManager";

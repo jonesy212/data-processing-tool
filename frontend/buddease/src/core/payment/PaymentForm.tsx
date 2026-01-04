@@ -1,4 +1,4 @@
-// PaymentForm.tsx
+PaymentForm.tsx
 import React from "react";
 const PaymentForm: React.FC = () => {
   // Your payment form component logic here

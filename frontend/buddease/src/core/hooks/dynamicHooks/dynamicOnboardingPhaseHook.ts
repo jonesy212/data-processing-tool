@@ -1,4 +1,4 @@
-// dynamicOnboardingPhaseHook.ts
+dynamicOnboardingPhaseHook.ts
 
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 
@@ -27,7 +27,7 @@ export const createDynamicOnboardingPhaseHook = (config: DynamicOnboardingPhaseH
   });
 };
 
-// useDynamicOnboardingPhaseHook
+useDynamicOnboardingPhaseHook
 const useDynamicOnboardingPhaseHook = createDynamicOnboardingPhaseHook({
   condition: async (idleTimeoutDuration: number) => {
     const isDynamicOnboardingPhase = true; // Replace with your condition

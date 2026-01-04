@@ -1,11 +1,11 @@
-// phaseSaga.ts
+phaseSaga.ts
 
 import { PhaseActions } from '@/core/actions/phases/PhaseActions';
 import PhaseService from '@/core/api/service/PhaseService';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-// Worker Saga: Fetch Phase
+Worker Saga: Fetch Phase
 function* fetchPhaseSaga(action: any) {
   try {
     const phaseId = action.payload;
@@ -20,7 +20,7 @@ function* fetchPhaseSaga(action: any) {
   }
 }
 
-// Worker Saga: Update Phase
+Worker Saga: Update Phase
 function* updatePhaseSaga(action: any) {
   try {
     const { phaseId, phaseData } = action.payload;
@@ -35,13 +35,13 @@ function* updatePhaseSaga(action: any) {
   }
 }
 
-// Watcher Saga: Watches for the fetch and update phase actions
+Watcher Saga: Watches for the fetch and update phase actions
 function* watchPhaseSagas() {
   yield takeLatest(PhaseActions.fetchPhaseRequest.type, fetchPhaseSaga);
   yield takeLatest(PhaseActions.updatePhaseRequest.type, updatePhaseSaga);
 }
 
-// Export the phase saga
+Export the phase saga
 export function* phaseSagas() {
   yield watchPhaseSagas();
 }

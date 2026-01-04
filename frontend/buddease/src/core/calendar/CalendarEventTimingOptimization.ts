@@ -1,14 +1,14 @@
 // CalendarEventTimingOptimization.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { Attendee } from "@/core/components/calendar/Attendee";
-import { DayOfWeekProps } from "@/core/components/calendar/DayOfWeek";
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { Attendee } from "@/core/components/calendar/Attendee";
+import type { DayOfWeekProps } from "@/core/components/calendar/DayOfWeek";
 import { Month } from "@/core/components/calendar/Month";
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
-import { User } from "@/core/users/User";
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { User } from "@/core/users/User";
 
 
 

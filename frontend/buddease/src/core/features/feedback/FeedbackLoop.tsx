@@ -1,5 +1,5 @@
-// FeedbackLoop.tsx
-//FeedbackLoop.tsx
+FeedbackLoop.tsx
+FeedbackLoop.tsx
 import { Feedback } from '@/core/features/support/Feedback';
 import React from 'react';
 

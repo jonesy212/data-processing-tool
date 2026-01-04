@@ -1,4 +1,4 @@
-// ChatPage.tsx
+ChatPage.tsx
  
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import {
@@ -11,7 +11,7 @@ import {
 import { User } from "@/core/users/User";
 import React, { useEffect, useState } from "react";
 
-// Expand the ChatPageProps interface
+Expand the ChatPageProps interface
 interface ChatPageProps {
   // Props related to the current user
   currentUser: User;
@@ -169,15 +169,15 @@ const ChatPage: React.FC<ChatPageProps> = (props) => {
 
 export default ChatPage;
 
-// explanations
-// currentUser: Information about the current user participating in the chat.
+explanations
+currentUser: Information about the current user participating in the chat.
 
-// currentChannel: Information about the currently selected channel.
+currentChannel: Information about the currently selected channel.
 
-// messages: An array of messages in the current channel.
+messages: An array of messages in the current channel.
 
-// sendMessage: A function to send a new message. The function takes a text parameter representing the content of the message.
+sendMessage: A function to send a new message. The function takes a text parameter representing the content of the message.
 
-// switchChannel: A function to switch to a different channel. It takes a channelId parameter specifying the ID of the channel to switch to.
+switchChannel: A function to switch to a different channel. It takes a channelId parameter specifying the ID of the channel to switch to.
 
-// optionalProp: An optional prop that you can use for any additional data or configuration specific to the chat page.
+optionalProp: An optional prop that you can use for any additional data or configuration specific to the chat page.

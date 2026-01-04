@@ -1,4 +1,4 @@
-// configureCollaborationPreferences.ts
+configureCollaborationPreferences.ts
 
 import { CollaborationPreferences } from "@/core/interfaces/settings/CollaborationPreferences";
 
@@ -20,7 +20,7 @@ const configureCollaborationPreferences = async (): Promise<CollaborationPrefere
   }
 };
 
-// Function to fetch existing collaboration preferences from backend or local storage
+Function to fetch existing collaboration preferences from backend or local storage
 const fetchCollaborationPreferences =
   async (): Promise<CollaborationPreferences> => {
     // Replace this with actual code to fetch preferences
@@ -152,7 +152,7 @@ const fetchCollaborationPreferences =
       
   };
 
-// Function to open a modal or UI component for configuring collaboration preferences
+Function to open a modal or UI component for configuring collaboration preferences
 const openCollaborationPreferencesModal = async (existingPreferences: CollaborationPreferences): Promise<CollaborationPreferences> => {
   // Replace this with actual code to open the modal
   // For example, using a modal library or custom UI component

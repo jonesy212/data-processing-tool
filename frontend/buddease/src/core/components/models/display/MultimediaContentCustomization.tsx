@@ -1,5 +1,5 @@
-// MultimediaContentCustomization.tsx
-// MultimediaContentCustomization.ts
+MultimediaContentCustomization.tsx
+MultimediaContentCustomization.ts
 import { getDataFrameInfo } from "@/core/api/DataDashboardApi";
 import { ChildComponentProps } from "@/core/hooks/ChildComponent";
 import { brandingSettings } from "@/core/libraries/theme/BrandingService";

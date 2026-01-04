@@ -1,9 +1,9 @@
-// TwitterIntegration.ts
+TwitterIntegration.ts
 
 import TwitterIntegrationAPI from "@/core/api/TwitterIntegrationAPI";
 import { User } from "@/core/users/User";
 
-// TwitterData.ts
+TwitterData.ts
 export interface TwitterData {
   accountId: string;
   // Add other properties specific to Twitter data if needed

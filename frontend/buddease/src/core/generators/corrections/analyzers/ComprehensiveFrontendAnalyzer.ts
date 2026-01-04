@@ -1,4 +1,4 @@
-// ComprehensiveFrontendAnalyzer.ts
+ComprehensiveFrontendAnalyzer.ts
 import { FrontendAnalysis } from '@/core/generators/corrections/analyzers/frontendAnalyzer';
 import { ReactWebAnalyzer } from '@/core/generators/corrections/analyzers/ReactWebAnalyzer';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
@@ -971,10 +971,10 @@ export class ComprehensiveFrontendAnalyzer {
   }
 }
 
-// Export singleton instance for easy use
+Export singleton instance for easy use
 export const comprehensiveAnalyzer = new ComprehensiveFrontendAnalyzer();
 
-// Also export the original functions for backward compatibility
+Also export the original functions for backward compatibility
 export {
     analyzeDirectory, analyzeFrontendStructure, buildDependencyMap, formatFileSize, generateAnalysisReport
 } from './frontendAnalyzer';

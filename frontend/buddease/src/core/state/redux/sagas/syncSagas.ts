@@ -1,4 +1,4 @@
-// app/state/sagas/syncSagas.ts
+app/state/sagas/syncSagas.ts
 import { HybridSyncService } from '@/core/services/HybridSyncService';
 import { call, put, select, takeEvery, takeLatest } from '@/core/state/redux/sagas/UndoRedoSaga';
 import { entityFailed, entitySynced, entitySyncing } from '../slices/syncSlice';

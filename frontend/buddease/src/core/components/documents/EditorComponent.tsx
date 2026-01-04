@@ -1,4 +1,4 @@
-// EditorComponent.tsx
+EditorComponent.tsx
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import BrowserCheckStore from "@/core/state/stores/BrowserCheckStore";
 import { rootStores } from "@/core/state/stores/RootStores";

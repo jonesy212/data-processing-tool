@@ -1,5 +1,5 @@
-// configConfig.ts
-// src/config/endpoints/configConfig.ts
+configConfig.ts
+src/config/endpoints/configConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { EndpointConfigurations } from '@/core/config/EndpointConfig';
 

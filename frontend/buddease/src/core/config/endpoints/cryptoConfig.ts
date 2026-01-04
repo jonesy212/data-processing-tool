@@ -1,6 +1,6 @@
 // cryptoConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { CryptoEndpoints } from '@/core/typings/categories/CryptoEndpoints';
+import type { CryptoEndpoints } from '@/core/typings/categories/CryptoEndpoints';
 
 export const cryptoConfig: CryptoEndpoints = {
   settings: { path: `${BASE_URL}/api/crypto/settings`, method: "GET" },

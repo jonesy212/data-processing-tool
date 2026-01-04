@@ -1,4 +1,4 @@
-// VPN.ts
+VPN.ts
 class VPN {
     constructor() {
       // Initialize VPN configuration

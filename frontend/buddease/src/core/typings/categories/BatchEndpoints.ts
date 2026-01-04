@@ -1,4 +1,4 @@
-// BatchEndpoints.ts
+BatchEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface BatchEndpoints extends EndpointCategoryConfig {

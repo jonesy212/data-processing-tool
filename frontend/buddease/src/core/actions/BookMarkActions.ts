@@ -1,4 +1,4 @@
-// BookMarkActions.ts
+BookMarkActions.ts
 import BookmarkData from "@/core/models/data/BookmarkData";
 import { BookmarkStatus } from "@/core/models/data/StatusType";
 import { createAction } from "@reduxjs/toolkit";

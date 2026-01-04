@@ -1,4 +1,4 @@
-// theme-provider.tsx
+theme-provider.tsx
 import { DesignTokens, defaultTokens } from '@/core/platform/styles/design-tokens';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 

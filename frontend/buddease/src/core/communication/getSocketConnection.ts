@@ -1,4 +1,4 @@
-// getSocketConnection.ts
+getSocketConnection.ts
 import { RetryConfig } from "@/core/services/ConfigurationService";
 import { useEffect, useState } from "react";
 

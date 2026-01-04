@@ -1,4 +1,4 @@
-// userRolesConfig.ts
+userRolesConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { UserRolesEndpoints } from '@/core/typings/categories/UserRolesEndpoints';
 

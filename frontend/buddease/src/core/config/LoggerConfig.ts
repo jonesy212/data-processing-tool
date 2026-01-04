@@ -1,4 +1,4 @@
-// LoggerConfig.ts
+LoggerConfig.ts
 import {
     AnalyticsLogger,
     BugLogger,
@@ -13,7 +13,7 @@ import {
     WebLogger,
 } from '@/core/logging/Logger';
 
-// Define the LoggerConfig class
+Define the LoggerConfig class
 class LoggerConfig {
   private loggers: Record<string, any>;
 
@@ -60,10 +60,10 @@ class LoggerConfig {
   }
 }
 
-// Example usage
+Example usage
 const loggerConfig = new LoggerConfig();
 
-// Add loggers to the configuration
+Add loggers to the configuration
 loggerConfig.addLogger("WebLogger", WebLogger);
 loggerConfig.addLogger("TenantLogger", TenantLogger);
 loggerConfig.addLogger("AnalyticsLogger", AnalyticsLogger);
@@ -76,16 +76,16 @@ loggerConfig.addLogger("ExchangeLogger", ExchangeLogger);
 loggerConfig.addLogger("CommunityLogger", CommunityLogger);
 loggerConfig.addLogger("BugLogger", BugLogger);
 
-// Get a specific logger from the configuration
+Get a specific logger from the configuration
 const webLogger = loggerConfig.getLogger("WebLogger");
 if (webLogger) {
   console.log("Found WebLogger:", webLogger);
 }
 
-// Remove a logger from the configuration
+Remove a logger from the configuration
 loggerConfig.removeLogger("WebLogger");
 
-// Get all loggers in the configuration
+Get all loggers in the configuration
 const allLoggers = loggerConfig.getAllLoggers();
 console.log("All Loggers:", allLoggers);
 

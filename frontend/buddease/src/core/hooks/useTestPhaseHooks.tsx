@@ -1,9 +1,9 @@
-// TestPhaseHooks.ts - Updated to match your existing structure
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+TestPhaseHooks.ts - Updated to match your existing structure
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CustomPhaseHooks, Phase } from '@/core/models/phases/Phase';
 
-// Test Phase Hook Configuration - Updated to match your structure
+Test Phase Hook Configuration - Updated to match your structure
 export interface TestPhaseHookConfig<
   T extends BaseDataEntity,
   K extends T = T,
@@ -33,7 +33,7 @@ export interface TestPhaseHookConfig<
   clearIdleTimeout?: () => void;
 }
 
-// Test Scenario Definition
+Test Scenario Definition
 export interface TestScenario<
   T extends BaseDataEntity,
   K extends T = T,
@@ -50,7 +50,7 @@ export interface TestScenario<
   expectedResult: any;
 }
 
-// Test Result
+Test Result
 export interface TestResult {
   success: boolean;
   message: string;
@@ -60,7 +60,7 @@ export interface TestResult {
   timestamp: Date;
 }
 
-// Test Phase Hooks Interface - Updated to match your return structure
+Test Phase Hooks Interface - Updated to match your return structure
 export interface TestPhaseHooks<
   T extends BaseDataEntity,
   K extends T = T,
@@ -92,14 +92,14 @@ export interface TestPhaseHooks<
   ) => Promise<TransitionTestResult>;
 }
 
-// Validation Result
+Validation Result
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
   warnings: string[];
 }
 
-// Transition Test Result
+Transition Test Result
 export interface TransitionTestResult {
   success: boolean;
   canTransition: boolean;
@@ -109,7 +109,7 @@ export interface TransitionTestResult {
 }
 
 
-// Factory for creating test scenarios
+Factory for creating test scenarios
 export const createTestScenario = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -140,7 +140,7 @@ export const createTestScenario = <
   };
 };
 
-// Common test hooks for different phase types
+Common test hooks for different phase types
 export const commonTestHooks = {
   // Hook for testing phase transitions
   createTransitionTestHook: <

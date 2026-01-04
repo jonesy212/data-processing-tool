@@ -1,13 +1,13 @@
-// AuthSlice.ts
+AuthSlice.ts
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserPreferences } from "@/core/config/UserPreferences";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NFT } from "@/core/models/cypto/NFT";
 import { AuthenticationProvider } from '@/core/server/auth/AuthService';
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { AuthStore } from "@/core/state/stores/AuthStore";
-import { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
+import type { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthState<
@@ -160,16 +160,16 @@ export const useAuthSlice = createSlice({
   },
 });
 
-// Selector to get the authentication state
+Selector to get the authentication state
 export const selectAuth = (state: RootState) => state.authManager;
 
-// Selector to get the authentication token
+Selector to get the authentication token
 export const selectAuthToken = createSelector(
   selectAuth,
   (auth) => auth.accessToken
 );
 
-// Selector to get the user ID
+Selector to get the user ID
 export const selectUserId = createSelector(
   selectAuth,
   (auth) => auth.userId

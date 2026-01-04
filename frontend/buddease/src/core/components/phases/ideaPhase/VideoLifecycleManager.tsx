@@ -1,4 +1,4 @@
-// VideoLifecycleManager.tsx
+VideoLifecycleManager.tsx
 import { useVideoLifecycle } from "@/core/hooks/useVideoLifecycle";
 import React, { useEffect } from "react";
 import useVideoStore from "../store/useVideoStore";

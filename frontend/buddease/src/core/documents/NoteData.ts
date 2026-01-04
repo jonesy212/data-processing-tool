@@ -1,15 +1,15 @@
 // NoteData.ts
 
-import { Collaborator } from "@/core/collaborators/Collaborator";
-import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import type { Collaborator } from "@/core/collaborators/Collaborator";
+import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { DocumentSize } from "@/core/models/data/StatusType";
-import { Progress } from "@/core/models/tracker/ProgressBar";
-import { Version } from "@/core/versions/Version";
+import type { Progress } from "@/core/models/tracker/ProgressBar";
+import type { Version } from "@/core/versions/Version";
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { CommonAnimationOptions } from '@/core/documents/SharedDocumentProps';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { CommonAnimationOptions } from '@/core/documents/SharedDocumentProps';
+import type { BaseData } from '@/core/models/data/Data';
 
 export interface Change {
   id: number;
@@ -63,7 +63,7 @@ export interface NoteData<
   version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionHistory: NoteVersion[] | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Use a union type to allow either NoteVersion or Version
   colorLabel?: string; // Hex color code or predefined label
-  collaborators: Collaborator[]; // Array of user IDs
+  collaborators: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Array of user IDs
   reminderDate?: Date;
   attachments?: AttachmentType[];
   geolocation?: NoteGeolocation;

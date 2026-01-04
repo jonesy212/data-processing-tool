@@ -1,4 +1,4 @@
-// configData.ts
+configData.ts
 import ApiConfig from "@/core/components/configs/ApiConfigComponent";
 import LazyLoadScriptConfig from '@/core/config/LazyLoadScriptConfig';
 import { userPreferences } from "@/core/config/UserPreferences";
@@ -17,7 +17,7 @@ import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 
 
 
-// Define your configuration options
+Define your configuration options
 const configurationOptions: any = { // You can replace 'any' with the specific type if known
   timeout: 5000,
   onLoad: () => {
@@ -43,7 +43,7 @@ const configurationOptions: any = { // You can replace 'any' with the specific t
 
   const appVersionString = "1.0.0"; // initial semantic version
 
-// Instantiate AppVersion with initial version number, release date, and release notes
+Instantiate AppVersion with initial version number, release date, and release notes
 const appVersionObj = new AppVersion({
   appName: "Buddease",
   versionNumber: versionNumber,          // use the resolved versionNumber
@@ -58,22 +58,22 @@ const appVersionObj = new AppVersion({
   isDevBuild: false
 });
 
-// Update appVersion dynamically as needed
+Update appVersion dynamically as needed
 appVersionObj.bumpVersion("Bug fixes and performance improvements");
 
-// Add release notes as needed
+Add release notes as needed
 appVersionObj.addReleaseNotes("Bug fixes and performance improvements");
 
-// Retrieve current app version
+Retrieve current app version
 const currentAppVersion = appVersionObj.getVersionNumber();
 
-// Generate appVersion using the provided generator
+Generate appVersion using the provided generator
 const appVersion = UniqueIDGenerator.generateAppVersion();
 
-// Generate versionNumber using the provided generator
+Generate versionNumber using the provided generator
 const newVersionNumber = UniqueIDGenerator.generateVersionNumber();
 
-// Create an instance of the Version class
+Create an instance of the Version class
 const version = new Version({
   versionNumber: newVersionNumber,
   appVersion: appVersionString,
@@ -83,25 +83,25 @@ const version = new Version({
   structureData: "",          // provide actual data if available
   buildVersions: undefined    // optional
 });
-// Include currentAppVersion in a comment or documentation to indicate its purpose
-// For example:
-// The current version of the application is stored in currentAppVersion constant.
+Include currentAppVersion in a comment or documentation to indicate its purpose
+For example:
+The current version of the application is stored in currentAppVersion constant.
 
 const projectPath = getAppPath(newVersionNumber, appVersion); // Get the project path dynamically
 
 const frontendStructure = new FrontendStructure("frontendStructure");
 const backendStructure = new BackendStructure("backendStructure");
 
-// Create lazyLoadScriptConfig object
+Create lazyLoadScriptConfig object
 configurationOptions.lazyLoadScriptConfig = new LazyLoadScriptConfig(projectPath, configurationOptions); 
 
-// Create apiConfig object
+Create apiConfig object
 configurationOptions.apiConfig = ApiConfig("apiConfig");
 
 const lazyLoadScriptConfig = configurationOptions.lazyLoadScriptConfig; // Use the created object
 const apiConfig = configurationOptions.apiConfig; // Use the created object
 
-// Logging configuration changes
+Logging configuration changes
 Logger.logWithOptions(
   "Configuration", 
   "Configuration data updated", 
@@ -127,8 +127,8 @@ const configData = {
 export default configData;
 
 
-// 'excuse me sir, are you attempting to traffic my person'
-// he is going to say no: 'no, i am not',
-// he gives you a ticket of avadavit - 30 day notice - presummed guity
-// they open up a trust in every court case - bid, performance, payment bond, trade a Cista Cave Trust - then seing them as debt instruments
-// grab an affavidative of truth
+'excuse me sir, are you attempting to traffic my person'
+he is going to say no: 'no, i am not',
+he gives you a ticket of avadavit - 30 day notice - presummed guity
+they open up a trust in every court case - bid, performance, payment bond, trade a Cista Cave Trust - then seing them as debt instruments
+grab an affavidative of truth

@@ -1,5 +1,6 @@
-// SidebarSlice.tsx
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+SidebarSlice.tsx
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface SidebarState {
   isChatSidebarOpen: boolean;

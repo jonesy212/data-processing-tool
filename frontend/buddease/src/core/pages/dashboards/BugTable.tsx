@@ -1,4 +1,4 @@
-// BugTable.tsx
+BugTable.tsx
 
 import React from "react";
 

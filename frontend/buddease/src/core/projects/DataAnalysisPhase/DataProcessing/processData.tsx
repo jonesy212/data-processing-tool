@@ -1,7 +1,7 @@
-// processData.tsx
+processData.tsx
 import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
 
-// Usage
+Usage
 async function processData() {
   try {
     const data: DataProcessing = { datasetPath: '/path/to/dataset' };
@@ -12,5 +12,5 @@ async function processData() {
   }
 }
 
-// Call the function
+Call the function
 processData();

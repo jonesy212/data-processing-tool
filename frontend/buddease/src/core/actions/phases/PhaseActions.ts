@@ -1,8 +1,9 @@
-// PhaseActions.ts
+  // PhaseActions.ts
 // phases/PhaseActions.ts
 import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
-import { AppPhase } from '@/core/typings/entities/PhaseEntity';
-import { createAction, PayloadAction } from "@reduxjs/toolkit";
+import type { AppPhase } from '@/core/typings/entities/PhaseEntity';
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createAction } from "@reduxjs/toolkit";
 
 export const PhaseActions = {
 

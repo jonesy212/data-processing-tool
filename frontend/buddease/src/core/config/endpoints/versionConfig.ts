@@ -1,5 +1,5 @@
 // versionConfig.ts
-import { VersionEndpoints } from '@/core/typings/categories/VersionEndpoints';
+import type { VersionEndpoints } from '@/core/typings/categories/VersionEndpoints';
 
 export const versionConfig: VersionEndpoints = {
   getVersion: { path: "/version", method: "GET" },

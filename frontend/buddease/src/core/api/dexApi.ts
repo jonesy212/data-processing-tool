@@ -1,4 +1,4 @@
-// dexApi.ts
+dexApi.ts
 import {
     fetchData,
     handleApiErrorAndNotify,
@@ -7,7 +7,7 @@ import DEXData from "@/core/models/data/DEXData";
 import { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from "axios";
 
-// Function to fetch DEX data
+Function to fetch DEX data
 export const fetchDexData = async (): Promise<DEXData[]> => {
   try {
     const endpoint = `${process.env.REACT_APP_API_BASE_URL}/dexData`; // Replace with your actual DEX data endpoint
@@ -36,7 +36,7 @@ export const fetchDexData = async (): Promise<DEXData[]> => {
   }
 };
 
-// Example transformation function (replace with actual logic)
+Example transformation function (replace with actual logic)
 const transformYourResponseToDEXData = (
   yourResponse: YourResponseType
 ): DEXData[] => {

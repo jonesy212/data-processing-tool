@@ -1,4 +1,4 @@
-// VideoToolbar.tsx
+VideoToolbar.tsx
 import {
     ButtonGenerator,
     useButtonGeneratorProps, // Updated import

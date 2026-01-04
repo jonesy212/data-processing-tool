@@ -1,5 +1,5 @@
-// onLogicalAnd.tsx
-// onLogicalAnd.ts
+onLogicalAnd.tsx
+onLogicalAnd.ts
 import React from 'react';
 
 interface ButtonProps {

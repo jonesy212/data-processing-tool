@@ -1,5 +1,5 @@
-// useAnimatedRoot.ts
-// app/layout/useAnimatedRoot.ts
+useAnimatedRoot.ts
+app/layout/useAnimatedRoot.ts
 import { AnimatedComponentRef } from "@/core/libraries/animations/AnimationComponent";
 import { useCallback, useRef } from "react";
 

@@ -1,4 +1,4 @@
-// AttendancePrediction.tsx
+AttendancePrediction.tsx
 import { Attendee } from "@/core/components/calendar/Attendee";
 import { BaseEvent } from '@/core/events/BaseEvent';
 import { AttendancePredictionResult } from "@/core/models/data/CalendarEventAttendancePrediction";

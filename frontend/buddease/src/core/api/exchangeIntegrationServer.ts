@@ -1,9 +1,9 @@
-// exchangeIntegrationServer.ts
+exchangeIntegrationServer.ts
 import DatabaseClient from "@/core/api/DatabaseClient";
 import { getConfigsData } from "@/core/api/getConfigsApi";
 import { ConfigLogger } from '@/core/logging/Logger';
 
-// Server-only database operations
+Server-only database operations
 export const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
   try {
     const configsData = await getConfigsData();
@@ -37,7 +37,7 @@ export const processTradesServerAPI = async (trades: any[]): Promise<void> => {
   console.log("Trade data processing completed on server.");
 };
 
-// Server-side subscription management
+Server-side subscription management
 export const manageSubscriptionsServer = async (subscriptionData: any) => {
   // Server-side subscription logic
   return { success: true };

@@ -1,4 +1,4 @@
-// collaboratorApi.ts
+collaboratorApi.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -7,10 +7,10 @@ import { NotificationType, useNotification } from '@/core/state/context/Notifica
 import InvitationData from '@/core/state/redux/slices/InvitationData';
 import { AxiosError } from 'axios';
 
-// Define the API base URL
+Define the API base URL
 const API_BASE_URL = endpoints.collaborators.base;
 
-// Define notification messages for collaborator actions
+Define notification messages for collaborator actions
 interface CollaboratorNotificationMessages {
   FETCH_COLLABORATORS_ERROR: string;
   INVITE_COLLABORATOR_ERROR: string;
@@ -23,7 +23,7 @@ const collaboratorApiNotificationMessages: CollaboratorNotificationMessages = {
   // Add more messages as needed
 };
 
-// Function to handle API errors and notify for collaborators
+Function to handle API errors and notify for collaborators
 const handleCollaboratorApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessageId: keyof CollaboratorNotificationMessages
@@ -39,7 +39,7 @@ const handleCollaboratorApiErrorAndNotify = (
   );
 };
 
-// Function to fetch collaborators
+Function to fetch collaborators
 export const fetchCollaborators = async (): Promise<CalendarEventCollaborator[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
@@ -54,7 +54,7 @@ export const fetchCollaborators = async (): Promise<CalendarEventCollaborator[]>
   }
 };
 
-// Function to invite a collaborator
+Function to invite a collaborator
 export const inviteCollaborator = async (invitationData: InvitationData): Promise<void> => {
   try {
     const response = await axiosInstance.post(`${API_BASE_URL}/invite`, invitationData);
@@ -74,4 +74,4 @@ export const inviteCollaborator = async (invitationData: InvitationData): Promis
   }
 };
 
-// Add more functions for managing collaborators as needed
+Add more functions for managing collaborators as needed

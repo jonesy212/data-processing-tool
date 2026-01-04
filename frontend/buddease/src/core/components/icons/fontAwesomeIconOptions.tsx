@@ -1,5 +1,5 @@
-// fontAwesomeIconOptions.tsx
-// fontAwesomeIconOptions.ts
+fontAwesomeIconOptions.tsx
+fontAwesomeIconOptions.ts
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface FontAwesomeIconOptions {

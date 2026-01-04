@@ -1,4 +1,4 @@
-// YourDocumentGeneratorComponent.tsx
+YourDocumentGeneratorComponent.tsx
 import { createPdfDocument } from '@/core/documents/DocumentCreationUtils';
 import React, { useState } from 'react';
 

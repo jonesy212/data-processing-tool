@@ -1,4 +1,4 @@
-// confirmation/InteractiveConfirmationService.ts
+confirmation/InteractiveConfirmationService.ts
 import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
 import { ConfirmationService } from '@/core/services/ConfirmationService';
 import { ConsoleConfirmationService } from '@/core/services/ConsoleConfirmationService';

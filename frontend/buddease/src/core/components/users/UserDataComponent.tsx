@@ -1,4 +1,4 @@
-// UserDataComponent.tsx
+UserDataComponent.tsx
 import generateTimeBasedCode from '@/core/models/realtime/TimeBasedCodeGenerator';
 import UserRoles from '@/core/models/UserRoles';
 import UserDetails, { User } from '@/core/users/User';

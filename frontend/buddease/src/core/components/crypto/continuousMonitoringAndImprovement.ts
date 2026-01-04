@@ -1,6 +1,6 @@
 // continuousMonitoringAndImprovement.ts
 import { getCurrentPrice } from '@/core/api/ApiCrypto';
-import { MarketData } from '@/core/trading/TradingStrategy';
+import type { MarketData } from '@/core/trading/TradingStrategy';
 import { automatedDecisionMaking } from '@/utils/web3/automatedDecisionMakingUtils';
 import MachineLearningModel from './machineLearning';
 
@@ -180,9 +180,7 @@ const fetchRecentRegulatoryUpdates = (): RegulatoryUpdate[] => {
   ];
 };
 
-// continuousMonitoringAndImprovement function
 
-// continuousMonitoringAndImprovement function
 const continuousMonitoringAndImprovement = async (): Promise<void> => {
   try {
     // Get the current price

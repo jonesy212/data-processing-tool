@@ -1,8 +1,8 @@
 // TaskActions.ts
 // tasks/TaskActions.ts
 
-import { Task } from "@/core/models/tasks/Task";
-import { Idea } from "@/core/users/Ideas";
+import type { Task } from "@/core/models/tasks/Task";
+import type { Idea } from "@/core/users/Ideas";
 import { createAction } from "@reduxjs/toolkit";
 
 export const TaskActions = {

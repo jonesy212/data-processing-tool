@@ -1,5 +1,5 @@
-// ApiMarker.ts
-// markerSagas.ts
+ApiMarker.ts
+markerSagas.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -54,7 +54,7 @@ function* deleteMarkerSaga(action: ReturnType<typeof MarkerActions.deleteMarker>
 }
 
 
-// Other sagas related to marker actions can be updated similarly
+Other sagas related to marker actions can be updated similarly
 
 export function* watchMarkerSagas() {
   yield takeLatest(MarkerActions.fetchMarkersRequest.type, fetchMarkersSaga);

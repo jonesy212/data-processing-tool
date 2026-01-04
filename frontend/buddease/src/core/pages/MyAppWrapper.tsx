@@ -1,4 +1,4 @@
-// MyAppWrapper.tsx
+MyAppWrapper.tsx
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
 import CaptionManagementPageComponent from "@/core/features/videos/CaptionManagementComponent";
 import { generateUtilityFunctions } from "@/core/generators/GenerateUtilityFunctions";
@@ -18,7 +18,7 @@ import MyApp from "./_app";
 import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
 
-// Extend NextRouter with additional properties
+Extend NextRouter with additional properties
 type ExtendedRouter = NextRouter & {
   components: any;
   sdc: any;
@@ -34,7 +34,7 @@ type ExtendedRouter = NextRouter & {
   brandingSettings: BrandingSettings;
 };
 
-// Extend AppProps to include hooks
+Extend AppProps to include hooks
 
 export const EnhancedCaptionManagementPage = contentManagementPage(
   CaptionManagementPage
@@ -49,7 +49,7 @@ type ExtendedAppProps = AppProps & {
 
 
 
-// Create initial theme from branding settings
+Create initial theme from branding settings
 const createInitialTheme = (brandingSettings: BrandingSettings): Theme => ({
   // Map branding settings to theme properties
   primaryColor: brandingSettings.themeColor || '#3498db',
@@ -237,7 +237,7 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
 
 
 
-// This component MUST be inside EnhancedThemeProvider to use useTheme()
+This component MUST be inside EnhancedThemeProvider to use useTheme()
 const ThemeApplication = (props: any) => {
   const { theme, tokens, updateTheme, switchTheme } = useTheme();
   

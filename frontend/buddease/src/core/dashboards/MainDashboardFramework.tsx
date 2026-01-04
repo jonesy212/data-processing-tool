@@ -1,4 +1,4 @@
-// MainDashboardFramework.tsx
+MainDashboardFramework.tsx
 import VideoFramework from "@/core/components/video/VideoFramework";
 import DashboardPanel from "@/core/hooks/userInterface/DashboardPanel";
 import React from "react";

@@ -1,8 +1,8 @@
-// getSnapshotEntries.ts
+getSnapshotEntries.ts
 import { K, T } from "@/core/models/data/dataStoreMethods";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
-// Implement the getSnapshotEntries method
+Implement the getSnapshotEntries method
 const getSnapshotEntries: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['getSnapshotEntries'] = (snapshotId: string) => {
   const snapshot = this.getSnapshot(snapshotId); // Retrieve the snapshot by its ID
   if (snapshot && snapshot.data instanceof Map) {
@@ -11,7 +11,7 @@ const getSnapshotEntries: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, I
   return undefined; // Return undefined if no entries are found
 };
 
-// Implement the getAllSnapshotEntries method
+Implement the getAllSnapshotEntries method
 const getAllSnapshotEntries: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['getAllSnapshotEntries'] = () => {
   const entries: Map<string, T>[] = [];
   const allSnapshots = this.getSnapshots(); // Retrieve all snapshots

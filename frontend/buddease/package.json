@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "ios": "PLATFORM=mobile react-native run-ios",
     "android": "PLATFORM=mobile react-native run-android",
@@ -48,6 +49,8 @@
     "imports:cleanup": "pnpm run imports:analyze && pnpm run imports:deduplicate && pnpm run imports:stats",
     "fix-and-deduplicate": "pnpm run fix-imports && pnpm run imports:deduplicate",
     "fix-all-and-deduplicate": "pnpm run fix-imports:all && pnpm run imports:deduplicate",
+    "list:type-errors": "npx tsc --noEmit --skipLibCheck 2>&1 | grep \"is a type\" | sort | uniq",
+
     "pre-commit:imports": "pnpm run imports:analyze -- --limit=20",
     "pre-commit:deduplicate": "pnpm run imports:deduplicate -- --limit=50",
     "fix-imports:complete": "pnpm run fix-imports:all && pnpm run imports:deduplicate",
@@ -140,7 +143,6 @@
     "fix:datastore-imports": "tsx app/scripts/fix-interface-imports.ts quick",
     "fix:interface-imports:datastore": "tsx app/scripts/fix-interface-imports.ts target src/core/state/stores/DataStore.ts",
     "fix:interface-imports:apply": "tsx app/scripts/fix-interface-imports.ts all --apply",
- 
     "test:imports": "pnpm type-check && pnpm analyze:all",
     "test:unit": "vitest run --coverage --watchAll=false",
     "test:integration": "vitest run --config vitest.integration.config.ts",
@@ -244,30 +246,55 @@
     "fix:quick-wins": "tsx src/app/error-analyzer/enhanced-cli.ts quick-wins",
     "quick:fixes": "pnpm generate:corrections:quick && echo '✅ Check ./corrections/quick-fixes.md for easy wins (zsh commands)'",
     "analyze:with-navigation": "pnpm analyze:ts-output && pnpm fix:navigate ts-errors.json",
-    
     "smart:dev-fix": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix",
     "smart:production-backup": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts production-backup",
     "smart:status": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts status",
     "smart:cleanup": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts cleanup",
     "smart:report": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts report",
-    
-    
     "fix:smart": "pnpm smart:dev-fix",
     "backup:production": "pnpm smart:production-backup 'Production Ready - $(date)'",
     "restore:last": "pnpm smart:status | grep -A1 'Individual backups' | tail -1 | cut -d' ' -f3",
-    
     "dev:with-backup": "pnpm smart:dev-fix && pnpm dev",
     "build:with-safety": "pnpm smart:production-backup 'Pre-Build' && pnpm build",
     "deploy:safe": "pnpm smart:production-backup 'Pre-Deploy' && pnpm deploy",
-    
     "fix:imports-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus imports",
     "fix:types-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus types",
     "fix:patterns-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus patterns",
+    "check:types": "tsc --noEmit --skipLibCheck 2>&1 | grep 'is a type' || true",
+    "check:types:all": "tsc --noEmit --skipLibCheck",
+    "fix:types:capture": "node src/scripts/fix-all-type-imports.ts --dry-run",
+    "fix:types": "tsx type-import-fixer-with-backup.ts",
+    "fix:types:dry-run": "tsx type-import-fixer-with-backup.ts --dry-run",
+    "fix:types:analyze": "tsx type-import-fixer-with-backup.ts --analyze-only",
+    "fix:types:comprehensive": "tsx fix-all-type-imports.ts",
+    "fix:types:comprehensive-dry": "tsx fix-all-type-imports.ts --dry-run",
+    "fix:types:comprehensive-quick": "tsx fix-all-type-imports.ts --quick",
+    "fix:types:specific": "tsx type-import-fixer-with-backup.ts",
     
+    "fix:types:cleanup": "rm -rf .import-fix-backups .import-fix-rollback",
+    "fix:types:list-backups": "ls -la .import-fix-backups/ 2>/dev/null || echo 'No backups'",
+    "fix:types:show-latest": "tail -20 .import-fix-backups/*.txt 2>/dev/null | head -50 || echo 'No backups'",
+    
+    "fix:types:specific-dry": "tsx type-import-fixer-with-backup.ts --dry-run",
+    "check:types:count": "tsc --noEmit --skipLibCheck 2>&1 | grep -c 'is a type' || true",
+    "find:type-errors": "tsc --noEmit --skipLibCheck 2>&1 | grep -E \"'[^']+' is a type\" | sort | uniq -c | sort -rn",
+    "fix:types:safe": "tsx type-import-fixer-with-backup.ts --dry-run",
+    
+    "check:type-errors": "npx tsc --noEmit --skipLibCheck 2>&1 | grep \"is a type\" | wc -l",
+    
+    "fix:types:complete-dry": "tsx src/scripts/fix-all-type-imports.ts --dry-run",
+    "fix:types:all": "tsx fix-all-type-imports-fixed.ts",
+    "fix:types:dry": "tsx fix-all-type-imports-fixed.ts --dry-run",
+    
+    
+    "check:syntax": "tsc --noEmit --skipLibCheck 2>&1 | grep -E '(error TS|: - error)' | head -10",
+    "check:type-imports": "tsc --noEmit --skipLibCheck 2>&1 | grep 'is a type' || echo '✅ No type-only import errors'",
+    "count:type-imports": "tsc --noEmit --skipLibCheck 2>&1 | grep -c 'is a type' || echo 0",
+    "fix:types:quick": "tsx fix-all-type-imports.ts --quick",
+    "fix:types:backup": "tsx type-import-fixer-with-backup.ts",
     "rollback:latest": "bash .smart-backups/rollback/latest/rollback.sh",
     "rollback:list": "ls -la .smart-backups/rollback/",
     "rollback:to": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts restore",
-
     "dev:with-phase": "pnpm phase:scan && pnpm dev",
     "dev:with-analysis": "pnpm generate:tree:json && pnpm dev",
     "dev:with-corrections": "pnpm generate:corrections && pnpm dev",
@@ -342,8 +369,21 @@
     "data:reset": "tsx src/app/scripts/resetDevelopmentData.ts",
     "apply-import-fixes": "tsx scripts/apply-import-fixes.ts",
     "debug:ts-analyzer": "node core/scripts/analyze-ts-errors.mjs --verbose --help",
+    "debug:types": "node src/scripts/debug-type-errors.ts",
     "test:ts-analyzer": "echo '[{\"resource\":\"test.ts\",\"code\":\"2304\",\"message\":\"Test error\",\"startLineNumber\":1,\"severity\":8}]' | pnpm analyze:ts-errors:stdin --quiet",
     "ts:test-phase": "tsx src/test-phase.ts",
+    "fix:types:clear": "tsx app/scripts/type-import-fixer-with-backup.ts",
+    "fix:types:preview": "tsx app/scripts/type-import-fixer-with-backup.ts --dry-run",
+    "fix:types:rollback": "tsx type-import-fixer-with-backup.ts --rollback",
+
+
+    
+    
+
+
+
+
+    "fix:types:summary": "tsx -e \"console.log('\\n📊 TYPE IMPORT SUMMARY:'); console.log('='.repeat(40)); require('child_process').execSync('grep -r \\\"import.*BaseDataEntity.*from\\\" src/ --include=\\\"*.ts\\\" --include=\\\"*.tsx\\\" | grep -v \\\"import type\\\" | wc -l', {encoding:'utf8'}).split('\\n').forEach(l => console.log('Files needing fix:', l.trim()));\"",
     "analyze:snapshots": "PLATFORM=web pnpm generate:corrections:snapshots",
     "analyze:critical": "PLATFORM=web pnpm generate:corrections:critical",
     "analyze:quick-fixes": "PLATFORM=web pnpm generate:corrections:quick",
@@ -405,6 +445,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/react-speech-recognition": "^3.9.6",
     "@types/ws": "^8.18.1",
+    "adm-zip": "^0.5.16",
     "animejs": "^4.2.2",
     "antd": "^5.27.6",
     "axios": "^1.13.1",
@@ -522,6 +563,7 @@
     "@storybook/addon-controls": "^9.0.8",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@types/adm-zip": "^0.5.7",
     "@types/animejs": "^3.1.13",
     "@types/babel__traverse": "^7.28.0",
     "@types/chalk": "^2.2.4",
@@ -534,7 +576,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/mysql": "^2.15.27",
     "@types/next": "^9.0.0",
-    "@types/node": "^24.9.2",
+    "@types/node": "^24.10.4",
     "@types/papaparse": "^5.3.16",
     "@types/pg": "^8.15.6",
     "@types/react": "^19.2.2",

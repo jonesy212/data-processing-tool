@@ -1,4 +1,4 @@
-// assets.d.ts
+assets.d.ts
 declare module '@/styles/*' {
   const value: any;
   export default value;

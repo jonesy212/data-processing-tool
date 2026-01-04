@@ -1,4 +1,4 @@
-// milestoneTypes.ts
+milestoneTypes.ts
 import {
     BaseEntityProperties,
     SharedIdentifiers,
@@ -9,7 +9,7 @@ import {
 import { StatusType } from '@/core/models/data/StatusType';
 import { Reminder } from '@/core/settings/Reminder';
 
-// -------------------- Core Milestone Interface --------------------
+-------------------- Core Milestone Interface --------------------
 export interface Milestone extends 
   BaseEntityProperties,
   SharedTimestamps,
@@ -56,9 +56,9 @@ export interface Milestone extends
   tags: string[];
 }
 
-// -------------------- Specialized Milestone Types --------------------
+-------------------- Specialized Milestone Types --------------------
 
-// -------------------- Phase-Specific Milestone --------------------
+-------------------- Phase-Specific Milestone --------------------
 export interface PhaseMilestone extends 
   Milestone,
   SharedSnapshotProperties<BaseDataEntity> { // Add snapshot properties
@@ -80,7 +80,7 @@ export interface PhaseMilestone extends
   phaseSuccessCriteria?: string[];
 }
 
-// -------------------- Project-Specific Milestone --------------------
+-------------------- Project-Specific Milestone --------------------
 export interface ProjectMilestone extends 
   Milestone,
   SharedIdentifiers<BaseDataEntity> { // Add identifier properties
@@ -99,7 +99,7 @@ export interface ProjectMilestone extends
   costVariance?: number;
 }
 
-// -------------------- Usage/Productivity Milestone --------------------
+-------------------- Usage/Productivity Milestone --------------------
 export interface UsageMilestone extends 
   Milestone,
   SharedSnapshotProperties<BaseDataEntity> {
@@ -139,7 +139,7 @@ export interface TaskMilestone extends Milestone {
   actualEffort?: number; // Actual time spent
 }
 
-// -------------------- Supporting Types --------------------
+-------------------- Supporting Types --------------------
 
 export interface MilestoneDependency {
   fromMilestoneId: string;
@@ -157,7 +157,7 @@ export interface MilestoneGroup {
   progress: number;
 }
 
-// -------------------- Milestone Filter & Query Types --------------------
+-------------------- Milestone Filter & Query Types --------------------
 export interface MilestoneFilter {
   status?: AllStatus[];
   priority?: ('low' | 'medium' | 'high' | 'critical')[];
@@ -180,7 +180,7 @@ export interface MilestoneQueryParams {
   pageSize?: number;
 }
 
-// -------------------- Milestone Update & Change Types --------------------
+-------------------- Milestone Update & Change Types --------------------
 export interface MilestoneUpdate {
   id: string;
   changes: Partial<Milestone>;
@@ -197,7 +197,7 @@ export interface MilestoneProgressUpdate {
   date: Date;
 }
 
-// -------------------- Milestone Analytics Types --------------------
+-------------------- Milestone Analytics Types --------------------
 export interface MilestoneAnalytics {
   milestoneId: string;
   onTime: boolean;
@@ -215,7 +215,7 @@ export interface MilestoneBurndown {
   remaining: number; // Milestones remaining
 }
 
-// -------------------- Factory Functions --------------------
+-------------------- Factory Functions --------------------
 export function createMilestone(base: Partial<Milestone> = {}): Milestone {
   const now = new Date();
   
@@ -273,7 +273,7 @@ export function createCalendarMilestone(base: Partial<CalendarMilestone> = {}): 
   };
 }
 
-// -------------------- Type Guards --------------------
+-------------------- Type Guards --------------------
 export function isMilestone(obj: any): obj is Milestone {
   return (
     obj &&
@@ -294,7 +294,7 @@ export function isCalendarMilestone(obj: any): obj is CalendarMilestone {
   return isMilestone(obj) && 'calendarId' in obj;
 }
 
-// -------------------- Utility Functions --------------------
+-------------------- Utility Functions --------------------
 export function calculateMilestoneProgress(milestone: Milestone): number {
   if (milestone.completed) return 100;
   
@@ -320,5 +320,5 @@ export function getMilestoneStatus(milestone: Milestone): AllStatus {
   return milestone.status;
 }
 
-// -------------------- Default Export --------------------
+-------------------- Default Export --------------------
 export default Milestone;

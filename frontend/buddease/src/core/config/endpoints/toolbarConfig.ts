@@ -1,4 +1,4 @@
-// toolbarConfig.ts
+toolbarConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ToolbarEndpoints } from '@/core/typings/categories/ToolbarEndpoints';
 

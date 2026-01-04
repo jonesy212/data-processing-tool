@@ -1,4 +1,4 @@
-// dataFrameSaga.ts
+dataFrameSaga.ts
 import DataFrameAPI from "@/core/api/DataframeApi";
 import {
     DataFrameResponse,
@@ -10,7 +10,7 @@ import {
 } from "@/core/slices/DataFrameSlice";
 import { call, put, takeLatest } from "redux-saga/effects";
 
-// Worker Saga: Fetch DataFrame
+Worker Saga: Fetch DataFrame
 function* fetchDataFrameSaga() {
   try {
     const dataFrames: DataFrameResponse[][] = yield call(
@@ -24,7 +24,7 @@ function* fetchDataFrameSaga() {
   }
 }
 
-// Worker Saga: Add DataFrame
+Worker Saga: Add DataFrame
 function* addDataFrameSaga(action: { payload: { id: string; title: string } }) {
   try {
     const { id, title } = action.payload;
@@ -38,7 +38,7 @@ function* addDataFrameSaga(action: { payload: { id: string; title: string } }) {
   }
 }
 
-// Worker Saga: Remove DataFrame
+Worker Saga: Remove DataFrame
 function* removeDataFrameSaga(action: { payload: string }) {
   try {
     const dataFrameId = action.payload;
@@ -52,7 +52,7 @@ function* removeDataFrameSaga(action: { payload: string }) {
   }
 }
 
-// Watcher Saga: Watches for fetch, add, and remove data frame actions
+Watcher Saga: Watches for fetch, add, and remove data frame actions
 export function* watchDataFrameSagas() {
   yield takeLatest(fetchDataFrameRequest.type, fetchDataFrameSaga);
   yield takeLatest(addDataFrame.type, addDataFrameSaga);

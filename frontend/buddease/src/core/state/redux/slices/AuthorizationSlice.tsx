@@ -1,7 +1,8 @@
-// AuthorizationSlice.tsx
-// authorizationSlice.ts
+AuthorizationSlice.tsx
+authorizationSlice.ts
 import { RootState } from '@/core/state/redux/slices/RootSlice';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthorizationState {
   isAuthenticated: boolean;
@@ -28,10 +29,10 @@ export const useAuthorizationSlice = createSlice({
   },
 });
 
-// Selector to get the authorization state
+Selector to get the authorization state
 export const selectAuthorization = (state: RootState) => state.authorizationManager;
 
-// Selector to get the authorization token
+Selector to get the authorization token
 export const selectAuthToken = (state: RootState) => selectAuthorization(state).accessToken;
 
 export const { loginSuccess, logout } = useAuthorizationSlice.actions;

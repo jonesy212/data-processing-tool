@@ -1,5 +1,5 @@
-// CustomContentState.tsx
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+CustomContentState.tsx
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { ContentState } from 'draft-js';
 
 interface CustomContentState  {
@@ -8,7 +8,7 @@ interface CustomContentState  {
   customProperty: string; // Add any additional properties here
 }
 
-// Alternatively, you can define a wrapper class
+Alternatively, you can define a wrapper class
 class CustomContentStateWrapper {
   contentState: ContentState;
   metadata: StructuredMetadata;

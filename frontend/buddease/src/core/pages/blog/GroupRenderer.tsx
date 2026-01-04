@@ -1,4 +1,4 @@
-// GroupRenderer.tsx
+GroupRenderer.tsx
 import React from 'react';
 
 interface GroupRendererProps {

@@ -1,4 +1,4 @@
-// userRolesNFTConfig.ts
+userRolesNFTConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { UserRolesNFTEndpoints } from '@/core/typings/categories/UserRolesNFTEndpoints';
 

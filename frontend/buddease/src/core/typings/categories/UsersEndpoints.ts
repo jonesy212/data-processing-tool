@@ -1,4 +1,4 @@
-// UsersEndpoints.ts
+UsersEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface UsersEndpoints extends EndpointCategoryConfig {

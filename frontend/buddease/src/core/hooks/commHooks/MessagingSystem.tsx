@@ -1,5 +1,5 @@
-// MessagingSystem.tsx
-// DynamicHooks.tsx
+MessagingSystem.tsx
+DynamicHooks.tsx
 import createDynamicHook from "@/core/hooks/dynamicHooks/dynamicHookGenerator";
 import { useEffect } from "react";
 

@@ -1,4 +1,4 @@
-// useRealtimeDextData.ts
+useRealtimeDextData.ts
 import useRealtimeData, { RealtimeUpdateCallback } from "@/core/hooks/commHooks/useRealtimeData";
 import { DEXEnum } from '@/core/models/cypto/exchangeIntegration';
 import { RealtimeData } from "@/core/typings/realtimeTypes";
@@ -47,7 +47,7 @@ const useRealtimeDextData = <T>(
 
 export default useRealtimeDextData;
 
-// Example function to fetch DEX data for a specific user
+Example function to fetch DEX data for a specific user
 const fetchDexDataForUser = async (userId: string): Promise<any[]> => {
   // Replace with actual fetch logic for DEX data based on userId
   // Example:

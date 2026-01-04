@@ -1,5 +1,5 @@
-// brandingPreferencesSaga.ts
-// Import necessary dependencies and constants
+brandingPreferencesSaga.ts
+Import necessary dependencies and constants
 import { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
 import { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
 import { UserBrandingPreferencesActions } from '@/core/config/UserPreferencesActions';
@@ -36,7 +36,7 @@ function* handleSetColors(action: PayloadAction<ColorSwatchProps[]>) {
 }
 
 
-// Saga for setting font styles
+Saga for setting font styles
 function* handleSetFontStyles(action: PayloadAction<DocumentFormattingOptions>) {
     try {
       const fontStyles: DocumentFormattingOptions = action.payload;
@@ -166,10 +166,10 @@ function* handleSetFontStyles(action: PayloadAction<DocumentFormattingOptions>) 
   }
   
 
-// Worker Saga: Fetch User Preferences
+Worker Saga: Fetch User Preferences
 
 
-// Watcher Saga: Watches for user preferences actions
+Watcher Saga: Watches for user preferences actions
 function* watchUserPreferencesActions() {
   yield all([
     takeLatest(UserBrandingPreferencesActions.setUserBrandColors.type, handleSetUserBrandColors),
@@ -244,7 +244,7 @@ function* watchUserPreferencesActions() {
     // Add more watchers for other user preferences actions...
 }
 
-// Root Saga
+Root Saga
 export default function* brandingPreferencesSaga() {
   yield all([
     watchUserPreferencesActions(),

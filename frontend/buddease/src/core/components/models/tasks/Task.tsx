@@ -1,10 +1,10 @@
-// Task.tsx
-// Task.ts
+Task.tsx
+Task.ts
 import { CommonDetails } from '@/core/components/models/details/CommonDetails';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SupportedData } from '@/core/models/CommonData';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Task } from '@/core/models/tasks/Task';
 import { Permission } from '@/core/permissions/Permission';
 import { TaskEntity } from '@/core/typings/entities/TaskEntity';
@@ -14,7 +14,7 @@ export interface TaskEntityExtended extends TaskEntity {
   ownerId: string;
 }
 
-// using commong detais we genrate detais for components by mapping through the objects.
+using commong detais we genrate detais for components by mapping through the objects.
 const TaskDetails = <
   T extends BaseDataEntity,
   K extends T = T,

@@ -1,12 +1,12 @@
-// ApiEntity.ts
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+ApiEntity.ts
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import { UnifiedMetaDataOptions } from '@/core/config/MetaDataOptions';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { Task } from "@/core/models/tasks/Task";
 
 
 
-// Define your API-specific types
+Define your API-specific types
 export interface ApiEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -24,7 +24,7 @@ export type ApiAttachmentType = any; // Or define proper attachment type
 export type ApiExcludedFields = never;
 export type ApiIncludedFields = keyof ApiEntity;
 
-// Create type aliases for complex types
+Create type aliases for complex types
 export type ApiStructuredMetadata = StructuredMetadata<
   ApiEntity,
   ApiK,

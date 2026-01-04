@@ -1,6 +1,6 @@
 // handleDataFormats.ts
 
-import { ExchangeData } from "@/core/models/data/ExchangeData";
+import type { ExchangeData } from "@/core/models/data/ExchangeData";
 
 // Function to handle data formats from various exchanges
 export const handleDataFormats = (exchangeData: ExchangeData[]): void => {

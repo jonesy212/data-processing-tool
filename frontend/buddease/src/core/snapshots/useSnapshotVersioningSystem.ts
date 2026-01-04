@@ -1,11 +1,11 @@
-// useSnapshotVersioningSystem.ts
+useSnapshotVersioningSystem.ts
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
 import { VersionMetadata } from '@/core/config/MetaDataOptions';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import React, { useCallback, useMemo, useState } from 'react';
 
 interface SnapshotVersion<T extends BaseDataEntity> {
@@ -32,7 +32,7 @@ interface SnapshotVersioningSystemProps<
   children: (versioningSystem: ReturnType<typeof useSnapshotVersioningSystem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => React.ReactNode;
 }
 
-// Functional Component
+Functional Component
 export function useSnapshotVersioningSystem<
   T extends BaseDataEntity,
   K extends T = T,
@@ -46,7 +46,7 @@ export function useSnapshotVersioningSystem<
   maxHistory = 100
 }: SnapshotVersioningSystemProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   // State
-// Fix the useState type annotation
+Fix the useState type annotation
   const [snapshots, setSnapshots] = useState<Map<string, SnapshotVersion<T>>>(initialSnapshots);
   const [currentVersionIds, setCurrentVersionIds] = useState<Map<string, string>>(new Map()); // snapshotId -> currentVersionId
 
@@ -239,7 +239,7 @@ export function useSnapshotVersioningSystem<
 
 export type { SnapshotVersion };
 
-// 🎨 React Hook Component
+🎨 React Hook Component
 export const SnapshotVersioningSystem: React.FC<SnapshotVersioningSystemProps<any>> = ({
   children,
   initialSnapshots,

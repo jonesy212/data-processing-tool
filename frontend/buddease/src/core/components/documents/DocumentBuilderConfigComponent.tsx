@@ -1,4 +1,4 @@
-// DocumentBuilderConfigComponent.tsx
+DocumentBuilderConfigComponent.tsx
 import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
 import React from "react";
 

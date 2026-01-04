@@ -1,6 +1,8 @@
 // fetchContent.tsx
 
 // Define the response type for the content API
+import type { DataNotificationMessages } from '@/core/api/ApiData'
+
 interface ContentResponseType {
   contentId: number;
   title: string;
@@ -22,5 +24,5 @@ interface ContentNotificationMessages extends DataNotificationMessages {
 import { contentApiService } from '@/core/api/service/ContentApiService';
 
 export const fetchContentById = async (contentId: number): Promise<ContentResponseType | null> => {
-  return await contentApiService.fetchContentById(contentId);
+  return await contentApiService.fetchContentById(Number(contentId));
 };

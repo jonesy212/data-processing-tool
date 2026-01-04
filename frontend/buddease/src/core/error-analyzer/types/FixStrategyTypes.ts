@@ -1,5 +1,5 @@
 // src/app/error-analyzer/types/FixStrategyTypes.ts
-import { FixPlan } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+import type { FixPlan, StrategyCore } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 
 // Create a unified type that includes ALL fix types from both FixPlan and your new ones
 export type FixStrategyTypeDef = 
@@ -61,11 +61,18 @@ export interface PropertyAdditionStrategy extends BaseFixStrategy {
   defaultValue?: string;
 }
 
+interface ConfidenceThresholds{ 
+  autoApply: number,
+  suggestApply: number,
+  manualReview: number
+}
+
 export interface CircularBreakStrategy extends BaseFixStrategy {
   type: 'circular_break' | 'circular_dependency'; // Include both possibilities
   cycle: string[];
   breakPoints: string[];
   replacementTypes: string[];
+  confidenceThresholds: ConfidenceThresholds;
 }
 
 export interface FixExecutionResult {

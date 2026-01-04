@@ -1,4 +1,4 @@
-// MeetingSchedulerViewerToolbar.tsx
+MeetingSchedulerViewerToolbar.tsx
 import React from 'react';
 
 interface MeetingSchedulerViewerToolbarProps {

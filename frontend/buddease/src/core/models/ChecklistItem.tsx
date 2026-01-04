@@ -1,9 +1,9 @@
 // ChecklistItem.tsx
-import { BaseDataEntity, DefaultMeta } from "@/core/config/BaseConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultMeta } from "@/core/config/BaseConfig";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ListGenerator from "@/core/generators/ListGenerator";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
-import {
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type {
     DetailsAttachment,
     DetailsEntity,
     DetailsExcludedFields,
@@ -26,7 +26,7 @@ interface ChecklistItemProps<
 
 const ChecklistItem = <
   T extends BaseDataEntity = DetailsEntity,
-  K extends T = DetailsK,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DetailsMeta,
   AttachmentType extends Attachment = DetailsAttachment,
   ExcludedFields extends keyof T = DetailsExcludedFields,

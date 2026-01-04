@@ -1,7 +1,6 @@
 // EventCategory.tsx
 import React from "react";
 
-// EventCategory.ts
 interface EventCategoryProps {
   category: string;
   icon?: string;

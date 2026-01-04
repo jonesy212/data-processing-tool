@@ -1,6 +1,6 @@
-// DataAnalysisResult.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+DataAnalysisResult.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { Phase } from '@/core/models/phases/Phase';
 import SnapshotStore, { SnapshotStoreReference } from '@/core/snapshots/SnapshotStore';

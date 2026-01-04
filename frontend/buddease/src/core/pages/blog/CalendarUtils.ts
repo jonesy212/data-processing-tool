@@ -1,38 +1,112 @@
 // CalendarUtils.ts
 
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
-import { useState } from "react";
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import { CalendarEventWithCriteria } from '@/core/pages/searches/FilterCriteria';
+import { SnapshotStore } from '@/core/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
 
+/* ============================================================
+ * Type Guard
+ * ============================================================ */
 
+export function isCalendarEventWithCriteria(
+  value: unknown
+): value is CalendarEventWithCriteria {
+  if (typeof value !== 'object' || value === null) return false;
 
+  return (
+    'id' in value &&
+    'version' in value &&
+    'criteria' in value
+  );
+}
 
+/* ============================================================
+ * Assertion Helpers (ONE TARGET EACH — REQUIRED)
+ * ============================================================ */
 
-// Define a custom hook to manage calendar events
-export const useCalendarEvents = () => {
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
-
-  // Function to set calendar events
-  const setEvents = (events: CalendarEvent[]) => {
-    setCalendarEvents(events);
-  };
-
-  return {
-    calendarEvents,
-    setEvents,
-  };
-};
-
-// Function to add events to the calendar
-export const setCalendarEvents = async (events: CalendarEvent[]) => {
-  try {
-    // Your logic to update the calendar state with new events
-    // For example, if you're using a state management library like Redux:
-    // dispatch({ type: 'SET_CALENDAR_EVENTS', payload: events });
-    // Or if you're using component state:
-    // setCalendarEvents(events);
-    console.log("Calendar events updated successfully.");
-  } catch (error) {
-    console.error("Error setting calendar events:", error);
-    throw error; // Optionally rethrow the error for error handling in the caller
+function assertCalendarStoreOptions(
+  options: SnapshotStoreOptions<any, any, any, any, any, any, any, any, any>
+): asserts options is SnapshotStoreOptions<
+  CalendarEventWithCriteria,
+  CalendarEventWithCriteria,
+  StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
+> {
+  if (!isCalendarEventWithCriteria((options as any)?.payload)) {
+    throw new Error(
+      'SnapshotStoreOptions payload must be CalendarEventWithCriteria'
+    );
   }
-};
+}
+
+function assertCalendarStoreConfig(
+  config: SnapshotStoreConfig<any, any, any, any, any, any, any, any, any>
+): asserts config is SnapshotStoreConfig<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields> {
+  if (!isCalendarEventWithCriteria((config as any)?.payload)) {
+    throw new Error(
+      'SnapshotStoreConfig payload must be CalendarEventWithCriteria'
+    );
+  }
+}
+
+function assertCalendarCallback(
+  callback: unknown
+): asserts callback is (data: CalendarEventWithCriteria) => void {
+  if (typeof callback !== 'function') {
+    throw new Error('Callback must be a function');
+  }
+}
+
+/* ============================================================
+ * Store Factory
+ * ============================================================ */
+
+export function getCalendarSnapshotStoreData(
+  options: SnapshotStoreOptions<any, any, any, any, any, any>,
+  config: SnapshotStoreConfig<any, any, any, any, any, any>,
+  callback: (data: any) => void
+): Promise<CalendarEventWithCriteria[]> {
+
+  /* ---------- Assertions (narrow types safely) ---------- */
+
+  assertCalendarStoreOptions(options);
+  assertCalendarStoreConfig(config);
+  assertCalendarCallback(callback);
+
+  /* ---------- Wrapped callback with runtime validation ---------- */
+
+  const calendarCallback = (data: unknown) => {
+    if (!isCalendarEventWithCriteria(data)) {
+      throw new Error(
+        'Callback received non-CalendarEventWithCriteria data'
+      );
+    }
+    callback(data);
+  };
+
+  /* ---------- Snapshot store creation ---------- */
+
+  const snapshotStore = new SnapshotStore<
+    CalendarEventWithCriteria,
+    CalendarEventWithCriteria
+  >({
+    storeId,
+    name,
+    version,
+    schema,
+    options,
+    category,
+    config,
+    operation,
+    expirationDate,
+    payload,
+    currentMeta,
+    callback: calendarCallback,
+    storeProps,
+    endpointCategory
+  });
+
+  return snapshotStore.getAllData();
+}

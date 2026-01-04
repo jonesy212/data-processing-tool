@@ -1,4 +1,4 @@
-// SecurityConfiguration.ts
+SecurityConfiguration.ts
 import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 
 import LazyLoadScriptConfigImpl from '@/core/config/LazyLoadScriptConfig';

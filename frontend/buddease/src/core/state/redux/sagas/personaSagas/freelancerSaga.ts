@@ -1,10 +1,10 @@
-// freelancerSaga.ts
+freelancerSaga.ts
 import { FreelancerActions } from "@/core/actions/FreelancerActions";
 import { freelancerApiService } from "@/core/components/models/FreelancerService";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { call, put, takeLatest } from "redux-saga/effects";
 
-// Worker Saga: Submit Project Proposal
+Worker Saga: Submit Project Proposal
 function* submitProjectProposalSaga(action: any) {
   try {
     const proposalData = action.payload;
@@ -19,7 +19,7 @@ function* submitProjectProposalSaga(action: any) {
   }
 }
 
-// Worker Saga: Join Project
+Worker Saga: Join Project
 function* joinProjectSaga(action: any) {
   try {
     const projectId = action.payload;
@@ -34,13 +34,13 @@ function* joinProjectSaga(action: any) {
   }
 }
 
-// Watcher Saga: Watches for the submit project proposal and join project actions
+Watcher Saga: Watches for the submit project proposal and join project actions
 function* watchFreelancerSaga() {
   yield takeLatest(FreelancerActions.submitProjectProposalRequest.type, submitProjectProposalSaga);
   yield takeLatest(FreelancerActions.joinProjectRequest.type, joinProjectSaga);
 }
 
-// Export the freelancer saga
+Export the freelancer saga
 export function* freelancerSaga() {
   yield watchFreelancerSaga();
 }

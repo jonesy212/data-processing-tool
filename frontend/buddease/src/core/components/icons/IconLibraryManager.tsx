@@ -1,4 +1,4 @@
-// IconLibraryManager.tsx
+IconLibraryManager.tsx
 import { IconLibrary, loadIconLibrary } from "@/core/components/icons/iconLibraryLoader";
 import { IconLoader } from "./IconLoader";
 
@@ -20,12 +20,12 @@ export const createDynamicIconLoader = (iconName: string, library: IconLibrary):
 };
 
 
-// Example Usage
-// For Web
+Example Usage
+For Web
 export const loadWebIcon1: IconLoader = createDynamicIconLoader('web-icon1', 'font-awesome');
 
-// // For Android
+ For Android
 export const loadAndroidIcon1: IconLoader = createDynamicIconLoader('android-icon1', 'ionicons');
 
-// For iOS
+For iOS
 export const loadiOSIcon1: IconLoader = createDynamicIconLoader('ios-icon1', 'feather');

@@ -1,4 +1,4 @@
-// VideoActions.ts
+VideoActions.ts
 import { VideoOptions } from "@/core/cards/modal/ChatSettingsModal";
 import { Video } from '@/core/typings/videoTypes/Video';
 import { createAction } from "@reduxjs/toolkit";

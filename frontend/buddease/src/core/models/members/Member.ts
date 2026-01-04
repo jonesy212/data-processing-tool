@@ -1,9 +1,9 @@
-// Member.ts
+Member.ts
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
 import { Team } from '@/core/components/teams/Team';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { UserRole } from "@/core/models/UserRole";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { UserRole } from "@/core/models/UserRole";
 import { UserRoleEnum } from '@/core/models/UserRoles';
 import { Task } from '@/core/models/tasks/Task';
 import { Persona } from "@/core/pages/personas/Persona";
@@ -17,7 +17,7 @@ import {
     MemberK,
     MemberMeta,
 } from '@/core/typings/entities/MemberEntity';
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 
 
@@ -39,7 +39,7 @@ export interface Member<
 
 const DEFAULT_REFRESH_UI = () => { };
 
-// Option 1: Using the exact MemberEntity generic parameters
+Option 1: Using the exact MemberEntity generic parameters
 const memberData: MemberData<
 	MemberEntity,
 	MemberK,

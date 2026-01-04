@@ -1,4 +1,4 @@
-// MeetingSchedulerHostScreen.tsx
+MeetingSchedulerHostScreen.tsx
 import MeetingSchedulerHostToolbar from '@/core/features/meetings/host/MeetingSchedulerHostToolbar';
 import React from 'react';
 

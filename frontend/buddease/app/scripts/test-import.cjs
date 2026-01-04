@@ -15,7 +15,7 @@ const testImports = [
   '@/app/api/TeamManagementApi',
   '@/app/state/stores/AssignBaseStore',
   '@/app/components/teams/Team',
-  '@/app/config/BaseConfig',
+  '@/core/config/BaseConfig',
   '@/app/documents/attachment/Attachment',
   '@/app/features/support/NotificationMessages',
   '@/app/hooks/useSnapshotManager',

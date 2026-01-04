@@ -1,7 +1,7 @@
-// ContentContext.tsx
+ContentContext.tsx
 import * as contentApi from '@/api/ApiContent';
 import { endpoints } from '@/core/api/ApiEndpoints';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { ContentState } from 'draft-js';
 import { React } from 'react';
 

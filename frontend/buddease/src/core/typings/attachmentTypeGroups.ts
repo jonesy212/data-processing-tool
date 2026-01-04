@@ -1,17 +1,17 @@
-// attachmentTypeGroups.ts
-import { AttachmentTypeEnum, NoteAttachment } from '@/core/documents/NoteData';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+attachmentTypeGroups.ts
+import type { AttachmentTypeEnum, NoteAttachment } from '@/core/documents/NoteData';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 export type AttachmentTypes = Attachment | NoteAttachment | CalendarAttachment
 
-// Calendar-specific attachments
+Calendar-specific attachments
 type CalendarAttachment = Attachment & {
   type: 'icalendar' | 'meeting-minutes' | 'presentation' | 'attendee-list';
   eventId: string;
   duration?: number; // meeting duration in minutes
 };
 
-// If you plan to use these enums in filters, dropdowns, or categorization, you can define groupings:
+If you plan to use these enums in filters, dropdowns, or categorization, you can define groupings:
 export const AttachmentTypeGroups = {
   media: [
     AttachmentTypeEnum.IMAGE,

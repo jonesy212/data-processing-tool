@@ -1,4 +1,4 @@
-// ContentList.tsx
+ContentList.tsx
 import { ContentItem } from '@/core/components/models/content/ContentItem';
 import ListGenerator, { DetailsItemCommon } from '@/core/generators/ListGenerator';
 import { Data } from '@/core/models/data/Data';

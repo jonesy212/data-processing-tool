@@ -1,5 +1,5 @@
-// BaseAnalyzer.ts
-// analyzers/BaseAnalyzer.ts
+BaseAnalyzer.ts
+analyzers/BaseAnalyzer.ts
 import { CorrectionFactory } from '@/core/config/factory/CorrectionFactory';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';

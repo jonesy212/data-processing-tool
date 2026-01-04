@@ -1,11 +1,11 @@
-// CryptoManager.tsx
+CryptoManager.tsx
 import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/core/api/ApiDataAnalysis';
-import { Collaborator } from '@/core/collaborators/Collaborator';
+import type { Collaborator } from '@/core/collaborators/Collaborator';
 import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/core/components/community/newsFeedIntegration';
-import { CryptoHolding } from '@/core/components/crypto/CryptoHolding';
+import type { CryptoHolding } from '@/core/components/crypto/CryptoHolding';
 import CryptoTransaction from '@/core/components/crypto/CryptoTransaction';
 import updateAnalyticsUI from '@/core/features/shortcuts/analytics/updateAnalyticsUI';
-import { NewsArticle } from "@/core/pages/blog/Blog";
+import type { NewsArticle } from "@/core/pages/blog/Blog";
 import calculateMetrics from '@/core/projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
 import * as crypto from 'crypto';
 import { useCallback, useState } from 'react';

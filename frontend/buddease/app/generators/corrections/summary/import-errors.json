@@ -522,10 +522,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/calendar/formatCalendarAsDOCX.ts",
       "lineNumber": 6,
-      "importPath": "@/app/config/declarations/global",
+      "importPath": "@/core/config/declarations/global",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/config/declarations/global\" to \"@/app/config/declarations/global\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/config/declarations/global\" to \"@/core/config/declarations/global\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/calendar/formatCalendarAsXLS.ts",
@@ -15394,10 +15394,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/calendar/formatCalendarAsDOCX.ts",
       "lineNumber": 6,
-      "importPath": "@/app/config/declarations/global",
+      "importPath": "@/core/config/declarations/global",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/config/declarations/global\" to \"@/app/config/declarations/global\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/config/declarations/global\" to \"@/core/config/declarations/global\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/calendar/formatCalendarAsXLS.ts",

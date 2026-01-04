@@ -1,4 +1,4 @@
-// ProjectTimelineDashboard.tsx
+ProjectTimelineDashboard.tsx
 import ProjectTimeline from '@/core/projects/projectManagement/ProjectTimeline';
 import TeamProgress from '@/core/projects/projectManagement/TeamProgress';
 

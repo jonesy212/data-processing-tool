@@ -5,7 +5,7 @@ import {
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/core/config/BaseConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DocumentOptions } from '@/core/documents/DocumentOptions';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NOTIFICATION_TYPES } from "@/core/features/support/NotificationTypes";
@@ -53,6 +53,60 @@ export const NotificationContext = createContext<NotificationStore | null>(
   null
 );
 
+
+interface CommunicationContext<
+  T extends BaseDataEntity = BaseDataEntity
+> {
+  // Core identifiers
+  communicationId?: string;
+  conversationId?: string;
+  messageId?: string;
+  channelId?: string;
+  threadId?: string;
+  
+  // Participants
+  senderId?: string;
+  senderName?: string;
+  recipientIds?: string[];
+  
+  // Content
+  messageContent?: string;
+  messageType?: 'text' | 'file' | 'system' | 'notification';
+  
+  // Metadata
+  timestamp?: string;
+  isRead?: boolean;
+  isArchived?: boolean;
+  
+  // Related entities
+  relatedEntities?: {
+    type: string;
+    id: string;
+    name?: string;
+  }[];
+  
+  // Additional context from your communication system
+  channelType?: 'direct' | 'group' | 'public';
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+  tags?: string[];
+  
+  // Your specific communication data
+  communicationData?: {
+    type: string;
+    content: string;
+    attachments?: any[];
+    metadata?: Record<string, any>;
+  };
+  
+  // System context
+  systemContext?: {
+    appVersion?: string;
+    platform?: string;
+    userId?: string;
+    sessionId?: string;
+  };
+}
+
 interface NotificationDataPayload<T = unknown> {
   originalError?: string | Error;
   entityId?: string | number;
@@ -67,6 +121,7 @@ interface NotificationDataPayload<T = unknown> {
   timestamp?: string;
   status?: string;
   category?: string;
+  communicationContext?: CommunicationContext<T>;
   logEntry?: LogEntry; // Add this
   entry?: any; // Or this if you want it generic
   metadata?: T;

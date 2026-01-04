@@ -1,5 +1,5 @@
 // detailsConfig.ts
-import { DetailsEndpoints } from '@/core/typings/categories/DetailsEndpoints';
+import type { DetailsEndpoints } from '@/core/typings/categories/DetailsEndpoints';
 const BASE_URL = "https://api.example.com";
 
 export const detailsConfig: DetailsEndpoints = {

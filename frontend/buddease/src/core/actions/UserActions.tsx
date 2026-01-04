@@ -1,8 +1,8 @@
-// UserActions.tsx
-// user/UserActions.ts
+UserActions.tsx
+user/UserActions.ts
 import { UserProfile } from "@/core/api/ApiUser";
 import { Data } from '@/core/models/data/Data';
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 import { Persona } from "@/core/pages/personas/Persona";
 import { DataProcessingTask } from "@/core/todos/tasks/DataProcessingTask";
 import { User, UserData } from "@/core/users/User";

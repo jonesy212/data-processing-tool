@@ -1,4 +1,4 @@
-// FollowTraders.tsx
+FollowTraders.tsx
 
 import React, { useEffect, useState } from "react";
 

@@ -1,18 +1,15 @@
 // WorkflowTransition.ts
-import { ThemeSettings } from '@/core/branding/ThemeSettings';
-import { FixHistoryEntry } from '@/core/error-analyzer/ProgressTracker'
-import { ValidationResult } from '@/core/components/database/SchemaEvolutionManager';
-import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
-import { Progress } from "@/core/models/tracker/ProgressBar";
-import { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
-import { FixPlan } from '@/core/error-analyzer/ErrorFixManager'
-import { PhaseBackupSystem } from '@/core/models/phases/PhaseBackupSystem';
-import { WorkflowStep } from '@/core/typings/entities/DocumentEntity';
-import StorageService from '@/src/utils/storage/StorageService';
-import { ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
+import type { ThemeSettings } from '@/core/branding/ThemeSettings';
+import type { ValidationResult } from '@/core/components/database/SchemaEvolutionManager';
+import type { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
 import PhaseManager from '@/core/models/phases/PhaseManager';
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
-import { ProgressMetrics } from '@/core/error-analyzer/ProgressTracker';
+import type { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
+import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
+import type { FixHistoryEntry, ProgressMetrics, ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
+import type { Progress, ProgressPhase } from '@/core/models/tracker/ProgressBar';
+import type { WorkflowStep } from '@/core/typings/entities/DocumentEntity';
+import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import StorageService from '@/src/utils/storage/StorageService';
 
 // Create a storage service instance
 export const storageService = new StorageService();
@@ -24,7 +21,6 @@ export interface WorkflowTransition extends
   id: string;
   name: string;
   description?: string;
-  
   // 🔄 Transition specification
   fromStepId: string; // Source step ID
   toStepId: string;   // Destination step ID
@@ -61,11 +57,15 @@ export interface WorkflowTransition extends
     trackPerformance: boolean;
     trackUIMetrics: boolean;
     trackErrors: boolean;
+
     successThreshold?: number; // Minimum success rate to consider transition healthy
     timeoutWarning?: number; // Time in ms after which to warn about slow transitions
     autoRetry?: boolean; // Automatically retry failed transitions
     maxRetries?: number;
     progressTracker?: ProgressTracker; // Embedded progress tracker
+    requiredProgress?: number; // Minimum required progress percentage (0-100)
+    conditions?: ProgressCondition[]; // Additional progress conditions
+
   };
 
   phaseManagerConfig?: {
@@ -94,7 +94,22 @@ export interface WorkflowTransition extends
         onError?: boolean;
         onRollback?: boolean;
     };
-};
+  };
+}
+
+
+interface ProgressCondition {
+  check: (progress: ProgressData,
+  context: TransitionEvaluationContext) => boolean;
+  message?: string;
+  blockTransition?: boolean;
+}
+
+interface ProgressData {
+  percentage: number;
+  completedSteps: number;
+  totalSteps: number;
+  // ... any other progress properties
 }
 
 // Enhanced TransitionUIConfig that integrates with your ThemeSettings
@@ -997,7 +1012,7 @@ export const phaseWorkflowTransition: WorkflowTransition = {
 // Where you use TransitionAnimations, you might need to handle the optional duration:
 
 // typescript
-// function getTransitionDuration(animations: TransitionAnimations, defaultDuration: number): number {
-//   // Use transition duration if provided, otherwise use inherited duration
-//   return animations.duration ?? defaultDuration;
-// }
+function getTransitionDuration(animations: TransitionAnimations, defaultDuration: number): number {
+  // Use transition duration if provided, otherwise use inherited duration
+  return animations.duration ?? defaultDuration;
+}

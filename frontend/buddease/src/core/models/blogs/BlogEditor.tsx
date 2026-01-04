@@ -1,4 +1,4 @@
-// BlogEditor.tsx
+BlogEditor.tsx
 
 import React from 'react';
 

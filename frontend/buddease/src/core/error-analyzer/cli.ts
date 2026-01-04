@@ -4,7 +4,7 @@
 
 import { APP_SPECIFIC_RULES, applyAppSpecificRules } from '@/core/error-analyzer/rules/app-specific-rules';
 import { TypeScriptErrorFixSystem } from '@/core/error-analyzer/TypeScriptErrorFixSystem';
-import { ImportFixerService } from '@/core/generators/corrections/ImportFixServicies';
+import { ImportFixerService, type ImportFix } from '@/core/generators/corrections/ImportFixServicies';
 import path from 'path';
 
 async function main() {

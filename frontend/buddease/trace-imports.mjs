@@ -5,11 +5,11 @@ console.log('🔍 Tracing import chain...\n');
 
 const tests = [
   { name: '1. Test fs/path imports', code: "import fs from 'fs'; import path from 'path'; console.log('✓ Basic imports OK')" },
-  { name: '2. Test CircularDependencyDetector', code: "import { CircularDependencyDetector } from '@/app/generators/corrections/CircularDependencyDetector'; console.log('✓ CircularDependencyDetector OK')" },
-  { name: '3. Test ImportFixServicies', code: "import { ImportFix } from '@/app/generators/corrections/ImportFixServicies'; console.log('✓ ImportFixServicies OK')" },
-  { name: '4. Test PatternAnalyzer', code: "import { PatternAnalyzer } from '@/app/generators/corrections/analyzers/PatternAnalyzer'; console.log('✓ PatternAnalyzer OK')" },
-  { name: '5. Test ReactWebAnalyzer', code: "import { ReactWebAnalyzer } from '@/app/generators/corrections/analyzers/ReactWebAnalyzer'; console.log('✓ ReactWebAnalyzer OK')" },
-  { name: '6. Test ErrorAnalyzer', code: "import { ErrorAnalyzer } from '@/app/generators/corrections/ErrorAnalyzer'; console.log('✓ ErrorAnalyzer OK')" },
+  { name: '2. Test CircularDependencyDetector', code: "import { CircularDependencyDetector } from '@/core/generators/corrections/CircularDependencyDetector'; console.log('✓ CircularDependencyDetector OK')" },
+  { name: '3. Test ImportFixServicies', code: "import { ImportFix } from '@/core/generators/corrections/ImportFixServicies'; console.log('✓ ImportFixServicies OK')" },
+  { name: '4. Test PatternAnalyzer', code: "import { PatternAnalyzer } from '@/core/generators/corrections/analyzers/PatternAnalyzer'; console.log('✓ PatternAnalyzer OK')" },
+  { name: '5. Test ReactWebAnalyzer', code: "import { ReactWebAnalyzer } from '@/core/generators/corrections/analyzers/ReactWebAnalyzer'; console.log('✓ ReactWebAnalyzer OK')" },
+  { name: '6. Test ErrorAnalyzer', code: "import { ErrorAnalyzer } from '@/core/generators/corrections/ErrorAnalyzer'; console.log('✓ ErrorAnalyzer OK')" },
   { name: '7. Test full ImportErrorSummary', code: "import './src/app/generators/corrections/ImportErrorSummary.ts'; console.log('✓ Full ImportErrorSummary OK')" },
 ];
 

@@ -1,4 +1,4 @@
-// global.d.ts
+global.d.ts
 declare module 'app' {
   // Empty declaration to resolve the TypeScript error
   // This is typically needed when a dependency expects an 'app' module
@@ -10,7 +10,7 @@ import { Presentation } from '@/core/documents/editing/Presentation';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
 
-// CSS Modules
+CSS Modules
 declare module '*.css' {
   const content: { [className: string]: string };
   export default content;
@@ -21,7 +21,7 @@ declare module '*.module.css' {
   export default content;
 }
 
-// Support for your specific CSS file paths
+Support for your specific CSS file paths
 declare module '@/core/css/*.css' {
   const content: { [className: string]: string };
   export default content;
@@ -33,7 +33,7 @@ declare module '*.stylesheet.css' {
 }
 
 
-// Your specific CSS files
+Your specific CSS files
 declare module '@/core/css/stylesheet.css' {
   const content: { [className: string]: string };
   export default content;
@@ -69,7 +69,7 @@ declare module '@/core/css/search.styles.css' {
   export default content;
 }
 
-// Component-specific CSS
+Component-specific CSS
 declare module '*.FormBuilder.css' {
   const content: { [className: string]: string };
   export default content;
@@ -85,7 +85,7 @@ declare module '*.FormElementStyles' {
   export default content;
 }
 
-// SCSS/SASS (common in Next.js projects)
+SCSS/SASS (common in Next.js projects)
 declare module '*.scss' {
   const content: { [className: string]: string };
   export default content;
@@ -96,7 +96,7 @@ declare module '*.sass' {
   export default content;
 }
 
-// Other asset types
+Other asset types
 declare module '*.png' {
   const content: string;
   export default content;

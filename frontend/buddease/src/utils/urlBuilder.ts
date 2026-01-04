@@ -1,4 +1,4 @@
-// urlBuilder.ts
+urlBuilder.ts
 
 import { EndpointConfig, EndpointDefinition } from '@/core/config/EndpointConfig';
 

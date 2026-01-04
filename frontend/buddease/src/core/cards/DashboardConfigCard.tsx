@@ -1,4 +1,4 @@
-// DashboardConfigCard.tsx
+DashboardConfigCard.tsx
 import ApiConfig from '@/core/api/ApiConfigService';
 
 import React, { useEffect } from "react";

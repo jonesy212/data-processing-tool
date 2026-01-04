@@ -1,4 +1,4 @@
-// parameterCustomizationConfig.ts
+parameterCustomizationConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ParameterCustomizationEndpoints } from '@/core/typings/categories/ParameterCustomizationEndpoints';
 

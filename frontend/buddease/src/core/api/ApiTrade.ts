@@ -1,5 +1,5 @@
-// ApiTrade.ts
-// ApiTrade.ts - MobX Observable Trade API
+ApiTrade.ts
+ApiTrade.ts - MobX Observable Trade API
 import internalApiService from '@/core/api/ApiClient'; // Use the service
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { TradeLogger } from '@/core/logging/TradeLogger';

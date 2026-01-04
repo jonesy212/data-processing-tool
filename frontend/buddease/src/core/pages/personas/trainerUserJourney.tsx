@@ -1,6 +1,6 @@
-// trainerUserJourney.tsx
-// trainerUserJourney.ts
-// User Journey Process
+trainerUserJourney.tsx
+trainerUserJourney.ts
+User Journey Process
 export const trainerUserJourney = async () => {
     try {
       // Step 1: Create workout program

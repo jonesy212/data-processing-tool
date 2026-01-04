@@ -1,5 +1,5 @@
-// DomainStructure.ts
-// Enhanced roadmap generation with domain-based organization
+DomainStructure.ts
+Enhanced roadmap generation with domain-based organization
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
 import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 

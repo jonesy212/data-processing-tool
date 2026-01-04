@@ -1,4 +1,4 @@
-// ApiService.ts
+ApiService.ts
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { BaseApiService } from '@/core/api/service/BaseApiService';
 import { Style as DocxStyle } from '@/core/documents/DocumentOptions';
@@ -11,8 +11,8 @@ import { getBackendStructureFilePath } from '@/utils/cache/CacheWriteOptions';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { AxiosRequestConfig } from "axios";
 
-// Define the API base URL - fix this based on your actual endpoint structure
-// Assuming endpoints.data.baseUrl or similar structure
+Define the API base URL - fix this based on your actual endpoint structure
+Assuming endpoints.data.baseUrl or similar structure
 const API_BASE_URL = typeof endpoints.data === 'string' ? endpoints.data : 
                      (endpoints.data as any)?.baseUrl || 'http://localhost:3000/api';
 
@@ -24,11 +24,11 @@ interface CustomStyle extends DocxStyle {
   // Add other custom properties as needed
 }
 
-// Remove hooks from module level - these can't be used here
-// const { notify } = useNotification(); // ERROR: Can't use hooks outside components
-// const storeId = useSecureStoreId(); // ERROR: Can't use hooks outside components
+Remove hooks from module level - these can't be used here
+const { notify } = useNotification(); // ERROR: Can't use hooks outside components
+const storeId = useSecureStoreId(); // ERROR: Can't use hooks outside components
 
-// Helper function to get storeId when needed (call from React components)
+Helper function to get storeId when needed (call from React components)
 export const getStoreId = async (): Promise<string> => {
   // You'll need to implement this differently
   // Could be from localStorage, context, or API
@@ -39,7 +39,7 @@ export const getStoreId = async (): Promise<string> => {
   return storeId;
 };
 
-// Usage example - make this a function, not module-level code
+Usage example - make this a function, not module-level code
 export const getCacheFilePath = async (): Promise<string> => {
   try {
     const storeId = await getStoreId();
@@ -51,7 +51,7 @@ export const getCacheFilePath = async (): Promise<string> => {
   }
 };
 
-// Make authToken a function, not module-level
+Make authToken a function, not module-level
 export const getAuthTokenAsync = async (): Promise<string> => {
   const token = getAuthToken();
   if (!token) {
@@ -227,7 +227,7 @@ class ApiService extends BaseApiService {
   }
 }
 
-// Create singleton instance
+Create singleton instance
 let apiServiceInstance: ApiService | null = null;
 
 export const getApiService = (baseURL?: string): ApiService => {

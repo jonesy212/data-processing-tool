@@ -1,5 +1,5 @@
-import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports'
-import { createBackup, restoreBackup } from '@/core/models/phases/PhaseBackupSystem';
+import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports';
+import { restoreBackup } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 
 
 async function autoFixInterfaceImportsWithBackup(

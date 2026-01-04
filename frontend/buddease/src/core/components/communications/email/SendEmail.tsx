@@ -1,4 +1,4 @@
-// SendEmail.tsx
+SendEmail.tsx
 'use client';
 
 import { sendEmail } from "@/core/api/sendEmail"; // 👈 clean import

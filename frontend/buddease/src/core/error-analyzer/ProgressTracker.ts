@@ -1,9 +1,10 @@
 // src/app/error-analyzer/ProgressTracker.ts
-import { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
-import { TransitionEvaluationContext } from '@/core/error-analyzer/TransitionEvaluationContext';
-import { WorkflowProgressMetrics } from '@/core/error-analyzer/WorkflowProgressMetrics';
-import { WorkflowTransition } from '@/core/models/phases/WorkflowTransition';
-import { Progress, ProgressPhase } from '@/models/tracker/ProgressBar';
+import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
+import type { TransitionEvaluationContext } from '@/core/error-analyzer/TransitionEvaluationContext';
+import type { WorkflowProgressMetrics } from '@/core/error-analyzer/WorkflowProgressMetrics';
+import type { WorkflowTransition } from '@/core/models/phases/WorkflowTransition';
+import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
+import type { Progress } from '@/core/models/tracker/ProgressBar';
 import fs from 'fs';
 import path from 'path';
 
@@ -1053,8 +1054,83 @@ export class ProgressTracker {
         }
     }
 
-    getCurrentProgress(): Progress {
-        return this.getProgressForUI();
+// Option 1: Update getCurrentProgress to accept either a string or context
+getCurrentProgress(contextOrWorkflowId: string | TransitionEvaluationContext): Progress {
+    // Extract workflow ID from either format
+    let workflowId: string;
+    
+    if (typeof contextOrWorkflowId === 'string') {
+        // If it's already a string (workflowId)
+        workflowId = contextOrWorkflowId;
+    } else {
+        // If it's a TransitionEvaluationContext
+        workflowId = contextOrWorkflowId.workflowInstance.id;
+    }
+    
+    return this.getProgressForUI({
+        workflowId: workflowId,
+        transitionId: typeof contextOrWorkflowId === 'object' 
+            ? (contextOrWorkflowId as TransitionEvaluationContext).transition?.id 
+            : undefined
+    });
+}
+
+// Option 2: Or update the ProgressTracker class to have both methods:
+export class ProgressTracker {
+    // ... existing properties and methods
+    
+    // For when you have the full context
+    getCurrentProgress(context: TransitionEvaluationContext): Progress {
+        return this.getProgressForUI({
+            workflowId: context.workflowInstance.id,
+            transitionId: context.transition?.id
+        });
+    }
+    
+    // For when you just have the workflow ID
+    getCurrentProgressByWorkflowId(workflowId: string): Progress {
+        return this.getProgressForUI({
+            workflowId: workflowId
+        });
+    }
+}
+
+    // Then update checkProgressConditions to use the correct method:
+    function checkProgressConditions(
+    transition: WorkflowTransition, 
+    context: TransitionEvaluationContext
+    ): { allowed: boolean; reason: string; blockTransition: boolean } {
+    const tracker = context.progressContext?.tracker;
+    if (!tracker) {
+        return { allowed: true, reason: '', blockTransition: false };
+    }
+    
+    // Use the method that accepts the full context
+    const progress = tracker.getCurrentProgress(context); // ✅ Pass the full context, not just the ID
+    
+    const requiredProgress = transition.progressTracking?.requiredProgress || 0;
+    
+    if (progress.percentage < requiredProgress) {
+        return {
+        allowed: false,
+        reason: `Requires ${requiredProgress}% completion (currently ${progress.percentage}%)`,
+        blockTransition: true
+        };
+    }
+    
+    // Check other progress conditions
+    const conditions = transition.progressTracking?.conditions || [];
+    for (const condition of conditions) {
+        if (!condition.check(progress, context)) {
+        return {
+            allowed: false,
+            reason: condition.message || 'Progress condition not met',
+            blockTransition: condition.blockTransition || false
+        };
+        }
+    }
+    
+    return { allowed: true, reason: '', blockTransition: false };
     }
 
     private updateMetricsAfterFix(entry: FixHistoryEntry): void {

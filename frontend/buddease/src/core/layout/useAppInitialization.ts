@@ -1,5 +1,5 @@
-// useAppInitialization.ts
-// app/layout/useAppInitialization.ts
+useAppInitialization.ts
+app/layout/useAppInitialization.ts
 
 import { ChangeLogManager } from '@/core/logging/ChangeLogEntry';
 import { ApiSynchronizationScript } from '@/core/scripts/ApiSynchronizationScript';
@@ -22,7 +22,7 @@ export const useAppInitialization = () => {
   return { initializeLogManagement };
 };
 
-// Setup functions
+Setup functions
 const setupDailyLogRotation = (syncScript: ApiSynchronizationScript) => {
   setInterval(() => {
     syncScript.clearChangeLog();

@@ -1,4 +1,4 @@
-// components/branding/FaviconComponent.tsx
+components/branding/FaviconComponent.tsx
 
 "use client";
 

@@ -1,6 +1,6 @@
-// CourseEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+CourseEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Course } from '@/core/documents/editing/CourseBuilder';
 import {
     BaseEntityProperties,
@@ -32,7 +32,7 @@ interface CourseEntity extends
   certificateAvailable: boolean;
 }
 
-// Course-specific type parameters
+Course-specific type parameters
 type CourseK = CourseEntity;
 type CourseMeta = DefaultMeta<CourseEntity, CourseK> & {
   level?: string;
@@ -45,7 +45,7 @@ type CourseAttachment = Attachment;
 type CourseExcludedFields = DefaultExcludedFields<CourseEntity> | "price" | "instructorId";
 type CourseIncludedFields = keyof CourseEntity;
 
-// Course base params
+Course base params
 type CourseBaseParams = {
   T: CourseEntity;
   K: CourseK;

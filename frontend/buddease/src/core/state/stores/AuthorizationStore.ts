@@ -1,4 +1,4 @@
-// AuthorizationStore.ts
+AuthorizationStore.ts
 import { makeAutoObservable } from 'mobx';
 
 interface AuthorizationState {

@@ -1,6 +1,6 @@
-// UIContext.tsx
-// UIContext.ts
-// stores/StoreProvider.tsx
+UIContext.tsx
+UIContext.ts
+stores/StoreProvider.tsx
 import { displayToast } from '@/core/models/display/ShowToast';
 import UIStore from '@/core/state/stores/UIStore';
 import { React } from 'react';

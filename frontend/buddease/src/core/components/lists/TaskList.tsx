@@ -1,4 +1,4 @@
-// TaskList.tsx
+TaskList.tsx
 import { TaskDetails } from '@/core/models/data/index';
 import { ValidPriority } from '@/core/pages/searches/CriteriaType';
 import { AppTask } from '@/core/typings/entities/TaskEntity';

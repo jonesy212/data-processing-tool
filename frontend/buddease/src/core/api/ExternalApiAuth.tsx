@@ -1,5 +1,5 @@
-// ExternalApiAuth.tsx
-// components/users/ExternalApiAuth.ts
+ExternalApiAuth.tsx
+components/users/ExternalApiAuth.ts
 "use client";
 
 import { sendNotification } from '@/core/state/redux/slices/UserSlice';
@@ -34,7 +34,7 @@ export const useExternalApiAuth = () => {
   return { authenticateWithWix, isLoading };
 };
 
-// Usage in components:
+Usage in components:
 export function WixAuthComponent() {
   const { authenticateWithWix, isLoading } = useExternalApiAuth();
 

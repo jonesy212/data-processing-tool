@@ -1,5 +1,5 @@
-// stopwatchConfig.tsx
-// stopwatchConfig.ts
+stopwatchConfig.tsx
+stopwatchConfig.ts
 
 import BasicStopwatchComponent from "@/core/components/stopwatches/BasicStopwatchComponent";
 import CountdownTimerComponent from "@/core/components/stopwatches/CountdownTimerComponent";

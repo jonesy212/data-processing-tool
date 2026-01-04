@@ -1,5 +1,5 @@
-// useIconLoaderAsync.tsx
-// useIconLoaderAsync.ts
+useIconLoaderAsync.tsx
+useIconLoaderAsync.ts
 import { getFAIcon, loadFontAwesomeIcon } from "@/core/components/icons/fontAwesomeIconLoader";
 import { FontAwesomeIconOptions } from "@/core/components/icons/fontAwesomeIconOptions";
 import { IconLibrary, loadIconLibrary } from "@/core/components/icons/iconLibraryLoader";

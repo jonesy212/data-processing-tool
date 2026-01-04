@@ -1,5 +1,5 @@
-// GenerateCacheLogic.ts
-// utils/GenerateCacheLogic.ts
+GenerateCacheLogic.ts
+utils/GenerateCacheLogic.ts
 import { CacheConfig } from '@/core/config/CacheConfig';
 import { CacheManager, synchronizeCacheWithServer, writeClientCache } from '@/core/libraries/cache/client/CacheManager';
 import axios from 'axios';
@@ -26,7 +26,7 @@ export interface CacheGenerationResult {
   error?: string;
 }
 
-// Default cache configuration
+Default cache configuration
 const defaultCacheConfig: CacheConfig = {
   enabled: true,
   maxAge: 3600, // 1 hour in seconds

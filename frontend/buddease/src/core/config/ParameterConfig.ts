@@ -1,4 +1,4 @@
-// ParameterConfig.ts
+ParameterConfig.ts
 export interface ParameterConfig {
   type: 'string' | 'number' | 'boolean' | 'object' | 'array';
   required: boolean;

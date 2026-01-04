@@ -9,7 +9,7 @@ import * as docx from 'docx';
 
 
 
-// Function to format calendar data as DOCX
+Function to format calendar data as DOCX
 export const formatCalendarAsDOCX = async (
   events: (WritableDraft<SimpleCalendarEvent<AppCalendarEvent>> | WritableDraft<CalendarEvent<AppCalendarEvent>>)[],
   calendarDisplaySettings: CalendarDisplaySettings,

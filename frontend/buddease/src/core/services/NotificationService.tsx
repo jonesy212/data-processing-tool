@@ -1,8 +1,8 @@
-// NotificationService.tsx
+NotificationService.tsx
 import { EventActions } from '@/core/actions/EventActions';
 import { NotificationActions } from "@/core/actions/NotificationActions";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import AnnouncementManager from "@/core/features/support/AnnouncementManager";
 import { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
 import PushNotificationManager from "@/core/features/support/PushNotificationManager";
@@ -10,7 +10,7 @@ import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { LogData } from "@/core/models/LogData";
 import { NotificationType, useNotification } from "@/core/state/context/NotificationContext";
 import { selectNotifications } from "@/core/state/redux/slices/NofiticationsSlice";
-import { LogAttachment, LogEntity, LogExcludedFields, LogIncludedFields, LogK, LogMeta } from '@/core/typings/entities/LogEntity';
+import type { LogAttachment, LogEntity, LogExcludedFields, LogIncludedFields, LogK, LogMeta } from '@/core/typings/entities/LogEntity';
 import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 

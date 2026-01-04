@@ -1,4 +1,4 @@
-// randomWalkConfig.ts
+randomWalkConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { RandomWalkEndpoints } from '@/core/typings/categories/RandomWalkEndpoints';
 

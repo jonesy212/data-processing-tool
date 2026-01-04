@@ -1,4 +1,4 @@
-// TaskHistoryEntry.tsx
+TaskHistoryEntry.tsx
 import { HistoryEntry, HistoryStore, baseStore } from "@/core/state/stores/HistoryStore";
 
 interface TaskHistoryEntry {
@@ -15,7 +15,7 @@ interface TaskHistoryStore {
     // Add more methods as needed
 }
 
-// Mock data for demonstration purposes (replace with actual implementation)
+Mock data for demonstration purposes (replace with actual implementation)
 const taskHistoryData: Record<number, TaskHistoryEntry[]> = {
     1: [
         { id: 1, taskId: 1, action: 'Task created', timestamp: 1620332996000 },
@@ -27,7 +27,7 @@ const taskHistoryData: Record<number, TaskHistoryEntry[]> = {
     ],
 };
 
-// Function to fetch task history entries for the specified taskId
+Function to fetch task history entries for the specified taskId
 const getTaskHistory = async (taskId: number): Promise<TaskHistoryEntry[]> => {
     // Simulate async fetch from database/storage
     return new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ const getTaskHistory = async (taskId: number): Promise<TaskHistoryEntry[]> => {
     });
 };
 
-// Function to add a new task history entry
+Function to add a new task history entry
 const addTaskHistoryEntry = (taskId: number, action: string): void => {
     // Generate a unique ID for the new history entry (replace with actual ID generation)
     const id = Math.floor(Math.random() * 1000) + 1;

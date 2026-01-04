@@ -1,4 +1,4 @@
-// CalendarEventEffectivenessEvaluation.ts
+CalendarEventEffectivenessEvaluation.ts
 interface CalendarEventEffectivenessEvaluation {
     eventId: string; // ID of the evaluated event
     effectivenessScore: number; // Effectiveness score of the event

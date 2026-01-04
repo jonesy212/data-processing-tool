@@ -1,8 +1,9 @@
 // appTreeApi.ts
 // AppTreeApi.ts
-
+import { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization'
 import { handleApiError } from "@/core/api/ApiLogs";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import {
     getFromLocalStorage,
     saveToLocalStorage,
@@ -10,7 +11,7 @@ import {
 import AppTreeService from "@/core/services/AppTreeService";
 import { useNotification, } from '@/core/state/context/NotificationContext';
 
-import { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
+import type { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";
 import { setThreshold } from '@/utils/setThresholdUtils';
 import { AxiosError } from "axios";
@@ -190,42 +191,41 @@ const responses: ReassignEventResponse[] = [
   {
     eventId: "event1",
     assignee: "user1",
-    todoId: "todo1",
-    assigneeId: "",
-    responseId: "",
-    userId: "",
-    comment: "",
-    timestamp: undefined,
-    reassignData: [],
-    assignedTo: "",
-    events: "",
-    getTime: "",
-    optimizeTiming: "",
-    blockNumber: "",
-    transactionHash: "",
-    event: "",
-    signature: "",
-   
+    events: { // Changed from empty string to proper object
+      "group1": [] as ExtendedCalendarEvent<BaseDataRoot, BaseDataRoot, DefaultMeta<T, K>, Attachment, never, keyof BaseDataRoot>[],
+      "group2": [] // Add more groups as needed
+    },
+    getTime: (value: string | Date | undefined): number => { // Changed from empty string to function
+      if (value instanceof Date) {
+        return value.getTime();
+      } else if (typeof value === 'string') {
+        return new Date(value).getTime();
+      }
+      return Date.now(); // Default for undefined
+    },
+    optimizeTiming: (): void => {
+      // Changed from empty string to function
+      // Implementation for optimizing timing
+      console.log("Optimizing timing...");
+      // Add your optimization logic here
+    },
+    blockNumber: 0, // Changed from empty string to number (or whatever type it should be)
+    // Add any other required properties
   },
-  
   {
     eventId: "event2",
     assignee: "user2",
-    todoId: "todo2",
-    assigneeId: "",
-    responseId: "",
-    userId: "",
-    comment: "",
-    timestamp: undefined,
-    reassignData: [],
-    assignedTo: "",
-    events: "",
-    getTime: "",
-    optimizeTiming: "",
-    blockNumber: "",
-  
+    events: {
+      "default": [] as ExtendedCalendarEvent<BaseDataRoot, BaseDataRoot, DefaultMeta<T, K>, Attachment, never, keyof BaseDataRoot>[]
+    },
+    getTime: (value: string | Date | undefined): number => {
+      return value instanceof Date ? value.getTime() : Date.now();
+    },
+    optimizeTiming: (): void => {
+      // Empty implementation or add logic
+    },
+    blockNumber: 0,
   },
-  // Add more objects as necessary
 ];
 
 // Iterate over responses array

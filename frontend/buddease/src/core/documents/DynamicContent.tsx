@@ -1,4 +1,4 @@
-// DynamicContent.tsx
+DynamicContent.tsx
 
 import React from 'react';
 

@@ -1,4 +1,4 @@
-// correctionTypes.ts
+correctionTypes.ts
 
 export type CorrectionType =
   | 'error' | 'warning' | 'suggestion' | 'info'

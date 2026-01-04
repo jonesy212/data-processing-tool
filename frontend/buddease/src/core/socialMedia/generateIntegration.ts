@@ -1,5 +1,5 @@
-// generateIntegration.ts
-// Function to generate integration module code based on the specified platform
+generateIntegration.ts
+Function to generate integration module code based on the specified platform
 function generateIntegrationModule(platform: string): string {
     switch (platform.toLowerCase()) {
         case 'facebook':
@@ -17,7 +17,7 @@ function generateIntegrationModule(platform: string): string {
     }
 }
 
-// Function to generate Facebook integration module code
+Function to generate Facebook integration module code
 function generateFacebookIntegrationModule(): string {
     return `
         // Facebook Integration Module
@@ -42,7 +42,7 @@ function generateFacebookIntegrationModule(): string {
     `;
 }
 
-// Function to generate Instagram integration module code
+Function to generate Instagram integration module code
 function generateInstagramIntegrationModule(): string {
     return `
         // Instagram Integration Module
@@ -67,7 +67,7 @@ function generateInstagramIntegrationModule(): string {
     `;
 }
 
-// Function to generate Twitter integration module code
+Function to generate Twitter integration module code
 function generateTwitterIntegrationModule(): string {
     return `
         // Twitter Integration Module
@@ -92,7 +92,7 @@ function generateTwitterIntegrationModule(): string {
     `;
 }
 
-// Function to generate YouTube integration module code
+Function to generate YouTube integration module code
 function generateYouTubeIntegrationModule(): string {
     return `
         // YouTube Integration Module
@@ -117,7 +117,7 @@ function generateYouTubeIntegrationModule(): string {
     `;
 }
 
-// Function to generate TikTok integration module code
+Function to generate TikTok integration module code
 function generateTikTokIntegrationModule(): string {
     return `
         // TikTok Integration Module

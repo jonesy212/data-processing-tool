@@ -1,5 +1,5 @@
 // CryptoManagerComponent.tsx
-import { CryptoHolding } from "@/core/components/crypto/CryptoHolding";
+import type { CryptoHolding } from "@/core/components/crypto/CryptoHolding";
 import { useCryptoManager } from "@/core/components/crypto/CryptoManager";
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { SearchLogger } from '@/core/logging/Logger';

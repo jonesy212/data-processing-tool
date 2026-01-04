@@ -1,10 +1,10 @@
-// moderatorSaga.ts
+moderatorSaga.ts
 import { ModeratorActions } from "@/core/actions/ModeratorActions";
 import { moderatorApiService } from "@/core/components/models/ModeratorService";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { call, put, takeLatest } from "redux-saga/effects";
 
-// Worker Saga: Moderate Content
+Worker Saga: Moderate Content
 function* moderateContentSaga(action: any) {
   try {
     const contentData = action.payload;
@@ -19,7 +19,7 @@ function* moderateContentSaga(action: any) {
   }
 }
 
-// Worker Saga: Review Project Listings
+Worker Saga: Review Project Listings
 function* reviewProjectListingsSaga(action: any) {
   try {
     const listingsData = action.payload;
@@ -34,13 +34,13 @@ function* reviewProjectListingsSaga(action: any) {
   }
 }
 
-// Watcher Saga: Watches for the moderate content and review project listings actions
+Watcher Saga: Watches for the moderate content and review project listings actions
 function* watchModeratorSaga() {
   yield takeLatest(ModeratorActions.moderateContentRequest.type, moderateContentSaga);
   yield takeLatest(ModeratorActions.reviewProjectListingsRequest.type, reviewProjectListingsSaga);
 }
 
-// Export the moderator saga
+Export the moderator saga
 export function* moderatorSaga() {
   yield watchModeratorSaga();
 }

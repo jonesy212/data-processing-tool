@@ -1,4 +1,4 @@
-// PhaseActivityStore.ts
+PhaseActivityStore.ts
 import { makeAutoObservable, reaction } from "mobx";
 
 export interface PhaseActivity {
@@ -90,5 +90,5 @@ export class PhaseActivityStore {
   }
 }
 
-// Export singleton instance
+Export singleton instance
 export const phaseActivityStore = new PhaseActivityStore();

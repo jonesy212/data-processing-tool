@@ -2,7 +2,8 @@
 // components/ColorPicker.tsx
 import { validateHexColor } from "@/core/libraries/ui/theme/ThemeConfig";
 import React from "react";
-import { ChromePicker, ColorResult } from "react-color";
+import { ChromePicker } from "react-color";
+import type { ColorResult } from "react-color";
 
 
 interface ColorPickerProps {

@@ -1,11 +1,11 @@
-// Fields.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+Fields.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { TaskMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
-import { ProjectMetadata } from "@/core/config/StructuredMetadata";
+import type { ProjectMetadata } from "@/core/config/StructuredMetadata";
 import { sharedBaseData } from '@/core/config/metadata/MetadataHooks';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Task } from '@/core/models/tasks/Task';
-import { ExampleAttachment, ExampleEntity, ExampleExcludedFields, ExampleIncludedFields, ExampleK, ExampleMeta } from "@/core/typings/entities/ExampleEntity";
+import type { ExampleAttachment, ExampleEntity, ExampleExcludedFields, ExampleIncludedFields, ExampleK, ExampleMeta } from "@/core/typings/entities/ExampleEntity";
 import {
     ProjectAttachment,
     ProjectEntity,
@@ -14,17 +14,17 @@ import {
     ProjectK,
     ProjectMeta
 } from '@/core/typings/entities/ProjectEntity';
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
 
-// Pick specific keys from T
+Pick specific keys from T
 type Fields<T, K extends keyof T> = Pick<T, K>;
 type IncludeFields<T, K extends keyof T> = Pick<T, K>;
 
-// Exclude specific keys from T
+Exclude specific keys from T
 type ExcludeKeys<T, K extends keyof T> = Omit<T, K>;
 type IncludeKeys<T, K extends keyof T> = Pick<T, K>;
 
-// Combine include and exclude logic
+Combine include and exclude logic
 type InclusiveExclusiveFields<
   T,
   Include extends keyof T = never,
@@ -34,15 +34,15 @@ type InclusiveExclusiveFields<
   : IncludeFields<T, Include> & ExcludeKeys<T, Exclude>;
 
 
-// Example of using Fields and ExcludeKeys with UnifiedMetaDataOptions
-// Use the Fields utility type to get specific fields from UnifiedMetaDataOptions
+Example of using Fields and ExcludeKeys with UnifiedMetaDataOptions
+Use the Fields utility type to get specific fields from UnifiedMetaDataOptions
 type ProjectFields = Fields<ProjectMetadata<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields
 >, 'projectId'>; 
 
-// Use ExcludeKeys to create a type without specific keys
+Use ExcludeKeys to create a type without specific keys
 type TaskWithoutId = ExcludeKeys<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 'taskId'>; // { taskName: string }
 
-// If needed, we can also define ExcludedFields as a generic utility for clarity
+If needed, we can also define ExcludedFields as a generic utility for clarity
 type ExcludedFields<T, K extends keyof T> = {
   // Retain all properties of T except for the excluded keys K
   [P in Exclude<keyof T, K>]: T[P];
@@ -57,12 +57,12 @@ type MapExcludedFieldsToMetaKeys<
   IncludedFields extends keyof T = keyof T,
 > = ExcludedFields extends keyof Meta ? ExcludedFields : never;
 
-// Example utility function to add source tracking for shared fields
+Example utility function to add source tracking for shared fields
 function addSource<T>(metadata: T, source: string): T & { source: string } {
   return { ...metadata, source };
 }
 
-// Type guard functions to determine the origin
+Type guard functions to determine the origin
 function isTaskMetadata<
   T extends BaseDataEntity,
   K extends T = T,
@@ -87,7 +87,7 @@ function isProjectMetadata<
 }
 
 
-// Example function to demonstrate how to use the union and utility types
+Example function to demonstrate how to use the union and utility types
 function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
   // Example of using Fields utility type with task metadata fields
   if ('taskMetadata' in metadata) {
@@ -115,7 +115,7 @@ function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
   console.log("Excluded Fields:", excludedFields);
 }
 
-// Example: use BaseDataEntity directly
+Example: use BaseDataEntity directly
 const exampleTaskMetadata: UnifiedMetaDataOptions<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields> = {
   taskMetadata: {
     taskId: '123',
@@ -135,7 +135,7 @@ const exampleTaskMetadata: UnifiedMetaDataOptions<ExampleEntity, ExampleK, Examp
   sharedBaseData: sharedBaseData,
 };
 
-// Call a function that processes the metadata
+Call a function that processes the metadata
 processMetadata<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>(exampleTaskMetadata);
 
 

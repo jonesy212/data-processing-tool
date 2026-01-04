@@ -2,11 +2,12 @@
 import { DrawingActions } from "@/core/actions/DrawingActions";
 import { autosaveDrawing } from "@/core/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/core/libraries/animations/movementAnimations/MovementAnimationActions";
-import FolderData from '@/core/models/data/FolderData';
-import Tracker, { TrackerProps } from '@/core/models/tracker/Tracker';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
-import { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/core/typings/entities/DrawingEntity';
+import type { FolderData } from '@/core/models/data/FolderData';
+import Tracker from '@/core/models/tracker/Tracker';
+import  type { TrackerProps } from '@/core/models/tracker/Tracker';
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/core/typings/entities/DrawingEntity';
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RefObject, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -16,8 +17,8 @@ import {
 } from "./TrackerSlice";
 
 import * as drawingApi from "@/core/api/ApiDrawing";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { saveAs } from "@/core/documents/editing/autosave";
 import TextType from "@/core/documents/TextType";
 import {
@@ -499,8 +500,8 @@ export const createMilestoneForTrackers = (trackers: TrackerProps[]) => (dispatc
       startDate: null,
       name: '',
       status: '',
-      completed: '',
-      progress: '',
+      completed: false,
+      progress: 0,
     
 
     };
@@ -585,7 +586,7 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
 
   
 
-// Create drawing slice
+Create drawing slice
 const dispatch = useDispatch();
 export const useDrawingManagerSlice = createSlice({
   name: "drawing",
@@ -813,13 +814,14 @@ export const useDrawingManagerSlice = createSlice({
     },
 
     // other reducers...
-    // initializeTextTool: (
-    //   state: WritableDraft<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>,
-    //   action: PayloadAction<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>
-    // ) => {
-    //   state.activeTool = "text";
-    //   state.selectedTextId = action.payload.id;
-    // },
+    initializeTextTool: (
+      state,
+        //  WritableDraft<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>,
+      action: PayloadAction<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>
+    ) => {
+      state.activeTool = "text";
+      state.selectedTextId = action.payload.id;
+    },
 
     resetTrackers: (
       state,
@@ -840,7 +842,7 @@ export const useDrawingManagerSlice = createSlice({
       state.milestones.push(action.payload); // Assuming state has a milestones array
     },
 
-    activateTextTool: (state, action: PayloadAction<DrawingState>) => {
+    activateTextTool: (state, action: PayloadAction<DrawingState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
       const { payload } = action;
       const { beginText } = payload;
 
@@ -979,6 +981,7 @@ export const useDrawingManagerSlice = createSlice({
       const layer = state.layers.find(layer => layer.id === id);
       if (layer) {
         layer.effects.push({
+          id, type, position, x,
           effectType,
           options,
         });
@@ -1903,7 +1906,7 @@ export const {
 export default useDrawingManagerSlice.reducer;
 export type { AppearanceUpdate, DrawingElement, DrawingState, Shadow, Stroke, TrackerDrawingElement };
 
-// Selectors
+Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;
 
 // Create and export selectors for accessing drawing-related state properties

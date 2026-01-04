@@ -1,4 +1,4 @@
-// TradingBasicInfoStep.tsx
+TradingBasicInfoStep.tsx
 import React, { useState } from 'react';
 
 const TradingBasicInfoStep: React.FC<{ onSubmit: (basicInfo: any) => void }> = ({ onSubmit }) => {

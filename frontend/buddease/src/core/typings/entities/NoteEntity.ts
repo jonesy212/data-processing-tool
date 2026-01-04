@@ -1,9 +1,9 @@
-// NoteEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+NoteEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// --- 1️⃣ Core entity definition ---
+--- 1️⃣ Core entity definition ---
 interface NoteEntity extends BaseDataEntity {
   id: string | number;
   title: string;
@@ -12,7 +12,7 @@ interface NoteEntity extends BaseDataEntity {
   attachments?: Attachment[];
 }
 
-// --- 2️⃣ Entity type aliases for use as generics ---
+--- 2️⃣ Entity type aliases for use as generics ---
 type NoteK = NoteEntity;
 type NoteMeta = DefaultMeta<NoteEntity, NoteK>;
 type NoteAttachment = Attachment;

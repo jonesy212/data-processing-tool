@@ -1,4 +1,4 @@
-// MainApplicationLogic.tsx
+MainApplicationLogic.tsx
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import ExtendedAppLogic from "@/core/pages/ExtendedAppLogic";
 import OnboardingPage from "@/core/pages/onboarding/OnboardingPage";

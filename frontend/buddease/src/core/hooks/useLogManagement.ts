@@ -1,4 +1,4 @@
-// useLogManagement.ts
+useLogManagement.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { TradeAction } from '@/core/components/crypto/CryptoPortfolio';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';

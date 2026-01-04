@@ -1,10 +1,10 @@
-// FrontendStructure.ts
+FrontendStructure.ts
 import axiosInstance from '@/core/api/csrfToken';
 import getAppPath from "@/core/config/appStructure/appPath";
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DataVersions } from "@/core/configs/DataVersionsConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { hashString } from "@/core/generators/HashUtils";
 import { UserConfigData } from "@/core/models/data/dataStoreMethods";
 import UserRoles from '@/core/models/UserRoles';
@@ -24,7 +24,7 @@ import * as path from "path";
 
 
 
-// Define UserConfigData with type arguments
+Define UserConfigData with type arguments
 type UserConfigDataWithArgs = UserConfigData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 
 const loadedUser: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = await fetchUser();
@@ -433,7 +433,7 @@ export default class FrontendStructure<
   }
 }
 
-// Instantiate FrontendStructure
+Instantiate FrontendStructure
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
@@ -444,7 +444,7 @@ const dir = path.join(
   "frontend"
 )
 
-// Define frontend object inside an async function
+Define frontend object inside an async function
 async function initializeFrontend() {
   return {
     ...frontendStructure,

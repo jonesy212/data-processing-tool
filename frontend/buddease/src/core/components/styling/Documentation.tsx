@@ -1,14 +1,14 @@
-// Documentation.tsx
-//Documentation.tsx
+Documentation.tsx
+Documentation.tsx
 import React from 'react';
 
-// Interface for documented components
+Interface for documented components
 interface DocumentedComponentProps {
   name: string;
   description: string;
 }
 
-// Dynamic Documented Component
+Dynamic Documented Component
 const DynamicDocumentedComponent: React.FC<DocumentedComponentProps> = ({ name, description }) => {
   return (
     <div>
@@ -18,7 +18,7 @@ const DynamicDocumentedComponent: React.FC<DocumentedComponentProps> = ({ name, 
   );
 };
 
-// Static Documented Component
+Static Documented Component
 const StaticDocumentedComponent: React.FC<DocumentedComponentProps> = ({ name, description }) => {
   return (
     <div>

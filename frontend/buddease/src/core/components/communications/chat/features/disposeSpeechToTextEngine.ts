@@ -1,4 +1,4 @@
-// disposeSpeechToTextEngine.ts
+disposeSpeechToTextEngine.ts
 const disposeSpeechToTextEngine = () => {
     // Implementation to dispose of the speech-to-text engine
   };

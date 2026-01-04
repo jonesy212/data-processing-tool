@@ -1,6 +1,6 @@
-// ProjectExplorer.tsx
+ProjectExplorer.tsx
 
-// Example usage in your app
+Example usage in your app
 import { FileTreeNode } from '@/core/services/FileTreeService';
 import EnhancedTreeView from "@/pages/dashboards/EnhancedTreeView";
 const ProjectExplorer: React.FC = () => {

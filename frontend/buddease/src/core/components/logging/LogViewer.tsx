@@ -1,4 +1,4 @@
-// LogViewer.tsx
+LogViewer.tsx
 import React from 'react';
 
 import Logger, {
@@ -33,7 +33,7 @@ import Logger, {
   WebLogger,
 } from "./Logger"; // Import all logger classes
 
-// Define a higher-order component (HOC) to enhance logging functionality
+Define a higher-order component (HOC) to enhance logging functionality
 const withLogging = <P extends object>(
   WrappedComponent: React.ComponentType<P>,
   logger?: typeof Logger
@@ -96,7 +96,7 @@ const LogViewer = () => {
   );
 };
 
-// Enhance the LogViewer component with logging functionality using different logger classes
+Enhance the LogViewer component with logging functionality using different logger classes
 const EnhancedLogViewerWithLogger = withLogging(LogViewer, Logger);
 const EnhancedLogViewerWithUILogger = withLogging(LogViewer, UILogger);
 const EnhancedLogViewerWithAudioLogger = withLogging(LogViewer, AudioLogger);

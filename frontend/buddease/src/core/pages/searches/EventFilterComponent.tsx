@@ -1,5 +1,5 @@
-// EventFilterComponent.tsx
-// EventFilterComponent.ts
+EventFilterComponent.tsx
+EventFilterComponent.ts
 import FilterComponent, { Filter } from '@/core/pages/searches/Filter';
 import { selectFilteredEvents } from '@/core/pages/searches/FilteredEvents'; // Assuming the action is imported from eventActions
 import { SortingOption } from '@/core/pages/searches/SearchOptions';

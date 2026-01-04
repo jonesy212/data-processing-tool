@@ -1,7 +1,7 @@
-// createMappingConfig.ts
-import { DefaultMeta } from '@/core/config/BaseConfig';
+createMappingConfig.ts
+import type { DefaultMeta } from '@/core/config/BaseConfig';
 import { MappingConfig } from "@/core/config/MappingConfig";
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { CommonData } from '@/core/models/CommonData';
 
@@ -96,7 +96,7 @@ const createMappingConfig = <
   }
 });
 
-// Updated mapping function with configuration
+Updated mapping function with configuration
 const mapParsedDataToCommonData = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,
   K extends T = T,

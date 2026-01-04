@@ -1,4 +1,4 @@
-// ActivityFeedComponent.tsx
+ActivityFeedComponent.tsx
 import apiNotificationsService from "@/core/api/NotificationsService";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import useSorting from "@/core/hooks/useSorting";

@@ -1,4 +1,4 @@
-// SecureFieldManager.ts
+SecureFieldManager.ts
 import { SecureField, SecureMetadata } from "@/core/server/security/SecureField";
 import SecurityAudit from "@/core/server/security/SecurityAudit";
 import crypto from 'crypto';
@@ -172,7 +172,7 @@ class SecureFieldManager {
 export default SecureFieldManager;
 
 
-// Example SecureMetadata object with sensitive fields
+Example SecureMetadata object with sensitive fields
 const secureMetadata: SecureMetadata = {
     id: {
         value: "12345", isSensitive: false,
@@ -194,14 +194,14 @@ const secureMetadata: SecureMetadata = {
     },
 };
 
-// Add a new field to metadata
+Add a new field to metadata
 SecureFieldManager.addField(secureMetadata, "config", { retries: 3 }, true);
 
-// Security Audit Instance
+Security Audit Instance
 const audit = new SecurityAudit();
 const findings = audit.conductAudit(secureMetadata);
 audit.reviewFindings(findings);
 
-// Sanitize metadata for a user with limited permissions
+Sanitize metadata for a user with limited permissions
 const sanitizedMetadata = SecureFieldManager.sanitizeMetadata(secureMetadata, "user", false);
 console.log("Sanitized Metadata:", sanitizedMetadata);

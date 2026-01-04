@@ -1,4 +1,4 @@
-// MediaDashboard.tsx
+MediaDashboard.tsx
 
 import MediaComponent from '@/core/components/socialMedia/MediaComponent';
 import React from 'react';

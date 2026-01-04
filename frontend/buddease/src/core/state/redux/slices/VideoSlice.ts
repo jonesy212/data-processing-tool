@@ -1,23 +1,23 @@
 
-// video/VideoSlice.ts
-import { DefaultMeta } from '@/core/config/BaseConfig';
-import { VideoMetadata } from "@/core/config/StructuredMetadata";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+video/VideoSlice.ts
+import type { DefaultMeta } from '@/core/config/BaseConfig';
+import type { VideoMetadata } from "@/core/config/StructuredMetadata";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Channel } from "@/core/interfaces/chat/Channel";
-import { BaseDataEntity } from '@/core/snapshots/ValidationRule';
+import type { BaseDataEntity } from '@/core/snapshots/ValidationRule';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { ApiManagerState } from "@/core/state/redux/slices/ApiSlice";
 import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
 import { implementThen } from '@/core/state/stores/CommonEvent';
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoMeta } from '@/core/typings/entities/VideoEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoMeta } from '@/core/typings/entities/VideoEntity';
 import { Video, VideoData } from '@/core/typings/videoTypes/Video';
 import { User } from "@/core/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createDraft } from "immer";
 
 
-// Define the generateCaptions function
+Define the generateCaptions function
 const generateCaptions = (video: any): string[] => {
   // Logic to generate captions for the video
   // Replace this with your actual implementation
@@ -904,11 +904,11 @@ export const {
   adaptiveBitrateStreaming,
   VRbasedVideoConferencing,
 } = useVideoManagerSlice.actions;
-// Export selector for accessing the API configurations from the state
+Export selector for accessing the API configurations from the state
 export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
   state.apiManager.apiConfigs;
 
-// Export reducer for the API manager slice
+Export reducer for the API manager slice
 
 export default useVideoManagerSlice.reducer;
 export type { VideoState };

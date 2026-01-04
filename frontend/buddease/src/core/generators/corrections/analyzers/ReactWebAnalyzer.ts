@@ -1,5 +1,5 @@
-// ReactWebAnalyzer.ts
-// analyzers/ReactWebAnalyzer.ts
+ReactWebAnalyzer.ts
+analyzers/ReactWebAnalyzer.ts
 import { BuildAnalyzer } from '@/core/generators/corrections/analyzers/BuildAnalyzer';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import chalk from 'chalk';

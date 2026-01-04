@@ -1,5 +1,5 @@
-// useLayoutState.ts
-// app/layout/useLayoutState.ts
+useLayoutState.ts
+app/layout/useLayoutState.ts
 import { useState, useCallback } from "react";
 
 export function useLayoutState() {

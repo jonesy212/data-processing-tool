@@ -1,5 +1,5 @@
-// PropTypes.ts
-// PropTypes.tsx
+PropTypes.ts
+PropTypes.tsx
 import {
     BaseDataEntity,
     BaseDataRoot,
@@ -7,7 +7,7 @@ import {
     DefaultMeta
 } from '@/core/config/BaseConfig';
 import TextType from "@/core/documents/TextType";
-import { Attachment, FileType } from '@/core/documents/attachment/Attachment';
+import type { Attachment, FileType } from '@/core/documents/attachment/Attachment';
 import { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { MessageType } from "@/core/generators/MessaageType";
@@ -37,7 +37,7 @@ type NotificationCategory = "general" | "urgent" | "important";
 type ButtonType = "submit" | "reset" | "button" | undefined;
 type VisibilityType = "public" | "private" | "restricted" | "shared" | boolean;
 
-// Union type of all types enums
+Union type of all types enums
 type AllTypes =
   | DataType
   | MessageType
@@ -108,7 +108,7 @@ interface ChatCardProps extends BaseProps {
   chatType?: ChatType;
 }
 
-// Utilizing Specific Types in Use Cases:
+Utilizing Specific Types in Use Cases:
 const chatCardProps: ChatCardProps = {
   id: "123",
   sender: "User123",

@@ -1,4 +1,4 @@
-// AnimatedDashboard.tsx
+AnimatedDashboard.tsx
 import DynamicIntroTooltip from "@/core/DynamicIntroTooltip";
 import { AnimatedComponent } from '@/core/libraries/animations/AnimationComponent';
 
@@ -224,7 +224,7 @@ const AnimatedDashboard: React.FC<ClickableListItem> = ({
     </SwingCard>
   );
 };
-// Use phase hooks
+Use phase hooks
 const notificationBarHook = notificationBarPhaseHook;
 const darkModeToggleHook = darkModeTogglePhaseHook;
 

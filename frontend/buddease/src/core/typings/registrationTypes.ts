@@ -1,5 +1,5 @@
-// registrationTypes.ts
-// app/features/registration/types/registration.ts
+registrationTypes.ts
+app/features/registration/types/registration.ts
 export interface RegistrationData {
   email: string;
   password: string;

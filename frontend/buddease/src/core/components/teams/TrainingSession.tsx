@@ -1,6 +1,6 @@
-// TrainingSession.tsx
+TrainingSession.tsx
 
-// Define the TrainingSession class
+Define the TrainingSession class
 class TrainingSession {
     private sessionId: string;
     private sessionTopic: string;
@@ -34,7 +34,7 @@ class TrainingSession {
   }
 
   
-// Example usage of TrainingSession
+Example usage of TrainingSession
 const sessionDate = new Date('2024-04-20');
 const trainingSession = new TrainingSession("TS-001", "Data Security Best Practices", sessionDate);
 trainingSession.addAttendee("John");

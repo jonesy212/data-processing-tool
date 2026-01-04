@@ -1,4 +1,4 @@
-// ResearchFindings.ts
+ResearchFindings.ts
 export interface ResearchFindings {
     hypothesis: string;
     results: string[];

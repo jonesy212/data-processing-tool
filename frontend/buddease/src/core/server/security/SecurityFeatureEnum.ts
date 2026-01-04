@@ -1,4 +1,4 @@
-// SecurityFeatureEnum.ts
+SecurityFeatureEnum.ts
 export enum SecurityFeatureEnum {
   TwoFactorAuthentication = 'TwoFactorAuthentication',
   Encryption = 'Encryption',

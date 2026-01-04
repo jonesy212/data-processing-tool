@@ -1,4 +1,4 @@
-// ExtendedAppLogic.tsx
+ExtendedAppLogic.tsx
 import NotificationManager from "@/core/features/support/NotificationManager";
 import { NotificationData } from "@/core/hooks/useNotificationSystem";
 import { ThemeConfigProvider } from "@/core/hooks/userInterface/ThemeConfigContext";

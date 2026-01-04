@@ -1,4 +1,4 @@
-// FormUI.tsx
+FormUI.tsx
 import { ComponentActions } from '@/core/actions/ComponentActions';
 import CreateComponentForm from "@/core/libraries/ui/components/CreateComponentForm";
 import React, { useState } from "react";

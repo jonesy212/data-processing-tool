@@ -1,4 +1,4 @@
-// RNConfigAnalyzer.ts
+RNConfigAnalyzer.ts
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import fs from 'fs';

@@ -1,4 +1,4 @@
-// teamSnapshot.ts
+teamSnapshot.ts
 import { Team } from '@/core/components/teams/Team';
 import useSnapshotManager from '@/core/hooks/useSnapshotManager';
 import { Data } from '@/core/models/data/Data';

@@ -1,5 +1,5 @@
-// TeamComponent.tsx
-// src/components/Teams/TeamComponent.tsx
+TeamComponent.tsx
+src/components/Teams/TeamComponent.tsx
 
 import { Task } from "@/core/components/models/tasks/Task";
 import { Team as BackendTeam } from "@/core/components/teams/Team";

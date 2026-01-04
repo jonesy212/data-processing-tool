@@ -1,0 +1,1890 @@
+{
+  "analysisTimestamp": "2025-12-30T08:44:30.269Z",
+  "summary": {
+    "totalFiles": 354,
+    "totalImports": 1478,
+    "foldersAffected": 108
+  },
+  "detailedStats": {
+    "folderStats": [
+      {
+        "folder": "src/core/snapshots",
+        "fileCount": 4,
+        "importCount": 25,
+        "files": [
+          "src/core/snapshots/SnapshotWithCriteria.ts",
+          "src/core/snapshots/Snapshot.tsx",
+          "src/core/snapshots/SnapshotTypeDefs.ts",
+          "src/core/snapshots/useSnapshotVersioningSystem.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 4,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 4,
+          "DefaultMeta": 4,
+          "StructuredMetadata": 2,
+          "Attachment": 7,
+          "InitializedState": 2,
+          "SharedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/config/database",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/config/database/updateDocumentInDatabase.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/config",
+        "fileCount": 12,
+        "importCount": 48,
+        "files": [
+          "src/core/config/useMetadata.tsx",
+          "src/core/config/DocumentBuilderConfig.ts",
+          "src/core/config/MainConfig.tsx",
+          "src/core/config/LazyLoadScriptConfig.ts",
+          "src/core/config/AppConfig.ts",
+          "src/core/config/UserPreferences.ts",
+          "src/core/config/MappingConfig.tsx",
+          "src/core/config/getConfigPromise.ts",
+          "src/core/config/createBaseDataEntity.ts",
+          "src/core/config/createMappingConfig.ts",
+          "src/core/config/RealtimeServiceConfig.ts",
+          "src/core/config/UserSettings.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 11,
+          "DefaultExcludedFields": 9,
+          "DefaultMeta": 10,
+          "UnifiedMetadata": 1,
+          "Attachment": 13,
+          "StructuredMetadata": 2,
+          "BaseDataRoot": 1,
+          "InitializedState": 1
+        }
+      },
+      {
+        "folder": "src/core/config/appStructure",
+        "fileCount": 5,
+        "importCount": 22,
+        "files": [
+          "src/core/config/appStructure/FrontendStructure.ts",
+          "src/core/config/appStructure/BackendStructureWrapper.tsx",
+          "src/core/config/appStructure/ExtendedBackendStructure.ts",
+          "src/core/config/appStructure/AppStructure.ts",
+          "src/core/config/appStructure/IBackendStructure.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 5,
+          "DefaultExcludedFields": 5,
+          "DefaultMeta": 5,
+          "Attachment": 6,
+          "BaseDataRoot": 1
+        }
+      },
+      {
+        "folder": "src/core/config/metadata",
+        "fileCount": 6,
+        "importCount": 37,
+        "files": [
+          "src/core/config/metadata/createMeta.ts",
+          "src/core/config/metadata/BaseMetaInfo.ts",
+          "src/core/config/metadata/MetadataHooks.ts",
+          "src/core/config/metadata/detectMetadataChanges.ts",
+          "src/core/config/metadata/createMetadata.ts",
+          "src/core/config/metadata/usePhaseMeta.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 6,
+          "DefaultExcludedFields": 5,
+          "DefaultMeta": 6,
+          "StructuredMetadata": 3,
+          "Attachment": 10,
+          "UnifiedMetadata": 2,
+          "EventManager": 2,
+          "BaseDataRoot": 1,
+          "SharedMetadata": 1,
+          "InitializedState": 1
+        }
+      },
+      {
+        "folder": "src/core/config/factory",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/config/factory/SnapshotFactory.ts",
+          "src/core/config/factory/VersionEntityFactory.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/projects/DataAnalysisPhase",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/projects/DataAnalysisPhase/DataAnalysisResult.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/projects",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/projects/TaskManagementPhase.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/simulate",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/simulate/simulateFetch.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/typings",
+        "fileCount": 14,
+        "importCount": 57,
+        "files": [
+          "src/core/typings/appEventTypes.ts",
+          "src/core/typings/baseResponseTypes.ts",
+          "src/core/typings/convertSnapshotEvents.ts",
+          "src/core/typings/appDevelopmentActionsTypes.ts",
+          "src/core/typings/taskTypes.ts",
+          "src/core/typings/apiTypes.ts",
+          "src/core/typings/projectTypes.ts",
+          "src/core/typings/roadmap.ts",
+          "src/core/typings/phaseTypes.ts",
+          "src/core/typings/exchangeTypes.ts",
+          "src/core/typings/BaseTypes.ts",
+          "src/core/typings/YourSpecificSnapshotType.ts",
+          "src/core/typings/PropTypes.ts",
+          "src/core/typings/attachmentTypeGroups.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 11,
+          "DefaultExcludedFields": 10,
+          "DefaultMeta": 10,
+          "Attachment": 15,
+          "EventManager": 1,
+          "UnifiedMetadata": 3,
+          "BaseDataRoot": 4,
+          "StructuredMetadata": 2,
+          "InitializedState": 1
+        }
+      },
+      {
+        "folder": "src/core/typings/videoTypes",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/typings/videoTypes/Video.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "UnifiedMetadata": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/typings/typeguards",
+        "fileCount": 2,
+        "importCount": 9,
+        "files": [
+          "src/core/typings/typeguards/isYourSettingsResponseType.ts",
+          "src/core/typings/typeguards/dataStoreTypeGuards.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/typings/entities",
+        "fileCount": 36,
+        "importCount": 143,
+        "files": [
+          "src/core/typings/entities/FileEntity.ts",
+          "src/core/typings/entities/ChatRoomEntity.ts",
+          "src/core/typings/entities/ProjectManagerEntity.ts",
+          "src/core/typings/entities/DocumentBuilderEntity.ts",
+          "src/core/typings/entities/StorePropEntity.ts",
+          "src/core/typings/entities/DataEntity.ts",
+          "src/core/typings/entities/ContentEntity.ts",
+          "src/core/typings/entities/LessonEntity.ts",
+          "src/core/typings/entities/CollaboratorEntity.ts",
+          "src/core/typings/entities/ConfigEntity.ts",
+          "src/core/typings/entities/EntityConverter.ts",
+          "src/core/typings/entities/ExtendedDappEntity.ts",
+          "src/core/typings/entities/ApiEntity.ts",
+          "src/core/typings/entities/SnapshotStorageOptionsEntity.ts",
+          "src/core/typings/entities/RealtimeDataEntity.ts",
+          "src/core/typings/entities/ArticleEntity.ts",
+          "src/core/typings/entities/NoteEntity.ts",
+          "src/core/typings/entities/ChatEntity.ts",
+          "src/core/typings/entities/CourseEntity.ts",
+          "src/core/typings/entities/VideoEntity.ts",
+          "src/core/typings/entities/FilterEntity.ts",
+          "src/core/typings/entities/SubscriptionEntity.ts",
+          "src/core/typings/entities/MessageEntity.ts",
+          "src/core/typings/entities/ProjectManagementEntity.ts",
+          "src/core/typings/entities/AssignEntity.ts",
+          "src/core/typings/entities/AuthEntity.ts",
+          "src/core/typings/entities/SenderEntity.ts",
+          "src/core/typings/entities/TagEntity.ts",
+          "src/core/typings/entities/ProductEntity.ts",
+          "src/core/typings/entities/LogEntity.ts",
+          "src/core/typings/entities/DetailsEntity.ts",
+          "src/core/typings/entities/UserEntity.ts",
+          "src/core/typings/entities/EntityConversionRules.ts",
+          "src/core/typings/entities/MeetingEntity.ts",
+          "src/core/typings/entities/AppMetadataEntity.ts",
+          "src/core/typings/entities/SnapshotContainerEntity.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 31,
+          "DefaultMeta": 34,
+          "Attachment": 33,
+          "DefaultExcludedFields": 29,
+          "UnifiedMetadata": 8,
+          "StructuredMetadata": 8
+        }
+      },
+      {
+        "folder": "src/core/features/support",
+        "fileCount": 3,
+        "importCount": 12,
+        "files": [
+          "src/core/features/support/UnifiedNotificationTypes.ts",
+          "src/core/features/support/NotificationManager.ts",
+          "src/core/features/support/NotificationProvider.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 2,
+          "Attachment": 3,
+          "UnifiedMetadata": 1,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/versions",
+        "fileCount": 5,
+        "importCount": 26,
+        "files": [
+          "src/core/versions/AppVersionToVersionAdapter.ts",
+          "src/core/versions/VersionData.ts",
+          "src/core/versions/versionConvertors.ts",
+          "src/core/versions/createLatestVersion.ts",
+          "src/core/versions/AppVersion.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 5,
+          "DefaultExcludedFields": 5,
+          "DefaultMeta": 5,
+          "Attachment": 8,
+          "UnifiedMetadata": 1,
+          "SharedMetadata": 1,
+          "BaseDataRoot": 1
+        }
+      },
+      {
+        "folder": "src/core/libraries/ui/components",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/libraries/ui/components/SnapshotComponent.tsx",
+          "src/core/libraries/ui/components/ConfigurationManagement.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/libraries/cache",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/libraries/cache/CacheResponse.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/libraries/eventSystem",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/libraries/eventSystem/callbackRegistry.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/libraries/categories",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/libraries/categories/determineFileCategory.tsx",
+          "src/core/libraries/categories/determineSnapshotStoreCategory.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/server/database",
+        "fileCount": 2,
+        "importCount": 5,
+        "files": [
+          "src/core/server/database/BackendStructure.ts",
+          "src/core/server/database/baseMeta.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/server/snapshots",
+        "fileCount": 1,
+        "importCount": 6,
+        "files": [
+          "src/core/server/snapshots/ServerSnapshotTypes.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "UnifiedMetadata": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/server/security",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/server/security/SecurityAudit.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultMeta": 1
+        }
+      },
+      {
+        "folder": "src/core/shared",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/shared/SharedMetadata.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "UnifiedMetadata": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/models/cypto",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/models/cypto/Exchange.ts",
+          "src/core/models/cypto/SanitizationFunctions.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/models",
+        "fileCount": 3,
+        "importCount": 13,
+        "files": [
+          "src/core/models/ChecklistItem.tsx",
+          "src/core/models/ProjectModel.tsx",
+          "src/core/models/CommunityData.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultMeta": 3,
+          "Attachment": 4,
+          "DefaultExcludedFields": 2,
+          "BaseDataRoot": 1
+        }
+      },
+      {
+        "folder": "src/core/models/comments",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/models/comments/Comments.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/models/tasks",
+        "fileCount": 3,
+        "importCount": 12,
+        "files": [
+          "src/core/models/tasks/Task.tsx",
+          "src/core/models/tasks/Subtask.ts",
+          "src/core/models/tasks/StoreMethods.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 3,
+          "DefaultMeta": 3,
+          "Attachment": 2,
+          "SharedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/models/builders",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/models/builders/TaskSnapshotConfigBuilder.ts"
+        ],
+        "importsByType": {
+          "Attachment": 1,
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1
+        }
+      },
+      {
+        "folder": "src/core/models/projects",
+        "fileCount": 1,
+        "importCount": 6,
+        "files": [
+          "src/core/models/projects/Project.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/models/content",
+        "fileCount": 1,
+        "importCount": 7,
+        "files": [
+          "src/core/models/content/AddContent.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 2,
+          "SharedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/models/tracker",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/models/tracker/Tracker.ts",
+          "src/core/models/tracker/Tag.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 3,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/models/teams",
+        "fileCount": 3,
+        "importCount": 12,
+        "files": [
+          "src/core/models/teams/Contributor.ts",
+          "src/core/models/teams/TeamMembers.ts",
+          "src/core/models/teams/TeamData.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 3,
+          "Attachment": 4
+        }
+      },
+      {
+        "folder": "src/core/models/members",
+        "fileCount": 1,
+        "importCount": 6,
+        "files": [
+          "src/core/models/members/Member.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 3
+        }
+      },
+      {
+        "folder": "src/core/models/phases",
+        "fileCount": 4,
+        "importCount": 14,
+        "files": [
+          "src/core/models/phases/DocumentPhase.ts",
+          "src/core/models/phases/PhaseTransitions.tsx",
+          "src/core/models/phases/Phase.ts",
+          "src/core/models/phases/PhaseManager.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 3,
+          "UnifiedMetadata": 2,
+          "StructuredMetadata": 2
+        }
+      },
+      {
+        "folder": "src/core/models/data",
+        "fileCount": 7,
+        "importCount": 34,
+        "files": [
+          "src/core/models/data/FileData.ts",
+          "src/core/models/data/DetailsContext.tsx",
+          "src/core/models/data/TaskMetadata.ts",
+          "src/core/models/data/TempData.ts",
+          "src/core/models/data/FolderData.ts",
+          "src/core/models/data/AnalyticsData.ts",
+          "src/core/models/data/DataService.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 7,
+          "BaseDataRoot": 3,
+          "DefaultExcludedFields": 7,
+          "DefaultMeta": 7,
+          "Attachment": 10
+        }
+      },
+      {
+        "folder": "src/core/state/context",
+        "fileCount": 5,
+        "importCount": 17,
+        "files": [
+          "src/core/state/context/DataContext.tsx",
+          "src/core/state/context/ContentContext.tsx",
+          "src/core/state/context/SnapshotStoreContextType.ts",
+          "src/core/state/context/AuthContext.tsx",
+          "src/core/state/context/NotificationContext.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 4,
+          "DefaultExcludedFields": 4,
+          "DefaultMeta": 4,
+          "StructuredMetadata": 1,
+          "Attachment": 4
+        }
+      },
+      {
+        "folder": "src/core/state/stores",
+        "fileCount": 13,
+        "importCount": 55,
+        "files": [
+          "src/core/state/stores/AssignEventStore.tsx",
+          "src/core/state/stores/DataStore.ts",
+          "src/core/state/stores/FeatureStore.ts",
+          "src/core/state/stores/DocumentStore.ts",
+          "src/core/state/stores/VideoStore.ts",
+          "src/core/state/stores/UserStore.ts",
+          "src/core/state/stores/FilterStore.ts",
+          "src/core/state/stores/MobXEntityStore.tsx",
+          "src/core/state/stores/CalendarManagerStore.tsx",
+          "src/core/state/stores/RootStores.ts",
+          "src/core/state/stores/UserPresentationsStore.ts",
+          "src/core/state/stores/AppStore.ts",
+          "src/core/state/stores/CalendarManagerStore.spec.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 11,
+          "DefaultMeta": 11,
+          "Attachment": 14,
+          "BaseDataRoot": 2,
+          "DefaultExcludedFields": 10,
+          "UnifiedMetadata": 2,
+          "StructuredMetadata": 4,
+          "EventManager": 1
+        }
+      },
+      {
+        "folder": "src/core/state",
+        "fileCount": 2,
+        "importCount": 9,
+        "files": [
+          "src/core/state/hydrateSnapshot.ts",
+          "src/core/state/persistSnapshot.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/state/redux/slices",
+        "fileCount": 19,
+        "importCount": 97,
+        "files": [
+          "src/core/state/redux/slices/NofiticationsSlice.tsx",
+          "src/core/state/redux/slices/FilteredEventsSlice.ts",
+          "src/core/state/redux/slices/RootSlice.ts",
+          "src/core/state/redux/slices/CollaborationSlice.ts",
+          "src/core/state/redux/slices/AuthSlice.ts",
+          "src/core/state/redux/slices/RealtimeDataSlice.ts",
+          "src/core/state/redux/slices/ProjectManagerSlice.ts",
+          "src/core/state/redux/slices/DocumentSlice.tsx",
+          "src/core/state/redux/slices/VideoSlice.ts",
+          "src/core/state/redux/slices/UserSlice.ts",
+          "src/core/state/redux/slices/CalendarSlice.tsx",
+          "src/core/state/redux/slices/ContentSlice.ts",
+          "src/core/state/redux/slices/ApiSlice.ts",
+          "src/core/state/redux/slices/ProjectSlice.ts",
+          "src/core/state/redux/slices/NotificationSlice.ts",
+          "src/core/state/redux/slices/ChatSlice.ts",
+          "src/core/state/redux/slices/TaskSlice.ts",
+          "src/core/state/redux/slices/DrawingSlice.ts",
+          "src/core/state/redux/slices/AppSlice.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 18,
+          "DefaultMeta": 18,
+          "Attachment": 38,
+          "UnifiedMetadata": 3,
+          "DefaultExcludedFields": 14,
+          "BaseDataRoot": 4,
+          "StructuredMetadata": 2
+        }
+      },
+      {
+        "folder": "src/core/state/redux",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/state/redux/ReducerGenerator.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/state/hybrid",
+        "fileCount": 2,
+        "importCount": 9,
+        "files": [
+          "src/core/state/hybrid/SettingsManagerStore.ts",
+          "src/core/state/hybrid/ProjectManagerStore.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 3
+        }
+      },
+      {
+        "folder": "src/core/dataIntegration/projectIntegration",
+        "fileCount": 1,
+        "importCount": 6,
+        "files": [
+          "src/core/dataIntegration/projectIntegration/projectManagement.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "StructuredMetadata": 1,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/dataIntegration",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/dataIntegration/reduxIntegration.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/dataIntegration/calendarIntegration",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/dataIntegration/calendarIntegration/scheduleCoordinator.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "EventManager": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/subscriptions",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/subscriptions/subscriberTypeGuads.ts",
+          "src/core/subscriptions/subscriptionServiceInstance.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/components/database",
+        "fileCount": 1,
+        "importCount": 2,
+        "files": [
+          "src/core/components/database/MigrationSystem.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1
+        }
+      },
+      {
+        "folder": "src/core/components/calendar",
+        "fileCount": 9,
+        "importCount": 36,
+        "files": [
+          "src/core/components/calendar/WeekView.tsx",
+          "src/core/components/calendar/Calendar.tsx",
+          "src/core/components/calendar/CalendarContext.tsx",
+          "src/core/components/calendar/YearView.tsx",
+          "src/core/components/calendar/CalendarApp.tsx",
+          "src/core/components/calendar/CalendarMonthView.tsx",
+          "src/core/components/calendar/CalendarWeek.tsx",
+          "src/core/components/calendar/CalendarMonth.tsx",
+          "src/core/components/calendar/DayOfWeek.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 9,
+          "DefaultExcludedFields": 8,
+          "DefaultMeta": 8,
+          "Attachment": 9,
+          "StructuredMetadata": 1,
+          "UnifiedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/components/development",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/components/development/MetadataViewer.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "UnifiedMetadata": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/admin",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/admin/AdminDashboard.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/models/tasks",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/components/models/tasks/Task.tsx",
+          "src/core/components/models/tasks/TaskDetailsComponent.tsx"
+        ],
+        "importsByType": {
+          "Attachment": 2,
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2
+        }
+      },
+      {
+        "folder": "src/core/components/models/details",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/models/details/CommonDetails.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/models/content",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/models/content/ContentItem.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/models/tracker",
+        "fileCount": 2,
+        "importCount": 11,
+        "files": [
+          "src/core/components/models/tracker/Tracker.ts",
+          "src/core/components/models/tracker/TagComponent.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 4
+        }
+      },
+      {
+        "folder": "src/core/components/models/realtime",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/components/models/realtime/RealtimeDataComponent.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/models/data",
+        "fileCount": 3,
+        "importCount": 18,
+        "files": [
+          "src/core/components/models/data/Details.tsx",
+          "src/core/components/models/data/CalendarDetails.tsx",
+          "src/core/components/models/data/DetailsListItem.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 3,
+          "DefaultMeta": 3,
+          "Attachment": 6,
+          "SharedMetadata": 1,
+          "BaseDataRoot": 2
+        }
+      },
+      {
+        "folder": "src/core/components/teams",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/components/teams/Team.tsx"
+        ],
+        "importsByType": {
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 2,
+          "BaseDataEntity": 1
+        }
+      },
+      {
+        "folder": "src/core/components/styling",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/styling/ResponsiveDesign.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/documents",
+        "fileCount": 2,
+        "importCount": 9,
+        "files": [
+          "src/core/components/documents/DocumentBuilderComponent.tsx",
+          "src/core/components/documents/FileSharingComponent.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "UnifiedMetadata": 1,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/components/routing",
+        "fileCount": 3,
+        "importCount": 18,
+        "files": [
+          "src/core/components/routing/MetadataComponent.tsx",
+          "src/core/components/routing/SearchResult.tsx",
+          "src/core/components/routing/Fields.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 3,
+          "DefaultMeta": 3,
+          "UnifiedMetadata": 1,
+          "Attachment": 6,
+          "BaseDataRoot": 1,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/components/trading",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/trading/TradeData.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/onboarding",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/components/onboarding/OnboardingHook.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1
+        }
+      },
+      {
+        "folder": "src/core/components/communications/chat",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/communications/chat/Group.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/communications",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/communications/CommunicationPage.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/components/communications/scheduler",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/components/communications/scheduler/Meeting.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/hooks",
+        "fileCount": 11,
+        "importCount": 43,
+        "files": [
+          "src/core/hooks/useTestPhaseHooks.tsx",
+          "src/core/hooks/useRoleAccess.ts",
+          "src/core/hooks/useNotificationSystem.ts",
+          "src/core/hooks/useSecurityAudit.ts",
+          "src/core/hooks/useSorting.ts",
+          "src/core/hooks/useSnapshotManager.ts",
+          "src/core/hooks/RoadmapScoringPlugin.ts",
+          "src/core/hooks/usePhaseManagement.ts",
+          "src/core/hooks/userScenarioCreation.tsx",
+          "src/core/hooks/useErrorHandling.tsx",
+          "src/core/hooks/useFiltering.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 11,
+          "DefaultExcludedFields": 9,
+          "DefaultMeta": 9,
+          "Attachment": 10,
+          "BaseDataRoot": 2,
+          "UnifiedMetadata": 1,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/hooks/dynamicHooks",
+        "fileCount": 2,
+        "importCount": 7,
+        "files": [
+          "src/core/hooks/dynamicHooks/dynamicHookGenerator.tsx",
+          "src/core/hooks/dynamicHooks/dynamicHooks.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2,
+          "DefaultExcludedFields": 1
+        }
+      },
+      {
+        "folder": "src/core/hooks/commHooks",
+        "fileCount": 4,
+        "importCount": 16,
+        "files": [
+          "src/core/hooks/commHooks/useRealtimeExchangeData.ts",
+          "src/core/hooks/commHooks/processSnapshotStore.ts",
+          "src/core/hooks/commHooks/useUIRealtimeData.tsx",
+          "src/core/hooks/commHooks/useRealtimeData.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 4,
+          "DefaultExcludedFields": 4,
+          "DefaultMeta": 4,
+          "Attachment": 4
+        }
+      },
+      {
+        "folder": "src/core/hooks/phaseHooks",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/hooks/phaseHooks/PhaseHooks.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/hooks/userInterface",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/hooks/userInterface/UIPhaseHooks.tsx",
+          "src/core/hooks/userInterface/ThemeConfigContext.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/hooks/phases",
+        "fileCount": 2,
+        "importCount": 8,
+        "files": [
+          "src/core/hooks/phases/UIPhase.ts",
+          "src/core/hooks/phases/lifecycles.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultMeta": 2,
+          "Attachment": 3,
+          "DefaultExcludedFields": 1
+        }
+      },
+      {
+        "folder": "src/core/users",
+        "fileCount": 1,
+        "importCount": 9,
+        "files": [
+          "src/core/users/User.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "StructuredMetadata": 2,
+          "Attachment": 3,
+          "UnifiedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/configs",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/configs/DataVersionsConfig.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/scripts",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/scripts/ApiSynchronizationScript.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "StructuredMetadata": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/actions",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/actions/AppDevelopmentActions.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/api",
+        "fileCount": 28,
+        "importCount": 112,
+        "files": [
+          "src/core/api/ApiTradeCore.ts",
+          "src/core/api/subscriberApi.ts",
+          "src/core/api/ApiCommunicationService.ts",
+          "src/core/api/ApiNote.ts",
+          "src/core/api/ApiDetails.ts",
+          "src/core/api/ApiContent.ts",
+          "src/core/api/ApiTodo.ts",
+          "src/core/api/DatabaseClient.ts",
+          "src/core/api/ChatApi.ts",
+          "src/core/api/NotificationsService.ts",
+          "src/core/api/ApiDocument.ts",
+          "src/core/api/ApiSearch.ts",
+          "src/core/api/ApiCalendar.ts",
+          "src/core/api/ApiProject.ts",
+          "src/core/api/ApiExchange.ts",
+          "src/core/api/userConfigs.ts",
+          "src/core/api/getSnapshotEndpoint.ts",
+          "src/core/api/ApiDatabase.ts",
+          "src/core/api/ApiClient.ts",
+          "src/core/api/systemConfigs.ts",
+          "src/core/api/ApiMetadata.ts",
+          "src/core/api/TasksApi.ts",
+          "src/core/api/articleApi.ts",
+          "src/core/api/ApiDrawing.ts",
+          "src/core/api/ProjectOwnerApi.ts",
+          "src/core/api/ApiUser.ts",
+          "src/core/api/ApiVideo.ts",
+          "src/core/api/processSnapshotData.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 26,
+          "DefaultMeta": 25,
+          "Attachment": 32,
+          "DefaultExcludedFields": 23,
+          "StructuredMetadata": 3,
+          "BaseDataRoot": 1,
+          "UnifiedMetadata": 1,
+          "SharedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/api/calendar/appendData",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/api/calendar/appendData/route.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/api/videos",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/api/videos/AppCacheManagerAPI.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/api/persistSnapshot",
+        "fileCount": 1,
+        "importCount": 3,
+        "files": [
+          "src/core/api/persistSnapshot/route.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1
+        }
+      },
+      {
+        "folder": "src/core/api/instances",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/api/instances/createSharedSnapshotContainer.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/api/documents",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/api/documents/loadMarkdownDocumentContent.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/api/service",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/api/service/DetailsService.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/generators",
+        "fileCount": 11,
+        "importCount": 53,
+        "files": [
+          "src/core/generators/GenerateButtons.tsx",
+          "src/core/generators/GenerateCache.ts",
+          "src/core/generators/TaskReportGenerator.tsx",
+          "src/core/generators/GenerateUniqueIds.ts",
+          "src/core/generators/docxGenerator.ts",
+          "src/core/generators/SnapshotListGenerator.tsx",
+          "src/core/generators/ListGenerator.tsx",
+          "src/core/generators/snapshotCache.ts",
+          "src/core/generators/GenerateChatInterfaces.ts",
+          "src/core/generators/processSnapshotList.tsx",
+          "src/core/generators/ContentIDGenerator.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 11,
+          "DefaultExcludedFields": 9,
+          "DefaultMeta": 11,
+          "Attachment": 17,
+          "UnifiedMetadata": 2,
+          "StructuredMetadata": 1,
+          "BaseDataRoot": 2
+        }
+      },
+      {
+        "folder": "src/core/documents",
+        "fileCount": 14,
+        "importCount": 50,
+        "files": [
+          "src/core/documents/Report.ts",
+          "src/core/documents/NoteData.ts",
+          "src/core/documents/File.ts",
+          "src/core/documents/DocumentOptions.ts",
+          "src/core/documents/PDFDoc.ts",
+          "src/core/documents/MarkdownDoc.ts",
+          "src/core/documents/SQLDoc.ts",
+          "src/core/documents/RelatedProps.ts",
+          "src/core/documents/DocumentPath.ts",
+          "src/core/documents/CommonDocumentPropertiesAndMethods.ts",
+          "src/core/documents/SharedDocumentProps.ts",
+          "src/core/documents/DocumentManagement.tsx",
+          "src/core/documents/DocumentGeneratorMethods.ts",
+          "src/core/documents/DocumentEditor.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 13,
+          "StructuredMetadata": 2,
+          "DefaultExcludedFields": 9,
+          "DefaultMeta": 11,
+          "Attachment": 11,
+          "BaseDataRoot": 1,
+          "UnifiedMetadata": 3
+        }
+      },
+      {
+        "folder": "src/core/documents/editing",
+        "fileCount": 5,
+        "importCount": 25,
+        "files": [
+          "src/core/documents/editing/MarkdownDocument.ts",
+          "src/core/documents/editing/DocumentBuilder.tsx",
+          "src/core/documents/editing/PDFDocument.ts",
+          "src/core/documents/editing/SQLDocument.ts",
+          "src/core/documents/editing/CourseBuilder.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 5,
+          "DefaultExcludedFields": 4,
+          "DefaultMeta": 5,
+          "Attachment": 8,
+          "UnifiedMetadata": 2,
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/subscribers",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/subscribers/SubscriberCollection.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/todos/tasks",
+        "fileCount": 2,
+        "importCount": 7,
+        "files": [
+          "src/core/todos/tasks/DataSetModel.ts",
+          "src/core/todos/tasks/DataProcessingTask.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 2,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/events",
+        "fileCount": 2,
+        "importCount": 5,
+        "files": [
+          "src/core/events/BaseEvent.ts",
+          "src/core/events/BaseCustomEvent.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/error-analyzer/phases",
+        "fileCount": 1,
+        "importCount": 2,
+        "files": [
+          "src/core/error-analyzer/phases/PhaseBackupSystem.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "UnifiedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/pages/personas",
+        "fileCount": 2,
+        "importCount": 5,
+        "files": [
+          "src/core/pages/personas/ScenarioBuilder.tsx",
+          "src/core/pages/personas/UserJourneyManager.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/pages/profile",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/pages/profile/Profile.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/pages/layouts",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/pages/layouts/fetchUserAreaDimensions.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 2
+        }
+      },
+      {
+        "folder": "src/core/pages/dashboards",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/pages/dashboards/DesignDashboard.tsx"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/pages",
+        "fileCount": 1,
+        "importCount": 7,
+        "files": [
+          "src/core/pages/_app.tsx"
+        ],
+        "importsByType": {
+          "StructuredMetadata": 1,
+          "Attachment": 3,
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1
+        }
+      },
+      {
+        "folder": "src/core/pages/onboarding",
+        "fileCount": 2,
+        "importCount": 7,
+        "files": [
+          "src/core/pages/onboarding/PersonaBuilderData.tsx",
+          "src/core/pages/onboarding/questionnaireLogic.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 2,
+          "DefaultMeta": 2,
+          "Attachment": 2,
+          "DefaultExcludedFields": 1
+        }
+      },
+      {
+        "folder": "src/core/logging",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/logging/ChangeLogEntry.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "StructuredMetadata": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/notifications",
+        "fileCount": 1,
+        "importCount": 5,
+        "files": [
+          "src/core/notifications/NotificationChannels.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "BaseDataRoot": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/services",
+        "fileCount": 6,
+        "importCount": 22,
+        "files": [
+          "src/core/services/ConfigurationService.ts",
+          "src/core/services/NotificationService.tsx",
+          "src/core/services/dataAnalysisOrchestrator.ts",
+          "src/core/services/stakeholderRoadmap.ts",
+          "src/core/services/NotificationManagerService.ts",
+          "src/core/services/roadmapService.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 6,
+          "BaseDataRoot": 2,
+          "DefaultExcludedFields": 4,
+          "DefaultMeta": 4,
+          "UnifiedMetadata": 1,
+          "Attachment": 5
+        }
+      },
+      {
+        "folder": "src/core/communications",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/core/communications/ChatRoom.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/utils",
+        "fileCount": 9,
+        "importCount": 36,
+        "files": [
+          "src/utils/metadataUtils.ts",
+          "src/utils/YourClass.ts",
+          "src/utils/logDataHelpers.ts",
+          "src/utils/tempDataUtils.ts",
+          "src/utils/ReadAndWriteCache.tsx",
+          "src/utils/versionUtils.ts",
+          "src/utils/SubscriberUtils.ts",
+          "src/utils/EventUtils.ts",
+          "src/utils/CalendarUtils.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 8,
+          "DefaultExcludedFields": 8,
+          "DefaultMeta": 8,
+          "StructuredMetadata": 2,
+          "Attachment": 9,
+          "BaseDataRoot": 1
+        }
+      },
+      {
+        "folder": "src/utils/cache",
+        "fileCount": 1,
+        "importCount": 4,
+        "files": [
+          "src/utils/cache/CacheWriteOptions.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1,
+          "DefaultExcludedFields": 1,
+          "DefaultMeta": 1,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/utils/web3",
+        "fileCount": 3,
+        "importCount": 12,
+        "files": [
+          "src/utils/web3/createMessage.ts",
+          "src/utils/web3/debugInfoUtils.tsx",
+          "src/utils/web3/getSecureSubscriberId.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 3,
+          "DefaultMeta": 3,
+          "Attachment": 3
+        }
+      },
+      {
+        "folder": "src/utils/web3/dAppAdapter",
+        "fileCount": 3,
+        "importCount": 16,
+        "files": [
+          "src/utils/web3/dAppAdapter/DApp.tsx",
+          "src/utils/web3/dAppAdapter/IPFS.tsx",
+          "src/utils/web3/dAppAdapter/DAppAdapterConfig.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 3,
+          "DefaultExcludedFields": 3,
+          "DefaultMeta": 3,
+          "Attachment": 5,
+          "BaseDataRoot": 2
+        }
+      },
+      {
+        "folder": "src/cli",
+        "fileCount": 1,
+        "importCount": 1,
+        "files": [
+          "src/cli/roadmapCLI.ts"
+        ],
+        "importsByType": {
+          "BaseDataEntity": 1
+        }
+      },
+      {
+        "folder": "src/core/server/repository",
+        "fileCount": 5,
+        "importCount": 5,
+        "files": [
+          "src/core/server/repository/secureMappers.ts",
+          "src/core/server/repository/versionMapper.ts",
+          "src/core/server/repository/userMapper.ts",
+          "src/core/server/repository/entityMapper.ts",
+          "src/core/server/repository/mappers.ts"
+        ],
+        "importsByType": {
+          "DefaultExcludedFields": 4,
+          "Attachment": 1
+        }
+      },
+      {
+        "folder": "src/core/examples",
+        "fileCount": 1,
+        "importCount": 1,
+        "files": [
+          "src/core/examples/CacheExample.ts"
+        ],
+        "importsByType": {
+          "UnifiedMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/libraries/ui",
+        "fileCount": 1,
+        "importCount": 1,
+        "files": [
+          "src/core/libraries/ui/CustomContentState.tsx"
+        ],
+        "importsByType": {
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/components/form",
+        "fileCount": 1,
+        "importCount": 1,
+        "files": [
+          "src/core/components/form/FormatEnum.tsx"
+        ],
+        "importsByType": {
+          "StructuredMetadata": 1
+        }
+      },
+      {
+        "folder": "src/core/routing",
+        "fileCount": 1,
+        "importCount": 1,
+        "files": [
+          "src/core/routing/FuzzyMatch.ts"
+        ],
+        "importsByType": {
+          "Attachment": 1
+        }
+      }
+    ],
+    "totalFiles": 354,
+    "totalImports": 1478,
+    "typeDistribution": {
+      "BaseDataEntity": 326,
+      "BaseDataRoot": 47,
+      "DefaultExcludedFields": 281,
+      "DefaultMeta": 311,
+      "StructuredMetadata": 50,
+      "Attachment": 403,
+      "InitializedState": 5,
+      "UnifiedMetadata": 43,
+      "EventManager": 5,
+      "SharedMetadata": 7
+    },
+    "topFilesByImportCount": [
+      {
+        "file": "src/core/config/metadata/createMetadata.ts",
+        "imports": 10
+      },
+      {
+        "file": "src/core/config/metadata/MetadataHooks.ts",
+        "imports": 9
+      },
+      {
+        "file": "src/core/state/redux/slices/DocumentSlice.tsx",
+        "imports": 9
+      },
+      {
+        "file": "src/core/users/User.tsx",
+        "imports": 9
+      },
+      {
+        "file": "src/core/generators/GenerateUniqueIds.ts",
+        "imports": 9
+      },
+      {
+        "file": "src/core/snapshots/Snapshot.tsx",
+        "imports": 9
+      },
+      {
+        "file": "src/core/snapshots/SnapshotWithCriteria.ts",
+        "imports": 8
+      },
+      {
+        "file": "src/core/versions/VersionData.ts",
+        "imports": 8
+      },
+      {
+        "file": "src/core/models/data/DataService.ts",
+        "imports": 8
+      },
+      {
+        "file": "src/core/state/redux/slices/ApiSlice.ts",
+        "imports": 8
+      }
+    ]
+  }
+}

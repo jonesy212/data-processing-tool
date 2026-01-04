@@ -1,5 +1,5 @@
-// analyzeDuplicates.ts
-// scripts/analyzeDuplicates.ts
+analyzeDuplicates.ts
+scripts/analyzeDuplicates.ts
 import { ImportFixerService } from '@/core/generators/corrections/ImportFixServicies';
 import fs from 'fs';
 import path from 'path';
@@ -177,8 +177,8 @@ class TypeScriptDuplicateAnalyzer {
   }
 }
 
-// Run the analysis
-// === MAIN FUNCTION - Enhanced Version ===
+Run the analysis
+=== MAIN FUNCTION - Enhanced Version ===
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
@@ -316,7 +316,7 @@ async function main() {
 }
 
 
-// Check if this is the main module in a cross-platform way
+Check if this is the main module in a cross-platform way
 function isMainModule(importMetaUrl: string): boolean {
   if (typeof require !== 'undefined' && require.main === module) {
     return true; // CommonJS
@@ -331,7 +331,7 @@ function isMainModule(importMetaUrl: string): boolean {
   }
 }
 
-// Then use:
+Then use:
 if (isMainModule(import.meta.url)) {
   main().catch(console.error);
 }

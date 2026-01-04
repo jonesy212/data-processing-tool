@@ -1,4 +1,4 @@
-// SecureField.ts
+SecureField.ts
 interface SecureField<T = any> {
   value: T;
   isSensitive: boolean;

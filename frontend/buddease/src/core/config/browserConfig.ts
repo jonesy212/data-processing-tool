@@ -1,8 +1,8 @@
-// browserConfig.ts
+browserConfig.ts
 import { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
 import { detectBrowserSpecific } from '@/core/state/detectBrowserSpecific';
 
-// Use the utility function
+Use the utility function
 const browserConfig: BrowserBehaviorConfig = {
     isAutoDismiss: true,
     isClosable: true,

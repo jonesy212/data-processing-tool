@@ -1,5 +1,5 @@
-// AssignEventStore.tsx
-// Import necessary types and interfaces
+AssignEventStore.tsx
+Import necessary types and interfaces
 import { fetchEventData } from "@/core/api/ApiEvent";
 import appTreeApiService from "@/core/api/appTreeApi";
 import { fetchUsersByTaskAPI } from "@/core/api/TasksApi";
@@ -7,17 +7,17 @@ import {
     default as CalendarEventTimingOptimization,
     default as ExtendedCalendarEvent,
 } from "@/core/calendar/CalendarEventTimingOptimization";
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { ExtendedTodo, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
 import { AuthStore } from "@/core/state/stores/AuthStore";
 import { PresentationEventAssignment } from "@/core/state/stores/UserPresentationsStore";
-import { MeetingAttachment, MeetingEntity, MeetingExcludedFields, MeetingIncludedFields, MeetingMeta } from '@/core/typings/entities/MeetingEntity';
-import { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { MeetingAttachment, MeetingEntity, MeetingExcludedFields, MeetingIncludedFields, MeetingMeta } from '@/core/typings/entities/MeetingEntity';
+import type { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 import { EventData } from "@/utils/ethereumUtils";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";

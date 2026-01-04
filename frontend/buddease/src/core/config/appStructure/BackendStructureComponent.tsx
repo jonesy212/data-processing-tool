@@ -1,4 +1,4 @@
-// BackendStructureComponent.tsx
+BackendStructureComponent.tsx
  import BackendStructure from "@/core/server/database/BackendStructure";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 import { NextApiRequest, NextApiResponse } from "next";

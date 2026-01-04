@@ -1,8 +1,8 @@
 // scripts/DatabaseSetupScript.ts
+import { DatabaseConfig, ProjectConfig } from '@/core/config/ProjectConfig';
+import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { ProjectConfig, DatabaseConfig } from '@/app/config/ProjectConfig';
-import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);

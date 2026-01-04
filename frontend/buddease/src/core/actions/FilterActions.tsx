@@ -1,4 +1,4 @@
-// FilterActions.tsx
+FilterActions.tsx
 import { Filter } from "@/core/pages/searches/Filter";
 import { createAction } from "@reduxjs/toolkit";
 

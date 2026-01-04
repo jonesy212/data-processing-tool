@@ -1,4 +1,4 @@
-// useFileUpload.tsx
+useFileUpload.tsx
 import CustomFile from "@/core//documents/File";
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -11,9 +11,9 @@ import { generateCSRFToken } from "@/core/server/security/csrfTokenGenerator";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { ChangeEvent, useState } from "react";
 
-// Don't call hooks conditionally or outside of components
-// const { notify } = useNotification();
-// const { handleError } = useErrorHandling();
+Don't call hooks conditionally or outside of components
+const { notify } = useNotification();
+const { handleError } = useErrorHandling();
 
 type UploadResult = { error: Error } | { uploadedFile: CustomFile<T> };
 

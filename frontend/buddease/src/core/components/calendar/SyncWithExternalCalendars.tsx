@@ -1,4 +1,4 @@
-// SyncWithExternalCalendars.tsx
+SyncWithExternalCalendars.tsx
 import authService from "@/core/server/auth/AuthService";
 import React, { useState } from "react";
 

@@ -1,6 +1,6 @@
-// RegistrationPhaseComponent.tsx
+RegistrationPhaseComponent.tsx
 
-// app/features/registration/components/RegistrationPhaseComponent.tsx
+app/features/registration/components/RegistrationPhaseComponent.tsx
 import { GenericStepContainer } from '@/core/components/shared/steps/GenericStepContainer';
 import { useStepNavigation } from '@/core/hooks/useStepNavigation';
 import { useAuth } from '@/core/state/context/AuthContext';
@@ -188,7 +188,7 @@ const handleSubmit = async () => {
   );
 };
 
-// Step Components
+Step Components
 interface StepProps {
   formData: any;
   onInputChange: (field: string, value: any) => void;

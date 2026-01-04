@@ -1,5 +1,5 @@
-// DatabaseTypes.ts
-// Frontend-safe types and interfaces only - NO pg imports!
+DatabaseTypes.ts
+Frontend-safe types and interfaces only - NO pg imports!
 import { DatabaseConfig } from '@/core/config/DatabaseConfig';
 
 interface DatabaseQuery {

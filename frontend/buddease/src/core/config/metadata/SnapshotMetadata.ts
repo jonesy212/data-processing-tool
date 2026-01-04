@@ -1,4 +1,4 @@
-// SnapshotMetadata.ts
+SnapshotMetadata.ts
 interface SnapshotMetadata {
   permissionLevel: PermissionLevel;
   visibility: VisibilityLevel;

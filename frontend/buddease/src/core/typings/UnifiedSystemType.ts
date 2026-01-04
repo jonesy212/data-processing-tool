@@ -1,4 +1,4 @@
-// UnifiedSystemType.ts
+UnifiedSystemType.ts
 import {
     ActivityActionEnum,
     ActivityTypeEnum, BookmarkStatus,
@@ -62,7 +62,7 @@ export type UnifiedSystemType = {
     meetingStatusType?: MeetingStatus;
   };
   
-// Example usage
+Example usage
 const unifiedSystem: UnifiedSystemType = {
   calendarEvents: [],
   todos: [],

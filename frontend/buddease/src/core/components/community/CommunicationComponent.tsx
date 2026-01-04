@@ -1,4 +1,4 @@
-// CommunicationComponent.tsx
+CommunicationComponent.tsx
 import { CommunicationActions } from '@/core/actions/CommunicationActions';
 import { ChatRoom } from '@/core/communications/ChatRoom';
 import Communication from '@/core/components/community/CommunicationComponent';

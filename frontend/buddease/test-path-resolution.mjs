@@ -4,7 +4,7 @@ import { existsSync } from 'fs';
 import { resolve } from 'path';
 
 const testPaths = [
-  '@/app/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer',
+  '@/core/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer',
   '@/utils/fileHeaderManager'
 ];
 

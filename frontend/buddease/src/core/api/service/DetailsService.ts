@@ -1,9 +1,9 @@
-// VersionGenerator.tsx
-// api/ApiDetails.ts
+VersionGenerator.tsx
+api/ApiDetails.ts
 import internalApiService from '@/core/api/ApiClient';
 import { handleApiError } from '@/core/api/ApiLogs';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';

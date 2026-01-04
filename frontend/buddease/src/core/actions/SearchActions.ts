@@ -1,4 +1,4 @@
-// SearchActions.ts
+SearchActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const SearchActions = {

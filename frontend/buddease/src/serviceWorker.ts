@@ -1,4 +1,5 @@
-import { ExtendableEvent, FetchEvent } from "@/core/api/CustomFetchEvent";
+import type { FetchEvent } from "@/core/api/CustomFetchEvent";
+import { ExtendableEvent } from "@/core/api/CustomFetchEvent";
 
 // service-worker.ts
 const CACHE_NAME = 'my-cache-v1';

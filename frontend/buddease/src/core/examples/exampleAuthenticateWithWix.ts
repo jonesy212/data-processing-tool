@@ -1,6 +1,6 @@
-// exampleAuthenticateWithWix.ts
+exampleAuthenticateWithWix.ts
 
-// exampleAuthenticateWithWix usage
+exampleAuthenticateWithWix usage
 const pageData: PageData = {
   title: 'New Page',
   layout: 'default',

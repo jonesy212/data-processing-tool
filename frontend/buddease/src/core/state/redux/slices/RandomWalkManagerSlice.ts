@@ -1,4 +1,4 @@
-// RandomWalkManagerSlice.ts
+RandomWalkManagerSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface RandomWalkState {

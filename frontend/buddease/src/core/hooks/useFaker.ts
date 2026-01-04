@@ -1,5 +1,5 @@
-// useFaker.ts
-// src/app/hooks/useFaker.ts
+useFaker.ts
+src/app/hooks/useFaker.ts
 import { faker } from '@faker-js/faker';
 
 const useFaker = () => {

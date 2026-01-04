@@ -1,1 +1,1 @@
-// ProductDetails.tsx
+ProductDetails.tsx

@@ -1,8 +1,8 @@
 // DatabaseOperations.ts
 // Function to perform database operation
 
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
-import { ClientDatabaseService } from '@/core/config/DatabaseTypes';
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { ClientDatabaseService } from '@/core/config/DatabaseTypes';
 import { MysqlDatabaseService } from '@/core/server/database/MysqlDatabaseService';
 import { PostgresDatabaseService } from '@/core/server/database/PostgresDatabaseService';
 

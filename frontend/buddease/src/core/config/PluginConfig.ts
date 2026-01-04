@@ -1,5 +1,5 @@
-// PluginConfig.ts
-// pluginTypes.ts
+PluginConfig.ts
+pluginTypes.ts
 export interface AppPlugin {
   id: string;
   name: string;

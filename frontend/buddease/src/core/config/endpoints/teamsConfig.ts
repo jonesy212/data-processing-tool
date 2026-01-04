@@ -1,5 +1,5 @@
 // teamsConfig.ts
-import { TeamsEndpoints } from '@/core/typings/categories/TeamsEndpoints';
+import type { TeamsEndpoints } from '@/core/typings/categories/TeamsEndpoints';
 
 export const teamsConfig: TeamsEndpoints = {
   list: { path: "/api/teams", method: "GET" },

@@ -1,4 +1,4 @@
-// ApiWebBaseEndpoints.ts
+ApiWebBaseEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ApiWebBaseEndpoints extends EndpointCategoryConfig {

@@ -1,5 +1,5 @@
-// FeatureFiles.tsx
-// app/features/prompts/FeatureFiles.tsx
+FeatureFiles.tsx
+app/features/prompts/FeatureFiles.tsx
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { FeaturePrompt } from '@/core/typings/promptTypes';
@@ -24,7 +24,7 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-// Types
+Types
 export interface Subject {
   id: string;
   name: string;
@@ -84,7 +84,7 @@ const FeatureFiles: React.FC = () => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   // Sample data - replace with actual API calls
-// app/features/prompts/FeatureFiles.tsx - Updated sample subjects
+app/features/prompts/FeatureFiles.tsx - Updated sample subjects
 const sampleSubjects: Subject[] = [
   // Project Management & Collaboration
   { id: '1', name: 'Project Planning', color: '#1890ff' },
@@ -177,7 +177,7 @@ const sampleSubjects: Subject[] = [
     }));
   };
 
-// FeaturePrompt Management
+FeaturePrompt Management
 const handleCreatePrompt = (promptData: Omit<FeaturePrompt, 'id' | 'createdAt' | 'updatedAt'>) => {
   try {
     const newPrompt: FeaturePrompt = {
@@ -245,7 +245,7 @@ const handleCreatePrompt = (promptData: Omit<FeaturePrompt, 'id' | 'createdAt' |
   }
 };
 
-// Also update other FeaturePrompt operations for consistency:
+Also update other FeaturePrompt operations for consistency:
 
 const handleUpdatePrompt = (promptId: string, updatedData: Partial<FeaturePrompt>) => {
   try {
@@ -362,7 +362,7 @@ const handleDeletePrompt = (promptId: string) => {
   }
 };
 
-// Helper function (assuming it exists or needs to be created)
+Helper function (assuming it exists or needs to be created)
 const getPromptById = (promptId: string): FeaturePrompt | undefined => {
   // Implementation depends on how you access your state
   // This is just a placeholder

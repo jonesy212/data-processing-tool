@@ -1,7 +1,7 @@
-// ApiExchange.ts
+ApiExchange.ts
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useSecureExchangeId from "@/core/hooks/useSecureExchangeId";
 import { Exchange } from "@/core/models/cypto/Exchange";
 import { ExchangeData } from "@/core/models/data/ExchangeData";
@@ -14,7 +14,7 @@ import {
     handleApiErrorAndNotify,
 } from "./ApiData";
 
-// Define your notification messages interface
+Define your notification messages interface
 
 
 interface DataNotificationMessages {
@@ -22,7 +22,7 @@ interface DataNotificationMessages {
   // Add more notification IDs as needed
 }
 
-// Function to fetch exchange data
+Function to fetch exchange data
 export const fetchExchangeData = async <
   T extends BaseDataEntity = AppEntity,
   K extends T = T,

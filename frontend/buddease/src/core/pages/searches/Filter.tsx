@@ -1,4 +1,4 @@
-// Filter.tsx
+Filter.tsx
 import { SortingOption } from '@/core/pages/searches/SearchOptions';
 import { DrawingEntity } from '@/core/typings/entities/DrawingEntity';
 import React, { useState } from 'react';

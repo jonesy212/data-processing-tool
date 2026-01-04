@@ -1,4 +1,4 @@
-// TeamActions.ts
+TeamActions.ts
 
 import { Team } from "@/core/components/teams/Team";
 import { Member } from "@/core/models/members/Member";

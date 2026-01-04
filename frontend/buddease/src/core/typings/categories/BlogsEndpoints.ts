@@ -1,4 +1,4 @@
-// BlogsEndpoints.ts
+BlogsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface BlogsEndpoints extends EndpointCategoryConfig {

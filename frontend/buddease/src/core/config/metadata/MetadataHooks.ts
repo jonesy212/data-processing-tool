@@ -1,17 +1,17 @@
-// MetadataHooks.ts
-// config/metadata/MetadataHooks.ts
+MetadataHooks.ts
+config/metadata/MetadataHooks.ts
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { Version } from '@/core/versions/Version';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedRelationshipData } from '@/core/models/data/Data';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import { UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
 
-import { createEventManager } from "@/core/state/stores/DataStore";
+import type { createEventManager } from "@/core/state/stores/DataStore";
 import { HistoryEntry } from '@/core/state/stores/HistoryStore';
 import {
     EventAttachment,
@@ -33,7 +33,7 @@ import { UserData } from "@/core/users/User";
 import { VersionData, VersionHistory } from "@/core/versions/VersionData";
 import { useState } from 'react';
 
-// Client-side metadata state interfaces
+Client-side metadata state interfaces
 interface MetaState<
   T extends BaseDataEntity,
   K extends T = T,
@@ -63,13 +63,13 @@ interface MyMetaState<
   timestamp: string | number | Date | undefined;
 }
 
-// Client-side type definitions
+Client-side type definitions
 type BaseDataWithAttachment = BaseDataEntity;
 type BaseType = BaseDataEntity;
 type ExtendedType = BaseDataEntity &
   UserConfig<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> & 
   UserData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
-// Client-side constants
+Client-side constants
 const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
 const lastUpdated: VersionHistory<VersionHistoryEntity, VersionHistoryK, VersionHistoryMeta, VersionHistoryAttachment, VersionHistoryExcludedFields, VersionHistoryIncludedFields> = {
@@ -89,7 +89,7 @@ const events = createEventManager<EventEntity,
   EventIncludedFields
 >();
 
-// Client-side React hooks for metadata
+Client-side React hooks for metadata
 export const useMeta = <
   T extends BaseDataEntity, 
   K extends T = T, 

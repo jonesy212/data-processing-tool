@@ -1,8 +1,8 @@
-// AccessControlRule.ts
+AccessControlRule.ts
 import { AccessControlEntry } from '@/core/permissions/AccessControlEntry';
 
-// Since AccessControlEntry is for specific user/group permissions,
-// AccessControlRule is for defining rules that can be applied dynamically
+Since AccessControlEntry is for specific user/group permissions,
+AccessControlRule is for defining rules that can be applied dynamically
 export interface AccessControlRule {
   id: string;
   name: string;
@@ -34,7 +34,7 @@ export interface AccessControlRule {
   version: number;
 }
 
-// Supporting types for AccessControlRule
+Supporting types for AccessControlRule
 export interface AccessControlCondition {
   type: 'user_property' | 'entity_state' | 'time_based' | 'custom_logic';
   property?: string; // Which property to check
@@ -51,7 +51,7 @@ export interface RuleSchedule {
   recurrence?: 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
 }
 
-// Utility function to check if an AccessControlEntry matches a rule
+Utility function to check if an AccessControlEntry matches a rule
 export function entryMatchesRule(
   entry: AccessControlEntry,
   rule: AccessControlRule,
@@ -69,7 +69,7 @@ export function entryMatchesRule(
   return evaluateConditions(rule.conditions, context);
 }
 
-// Context for rule evaluation
+Context for rule evaluation
 export interface RuleEvaluationContext {
   user: {
     id: string;

@@ -1,4 +1,4 @@
-// CollaborationDashboard.tsx
+CollaborationDashboard.tsx
 import Stopwatch from "@/core/calendar/Stopwatch";
 import { ChatRoom } from '@/core/communications/ChatRoom';
 import EditorWithPrompt from "@/core/components/documents/EditorWithPrompt";

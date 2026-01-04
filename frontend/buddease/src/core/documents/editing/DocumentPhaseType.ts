@@ -1,5 +1,5 @@
-// DocumentPhaseType.ts
-//DocumentPhaseTypeEnum.ts
+DocumentPhaseType.ts
+DocumentPhaseTypeEnum.ts
 
 export enum DocumentPhaseTypeEnum {
   Ideation = "ideation",

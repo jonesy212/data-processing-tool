@@ -1,4 +1,4 @@
-// src/app/error-analyzer/ImportSuggestionGenerator.ts
+src/app/error-analyzer/ImportSuggestionGenerator.ts
 
 import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import { ImportFixStrategy } from '@/core/error-analyzer/index';

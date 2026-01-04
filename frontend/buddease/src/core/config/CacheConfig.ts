@@ -1,4 +1,4 @@
-// CacheConfig.ts
+CacheConfig.ts
 
 export interface BaseCacheConfig {
   maxAge?: string | number;

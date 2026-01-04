@@ -1,5 +1,5 @@
-// EnvironmentConfig.ts
-// src/config/environments/EnvironmentConfig.ts
+EnvironmentConfig.ts
+src/config/environments/EnvironmentConfig.ts
 export interface EnvironmentConfig {
   name: 'development' | 'staging' | 'production';
   apiBaseUrl: string;

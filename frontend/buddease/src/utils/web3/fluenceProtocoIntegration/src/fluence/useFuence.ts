@@ -1,4 +1,4 @@
-// UseFluence.tsx
+UseFluence.tsx
 import LoadFluenceState from '@/core/dashboards/LoadFluenceState';
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { useEffect } from 'react';

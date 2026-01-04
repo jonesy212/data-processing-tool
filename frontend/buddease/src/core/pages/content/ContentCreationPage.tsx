@@ -1,4 +1,4 @@
-// ContentCreationPage.tsx
+ContentCreationPage.tsx
 
 import { ButtonGenerator } from '@/core/generators/GenerateButtons';
 import AddContent from '@/core/models/content/AddContent';
@@ -9,7 +9,7 @@ interface ContentCreateionPageProps {
 }
 
 
-// Enhanced version with content-specific lifecycle
+Enhanced version with content-specific lifecycle
 const ContentCreationPage: React.FC<ContentCreationPageProps> = ({
   onComplete
 }) => {

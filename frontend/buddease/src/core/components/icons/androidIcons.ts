@@ -1,8 +1,8 @@
-// androidIcons.ts
+androidIcons.ts
 import { IconLoader, createIconLoader } from "@/core/components/icons/IconLoader";
 
 
-// Launcher Icon
+Launcher Icon
 export const loadLauncherIcon: IconLoader = createIconLoader(
     "path/to/launcher-icon.png",
     "Launcher Icon"
@@ -60,7 +60,7 @@ export const loadLauncherIcon: IconLoader = createIconLoader(
   
 
 
-// Share Icon
+Share Icon
 export const loadShareIcon: IconLoader = createIconLoader(
     "path/to/share-icon.png",
     "Share Icon"

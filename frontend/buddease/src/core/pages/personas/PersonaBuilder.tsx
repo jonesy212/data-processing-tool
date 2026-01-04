@@ -1,9 +1,9 @@
-// PersonaBuilder.tsx
+PersonaBuilder.tsx
 import { PersonaData } from "@/core/pages/personas/Persona";
 import ProjectManagerPersona from "./ProjectManagerPersona";
 
 
-// Define PersonaTypeEnum enum with persona types
+Define PersonaTypeEnum enum with persona types
 export enum PersonaTypeEnum {
   Music = "Music Persona",
   Film = "Film Persona",
@@ -89,7 +89,7 @@ export class PersonaBuilder {
   }
 }
 
-// Function to check alignment between PersonaData and PersonaType
+Function to check alignment between PersonaData and PersonaType
 const checkAlignment = (
   personaData: PersonaData,
   personaType: typeof PersonaTypeEnum
@@ -115,7 +115,7 @@ const checkAlignment = (
 
 
 
-// Create an instance of PersonaData or pass an object of type PersonaData
+Create an instance of PersonaData or pass an object of type PersonaData
 const personaDataInstance: PersonaData = {
   Music: [],
   Film: [],
@@ -135,10 +135,10 @@ const personaDataInstance: PersonaData = {
   Blogger: [],
 };
 
-// Call checkAlignment function with the instance of PersonaData
+Call checkAlignment function with the instance of PersonaData
 checkAlignment(personaDataInstance, PersonaTypeEnum);
 
-// Export PersonaData and PersonaType
+Export PersonaData and PersonaType
 export type { PersonaData };
 
 export default PersonaTypeEnum;

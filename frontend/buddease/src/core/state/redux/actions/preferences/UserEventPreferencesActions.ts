@@ -1,5 +1,6 @@
-// UserEventPreferencesActions.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+UserEventPreferencesActions.ts
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface UserEventPreferencesState {
   preferredEventTypes: string[];

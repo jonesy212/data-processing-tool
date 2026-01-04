@@ -1,5 +1,5 @@
-// sharedError.ts
-// sharedErrorHandling.ts
+sharedError.ts
+sharedErrorHandling.ts
 
 
 export class NamingConventionsError extends Error {
@@ -13,7 +13,7 @@ export class NamingConventionsError extends Error {
   }
 }
 
-// Export messages for the NamingConventionsError type
+Export messages for the NamingConventionsError type
 export const NamingConventionsErrorMessages = {
   DEFAULT: (errorType: any, details: any) => `Error: ${errorType} - ${details}`,
   INVALID_NAME_FORMAT: 'Invalid name format.',

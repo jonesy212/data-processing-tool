@@ -1,5 +1,5 @@
-// TechnicalSpecifications.ts
-// Define structure for TechnicalSpecifications
+TechnicalSpecifications.ts
+Define structure for TechnicalSpecifications
 
 interface TechnicalSpecifications {
   technologyStack: string[];
@@ -15,7 +15,7 @@ interface TechnicalSpecifications {
   };
 }
 
-// Process function for TechnicalSpecifications
+Process function for TechnicalSpecifications
 export const processTechnicalSpecifications = (specs: TechnicalSpecifications): void => {
   console.log("Processing Technical Specifications...");
 
@@ -29,7 +29,7 @@ export const processTechnicalSpecifications = (specs: TechnicalSpecifications): 
   evaluatePerformance(specs.performanceMetrics);
 };
 
-// Additional performance evaluation helper
+Additional performance evaluation helper
 const evaluatePerformance = (metrics: TechnicalSpecifications['performanceMetrics']): void => {
   if (metrics.uptime > 99.9) {
     console.log("High reliability with uptime over 99.9%.");

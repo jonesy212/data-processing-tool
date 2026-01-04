@@ -1,5 +1,5 @@
-// DynamicComponents.tsx
-// components/DynamicComponent.tsx
+DynamicComponents.tsx
+components/DynamicComponent.tsx
 import React from "react";
 
 interface ButtonProps {

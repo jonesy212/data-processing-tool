@@ -1,5 +1,5 @@
 // AppActions.ts
-import { DocumentActionTypes } from '@/core/tokens/DocumentActions';
+import type { DocumentActionTypes } from '@/core/tokens/DocumentActions';
 import { createAction } from '@reduxjs/toolkit';
 // Import other action types
 

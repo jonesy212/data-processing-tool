@@ -1,4 +1,4 @@
-// Calendar.tsx
+Calendar.tsx
 import { Label } from '@/core/branding/BrandingSettings';
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import YourCalendarLibrary from '@/core/calendar/YourCalendarLibrary';
@@ -11,8 +11,8 @@ import WeekView from '@/core/components/calendar/WeekView';
 import { CryptoHolding } from '@/core/components/crypto/CryptoHolding';
 import CryptoTransaction from '@/core/components/crypto/CryptoTransaction';
 import { Task } from '@/core/components/models/tasks/Task';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project } from '@/core/models/projects/Project';
 import { Progress } from "@/core/models/tracker/ProgressBar";
 import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';

@@ -1,4 +1,4 @@
-// TeamBuildingSettings.ts
+TeamBuildingSettings.ts
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
 
 interface TeamBuildingSettings extends Settings {
@@ -16,7 +16,7 @@ interface TeamBuildingSettings extends Settings {
   // Add any other specific settings for team building based on project needs
 }
 
-// Example usage
+Example usage
 const teamBuildingSettings: TeamBuildingSettings = {
   id: 'teamBuildingSettings',
   enableTeamBuilding: true,

@@ -1,6 +1,6 @@
-// PlatformIntegration.ts
+PlatformIntegration.ts
 
-// Define an interface for platform integration modules
+Define an interface for platform integration modules
 export interface PlatformIntegration {
   fetchHistoricalData: (coinId: string) => Promise<any>;
   trackNewCoins: () => Promise<any>;
@@ -13,7 +13,7 @@ export interface PlatformIntegration {
   [key: string]: (params?: any) => Promise<any>;
 }
 
-// Function to generate platform integration modules
+Function to generate platform integration modules
 export const createPlatformIntegration = (apiEndpoints: { [key: string]: string }): PlatformIntegration => {
   const integration: PlatformIntegration = {} as PlatformIntegration;
 
@@ -32,7 +32,7 @@ export const createPlatformIntegration = (apiEndpoints: { [key: string]: string 
   return integration;
 };
 
-// Platform integration module for CoinMarketCap
+Platform integration module for CoinMarketCap
 export const CoinMarketCapIntegration = createPlatformIntegration({
   fetchHistoricalData: 'https://api.coinmarketcap.com/v1/ticker/',
   trackNewCoins: 'https://api.coinmarketcap.com/v2/listings/',
@@ -41,7 +41,7 @@ export const CoinMarketCapIntegration = createPlatformIntegration({
   fetchGlobalMarketData: 'https://api.coinmarketcap.com/v1/global/',
 });
 
-// Platform integration module for Uniswap
+Platform integration module for Uniswap
 export const UniswapIntegration = createPlatformIntegration({
   fetchHistoricalData: 'https://api.uniswap.com/v1/historical/',
   trackNewCoins: 'https://api.uniswap.com/v2/listings/',
@@ -51,8 +51,8 @@ export const UniswapIntegration = createPlatformIntegration({
 });
 
 
-// todo
-// Define integration modules for DeFi platforms, DEX, and centralized exchanges similarly
-// Example: DeFi Pulse, DeBank, DeFi Rate, SushiSwap, Binance, Kraken, etc.
-// set up coinmarektcap:
-// https://coinmarketcap.com/api/pricing/
+todo
+Define integration modules for DeFi platforms, DEX, and centralized exchanges similarly
+Example: DeFi Pulse, DeBank, DeFi Rate, SushiSwap, Binance, Kraken, etc.
+set up coinmarektcap:
+https://coinmarketcap.com/api/pricing/

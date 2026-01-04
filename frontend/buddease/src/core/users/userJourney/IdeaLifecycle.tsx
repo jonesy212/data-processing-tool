@@ -1,5 +1,5 @@
-// IdeaLifecycle.tsx
-// Updated IdeaLifecycle component
+IdeaLifecycle.tsx
+Updated IdeaLifecycle component
 import { allLifecyclePhases } from '@/core/hooks/phases/lifecycles';
 import { useLifecycle } from '@/core/hooks/useLifecycle.ts';
 import { StepProps } from "@/core/phases/steps/steps";

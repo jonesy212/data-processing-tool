@@ -1,5 +1,5 @@
-// snapshotSuccessMethods.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+snapshotSuccessMethods.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 
 
 

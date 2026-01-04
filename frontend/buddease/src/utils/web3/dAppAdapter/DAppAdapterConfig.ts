@@ -1,21 +1,21 @@
 import ApiConfig from '@/core/api/ApiConfigService';
 import { ClientConfig } from "@/core/client/Client";
 import { Team } from "@/core/components/teams/Team";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CacheConfig } from '@/core/config/CacheConfig';
 import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
 import { LocalizationConfig } from '@/core/config/LocalizationConfig';
 import { LoggingConfig } from '@/core/config/LoggingConfig';
 import { PluginConfig } from '@/core/config/PluginConfig';
 import { StorageConfig } from '@/core/config/StorageConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { ThemeConfig } from '@/core/libraries/ui/theme/ThemeConfig';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import { Project } from "@/core/models/projects/Project";
 import { Task } from "@/core/models/tasks/Task";
 import { TeamMember } from "@/core/models/teams/TeamMembers";
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;

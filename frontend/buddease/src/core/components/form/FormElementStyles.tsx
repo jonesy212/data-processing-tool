@@ -1,8 +1,10 @@
 // FormElementStyles.tsx
-import { AnimationType, useAnimationHook } from '@/core/libraries/animations/AnimationLibrary';
+import { useAnimationHook } from '@/core/libraries/animations/AnimationLibrary';
+import type { AnimationType } from '@/core/libraries/animations/AnimationLibrary';
 import { useShakeAnimation } from '@/core/libraries/animations/useShakeAnimation';
 import React from 'react';
-import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import type {ViewStyle } from 'react-native';
 
 interface FormElementStylesProps {
   animationType: AnimationType;

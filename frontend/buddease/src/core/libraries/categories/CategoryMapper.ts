@@ -1,4 +1,4 @@
-// CategoryMapper.ts
+CategoryMapper.ts
 
 import { CorrectionCategory } from '@/core/typings/correctionTypes';
 

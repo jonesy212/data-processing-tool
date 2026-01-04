@@ -1,4 +1,4 @@
-// ExtendedNotificationMessages.ts
+ExtendedNotificationMessages.ts
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
 
 const EXTENDED_NOTIFICATION_MESSAGES = {

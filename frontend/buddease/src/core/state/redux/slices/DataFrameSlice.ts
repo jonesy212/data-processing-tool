@@ -1,4 +1,4 @@
-// DataFrameSlice.ts
+DataFrameSlice.ts
 import DataFrameAPI from "@/core/api/DataframeApi";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -135,10 +135,10 @@ export const {
   removeDataFrame,
 } = useDataFrameManagerSlice.actions;
 
-// Export selector for accessing the data frames from the state
+Export selector for accessing the data frames from the state
 export const selectDataFrames = (state: { dataFrame: DataFrameSliceState }) =>
   state.dataFrame.dataFrames;
 
-// Export reducer for the data frame entity slice
+Export reducer for the data frame entity slice
 export default useDataFrameManagerSlice.reducer;
 export type { DataFrameResponse };

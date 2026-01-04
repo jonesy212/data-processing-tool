@@ -1,4 +1,4 @@
-// RandomWalkEndpoints.ts
+RandomWalkEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface RandomWalkEndpoints extends EndpointCategoryConfig {

@@ -1,5 +1,5 @@
 // AppCacheManagerActions.ts
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { createAction } from "@reduxjs/toolkit";
 
 export const AppCacheManagerActions = {

@@ -1,14 +1,14 @@
-// apiEndpointOutput.ts
+apiEndpointOutput.ts
 import { NestedEndpoints, endpoints } from "@/core/api/ApiEndpoints";
 import { endpointPreferences } from "@/core/api/ApiPreferencesEndpoints";
 import { generatedApiCode } from "@/core/generators/ApiCodeGenerator";
 
 console.log(generatedApiCode); // Output generated TypeScript API code
 
-// Type assertion to inform TypeScript that endpointPreferences.userMiscellaneousPreferences is of type NestedEndpoints
+Type assertion to inform TypeScript that endpointPreferences.userMiscellaneousPreferences is of type NestedEndpoints
 const userMiscellaneousPreferences = endpointPreferences.userMiscellaneousPreferences as NestedEndpoints;
 
-// Now you can access the setMiscellaneousPreferences endpoint
+Now you can access the setMiscellaneousPreferences endpoint
 console.log(userMiscellaneousPreferences.setMiscellaneousPreferences); // Output: https://your-api-base-url/api/user/preferences/miscellaneous/set
 console.log(userMiscellaneousPreferences.fetchUserPreferences); // Output: https://your-api-base-url/api/user/preferences
 console.log(userMiscellaneousPreferences.updateUserPreferences); // Output: https://your-api-base-url/api/user/preferences
@@ -16,7 +16,7 @@ console.log(userMiscellaneousPreferences.deleteUserPreferences); // Output: http
 console.log(userMiscellaneousPreferences.setTheme); // Output: https://your-api-base-url/api/user/preferences/theme
 console.log(userMiscellaneousPreferences.setIdeationPhase); // Output: https://your-api-base-url/api/user/preferences/ideation-phase
 
-// Accessing the generated API endpoints
+Accessing the generated API endpoints
 const usersEndpoints = endpoints.users as { [key: string]: string | ((userId: number) => string) };
 console.log((endpoints.apiConfig as { [key: string]: string })?.updateUserApiConfig); // Output: https://your-api-base-url/api/user/api-config
 console.log((endpoints.apiConfig as { [key: string]: string })?.aquaConfig); // Output: https://your-api-base-url/api/aqua-config
@@ -32,16 +32,16 @@ console.log(
     123
   )
 );
-// Output: https://your-api-base-url/users/123
+Output: https://your-api-base-url/users/123
 console.log(
   (usersEndpoints as { [key: string]: (userId: number) => string })?.updateRole(
     123
   )
 );
-// Output: https://your-api-base-url/users/123/update-role
+Output: https://your-api-base-url/users/123/update-role
 console.log(
   (
     endpoints.users as { [key: string]: (userIds: number[]) => string }
   )?.updateRoles([456, 789])
 );
-// Output: https://your-api-base-url/users/456,789/update-roles
+Output: https://your-api-base-url/users/456,789/update-roles

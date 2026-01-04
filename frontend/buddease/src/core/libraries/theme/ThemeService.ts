@@ -1,4 +1,4 @@
-// ThemeService.ts
+ThemeService.ts
 
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
@@ -12,7 +12,7 @@ import { action, observable, runInAction } from "mobx";
 
 
 const API_BASE_URL = endpoints.theme.settings;
-// Create your Redux store
+Create your Redux store
 const store = useStore(); // Access the Redux store using the useStore hook
 
 

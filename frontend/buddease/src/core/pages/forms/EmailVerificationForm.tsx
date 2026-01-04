@@ -1,4 +1,4 @@
-// EmailVerificationForm.tsx
+EmailVerificationForm.tsx
 import React, { useState } from 'react';
 
 const EmailVerificationForm: React.FC = () => {

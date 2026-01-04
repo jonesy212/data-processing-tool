@@ -1,6 +1,6 @@
-// Permission.ts
+Permission.ts
 
-// Base interface WITHOUT index signature
+Base interface WITHOUT index signature
 interface BasePermissions {
   userId: string;
   permissions: UserPermissions;
@@ -16,7 +16,7 @@ interface BasePermissions {
   delete?: boolean;
 }
 
-// Extended interface WITH index signature
+Extended interface WITH index signature
 interface Permission extends BasePermissions {
   [key: string]: any; // Flexible additional properties
 }
@@ -32,7 +32,7 @@ interface PrivacyCompliance {
 }
 
 
-// Define individual category permissions
+Define individual category permissions
 interface DataPermissions extends BasePermissions {
   // Additional data-specific permissions
   canExport?: boolean;
@@ -71,7 +71,7 @@ interface TaskPermissions extends BasePermissions {
 }
 
 
-// Member-specific Permissions
+Member-specific Permissions
 interface MemberPermission extends Permission {
   scope: 'member';
   resourceType: 'profile' | 'data' | 'settings' | 'tasks';
@@ -175,7 +175,7 @@ interface DocumentEditingPermissions extends BasePermissions {
 
 
 
-// Combine all permissions into a single interface
+Combine all permissions into a single interface
 interface UserPermissions {
   data?: DataPermissions;
   board?: BoardPermissions;

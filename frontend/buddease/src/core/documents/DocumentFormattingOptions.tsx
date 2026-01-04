@@ -1,4 +1,4 @@
-// DocumentFormattingOptions.tsx
+DocumentFormattingOptions.tsx
 import { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
 import React from 'react';
 

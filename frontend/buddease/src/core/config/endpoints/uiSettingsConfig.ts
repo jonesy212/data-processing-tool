@@ -1,7 +1,6 @@
 // uiSettingsConfig.ts
-// UiSettingsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { UiSettingsEndpoints } from '@/core/typings/categories/UiSettingsEndpoints';
+import type { UiSettingsEndpoints } from '@/core/typings/categories/UiSettingsEndpoints';
 
 
 export const uiSettingsConfig: UiSettingsEndpoints = {

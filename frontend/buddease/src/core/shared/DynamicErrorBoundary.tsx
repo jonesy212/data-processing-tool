@@ -1,4 +1,4 @@
-// DynamicErrorBoundary.tsx
+DynamicErrorBoundary.tsx
 import { ErrorBoundaryContext } from '@/core/shared/ErrorBoundaryProvider';
 import React, { Component, ErrorInfo, ReactNode } from '@/core/shared/ErrorHandler';
 

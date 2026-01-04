@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // debug-babel.ts
-var DebugBabelAnalyzer_1 = require("@/app/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer");
+var DebugBabelAnalyzer_1 = require("@/core/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer");
 function debugBabelConfigs() {
     return __awaiter(this, void 0, void 0, function () {
         var analyzer, issues;

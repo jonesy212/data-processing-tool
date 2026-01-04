@@ -1,4 +1,4 @@
-// CalendarStore.tsx
+CalendarStore.tsx
 import { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";

@@ -1,5 +1,5 @@
-// generateFileChecklist.tsx
-// generateFileChecklist.ts
+generateFileChecklist.tsx
+generateFileChecklist.ts
 import FeatureStructure from "@/core/pages/personas/FeatureStructure";
 import FeatureStore from "@/core/state/stores/FeatureStore";
 
@@ -58,11 +58,11 @@ function generateFileChecklist(featureStructure: FeatureStructure): string {
 }
 
 
-// Instantiate the FeatureStore
+Instantiate the FeatureStore
 const featureStore = new FeatureStore();
 
 
-// Usage example:
+Usage example:
 const featureStructure: FeatureStructure = {
   componentName: "ExampleComponent",
   category: "UserInterface",

@@ -1,4 +1,4 @@
-// FilesEndpoints.ts
+FilesEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface FilesEndpoints extends EndpointCategoryConfig {

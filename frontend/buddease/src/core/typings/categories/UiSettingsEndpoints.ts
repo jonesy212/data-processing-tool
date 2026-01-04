@@ -1,4 +1,4 @@
-// UiSettingsEndpoints.ts
+UiSettingsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface UiSettingsEndpoints extends EndpointCategoryConfig {

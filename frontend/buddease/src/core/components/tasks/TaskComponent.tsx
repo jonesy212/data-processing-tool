@@ -1,4 +1,4 @@
-// TaskComponent.tsx
+TaskComponent.tsx
 
 import { FilterActions } from '@/core/actions/FilterActions';
 import { LanguageEnum } from '@/core/communications/LanguageEnum';

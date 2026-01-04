@@ -1,5 +1,5 @@
-// UserRolesEditor.tsx
-import { UserRole } from "@/core/models/UserRole";
+UserRolesEditor.tsx
+import type { UserRole } from "@/core/models/UserRole";
 import UserRoles from '@/core/models/UserRoles';
 import React, { useState } from 'react';
 

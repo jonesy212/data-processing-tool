@@ -1,8 +1,8 @@
-// appDetailsConfig.ts
+appDetailsConfig.ts
 
-// detailsConfig.ts
+detailsConfig.ts
 
-// Import necessary modules or types/interfaces
+Import necessary modules or types/interfaces
 
 const appDetailsConfig = {
     // Define configurations for details here

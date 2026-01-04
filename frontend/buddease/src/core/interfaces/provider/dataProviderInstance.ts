@@ -1,4 +1,4 @@
-// dataProviderInstance.ts
+dataProviderInstance.ts
 import {
     CreateManyResponse, CreateResponse,
     CustomBaseRecord, CustomCreateManyParams,

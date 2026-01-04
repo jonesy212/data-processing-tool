@@ -1,4 +1,4 @@
-// PersonaActions.ts
+PersonaActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const CommonPersonaActions = {

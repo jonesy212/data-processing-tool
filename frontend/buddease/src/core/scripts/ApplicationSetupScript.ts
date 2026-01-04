@@ -1,4 +1,4 @@
-// scripts/ApplicationSetupScript.ts
+scripts/ApplicationSetupScript.ts
 import { DatabaseSetupScript } from '@/core/actions/database';
 import { ConfigurationGenerationScript } from '@/core/api/config';
 import { ProjectConfig } from '@/core/config/ProjectConfig';

@@ -1,4 +1,4 @@
-// IdeaLifecycleManager.tsx
+IdeaLifecycleManager.tsx
 import { IdeaLifecyclePhase } from '@/core/models/phases/PhaseManager';
 import ConceptDevelopment from '@/core/users/userJourney/ConceptDevelopment';
 import IdeaValidation from '@/core/users/userJourney/IdeaValidation';

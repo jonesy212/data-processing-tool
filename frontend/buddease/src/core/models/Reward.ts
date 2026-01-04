@@ -1,4 +1,4 @@
-// Reward.ts
+Reward.ts
 interface Reward {
   userId: string;
   amount: number;

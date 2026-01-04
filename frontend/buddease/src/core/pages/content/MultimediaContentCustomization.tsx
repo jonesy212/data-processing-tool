@@ -1,4 +1,4 @@
-// MultimediaContentCustomization.tsx
+MultimediaContentCustomization.tsx
 import ContentDetailsListItem from "@/core/components/models/content/ContentDetailsListItem";
 import { Task } from "@/core/components/models/tasks/Task";
 import { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
@@ -220,7 +220,7 @@ const MultimediaContentCustomization: React.FC<
   );
 };
 
-// Todo: Replace with your actual icon
+Todo: Replace with your actual icon
 const ExampleIcon: React.FC = () => <span>🌐</span>;
 
 export default MultimediaContentCustomization;

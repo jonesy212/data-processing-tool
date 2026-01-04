@@ -1,5 +1,5 @@
-// Accessibility.tsx
-// components/Accessibility.tsx
+Accessibility.tsx
+components/Accessibility.tsx
 import React, { ReactNode } from "react";
 
 interface AccessibleComponentProps {

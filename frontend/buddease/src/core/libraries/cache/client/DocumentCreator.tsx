@@ -1,4 +1,4 @@
-// DocumentCreator.tsx
+DocumentCreator.tsx
 'use client';
 
 import { ClientDocumentGenerator } from '@/core/libraries/cache/client/DocumentGenerator';

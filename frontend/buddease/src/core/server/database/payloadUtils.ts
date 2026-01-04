@@ -1,4 +1,4 @@
-// payloadUtils.ts 
+payloadUtils.ts 
 import { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 
 const mapToPayload = (updatePayload: UpdateSnapshotPayload<Data<BaseData<any>>>): Payload => {

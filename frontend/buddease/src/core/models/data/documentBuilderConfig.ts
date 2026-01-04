@@ -1,4 +1,4 @@
-// documentBuilderConfig.ts
+documentBuilderConfig.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/core/communications/LanguageEnum";
 import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
 import { LinksType } from "@/core/documents/DocumentOptions";

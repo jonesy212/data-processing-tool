@@ -1,6 +1,6 @@
 // BackendStructureViewer.tsx
 import { useCurrentUser, useRoleAccess } from '@/core/hooks/useRoleAccess';
-import { UserRole } from '@/core/models/UserRole';
+import type { UserRole } from '@/core/models/UserRole';
 import { UserRoleEnum } from '@/core/models/UserRoles';
 import AccessDenied from '@/core/pages/AccessDenied';
 import React, { useState } from 'react';

@@ -1,4 +1,4 @@
-// GenerateDatabase.tsx
+GenerateDatabase.tsx
 import { databaseConnection } from '@/core/config/databaseConnection';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { databaseService } from "@/core/server/database/DatabaseOperations";

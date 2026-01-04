@@ -1,4 +1,4 @@
-// SliceGenerator.tsx
+SliceGenerator.tsx
 import { PayloadAction, createSlice, Draft } from "@reduxjs/toolkit";
 
 interface GenericEntityState<T extends { id: string }> {

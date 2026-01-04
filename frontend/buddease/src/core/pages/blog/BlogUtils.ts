@@ -1,4 +1,4 @@
-// BlogUtils.ts
+BlogUtils.ts
 import { Blog } from "@/core/pages/blog/Blog";
 
 /**

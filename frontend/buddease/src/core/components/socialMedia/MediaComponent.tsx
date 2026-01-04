@@ -1,4 +1,4 @@
-// MediaComponent.tsx
+MediaComponent.tsx
 
 import { socialMediaIntegrationService } from '@/core/api/service/SocialMediaIntegrationService';
 import React, { useEffect, useState } from 'react';

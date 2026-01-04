@@ -1,4 +1,4 @@
-// assign.ts
+assign.ts
 import DatabaseClient from '@/core/api/DatabaseClient';
 import { databaseConnection } from '@/core/config/databaseConnection'; // Import the renamed config
 import { NextRequest, NextResponse } from 'next/server';

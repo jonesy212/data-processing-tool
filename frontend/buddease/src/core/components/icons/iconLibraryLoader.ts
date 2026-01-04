@@ -1,4 +1,4 @@
-// iconLibraryLoader.ts
+iconLibraryLoader.ts
 type IconLibrary =
   "feather"
   | "ionicons"

@@ -1,4 +1,4 @@
-// EmailConfirmationPhase.tsx
+EmailConfirmationPhase.tsx
 
 import { DevelopmentPhase } from "@/core/components/phases/DevelopmentPhase";
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";
@@ -16,7 +16,7 @@ const handleRegistrationSuccess = (condition: boolean, dynamicData: any) => {
   };
  
 
-// Implement the email confirmation phase
+Implement the email confirmation phase
 const EmailConfirmationPhase: DevelopmentPhase = {
     phase: OnboardingPhase.EMAIL_CONFIRMATION,
     title: 'Email Confirmation',

@@ -1,4 +1,4 @@
-// snapshotValidators.ts
+snapshotValidators.ts
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
 import { SnapshotAnalyzer } from '@/core/generators/corrections/SnapshotAnalyzer';
@@ -30,7 +30,7 @@ export interface CodeSuggestion {
     };
 }
 
-// Type guards
+Type guards
 export const isStringSuggestion = (suggestion: ValidationSuggestion): suggestion is StringSuggestion =>
     suggestion.type === 'string';
 
@@ -1241,10 +1241,10 @@ export class SnapshotValidators {
     }
 }
 
-// Singleton instance for easy import
+Singleton instance for easy import
 export const snapshotValidators = new SnapshotValidators();
 
-// Example custom rules
+Example custom rules
 export const defaultCustomRules: SnapshotValidationRule[] = [
     {
         name: 'no-empty-data',

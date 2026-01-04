@@ -1,92 +1,188 @@
 // route.ts
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
+import PizZip from "pizzip";
 
-export async function POST(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+  }
+  
   try {
-    const { shopUrl, apiKey, apiSecret, accessToken } = await request.json();
-
-    if (!shopUrl) {
-      return NextResponse.json(
-        { error: 'Shop URL is required' },
-        { status: 400 }
-      );
-    }
-
-    // Shopify OAuth or token-based auth
-    let authResponse;
-    if (apiKey && apiSecret) {
-      // OAuth flow
-      authResponse = await fetch(`https://${shopUrl}/admin/oauth/access_token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          client_id: apiKey,
-          client_secret: apiSecret,
-          grant_type: 'client_credentials'
-        }),
-      });
-    } else if (accessToken) {
-      // Validate existing token
-      authResponse = await fetch(`https://${shopUrl}/admin/api/2023-10/shop.json`, {
-        headers: {
-          'X-Shopify-Access-Token': accessToken,
-        },
-      });
-    } else {
-      return NextResponse.json(
-        { error: 'Either API key/secret or access token is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!authResponse.ok) {
-      throw new Error('Shopify authentication failed');
-    }
-
-    const data = await authResponse.json();
-
-    return NextResponse.json({
-      success: true,
-      accessToken: data.access_token || accessToken,
-      shop: data.shop,
-      scope: data.scope
-    });
-  } catch (error: any) {
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
+  } catch (error) {
     return NextResponse.json(
-      { error: 'Shopify authentication failed: ' + error.message },
+      { error: 'Failed to read from cache' },
       { status: 500 }
     );
   }
 }
 
-// GET - Install URL for OAuth
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const shopUrl = searchParams.get('shopUrl');
-    const apiKey = process.env.SHOPIFY_API_KEY;
-
-    if (!shopUrl || !apiKey) {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
       return NextResponse.json(
-        { error: 'Shop URL and API key are required' },
+        { error: 'Key and data are required' },
         { status: 400 }
       );
     }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
 
-    const scopes = 'read_products,write_products,read_orders';
-    const redirectUri = `${process.env.NEXTAUTH_URL}/api/external/shopify/callback`;
-    const installUrl = `https://${shopUrl}/admin/oauth/authorize?client_id=${apiKey}&scope=${scopes}&redirect_uri=${redirectUri}`;
 
-    return NextResponse.json({
-      success: true,
-      installUrl,
-      message: 'Use this URL to install the app'
+
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
+    
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Failed to generate install URL: ' + error.message },
+      { 
+        success: false, 
+        error: error.message 
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
+    }
+  } catch (error) {
+    console.error("Error generating document:", error);
+    return NextResponse.json(
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
+
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
+
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
+}
+
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
+}
+
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
       { status: 500 }
     );
   }

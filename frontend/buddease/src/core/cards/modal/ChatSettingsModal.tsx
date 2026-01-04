@@ -1,4 +1,4 @@
-// ChatSettingsModal.tsx
+ChatSettingsModal.tsx
 import { CryptoPreferences } from '@/core/config/UserPreferences';
 import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
 import { GeneralNotificationTypes } from '@/core/notifications/NotificationChannels';
@@ -6,7 +6,7 @@ import { DocumentEditingPermissions } from '@/core/permissions/Permission';
 import { PrivacySettings } from '@/core/settings/PrivacySettings';
 import { SecuritySettings } from '@/core/settings/SecuritySettings';
 
-// Define the ChatSettingsModal type
+Define the ChatSettingsModal type
 type ChatSettingsModal = {
   close: () => void;
   isOpen: () => boolean;
@@ -48,7 +48,7 @@ type CommonNotificationSettings = {
   smsFrequency: string; // Adjust type if needed (e.g., 'daily', 'weekly')
 };
 
-// Define related types
+Define related types
 type NotificationPreferences = {
   mobile: CommonNotificationSettings;
   desktop: CommonNotificationSettings;

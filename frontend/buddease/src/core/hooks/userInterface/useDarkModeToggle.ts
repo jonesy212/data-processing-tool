@@ -1,4 +1,4 @@
-// useDarkModeToggle.ts
+useDarkModeToggle.ts
 import { useState } from 'react';
 
 const useDarkModeToggle = () => {

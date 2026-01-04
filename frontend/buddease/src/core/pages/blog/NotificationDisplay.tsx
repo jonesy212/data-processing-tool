@@ -1,4 +1,4 @@
-// NotificationDisplay.tsx
+NotificationDisplay.tsx
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import React from 'react';
 

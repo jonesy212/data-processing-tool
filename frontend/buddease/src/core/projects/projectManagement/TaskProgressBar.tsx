@@ -1,4 +1,4 @@
-// TaskProgressBar.tsx
+TaskProgressBar.tsx
 import ProgressBar, { Progress, ProgressPhase } from "@/core/models/tracker/ProgressBar";
 import React from "react";
 

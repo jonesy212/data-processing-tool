@@ -1,8 +1,8 @@
-// fetchCustomFeedbackForm.tsx
+fetchCustomFeedbackForm.tsx
 
 import axiosInstance from '@/core/api/csrfToken';
 
-// Function to fetch customized feedback form based on persona
+Function to fetch customized feedback form based on persona
 const fetchCustomFeedbackForm = async (persona) => {
     try {
         const response = await axiosInstance.get(`/api/customize_feedback_form/${persona}`);
@@ -13,7 +13,7 @@ const fetchCustomFeedbackForm = async (persona) => {
     }
 };
 
-// Example usage:
+Example usage:
 const persona = "Art Persona";
 fetchCustomFeedbackForm(persona)
     .then((customizedForm) => {

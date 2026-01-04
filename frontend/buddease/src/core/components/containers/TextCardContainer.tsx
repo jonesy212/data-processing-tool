@@ -1,5 +1,5 @@
-// TextCardContainer.tsx
-// TextContainer.tsx
+TextCardContainer.tsx
+TextContainer.tsx
 import TextCard from '@/core/cards/TextCard';
 import React from 'react';
 

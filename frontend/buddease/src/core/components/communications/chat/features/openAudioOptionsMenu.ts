@@ -1,9 +1,9 @@
-// openAudioOptionsMenu.ts
+openAudioOptionsMenu.ts
 
 import { ChatApi } from "@/core/api/ChatApi";
 import { showToast } from "@/core/models/display/ShowToast";
 
-// Function to open audio options menu
+Function to open audio options menu
 const openAudioOptionsMenu = async (roomId: string) => {
   try {
     // Simulate fetching audio options from an API or local storage

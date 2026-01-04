@@ -1,4 +1,4 @@
-// SharingOptions.tsx
+SharingOptions.tsx
 import React from 'react';
 
 interface SharingOptionsProps {

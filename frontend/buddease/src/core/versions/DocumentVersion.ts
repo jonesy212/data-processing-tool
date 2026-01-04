@@ -1,4 +1,4 @@
-// DocumentVersion.ts
+DocumentVersion.ts
 import Logger from '@/core/logging/Logger';
 import * as path from 'path';
 
@@ -93,7 +93,7 @@ class DocumentVersioning {
     }
   }}
 
-// Example usage:
+Example usage:
 try {
   const documentVersioning = new DocumentVersioning('/path/to/data');
   documentVersioning.initializeVersions();

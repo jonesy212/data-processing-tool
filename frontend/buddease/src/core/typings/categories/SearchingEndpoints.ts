@@ -1,4 +1,4 @@
-// SearchingEndpoints.ts
+SearchingEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface SearchingEndpoints extends EndpointCategoryConfig {

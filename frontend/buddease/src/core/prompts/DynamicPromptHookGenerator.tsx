@@ -1,5 +1,5 @@
-// DynamicPromptHookGenerator.tsx
-// DynamicPromptHook.ts
+DynamicPromptHookGenerator.tsx
+DynamicPromptHook.ts
 import createDynamicHook, { DynamicHookParams } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { processAutoGPTOutputWithSpaCy } from '@/core/intelligence/AutoGPTSpaCyIntegration';
 import { useEffect } from 'react';
@@ -62,7 +62,7 @@ const useDynamicPromptHook = createDynamicPromptHook({
 } as DynamicPromptConfig & DynamicHookParams);
 
 
-// New code with useEffect integration
+New code with useEffect integration
 const useDynamicPromptHookWithEffect = () => {
   useEffect(() => {
     // Invoke the dynamic prompt hook when the component mounts

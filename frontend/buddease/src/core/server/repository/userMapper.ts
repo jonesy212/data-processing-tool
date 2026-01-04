@@ -1,8 +1,8 @@
-// userMapper.ts
-import { DefaultExcludedFields } from '@/core/config/BaseConfig';
+userMapper.ts
+import type { DefaultExcludedFields } from '@/core/config/BaseConfig';
 import { CacheData } from '@/core/generators/GenerateCache';
 
-// Explicit sensitive fields that should never be exposed
+Explicit sensitive fields that should never be exposed
 const SensitiveUserFields = [
   'password',
   'authToken',

@@ -1,8 +1,8 @@
-// CustomSlider.tsx
+CustomSlider.tsx
 import { Slider } from 'antd';
 import React, { ChangeEvent, ChangeEventHandler, useState } from 'react';
 
-// Define props interface for CustomSlider
+Define props interface for CustomSlider
 interface CustomSliderProps {
   min: number;
   max: number;

@@ -1,4 +1,4 @@
-// AdapterContent.tsx
+AdapterContent.tsx
 import Link from "@/core/components/routing/Link";
 import {
     AnimatedComponentProps,
@@ -242,7 +242,7 @@ const AdapterContent: React.FC<AdapterContentProps> = ({
   );
 };
 
-//todo update and use the right icon here
+todo update and use the right icon here
 const ExampleIcon: React.FC = () => <span>🌐</span>; // Replace with your actual icon
 
 export default AdapterContent;

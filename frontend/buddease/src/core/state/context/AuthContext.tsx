@@ -1,21 +1,21 @@
-// AuthContext.tsx
+AuthContext.tsx
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
 import { UserPreferences } from "@/core/config/UserPreferences";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NFT } from "@/core/models/cypto/NFT";
 import { AuthenticationProvider } from '@/core/server/auth/AuthService';
 import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession } from "@/core/state/stores/AuthStore";
 import { SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
 import { DashboardConfig } from '@/core/typings/authTypes';
-import { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
+import type { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
 import { User } from "@/core/users/User";
 import React, { createContext, useContext } from "react";
 
-// Keep AuthMethods as the source of truth for all auth methods
+Keep AuthMethods as the source of truth for all auth methods
 
 interface AuthMethods<
   T extends BaseDataEntity,
@@ -41,7 +41,7 @@ interface AuthMethods<
   ) => void;
 }
 
-// Create a separate interface for AuthContext value that extends AuthMethods
+Create a separate interface for AuthContext value that extends AuthMethods
 interface AuthContextProps<
   T extends BaseDataEntity,
   K extends T = T,

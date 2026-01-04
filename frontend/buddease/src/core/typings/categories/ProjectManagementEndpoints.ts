@@ -1,4 +1,4 @@
-// ProjectManagementEndpoints.ts
+ProjectManagementEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ProjectManagementEndpoints extends EndpointCategoryConfig {

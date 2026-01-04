@@ -1,11 +1,11 @@
-// useSecureProjectId.ts
+useSecureProjectId.ts
 import UserRoles from '@/core/models/UserRoles';
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Optional: You might pass projectId from route params or props
+Optional: You might pass projectId from route params or props
 export const useSecureProjectId = (projectId: string | null) => {
   const [secureProjectId, setSecureProjectId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

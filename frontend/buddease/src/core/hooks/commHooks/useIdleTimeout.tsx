@@ -1,31 +1,31 @@
-// useIdleTimeout.tsx
+useIdleTimeout.tsx
 
 import { ExtendedRouter } from "@/core/pages/MyAppWrapper";
 import { useEffect } from "react";
 import { Router } from "react-router-dom";
-// Define the type for the idleTimeoutEffect function
+Define the type for the idleTimeoutEffect function
 type IdleTimeoutEffectFunction = () => Promise<void>;
 
-// Define the type for the idleTimeoutCondition function
+Define the type for the idleTimeoutCondition function
 type IdleTimeoutConditionFunction = (
   lastUserInteractionTime: number | null
 ) => boolean;
 
-// Define the type for the fetchLastUserInteractionTime function
+Define the type for the fetchLastUserInteractionTime function
 type FetchLastUserInteractionTimeFunction = () => Promise<number | null>;
 
-// Define the type for the showModalOrNotification function
+Define the type for the showModalOrNotification function
 type ShowModalOrNotificationFunction = (message: string) => void;
 
-// Define the type for the clearUserData function
+Define the type for the clearUserData function
 type ClearUserDataFunction = () => void;
 
-// Define the type for the resetIdleTimeout function
+Define the type for the resetIdleTimeout function
 type ResetIdleTimeoutFunction = () => void;
 
 const IDLE_TIMEOUT_DURATION = 60000; // 1 minute in milliseconds
 
-// Interface defining props for the useIdleTimeout hook
+Interface defining props for the useIdleTimeout hook
 interface IdleTimeoutProps {
   IDLE_TIMEOUT_DURATION: number;
   accessToken: string;
@@ -40,7 +40,7 @@ interface IdleTimeoutProps {
   resetIdleTimeout: ResetIdleTimeoutFunction;
 }
 
-// useIdleTimeout hook implementation
+useIdleTimeout hook implementation
 const useIdleTimeout = (props: IdleTimeoutProps): (() => void) => {
   const {
     fetchLastUserInteractionTime,

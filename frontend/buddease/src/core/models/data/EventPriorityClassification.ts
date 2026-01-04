@@ -1,10 +1,10 @@
-// EventPriorityClassification.ts
+EventPriorityClassification.ts
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 
 
 
 export type EventTrendType = "Increasing" | "Decreasing" | "Stable" |  "Positive" | "Neutral" | "Negative"; 
-// EventPriorityClassification.ts
+EventPriorityClassification.ts
 interface EventPriorityClassification {
   eventId: string;
   priority: PriorityTypeEnum;

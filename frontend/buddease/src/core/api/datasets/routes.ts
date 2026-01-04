@@ -1,9 +1,9 @@
-// routes.ts
-// src/app/api/datasets/route.ts
+routes.ts
+src/app/api/datasets/route.ts
 import DatabaseClient from '@/core/api/DatabaseClient';
 import { NextRequest, NextResponse } from 'next/server';
 
-// GET /api/datasets - List all datasets
+GET /api/datasets - List all datasets
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/datasets - Create new dataset
+POST /api/datasets - Create new dataset
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

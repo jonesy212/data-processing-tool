@@ -1,4 +1,4 @@
-// PersonaBuilderUtils.tsx
+PersonaBuilderUtils.tsx
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import { Data } from '@/core/models/data/Data';
@@ -82,7 +82,7 @@ export const PersonaBuilderUtils = () => {
   };
 
 
-// Define your update callback function
+Define your update callback function
 const updateCallback = (
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<Snapshot<Data, Data>>

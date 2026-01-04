@@ -1,7 +1,8 @@
 // useCryptoIntegration.ts
-// src/hooks/useCryptoIntegration.ts
 import { environmentAwareEndpointManager } from '@/core/config/endpoints/EnvironmentAwareEndpointManager';
-import { cryptoIntegrationService, CryptoPortfolio } from '@/core/services/CryptoIntegrationService';
+import internalApiService from '@/core/api/ApiClient';
+import { cryptoIntegrationService } from '@/core/services/CryptoIntegrationService';
+import type { CryptoPortfolio } from '@/core/services/CryptoIntegrationService';
 import { useEffect, useState } from 'react';
 
 export const useCryptoIntegration = (userId: number) => {
@@ -30,7 +31,9 @@ export const useCryptoIntegration = (userId: number) => {
       const portfolioData = await cryptoIntegrationService.getPortfolio(userId);
       setPortfolio(portfolioData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch portfolio');
+      // FIX: Properly handle unknown error type
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch portfolio';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -47,7 +50,8 @@ export const useCryptoIntegration = (userId: number) => {
       await fetchPortfolio();
       return result;
     } catch (err) {
-      throw err;
+      // FIX: Re-throw the error properly
+      throw err instanceof Error ? err : new Error('Trade execution failed');
     }
   };
 
@@ -67,8 +71,8 @@ export const useCryptoIntegration = (userId: number) => {
       const fundingEndpoint = environmentAwareEndpointManager.getEndpoint(
         'projects', 
         'fundPhase', 
-        projectId, 
-        phaseId
+        projectId.toString(), // FIX: Convert number to string if needed
+        phaseId.toString() // FIX: Convert number to string if needed
       );
       
       await internalApiService.post(fundingEndpoint, {
@@ -81,7 +85,8 @@ export const useCryptoIntegration = (userId: number) => {
       return tradeResult;
     } catch (err) {
       console.error('Project funding failed:', err);
-      throw err;
+      // FIX: Throw properly typed error
+      throw err instanceof Error ? err : new Error('Project funding failed');
     }
   };
 

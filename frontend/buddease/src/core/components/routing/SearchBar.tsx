@@ -1,4 +1,4 @@
-// SearchBar.tsx
+SearchBar.tsx
 import { userId } from '@/core/api/ApiUser';
 import React, { useState } from 'react';
 

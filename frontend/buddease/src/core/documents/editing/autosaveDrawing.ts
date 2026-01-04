@@ -2,8 +2,8 @@
   // Import necessary dependencies
   import { saveDrawingToDatabase } from '@/core/api/ApiDrawing';
 import Tracker from '@/core/components/models/tracker/Tracker';
-import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
-import { TrackerAttachment, TrackerEntity, TrackerExcludedFields, TrackerIncludedFields, TrackerK, TrackerMeta } from '@/core/typings/entities/TrackerEntity';
+import type { WritableDraft } from '@/core/state/redux/ReducerGenerator';
+import type { TrackerAttachment, TrackerEntity, TrackerExcludedFields, TrackerIncludedFields, TrackerK, TrackerMeta } from '@/core/typings/entities/TrackerEntity';
   
   // Define the Draw type representing the structure of a drawing
   type Draw = {

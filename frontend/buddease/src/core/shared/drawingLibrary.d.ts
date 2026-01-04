@@ -1,4 +1,4 @@
-// drawingLibrary.d.ts
+drawingLibrary.d.ts
 
 declare module "drawingLibrary" {
   // Type declaration for the DrawingError class

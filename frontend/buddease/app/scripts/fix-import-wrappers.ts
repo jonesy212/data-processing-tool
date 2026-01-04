@@ -43,7 +43,11 @@ async function runFix(targetType: 'interface' | 'file', targetName: string, opti
   try {
     execSync(command, { stdio: 'inherit' });
   } catch (error) {
-    console.error('Error running fixer:', error.message);
+    if (error instanceof Error) {
+      console.error('Error running fixer:', getErrorMessage(error));
+    } else {
+      console.error('Unknown error:', error);
+    }
   }
 }
 
@@ -76,6 +80,21 @@ export async function fixAllFromDataStoreFile() {
 export async function fixAllFromSnapshotFile() {
   await runFix('file', 'Snapshot.ts');
 }
+
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else if (typeof error === 'string') {
+    return error;
+  } else {
+    return 'Unknown error';
+  }
+}
+
+
+
+
 
 // CLI
 async function main() {

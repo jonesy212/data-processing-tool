@@ -1,4 +1,4 @@
-// RandomWalkSuggestions.tsx
+RandomWalkSuggestions.tsx
 
 import { RandomWalkActions } from "@/core/hooks/userInterface/RandomWalkActions";
 import { RootState } from "@/core/state/redux/slices/RootSlice";

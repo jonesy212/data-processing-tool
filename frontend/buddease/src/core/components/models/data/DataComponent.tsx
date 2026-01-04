@@ -1,4 +1,4 @@
-// DataComponent.tsx
+DataComponent.tsx
 import DocumentFormattingOptions from '@/core/documents/DocumentFormattingOptions';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { RootState } from '@/core/state/redux/slices/RootSlice';

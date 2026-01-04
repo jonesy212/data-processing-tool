@@ -1,10 +1,10 @@
-// handleNotificationPreferences.ts
+handleNotificationPreferences.ts
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
 import { CustomEventListener } from "@/core/typings/eventHandlers/eventTypes";
 import { GestureHandlerGestureEvent } from "react-native-gesture-handler";
 
 
-// Define functions to set up and remove event listeners for notification types
+Define functions to set up and remove event listeners for notification types
 const setupMentionNotificationListener = (listener: CustomEventListener) => {
     document.addEventListener('mention', listener.handleMouseClick);
   };

@@ -1,4 +1,4 @@
-// methodBinder.ts
+methodBinder.ts
 export function bindMethods<
   T extends object,
   U extends object
@@ -12,7 +12,7 @@ export function bindMethods<
 
 
 
-// utils/methodBinder.ts
+utils/methodBinder.ts
 export function bindAllMethods<Target extends object, Source extends object>(
   target: Target,
   source: Source,

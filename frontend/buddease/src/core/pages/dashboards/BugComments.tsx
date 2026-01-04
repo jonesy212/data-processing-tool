@@ -1,4 +1,4 @@
-// BugComments.tsx
+BugComments.tsx
 import { CommentData, CommentMeta, CommentType } from '@/core/models/comments/Comments';
 import React, { useState } from 'react';
 

@@ -1,5 +1,5 @@
-// BuildAnalyzer.ts
-// analyzers/BuildAnalyzer.ts
+BuildAnalyzer.ts
+analyzers/BuildAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { exec } from 'child_process';

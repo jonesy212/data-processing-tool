@@ -1,4 +1,4 @@
-// CalendarEventConflictDetectionResult.ts
+CalendarEventConflictDetectionResult.ts
 import { EventConflictDetectionResult } from "@/core/models/data/EventPriorityClassification";
 
 interface CalendarEventConflictDetectionResult extends EventConflictDetectionResult {

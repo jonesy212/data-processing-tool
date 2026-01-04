@@ -1,30 +1,51 @@
 // CryptoActions.tsx
 // CryptoActions.ts
-import { InvestmentStrategy } from '@/core/components/crypto/InvestmentStrategy';
+import TradingStrategy from "@/core/trading/TradingStrategy";
+import { MarketTrendEnum } from '@/core/pages/searches/CriteriaEnums'
+import type { InvestmentStrategy } from '@/core/components/crypto/InvestmentStrategy';
 import { ContentManagementPhaseEnum } from '@/core/components/phases/ContentManagementPhase';
 import { FeedbackPhaseEnum } from '@/core/components/phases/FeedbackPhase';
 import { StatusType } from "@/core/models/data/StatusType";
 import { CryptoAssetTypeEnum, InvestmentStrategyEnum, PerformanceStatusEnum } from '@/core/pages/searches/CriteriaEnums';
-import { CryptoManagementCriteria } from '@/core/pages/searches/CriteriaOptions';
-import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
-import { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
-import { TradeIdea } from '@/core/trading/TradeIdea';
-import { MarketData } from '@/core/trading/TradingStrategy';
+import type { CryptoManagementCriteria } from '@/core/pages/searches/CriteriaOptions';
+import type { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
+import type { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
+import type { TradeIdea } from '@/core/trading/TradeIdea';
+import type { MarketData } from '@/core/trading/TradingStrategy';
 import { createAction } from "@reduxjs/toolkit";
 
 // Helper function to fetch recent market data
 const fetchRecentMarketData = (): MarketData[] => {
-  // Implementation to fetch actual market data
-  // This could be from an API, database, or real-time feed
   return [
-    { price: 45000, timestamp: new Date('2024-01-01'), volume: 1000 },
-    { price: 45500, timestamp: new Date('2024-01-02'), volume: 1200 },
-    { price: 45200, timestamp: new Date('2024-01-03'), volume: 1100 },
-    // ... more data points
+    { 
+      price: 45000, 
+      timestamp: new Date('2024-01-01'), 
+      volume: 1000,
+      target: 46000, // Changed from string to number (or null)
+      symbol: 'BTC/USD',
+      type: 'market',
+      quantity: 1
+    },
+    { 
+      price: 45500, 
+      timestamp: new Date('2024-01-02'), 
+      volume: 1200,
+      target: 46500, // Number representing target price
+      symbol: 'BTC/USD',
+      type: 'market',
+      quantity: 1.2
+    },
+    { 
+      price: 45200, 
+      timestamp: new Date('2024-01-03'), 
+      volume: 1100,
+      target: 46200, // Number
+      symbol: 'BTC/USD',
+      type: 'market',
+      quantity: 1.1
+    },
   ];
 };
-
-
 
 // The analyzeMarketTrends function
 const analyzeMarketTrends = (marketData: MarketData[]): string => {

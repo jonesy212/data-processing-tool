@@ -1,4 +1,4 @@
-// BrandingPhase.tsx
+BrandingPhase.tsx
 
 import React from 'react';
 

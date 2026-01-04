@@ -1,5 +1,5 @@
-// RootLayout.tsx
-// app/RootLayout.tsx
+RootLayout.tsx
+app/RootLayout.tsx
 "use client";
 
 import { AppProviders } from '@/core/components/AppProviders';

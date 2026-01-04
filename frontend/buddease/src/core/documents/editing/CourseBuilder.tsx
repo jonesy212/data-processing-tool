@@ -1,10 +1,10 @@
 // CourseBuilder.tsx
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import { createMeta } from "@/core/config/metadata/createMeta";
-import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { useMetadata } from "@/core/config/useMetadata";
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import {
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type {
     BaseEntityProperties,
     SharedSnapshotProperties,
     SharedStatusFlags,
@@ -12,13 +12,13 @@ import {
 } from '@/core/documents/RelatedProps';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import { BaseData } from '@/core/models/data/Data';
-import { CustomPhaseHooks, Phase, PhaseData } from '@/core/models/phases/Phase';
-import { FetchOptions, fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
+import type { BaseData } from '@/core/models/data/Data';
+import type { CustomPhaseHooks, Phase, PhaseData } from '@/core/models/phases/Phase';
+import type { FetchOptions, fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import { VisibilityLevel } from '@/core/permissions/PermissionEnums';
-import { CourseAttachment, CourseEntity, CourseExcludedFields, CourseIncludedFields, CourseK, CourseMeta } from '@/core/typings/entities/CourseEntity';
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from "@/core/typings/entities/PhaseEntity";
-import { BasicUserInfo } from '@/core/typings/entities/UserEntity';
+import type { CourseAttachment, CourseEntity, CourseExcludedFields, CourseIncludedFields, CourseK, CourseMeta } from '@/core/typings/entities/CourseEntity';
+import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from "@/core/typings/entities/PhaseEntity";
+import type { BasicUserInfo } from '@/core/typings/entities/UserEntity';
 
 
 // Interfaces for course structure

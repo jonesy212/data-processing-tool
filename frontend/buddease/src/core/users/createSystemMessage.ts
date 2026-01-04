@@ -1,4 +1,4 @@
-// createSystemMessage.ts
+createSystemMessage.ts
 import userSettings from '@/core/config/UserSettings';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
@@ -8,7 +8,7 @@ import { ActivityStatus } from '@/core/pages/profile/Profile';
 import { ExtendedUser, User } from '@/core/users/User';
 import { DataSharingPreferences } from '@/core/settings/PrivacySettings';
 
-// Function to transform friends into the required format
+Function to transform friends into the required format
 const transformFriends = (friends: User[]): User[] => {
   return friends.map(friend => ({
     id: friend.id ? friend.id.toString() : undefined,

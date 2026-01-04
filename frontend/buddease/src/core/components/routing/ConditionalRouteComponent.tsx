@@ -1,4 +1,4 @@
-// ConditionalRouteComponent.tsx
+ConditionalRouteComponent.tsx
 
 import React from 'react';
 

@@ -1,12 +1,12 @@
-// CacheManager.ts
-//client/CacheManager.ts
+CacheManager.ts
+client/CacheManager.ts
 'use client';
 
 import { CacheWriteOptions } from '@/core/libraries/cache/client/index';
 import axios from "axios";
 import { create } from "mobx-persist";
 
-// Client-side storage implementation
+Client-side storage implementation
 const getStorage = () => {
   if (typeof window === 'undefined') return null;
   return localStorage;
@@ -132,7 +132,7 @@ export class CacheManager {
   }
 }
 
-// Client-side only cache operations
+Client-side only cache operations
 export const readClientCache = async (key: string): Promise<any> => {
   try {
     const data = localStorage.getItem(key);

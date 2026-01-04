@@ -1,6 +1,6 @@
-// SnapshotListGenerator.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
-import { Attachment } from "@/core/documents/attachment/Attachment";
+SnapshotListGenerator.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
+import type { Attachment } from "@/core/documents/attachment/Attachment";
 import SnapshotList, { SnapshotItem } from "@/core/snapshots/SnapshotList";
 
 class SnapshotListGenerator<

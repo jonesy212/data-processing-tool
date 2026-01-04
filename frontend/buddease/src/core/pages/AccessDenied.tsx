@@ -1,5 +1,5 @@
-// AccessDenied.tsx
-// components/AccessDenied.tsx
+AccessDenied.tsx
+components/AccessDenied.tsx
 import { UserRole } from '@/core/models/UserRole';
 import { UserRoleEnum } from '@/core/models/UserRoles';
 import React from 'react';

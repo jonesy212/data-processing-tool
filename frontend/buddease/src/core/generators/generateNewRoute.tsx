@@ -1,4 +1,4 @@
-// generateNewRoute.tsx
+generateNewRoute.tsx
 import ConditionalRouteComponent from '@/core/components/routing/ConditionalRouteComponent';
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import safeParseData from '@/core/dataIntegration/SafeParseData';
@@ -9,7 +9,7 @@ import DynamicErrorBoundary from '@/core/shared/DynamicErrorBoundary';
 import ErrorHandler from '@/core/shared/ErrorHandler';
 import { YourResponseType } from '@/core/typings/responseTypes';
 
-// Define a mapping between JSX elements and route strings
+Define a mapping between JSX elements and route strings
 const routeMappings: Record<string, JSX.Element> = {
   "/conditional-route": <ConditionalRouteComponent />,
   "/dynamic-route": <DynamicRouteComponent

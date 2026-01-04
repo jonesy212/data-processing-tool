@@ -1,4 +1,4 @@
-// RecruitingPhaseStep.tsx
+RecruitingPhaseStep.tsx
 
 import Candidate from '@/core/components/models/realtime/Candidate';
 import { DatePicker, Form, Table } from 'antd'; // Import UI components from Ant Design or your preferred library

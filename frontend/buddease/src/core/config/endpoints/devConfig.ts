@@ -1,4 +1,4 @@
-// devConfig.ts
+devConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { DevEndpoints } from '@/core/typings/categories/DevEndpoints';
 

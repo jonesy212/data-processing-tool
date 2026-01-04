@@ -1,4 +1,4 @@
-// src/app/error-analyzer/utils/CodePatternDetector.ts
+src/app/error-analyzer/utils/CodePatternDetector.ts
 
 export interface CodePattern {
   name: string;

@@ -1,5 +1,5 @@
 // tasksConfig.ts
-import { TasksEndpoints } from '@/core/typings/categories/TasksEndpoints';
+import type { TasksEndpoints } from '@/core/typings/categories/TasksEndpoints';
 
 export const tasksConfig: TasksEndpoints = {
   list: { path: "/api/tasks", method: "GET" },

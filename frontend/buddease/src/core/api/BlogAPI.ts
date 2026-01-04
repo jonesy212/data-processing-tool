@@ -1,4 +1,4 @@
-// BlogAPI.ts
+BlogAPI.ts
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
@@ -16,7 +16,7 @@ const API_BASE_URL = endpoints.apiConfig
 
 const notificationContext = useNotification();
 
-// Example values for the Message object
+Example values for the Message object
 const generateUniqueID = UniqueIDGenerator.generateMessageID()
 const createMessage = (type: string, content: string): Partial<Message> => ({
   id: generateUniqueID,

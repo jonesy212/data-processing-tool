@@ -1,6 +1,6 @@
-// addToSnapshotList.tsx
-//import { Attachment } from '@/core/documents/attachment/Attachment';
-// import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+// import type { Attachment } from '@/core/documents/attachment/Attachment'
+
+// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
 // import { IHydrateResult } from "mobx-persist";
 // import { useState } from "react";

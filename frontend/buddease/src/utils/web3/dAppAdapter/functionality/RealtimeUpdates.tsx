@@ -1,4 +1,4 @@
-// RealtimeUpdatesComponent.tsx
+RealtimeUpdatesComponent.tsx
 
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { brandingSettings } from "@/core/libraries/theme/BrandingService";

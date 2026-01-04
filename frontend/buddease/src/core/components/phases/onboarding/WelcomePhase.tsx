@@ -1,4 +1,4 @@
-// WelcomePhase.tsx
+WelcomePhase.tsx
 import React, { useState } from 'react';
 import DynamicNamingConventions from '@/utils/DynamicNamingConventions';
 

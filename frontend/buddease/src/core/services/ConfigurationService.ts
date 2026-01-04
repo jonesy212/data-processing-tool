@@ -1,4 +1,4 @@
-// ConfigurationService.ts
+ConfigurationService.ts
 import ApiConfigService, { ApiConfig } from '@/core/api/ApiConfigService';
 import { getConfigsData } from '@/core/api/getConfigsApi';
 
@@ -7,7 +7,7 @@ import { UserConfigs } from '@/core/api/userConfigs';
 import {
     BackendConfig
 } from '@/core/config/BackendConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CacheConfig } from "@/core/config/CacheConfig";
 import { EndpointCategory, EndpointConfigurations, EndpointKey } from '@/core/config/EndpointConfig';
 import {
@@ -15,11 +15,11 @@ import {
     frontendConfig,
 } from '@/core/config/FrontendConfig';
 import LazyLoadScriptConfigImpl from '@/core/config/LazyLoadScriptConfig';
-import { UnifiedMetadata } from '@/core/config/MetaDataOptions';
+import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { ModuleType, userPreferences } from '@/core/config/UserPreferences';
 import userSettings from '@/core/config/UserSettings';
 import dataVersions from '@/core/configs/DataVersionsConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project, isProjectInSpecialPhase } from '@/core/models/projects/Project';
 import StoreConfig from '@/core/shoppingCenter/ShoppingCenterConfig';
 import { useNotification } from '@/core/state/context/NotificationContext';
@@ -98,7 +98,7 @@ interface ConfigurationOptions<
   // other configuration options
 }
 
-// Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
+Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
 export const DATA_PATH = getConfigsData()
 
 const notify = useNotification()
@@ -525,12 +525,12 @@ return this.cachedConfig;
   return this.apiConfig;
 }
 
-// Add a method to get the current API config
+Add a method to get the current API config
 getCurrentApiConfig(): ApiConfig {
   return this.apiConfig;
 }
 
-// Method to retrieve the API version header
+Method to retrieve the API version header
 getApiVersionHeader(): string {
   return 'application/vnd.yourapp.v1+json';
 }
@@ -543,7 +543,7 @@ getConfigurationOptions(): ConfigurationOptions {
   return {} as ConfigurationOptions;
 }
 
-// Fixed duplicate method with correct name
+Fixed duplicate method with correct name
 subscribeToApiConfigChanges(callback: (config: ApiConfig) => void): void {
   this.apiConfigSubscribers.push(callback);
 }
@@ -561,7 +561,7 @@ unsubscribeFromApiConfigChanges(callback: (config: ApiConfig) => void): void {
   );
 }
 
-// Example method that updates the API config and triggers changes
+Example method that updates the API config and triggers changes
 updateApiConfig(updatedConfig: Partial<ApiConfig>): void {
   this.apiConfig = { ...this.apiConfig, ...updatedConfig };
   this.triggerApiConfigChange();
@@ -707,7 +707,7 @@ updateApiConfig(updatedConfig: Partial<ApiConfig>): void {
 }
 
 
-// Create an instance of the configuration service
+Create an instance of the configuration service
 const configServiceInstance = ConfigurationService.getInstance();
 
 export { configServiceInstance };

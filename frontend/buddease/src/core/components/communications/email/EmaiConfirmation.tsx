@@ -1,5 +1,6 @@
 // EmaiConfirmation.tsx
 // EmailConfirmationPage.tsx
+
 import React from 'react';
 
 const EmailConfirmationPage: React.FC = () => {

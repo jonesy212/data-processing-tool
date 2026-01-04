@@ -1,4 +1,4 @@
-// TickerUpdater.ts
+TickerUpdater.ts
 class TickerUpdater {
     updateTicker(tickerData: any): void {
       // Implement logic to update the ticker information

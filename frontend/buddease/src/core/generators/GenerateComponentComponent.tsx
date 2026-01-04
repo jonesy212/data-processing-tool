@@ -1,5 +1,5 @@
-// GenerateComponentComponent.tsx
-// components/generator/GenerateComponentComponent.tsx
+GenerateComponentComponent.tsx
+components/generator/GenerateComponentComponent.tsx
 "use client";
 
 import React, { useState } from 'react';

@@ -4,16 +4,17 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from "@/core/api/endpointConfigurations";
 import HeadersConfig from "@/core/api/headers/HeadersConfig";
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { headersConfig } from '@/core/components/shared/SharedHeaders';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import FileImportData from '@/core/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { VersionData } from '@/core/versions/VersionData';
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import type { VersionData } from '@/core/versions/VersionData';
+import { AxiosError } from "axios";
+import type {  AxiosRequestConfig, AxiosResponse } from "axios";
 
 
 const API_BASE_URL = endpoints.client;
@@ -186,7 +187,7 @@ const clientNotificationMessages: ClientNotificationMessages & {
   UPDATE_CLIENT_DETAILS_SUCCESS: getNotificationMessage('UPDATE_CLIENT_DETAILS_SUCCESS'),
   UPDATE_CLIENT_DETAILS_ERROR: getNotificationMessage('UPDATE_CLIENT_DETAILS_ERROR'),
   REMOVE_CALENDAR_EVENT_ERROR: getNotificationMessage('REMOVE_CALENDAR_EVENT_ERROR'),
-  GENERIC_GET_ERROR: getNotificationMessage('GENERIC_GET_ERROR'),
+  // GENERIC_GET_ERROR: getNotificationMessage('GENERIC_GET_ERROR'),
 
   // Tenant and communication messages
   CONNECT_WITH_TENANT_SUCCESS: getNotificationMessage('CONNECT_WITH_TENANT_SUCCESS'),

@@ -1,7 +1,7 @@
 // analyzeCodeSmells.ts
 // src/app/scripts/analyzeCodeSmells.ts
-import { PatternAnalyzer } from '@/app/generators/corrections/analyzers/PatternAnalyzer'
-import { CodeQualityScript } from '@/app/scripts/CodeQualityScript'
+import { CodeQualityScript } from '@/app/scripts/CodeQualityScript';
+import { PatternAnalyzer } from '@/core/generators/corrections/analyzers/PatternAnalyzer';
 
 async function analyzeCodeSmells() {
   console.log('🔍 Starting comprehensive code smell analysis...');

@@ -1,7 +1,7 @@
-// AppContextHelper.ts
+AppContextHelper.ts
 
 
-// SINGLE getAppContext function (no duplicates)
+SINGLE getAppContext function (no duplicates)
 const getAppContext = (userQuery: string): string | null => {
   if (userQuery.includes("dashboard")) return "dashboard";
   if (userQuery.includes("theme")) return "theme";

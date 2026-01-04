@@ -1,4 +1,4 @@
-// idleTimeout.ts
+idleTimeout.ts
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
 
 const idleTimeout = useIdleTimeout("IdleTimeout", {

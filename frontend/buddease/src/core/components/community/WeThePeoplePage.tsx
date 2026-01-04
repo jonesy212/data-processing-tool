@@ -1,4 +1,4 @@
-// WeThePeoplePage.tsx
+WeThePeoplePage.tsx
 import React from 'react';
 
 const WeThePeoplePage: React.FC = () => {

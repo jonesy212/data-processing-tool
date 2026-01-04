@@ -1,12 +1,13 @@
 // ethereumUtils.ts
 
-import {
+import type {
   ContractInterface,
   ContractTransaction,
   TransactionRequest, Wallet, ethers,
 } from "ethers";
-import { ContractAbi, default as Web3 } from "web3";
-import { Contract, EventLog } from "web3-eth-contract";
+import type { ContractAbi, default as Web3 } from "web3";
+import { Contract } from "web3-eth-contract";
+import type { EventLog } from "web3-eth-contract";
 
 interface EventData {
   eventId: string; // Event ID from the args
@@ -177,7 +178,7 @@ const signTransaction = async (
 };
 
 
-// Function to send a transaction using ethers.js
+Function to send a transaction using ethers.js
 const sendTransaction = async (
   wallet: Wallet,
   to: string,

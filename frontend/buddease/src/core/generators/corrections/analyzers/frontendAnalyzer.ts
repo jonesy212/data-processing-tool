@@ -1,4 +1,4 @@
-// utils/frontendAnalyzer.ts
+utils/frontendAnalyzer.ts
 
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { parse } from '@babel/parser';
@@ -14,7 +14,7 @@ export interface ImportInfo {
   isNamespace: boolean;
 }
 
-// Import the ReactWebAnalyzer or integrate its logic
+Import the ReactWebAnalyzer or integrate its logic
 export interface FrontendAnalysis {
   filePath: string;
   fileType: string;

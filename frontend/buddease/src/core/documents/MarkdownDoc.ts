@@ -1,12 +1,13 @@
-// MarkdownDoc.ts
-import { Task } from '@/core/models/tasks/Task';
+MarkdownDoc.ts
+import type { Task } from '@/core/models/tasks/Task';
+import type { Collaborator } from '@/core/collaborators/Collaborator';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { MarkdownDocument } from "@/core/documents/editing/MarkdownDocument";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { MarkdownDocument } from "@/core/documents/editing/MarkdownDocument";
 
-// MarkdownDocument Implementation
+MarkdownDocument Implementation
 class MarkdownDoc<
   T extends BaseDataEntity,
   K extends T = T,
@@ -21,7 +22,7 @@ class MarkdownDoc<
     htmlContent: string;
     author: string;
     tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Can initialize empty array
-    collaborators: Collaborato<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    collaborators: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
     createdAt: Date;
     updatedAt: Date;
@@ -30,8 +31,6 @@ class MarkdownDoc<
     version: number;
     comments: string[];
     tags: string[];
-    tasks: any[]; // Can be Task<T,K,...>
-    collaborators: any[];
     permissions: Record<string, boolean>;
     isPublic: boolean;
     parentDocument: string;
@@ -91,7 +90,7 @@ class MarkdownDoc<
   
 export default MarkdownDoc
   
-// Creating and using a MarkdownDocument
+Creating and using a MarkdownDocument
 const markdownDoc = new MarkdownDoc('1', 'Markdown Title', '# Markdown Content', 'Author Name');
 markdownDoc.printInfo();
 markdownDoc.convertToHTML(markdownDoc.content);

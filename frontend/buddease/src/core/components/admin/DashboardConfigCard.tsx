@@ -1,4 +1,4 @@
-// DashboardConfigCard.tsx
+DashboardConfigCard.tsx
 
 import React, { useEffect } from "react";
 

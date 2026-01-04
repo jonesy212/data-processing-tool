@@ -1,11 +1,11 @@
-// PersonaBuilderData.tsx
-// PersonaBuilderData.ts
+PersonaBuilderData.tsx
+PersonaBuilderData.ts
 import { RealtimeUpdates } from "@/core/components/community/ActivityFeedComponent";
 import { CommonDetails } from '@/core/components/models/details/CommonDetails';
 import { Task } from "@/core/components/models/tasks/Task";
 import { Team } from '@/core/components/teams/Team';
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";

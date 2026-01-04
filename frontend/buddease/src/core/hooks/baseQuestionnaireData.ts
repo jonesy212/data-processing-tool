@@ -1,4 +1,4 @@
-// baseQuestionnaireData.ts
+baseQuestionnaireData.ts
 import { Question } from "@/core/pages/onboarding/Question";
 
 const baseQuestionnaireData: {

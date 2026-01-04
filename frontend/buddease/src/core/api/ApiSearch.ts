@@ -3,8 +3,8 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import { Note } from "@/core/api/ApiNote";
 import axiosInstance from "@/core/api/csrfToken";
 import { SearchResult } from "@/core/components/routing/SearchResult";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 // Define the base URL for your search endpoint
 const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your actual API endpoint
@@ -49,6 +49,11 @@ export const searchAPI = async <
       _id: note.id,
       id: note.id,
       date: note.date,
+      appMetadata: note.appMetadata,
+      userId: note.userId,
+      path: note.path,
+      draft: note.draft,
+    
       uploadedBy: note.uploadedBy,
       tagsOrCategories: note.tagsOrCategories,
       format: note.format,

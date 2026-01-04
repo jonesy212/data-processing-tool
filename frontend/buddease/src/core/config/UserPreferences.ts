@@ -1,10 +1,10 @@
-// UserPreferences.ts
+UserPreferences.ts
 import { apiService } from "@/core/api/ApiDetails";
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
 import { HighlightColor } from "@/core/components/styling/Palette";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import FileData from "@/core/models/data/FileData";
 import { CommonTrackerProps } from "@/core/models/tracker/Tracker";
@@ -12,7 +12,7 @@ import { PrivacySettings } from "@/core/settings/PrivacySettings";
 import { refreshUI } from '@/core/snapshots/refreshUI';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
-import { FileAttachment, FileEntity, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/core/typings/entities/FileEntity';
+import type { FileAttachment, FileEntity, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/core/typings/entities/FileEntity';
 import { User } from "@/core/users/User";
 import { createLatestVersion } from '@/core/versions/createLatestVersion';
 import { AnyAction, Reducer } from 'react-redux';
@@ -153,7 +153,7 @@ interface UserPreferences<
   otherPreferences?: any; // Placeholder for any other preferences
 }
 
-//todo update to modue names
+todo update to modue names
 export type ModuleType =
   "profileManagement"
   | "taskTracking"
@@ -249,7 +249,7 @@ const userPreferences: UserPreferences = {
 
 
 
-// Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
+Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
 const getUserPreferences = async <
   T extends BaseDataEntity,
   K extends T = T,
@@ -555,7 +555,7 @@ const getUserPreferences = async <
 };
 
 
-// Example usage:
+Example usage:
 getUserPreferences()
   .then((userPreferences) => {
     console.log("User preferences:", userPreferences);
@@ -571,10 +571,10 @@ export type { CryptoPreferences, UserPreferences };
 
 
   
-// #Review
+#Review
 
-// Sample usage
-// Tracking file changes
+Sample usage
+Tracking file changes
 const file: FileData<FileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields> = {
   name: "sample.txt",
   size: 1024,

@@ -1,5 +1,5 @@
-// TypeScriptAnalyzer.ts
-// analyzers/TypeScriptAnalyzer.ts
+TypeScriptAnalyzer.ts
+analyzers/TypeScriptAnalyzer.ts
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
@@ -228,24 +228,24 @@ export class TypeScriptAnalyzer extends BaseAnalyzer {
     switch (errorCode) {
       case '2304': // Cannot find name
         return `// Add missing import or install dependency
-// Check if the referenced type/function is properly exported and imported`;
+Check if the referenced type/function is properly exported and imported`;
 
       case '2307': // Cannot find module
         return `// Install missing dependency or fix import path
-// Run: npm install <missing-package>
-// Or check the import statement for typos`;
+Run: npm install <missing-package>
+Or check the import statement for typos`;
 
       case '2339': // Property does not exist on type
         return `// Check the type definition
-// Add the missing property to the interface or use type assertion`;
+Add the missing property to the interface or use type assertion`;
 
       case '2554': // Expected X arguments but got Y
         return `// Check function signature
-// Provide all required parameters or use optional parameters`;
+Provide all required parameters or use optional parameters`;
 
       default:
         return `// Fix TypeScript error ${errorCode}: ${message}
-// Review the TypeScript documentation for error ${errorCode}`;
+Review the TypeScript documentation for error ${errorCode}`;
     }
   }
 

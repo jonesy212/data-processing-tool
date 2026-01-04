@@ -1,4 +1,4 @@
-// TableFormatter.ts
+TableFormatter.ts
 import path from 'path';
 
 

@@ -1,7 +1,7 @@
 // components/global/GlobalComponent.tsx
 "use client";
 
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import {
     setGlobalConfig,
     setLanguage,

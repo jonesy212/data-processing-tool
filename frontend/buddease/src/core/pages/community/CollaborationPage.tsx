@@ -1,4 +1,4 @@
-// CollaborationPage.tsx
+CollaborationPage.tsx
 import RealTimeVisualization from "@/core/components/models/realtime/RealTimeVisualization";
 import { ResponsiveDesign } from "@/core/components/styling/ResponsiveDesign";
 import triggerAutosave from "@/core/documents/editing/triggerAutosave";
@@ -9,7 +9,7 @@ import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
 import { default as ControlPanel, ControlPanelProps } from "@/utils/ControlPanel"; // Import ControlPanel and ControlPanelProps
 import React, { useEffect } from "react";
 
-// Define interface extending ControlPanelProps
+Define interface extending ControlPanelProps
 interface CollaborationPageProps extends ControlPanelProps {
     // Add any additional props specific to CollaborationPage
 }

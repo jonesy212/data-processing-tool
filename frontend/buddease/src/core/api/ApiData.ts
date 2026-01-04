@@ -6,13 +6,14 @@ import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { notificationStore } from '@/core/features/support/NotificationProvider';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addLog } from '@/core/state/redux/slices/LogSlice';
 import { useDataStore } from '@/core/state/stores/DataStore';
-import { YourResponseType } from '@/core/typings/responseTypes';
-import { AxiosError, AxiosResponse } from 'axios';
+import type { YourResponseType } from '@/core/typings/responseTypes';
+import { AxiosError } from 'axios';
+import type { AxiosResponse } from 'axios';
 
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;

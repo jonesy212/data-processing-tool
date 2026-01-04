@@ -1,4 +1,4 @@
-// traverseBackend.ts
+traverseBackend.ts
 import * as apiFile from '@/api/ApiFiles';
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import { frontend } from '@/core/config/appStructure/FrontendStructure';
@@ -70,14 +70,14 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
 };
 
 
-// If you want to allow the method to be used outside the class as well, you can do the following:
+If you want to allow the method to be used outside the class as well, you can do the following:
 export const getStructureAsArray = (
   structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
   return structure ? Object.values(structure) : [];
 };
 
-// Function to fetch files in a directory
+Function to fetch files in a directory
 const fetchFilesInDirectory = async (dir: string): Promise<string[]> => {
   // Implement logic to fetch file names from the server
   // Example using fetch API:
@@ -86,7 +86,7 @@ const fetchFilesInDirectory = async (dir: string): Promise<string[]> => {
   return files;
 };
 
-// Function to check if a path is a directory
+Function to check if a path is a directory
 const isDirectoryAsync = async (filePath: string): Promise<boolean> => {
   // Implement logic to check if the path is a directory
   // Example using fetch API:
@@ -95,7 +95,7 @@ const isDirectoryAsync = async (filePath: string): Promise<boolean> => {
   return isDirectory;
 };
 
-// Function to fetch content of a file
+Function to fetch content of a file
 const fetchFileContent = async (filePath: string): Promise<string> => {
   // Implement logic to fetch file content from the server
   // Example using fetch API:
@@ -104,7 +104,7 @@ const fetchFileContent = async (filePath: string): Promise<string> => {
   return content;
 };
 
-// todo #review update your file path so we can create your backend structure
+todo #review update your file path so we can create your backend structure
 const backendStructureResult = await traverseBackendDirectory('/path/to/your/project/backend');
 backendStructure.push(...backendStructureResult); // Update the backendStructure with the result
 

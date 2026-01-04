@@ -1,238 +1,189 @@
 // route.ts
-import isValidAuthToken from "@/core/server/security/AuthValidation";
-import {
-    implementSecurityMeasures,
-    SecurityMeasureType
-} from '@/core/server/security/SecurityMeasures'; // Adjust import path
-import * as fs from 'fs/promises';
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
-import * as path from 'path';
+import PizZip from "pizzip";
 
-// Security headers for file operations
-const fileSecurityMeasures = [
-  {
-    id: "file-x-content-type",
-    type: SecurityMeasureType.Header,
-    description: "Prevent MIME type sniffing for file responses",
-    name: "X-Content-Type-Options",
-    value: "nosniff"
-  },
-  {
-    id: "file-x-frame-options",
-    type: SecurityMeasureType.Header,
-    description: "Prevent clickjacking attacks",
-    name: "X-Frame-Options",
-    value: "DENY"
-  },
-  {
-    id: "file-csp",
-    type: SecurityMeasureType.Header,
-    description: "Content Security Policy for file operations",
-    name: "Content-Security-Policy",
-    value: "default-src 'self'; script-src 'none';"
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
   }
-];
-
-// Security: Define allowed project roots
-const ALLOWED_ROOTS = [
-  process.cwd(),
-  path.join(process.cwd(), 'src'),
-  path.join(process.cwd(), 'app'),
-  path.join(process.cwd(), 'public'),
-];
-
-/**
- * Validate if a path is safe and within allowed project boundaries
- */
-function validatePath(requestedPath: string): { isValid: boolean; resolvedPath: string } {
+  
   try {
-    const resolvedPath = path.resolve(requestedPath);
-    const isAllowed = ALLOWED_ROOTS.some(root => 
-      resolvedPath.startsWith(root) && resolvedPath !== root
-    );
-    return { isValid: isAllowed, resolvedPath };
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
   } catch (error) {
-    return { isValid: false, resolvedPath: requestedPath };
-  }
-}
-
-/**
- * Create a secure response with security headers
- */
-function createSecureResponse(data: any, status: number = 200): NextResponse {
-  const response = NextResponse.json(data, { status });
-  
-  // Apply security measures to response headers
-  implementSecurityMeasures(fileSecurityMeasures);
-  
-  // Additional security headers specific to file API
-  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-  
-  return response;
-}
-
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const operation = searchParams.get('operation');
-  const filePath = searchParams.get('path');
-  const authToken = searchParams.get('authToken');
-
-  // Validate authentication
-  if (!authToken || !isValidAuthToken(authToken)) {
-    return createSecureResponse(
-      { error: 'Unauthorized' },
-      401
-    );
-  }
-
-  if (!filePath) {
-    return createSecureResponse(
-      { error: 'Path parameter is required' },
-      400
-    );
-  }
-
-  // Validate path security
-  const { isValid, resolvedPath } = validatePath(filePath);
-  if (!isValid) {
-    return createSecureResponse(
-      { error: 'Invalid path or access denied' },
-      403
-    );
-  }
-
-  try {
-    switch (operation) {
-      case 'readdir':
-        const files = await fs.readdir(resolvedPath);
-        return createSecureResponse({ files });
-
-      case 'stat':
-        const stat = await fs.stat(resolvedPath);
-        return createSecureResponse({ 
-          isDirectory: stat.isDirectory(),
-          size: stat.size,
-          modified: stat.mtime,
-          name: path.basename(resolvedPath),
-          path: resolvedPath
-        });
-
-      case 'readFile':
-        const stats = await fs.stat(resolvedPath);
-        if (stats.size > 10 * 1024 * 1024) {
-          return createSecureResponse(
-            { error: 'File too large' },
-            413
-          );
-        }
-        const content = await fs.readFile(resolvedPath, 'utf-8');
-        return createSecureResponse({ content });
-
-      case 'exists':
-        try {
-          await fs.access(resolvedPath);
-          return createSecureResponse({ exists: true });
-        } catch {
-          return createSecureResponse({ exists: false });
-        }
-
-      default:
-        return createSecureResponse(
-          { error: 'Invalid operation. Use: readdir, stat, readFile, exists' },
-          400
-        );
-    }
-  } catch (error) {
-    console.error('File operation error:', error);
-    
-    // Security logging could be added here using your SecurityMeasureLogger
-    
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return createSecureResponse(
-        { error: 'File or directory not found' },
-        404
-      );
-    }
-    
-    if ((error as NodeJS.ErrnoException).code === 'EACCES') {
-      return createSecureResponse(
-        { error: 'Permission denied' },
-        403
-      );
-    }
-
-    return createSecureResponse(
-      { error: 'File operation failed' },
-      500
+    return NextResponse.json(
+      { error: 'Failed to read from cache' },
+      { status: 500 }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
-  const { authToken, operation, path: filePath, content } = await request.json();
-
-  if (!authToken || !isValidAuthToken(authToken)) {
-    return createSecureResponse(
-      { error: 'Unauthorized' },
-      401
-    );
-  }
-
-  if (!filePath) {
-    return createSecureResponse(
-      { error: 'Path parameter is required' },
-      400
-    );
-  }
-
-  const { isValid, resolvedPath } = validatePath(filePath);
-  if (!isValid) {
-    return createSecureResponse(
-      { error: 'Invalid path or access denied' },
-      403
-    );
-  }
-
   try {
-    switch (operation) {
-      case 'writeFile':
-        const dirname = path.dirname(resolvedPath);
-        const dirStats = await fs.stat(dirname);
-        if (!dirStats.isDirectory()) {
-          return createSecureResponse(
-            { error: 'Parent directory does not exist' },
-            400
-          );
-        }
-        await fs.writeFile(resolvedPath, content, 'utf-8');
-        return createSecureResponse({ success: true, path: resolvedPath });
-
-      case 'mkdir':
-        await fs.mkdir(resolvedPath, { recursive: true });
-        return createSecureResponse({ success: true, path: resolvedPath });
-
-      default:
-        return createSecureResponse(
-          { error: 'Invalid operation' },
-          400
-        );
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
     }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('File write error:', error);
-    return createSecureResponse(
-      { error: 'File write operation failed' },
-      500
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
     );
   }
 }
 
-// Add OPTIONS method for CORS preflight requests
-export async function OPTIONS() {
-  const response = new NextResponse(null, { status: 200 });
-  implementSecurityMeasures(fileSecurityMeasures);
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  return response;
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
+    
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error.message 
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
+    }
+  } catch (error) {
+    console.error("Error generating document:", error);
+    return NextResponse.json(
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
+
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
+
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
+}
+
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
+}
+
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
+      { status: 500 }
+    );
+  }
 }

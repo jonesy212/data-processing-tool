@@ -1,5 +1,5 @@
-// updateProgress.ts
-// /src/app/api/teams/update-progress/route.ts
+updateProgress.ts
+/src/app/api/teams/update-progress/route.ts
 import DatabaseClient from '@/core/api/DatabaseClient';
 import { databaseConnection } from '@/core/config/databaseConnection'; // Import the renamed config
 import { NextRequest, NextResponse } from 'next/server';
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Optional: GET endpoint to fetch current progress
+Optional: GET endpoint to fetch current progress
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

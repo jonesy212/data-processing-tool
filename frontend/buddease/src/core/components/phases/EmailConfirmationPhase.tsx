@@ -1,4 +1,4 @@
-// EmailConfirmationPhase.tsx
+EmailConfirmationPhase.tsx
 import RequestEmailPhase from '@/core/components/communications/email/RequestEmailPhase';
 import VerifyEmailPhase from '@/core/components/communications/email/VerifyEmailPhase';
 import { useState } from "react";

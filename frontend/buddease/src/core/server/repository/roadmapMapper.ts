@@ -1,11 +1,11 @@
-// roadmapMapper.ts
-// /app/server/repository/roadmapMapper.ts
+roadmapMapper.ts
+/app/server/repository/roadmapMapper.ts
 import fs from 'fs';
 import path from 'path';
 
-//
-// Types (adapt or import your real types if you already have them)
-//
+
+Types (adapt or import your real types if you already have them)
+
 
 export type RoadmapAudience = 'stakeholder' | 'developer' | 'community';
 
@@ -23,7 +23,7 @@ export interface TagSemantic {
   priority?: number; // numeric priority, higher => more important
 }
 
-// Roadmap node that we will return
+Roadmap node that we will return
 export interface RoadmapNode<T = any> {
   id: string;
   name: string;
@@ -44,9 +44,9 @@ export interface RoadmapNode<T = any> {
   };
 }
 
-//
-// Config: canonical phases + sanitization rules
-//
+
+Config: canonical phases + sanitization rules
+
 
 export const DEFAULT_PHASES = [
   'ideation',

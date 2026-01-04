@@ -1,5 +1,5 @@
-// FileOrganizationSection.tsx
-// FileOrganizationSection component
+FileOrganizationSection.tsx
+FileOrganizationSection component
 import React from 'react';
 
 const FileOrganizationSection = () => {

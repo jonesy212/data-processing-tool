@@ -1,4 +1,4 @@
-// cleanEmptyStrings.ts
+cleanEmptyStrings.ts
 function cleanEmptyStrings<T>(data: T): T {
     if (Array.isArray(data)) {
       return data.map(item => cleanEmptyStrings(item)) as unknown as T;

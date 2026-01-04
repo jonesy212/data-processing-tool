@@ -1,4 +1,4 @@
-// ClearingTimer.tsx
+ClearingTimer.tsx
 import React, { useEffect } from 'react';
 
 const TimerComponent = () => {

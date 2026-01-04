@@ -1,8 +1,8 @@
 // ToolbarActions.ts
 // toolbar/ToolbarActions.ts
-import { Theme } from "@/core/libraries/ui/theme/Theme";
-import { ParticipantData } from "@/core/pages/management/ParticipantManagementPage";
-import { User } from "@/core/users/User";
+import type { Theme } from "@/core/libraries/ui/theme/Theme";
+import type { ParticipantData } from "@/core/pages/management/ParticipantManagementPage";
+import type { User } from "@/core/users/User";
 import { createAction } from "@reduxjs/toolkit";
 
 export const ToolbarActions = {

@@ -1,14 +1,14 @@
-// systemConfigs.ts
+systemConfigs.ts
 import FrontendStructure from "@/core/config/appStructure/FrontendStructureComponent";
 import { BackendConfig } from "@/core/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { FrontendConfig } from "@/core/config/FrontendConfig";
 import LazyLoadScriptConfig from "@/core/config/LazyLoadScriptConfig";
 import { DataVersions } from "@/core/configs/DataVersionsConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import BackendStructure from "@/core/server/database/BackendStructure";
 import ShoppingCenterConfig from "@/core/shoppingCenter/ShoppingCenterConfig";
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
+import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 
 
@@ -77,5 +77,5 @@ export const createSystemConfigs = <
   ...configOverrides,
 });
 
-// Usage:
-// const configs = createSystemConfigs<MyEntityType>({ maxConnections: 20 });
+Usage:
+const configs = createSystemConfigs<MyEntityType>({ maxConnections: 20 });

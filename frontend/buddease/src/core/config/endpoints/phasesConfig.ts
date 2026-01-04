@@ -1,4 +1,4 @@
-// phasesConfig.ts
+phasesConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { PhasesEndpoints } from '@/core/typings/categories/PhasesEndpoints';
 

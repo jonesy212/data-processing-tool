@@ -1,4 +1,4 @@
-// FileApiService.tsx
+FileApiService.tsx
 import internalApiService, { ClientNotificationMessages, clientNotificationMessages } from "@/core/api/ApiClient";
 import { handleApiError } from "@/core/api/ApiLogs";
 import { endpoints } from "@/core/api/endpointConfigurations";
@@ -348,7 +348,7 @@ class FileApiService {
 
 
 
-// Define the function to determine the file type
+Define the function to determine the file type
 async getFileType(file: string): Promise<FileType> {
   try {
     // Call the API to get the file type

@@ -1,12 +1,12 @@
-// userSagas.ts
-// userSaga.ts
+userSagas.ts
+userSaga.ts
 import { UserActions } from "@/core/actions/UserActions";
 import UserService, { userService } from "@/core/api/ApiUser";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { User } from "@/core/users/User";
 import { call, put, takeLatest } from "redux-saga/effects";
 
-// Worker Saga: Fetch User
+Worker Saga: Fetch User
 function* fetchUserSaga(action: any) {
   try {
     const userId = action.payload;
@@ -38,7 +38,7 @@ function* updateUserFailureSaga(action: any): Generator {
     console.error("Failed to handle update user failure", error);
   }
 }
-// Worker Saga: Update User
+Worker Saga: Update User
 function* updateUserSaga(action: any) {
   try {
     const { userId, userData } = action.payload;
@@ -101,7 +101,7 @@ function* updateUsersFailureSaga(
   }
 }
 
-// Watcher Saga: Watches for the fetch and update user actions
+Watcher Saga: Watches for the fetch and update user actions
 function* watchUserSagas() {
   
   yield takeLatest(UserActions.fetchUserRequest.type, fetchUserSaga);
@@ -111,7 +111,7 @@ function* watchUserSagas() {
   yield takeLatest(UserActions.updateUsersFailure.type, updateUsersFailureSaga);
 }
 
-// Export the user saga
+Export the user saga
 export function* userSagas() {
   yield watchUserSagas();
 }

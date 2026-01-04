@@ -1,6 +1,6 @@
 // categoryConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { CategoryEndpoints } from '@/core/typings/categories/CategoryEndpoints';
+import type { CategoryEndpoints } from '@/core/typings/categories/CategoryEndpoints';
 
 
 export const categoryConfig: CategoryEndpoints = {

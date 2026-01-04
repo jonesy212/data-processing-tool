@@ -1,4 +1,4 @@
-// urlGenerator.ts
+urlGenerator.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { endpointConfigurations } from '@/core/api/endpointConfigurations';
 import { EndpointConfig, EndpointConfigurations } from '@/core/config/EndpointConfig';
@@ -11,7 +11,7 @@ import { EndpointConfig, EndpointConfigurations } from '@/core/config/EndpointCo
  * @returns The generated endpoint URL.
  */
 
-// Enhanced URL generator that handles all endpoint types
+Enhanced URL generator that handles all endpoint types
 export const generateEndpointUrl = (
   category: keyof EndpointConfigurations,
   endpoint: string,

@@ -1,7 +1,8 @@
-// ProjectFeedbackSlice.tsx
+ProjectFeedbackSlice.tsx
 import { ProjectFeedback } from '@/core/features/support/ProjectFeedback';
 import { RootState } from '@/core/state/redux/slices/RootSlice';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 
 interface ProjectFeedbackState {
@@ -33,10 +34,10 @@ export const projectFeedbackSlice = createSlice({
   },
 });
 
-// Export action creators
+Export action creators
 export const { addProjectFeedback, removeProjectFeedback, clearAllProjectFeedback } = projectFeedbackSlice.actions;
 
-// Selectors to access project feedback state
+Selectors to access project feedback state
 export const selectProjectFeedback = (state: RootState) => state.projectManager.projectFeedback;
 
 export default projectFeedbackSlice.reducer;

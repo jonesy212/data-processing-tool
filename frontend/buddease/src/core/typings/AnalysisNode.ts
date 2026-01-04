@@ -1,5 +1,5 @@
-// AnalysisNode.ts
-// Generic node representing analysis results
+AnalysisNode.ts
+Generic node representing analysis results
 
 export interface AnalysisNode<
   T extends BaseDataEntity = BaseDataEntity

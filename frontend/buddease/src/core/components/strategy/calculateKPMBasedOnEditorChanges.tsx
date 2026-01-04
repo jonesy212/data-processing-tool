@@ -1,7 +1,7 @@
-// calculateKPMBasedOnEditorChanges.tsx
+calculateKPMBasedOnEditorChanges.tsx
 import { useEffect, useState } from "react";
 
-// Function to calculate KPM based on editor changes
+Function to calculate KPM based on editor changes
 const calculateKPMBasedOnEditorChanges = (editorState: any) => {
   const [keystrokes, setKeystrokes] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);

@@ -1,4 +1,4 @@
-// diagramGenerator.ts
+diagramGenerator.ts
 
 function diagramGenerator(rows: number, cols: number, content: string[]): string {
     try {
@@ -38,7 +38,7 @@ function diagramGenerator(rows: number, cols: number, content: string[]): string
 
 
 
-// Define the generate function
+Define the generate function
 export function generate(): void {
     try {
         // Example parameters for generating a diagram
@@ -58,8 +58,8 @@ export function generate(): void {
     }
 }
 
-// Call the generate function to generate and display the diagram
+Call the generate function to generate and display the diagram
 generate();
-// Export the diagramGenerator function for external use
+Export the diagramGenerator function for external use
 export { diagramGenerator };
 

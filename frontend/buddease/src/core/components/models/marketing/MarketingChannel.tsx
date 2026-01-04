@@ -1,4 +1,4 @@
-// MarketingChannel.tsx
+MarketingChannel.tsx
 interface MarketingChannelOptions {
     name: string; // Name of the marketing channel
     audience: string[]; // Target audience of the marketing channel

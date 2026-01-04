@@ -1,4 +1,4 @@
-// DocumentFormattingOptionsComponent.tsx
+DocumentFormattingOptionsComponent.tsx
 import { BaseFormattingOptions } from "@/core/components/documents/ToolbarOptions";
 import React, { useState } from "react";
 

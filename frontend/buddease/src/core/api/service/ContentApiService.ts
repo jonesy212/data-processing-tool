@@ -1,5 +1,5 @@
-// ContentApiService.ts
-// app/api/contentApiService.ts
+ContentApiService.ts
+app/api/contentApiService.ts
 import internalApiService from '@/core/api/ApiClient';
 import {
     ContentBulkOperationResponse,
@@ -401,5 +401,5 @@ export class ContentApiService {
   }
 }
 
-// Singleton instance
+Singleton instance
 export const contentApiService = new ContentApiService();

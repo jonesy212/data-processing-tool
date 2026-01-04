@@ -1,5 +1,5 @@
-// ComponentsConfig.ts
-// For UI component styling / theming
+ComponentsConfig.ts
+For UI component styling / theming
 export interface ComponentsConfig {
   button: {
     textColor?: string;
@@ -64,7 +64,7 @@ export interface ComponentsConfig {
   // Add more configurations for additional components as needed
 }
 
-// Define component configurations
+Define component configurations
 const componentConfig: ComponentsConfig = {
     button: {
         textColor: "#ffffff",
@@ -104,12 +104,12 @@ const componentConfig: ComponentsConfig = {
     }
 };
 
-// Example usage in code
+Example usage in code
 const buttonTextColor = componentConfig.button.textColor; // Get button text color
 const inputBackgroundColor = componentConfig.input.backgroundColor; // Get input background color
 const modalOverlayColor = componentConfig.modal.overlayColor; // Get modal overlay color
 
-// Use the configurations as needed in your application
+Use the configurations as needed in your application
 console.log("Button text color:", buttonTextColor);
 console.log("Input background color:", inputBackgroundColor);
 console.log("Modal overlay color:", modalOverlayColor);

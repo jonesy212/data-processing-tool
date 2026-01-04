@@ -1,5 +1,7 @@
-// Repository.ts
-interface Repository<T extends BaseDataEntity> {
+Repository.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
+
+export interface Repository<T extends BaseDataEntity> {
   getById(id: string): Promise<T | null>;
   save(entity: T): Promise<void>;
   delete(id: string): Promise<void>;

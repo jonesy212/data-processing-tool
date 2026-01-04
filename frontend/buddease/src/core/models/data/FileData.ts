@@ -1,11 +1,11 @@
-// FileData.ts
+FileData.ts
 
 import { ScheduledData } from '@/core/calendar/ScheduledData';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { User } from '@/core/users/User';
 
-// Define the interface for FileData
+Define the interface for FileData
 interface FileData<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,

@@ -1,21 +1,21 @@
-// AppConfig.ts
+AppConfig.ts
 
 import { ApiConfig } from '@/core/api/ApiConfigService';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from "@/core/hooks/useNotificationSystem";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 import { Data } from '@/core/models/data/Data';
 import { RetryConfig, configServiceInstance } from "@/core/services/ConfigurationService";
 import { User } from "@/core/users/User";
 import { AppVersion, currentAppName } from '@/core/versions/AppVersion';
 
-// Define the API version header constant
+Define the API version header constant
 const API_VERSION_HEADER: string = configServiceInstance.getApiVersionHeader();
 const DATA_PATH: string = configServiceInstance.getDataPath();
 
-// Define AppConfig-specific generic parameters
+Define AppConfig-specific generic parameters
 type AppConfigEntity = BaseDataEntity;
 type AppConfigK = AppConfigEntity;
 type AppConfigMeta = DefaultMeta<AppConfigEntity, AppConfigK>;
@@ -36,7 +36,7 @@ interface AppActions {
   getApiKey: () => string;
 }
 
-// Define the AppConfig interface
+Define the AppConfig interface
 interface AppConfig {
   // General application settings
   appName: string;
@@ -86,7 +86,7 @@ interface AppConfig {
   getApiKey: () => Promise<string>; 
 }
 
-// Create a simplified AppVersion instance for AppConfig
+Create a simplified AppVersion instance for AppConfig
 const createAppConfigVersion = (): AppVersion<AppConfigEntity, AppConfigK, AppConfigMeta, AppConfigAttachment, AppConfigExcludedFields, AppConfigIncludedFields> => {
   return new AppVersion<AppConfigEntity, AppConfigK, AppConfigMeta, AppConfigAttachment, AppConfigExcludedFields, AppConfigIncludedFields>({
     major: 1,
@@ -100,7 +100,7 @@ const createAppConfigVersion = (): AppVersion<AppConfigEntity, AppConfigK, AppCo
   });
 };
 
-// Create a default theme that matches the Theme interface and BrandingSettings
+Create a default theme that matches the Theme interface and BrandingSettings
 const createDefaultTheme = (): Theme => ({
   // ===== REQUIRED PROPERTIES FROM BRANDINGSETTINGS =====
   logoUrl: "",
@@ -254,7 +254,7 @@ const createDefaultTheme = (): Theme => ({
   isDarkMode: false
 });
 
-// Define the function to retrieve AppConfig
+Define the function to retrieve AppConfig
 export const getAppConfig = (): AppConfig => {
   const config = configServiceInstance.getApiConfig();
   config.name = "Mock Config";
@@ -308,7 +308,7 @@ export const getAppConfig = (): AppConfig => {
   };
 };
 
-// Usage example:
+Usage example:
 const appConfig: AppConfig = getAppConfig();
 console.log(appConfig.appName);
 

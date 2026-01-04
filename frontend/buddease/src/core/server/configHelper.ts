@@ -1,5 +1,5 @@
-// configHelper.ts
-// app/server/configHelper.ts
+configHelper.ts
+app/server/configHelper.ts
 import fs from 'fs';
 import path from 'path';
 
@@ -37,7 +37,7 @@ export function getEnvironmentConfig(): AppConfig {
   return defaultConfig;
 }
 
-// Utility to check if config file exists
+Utility to check if config file exists
 export function configFileExists(): boolean {
   const configPath = path.join(process.cwd(), 'config.json');
   return fs.existsSync(configPath);

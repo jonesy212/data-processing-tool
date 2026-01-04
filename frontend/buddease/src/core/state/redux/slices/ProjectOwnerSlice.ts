@@ -1,4 +1,4 @@
-// ProjectOwnerSlice.ts
+ProjectOwnerSlice.ts
 import { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import { Team } from "@/core/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
@@ -123,7 +123,7 @@ export const generateReportAsync = createAsyncThunk(
   }
 );
 
-// Create an asynchronous thunk action creator named exportData
+Create an asynchronous thunk action creator named exportData
 export const exportData = createAsyncThunk(
   // Specify the action type string
   "projectOwner/exportData",
@@ -1011,7 +1011,7 @@ export const useProjectOwnerSlice = createSlice({
   }
 });
 
-// Export action creators
+Export action creators
 export const {
   updateProject,
   addTeamMember,
@@ -1047,10 +1047,10 @@ export const {
   contributeToSustainability,
 } = useProjectOwnerSlice.actions;
 
-// Selectors
+Selectors
 export const selectProjectOwner = (state: RootState) => state.projectOwner;
 
-// Export the reducer
+Export the reducer
 export default useProjectOwnerSlice.reducer;
 export type { ProjectOwnerState };
 

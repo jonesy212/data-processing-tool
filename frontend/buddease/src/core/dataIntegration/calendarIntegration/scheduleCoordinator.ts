@@ -1,9 +1,9 @@
-// scheduleCoordinator.ts
+scheduleCoordinator.ts
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { CalendarEventManager } from '@/core/dataIntegration/calendarIntegration/calendarEventManager';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { CalendarEventManager } from '@/core/dataIntegration/calendarIntegration/calendarEventManager';
 import { ProjectLogger } from '@/core/dataIntegration/projectIntegration/ProjectLogger';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ScheduleOptimization } from '@/core/models/data/EventContentAnalysis';
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
 
@@ -518,7 +518,7 @@ export class ScheduleCoordinator<
   }
 }
 
-// Default coordinator instance
+Default coordinator instance
 export const defaultScheduleCoordinator = new ScheduleCoordinator(
   defaultCalendarEventManager
 );

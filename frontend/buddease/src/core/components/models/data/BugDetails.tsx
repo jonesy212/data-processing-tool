@@ -1,4 +1,4 @@
-// BugDetails.tsx
+BugDetails.tsx
 import { ButtonGenerator } from "@/core/generators/GenerateButtons";
 import ListGenerator from "@/core/generators/ListGenerator";
 import React, { useState } from "react";

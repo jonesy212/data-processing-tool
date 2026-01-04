@@ -1,4 +1,4 @@
-// NavigationContextState.ts
+NavigationContextState.ts
 
 import { Step } from '@/core/hooks/useStepNavigation';
 import { NavigationView } from './NavigationContext';

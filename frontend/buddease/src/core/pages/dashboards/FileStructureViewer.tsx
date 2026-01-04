@@ -1,4 +1,4 @@
-// FileStructureViewer.tsx
+FileStructureViewer.tsx
 import { useAccessControl } from '@/core/hooks/useAccessControl';
 import AccessDenied from '@/core/pages/AccessDenied';
 import TreeView from "@/core/pages/dashboards/TreeView";

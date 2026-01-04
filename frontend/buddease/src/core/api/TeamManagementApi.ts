@@ -1,5 +1,5 @@
-// TeamManagementApi.ts
-// TeamManagementService.ts
+TeamManagementApi.ts
+TeamManagementService.ts
 import { TeamActions } from "@/core/actions/TeamActions";
 import { handleApiError } from "@/core/api/ApiLogs";
 import axiosInstance from "@/core/api/csrfToken";

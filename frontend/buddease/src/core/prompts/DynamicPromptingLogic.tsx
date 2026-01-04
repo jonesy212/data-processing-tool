@@ -1,4 +1,4 @@
-// DynamicPromptingLogic.tsx
+DynamicPromptingLogic.tsx
 import { generateDynamicPrompts } from "@/core/prompts/promptGenerator";
 import React, { useState } from "react";
 

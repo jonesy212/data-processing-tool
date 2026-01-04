@@ -1,7 +1,7 @@
-// DataService.ts
+DataService.ts
 import internalApiService from '@/core/api/ApiClient';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DATA_NOTIFICATIONS from '@/core/features/support/DataNotifications';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from '@/core/models/data/StatusType';
@@ -262,7 +262,7 @@ class DataService<
   }
 }
 
-// Create entity-specific instances using the generic parameters
+Create entity-specific instances using the generic parameters
 import {
     NoteAttachment,
     NoteEntity,
@@ -309,7 +309,7 @@ const noteDataService = new DataService<
   NoteIncludedFields
 >();
 
-// Default export for general use (uses default generic parameters)
+Default export for general use (uses default generic parameters)
 const dataService = new DataService();
 
 export { noteDataService, taskDataService, userDataService };

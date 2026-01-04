@@ -1,4 +1,4 @@
-// participantsEndpoints.ts
+participantsEndpoints.ts
 import { ParticipantsEndpoints } from '@/core/typings/categories/ParticipantsEndpoints';
 
 export const participantsConfig: ParticipantsEndpoints = {

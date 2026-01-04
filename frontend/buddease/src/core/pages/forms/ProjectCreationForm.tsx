@@ -1,4 +1,4 @@
-// ProjectCreationForm.tsx
+ProjectCreationForm.tsx
 import { ClientProjectEntity, ProjectType } from '@/core/models/projects/Project';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useNotification } from '@/core/state/context/NotificationContext';

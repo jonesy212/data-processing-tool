@@ -1,23 +1,23 @@
-// Task.tsx
+Task.tsx
 
-import { ScheduledData } from "@/core/calendar/ScheduledData";
-import { SharedDetails } from '@/core/components/models/data/Details';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { TaskMetadata } from '@/core/config/MetaDataOptions';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { SharedTimestamps } from '@/core/documents/RelatedProps';
-import { Data } from '@/core/models/data/Data';
+import type { ScheduledData } from "@/core/calendar/ScheduledData";
+import type { SharedDetails } from '@/core/components/models/data/Details';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { TaskMetadata } from '@/core/config/MetaDataOptions';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { Data } from '@/core/models/data/Data';
 import { taskMetadata } from '@/core/models/data/TaskMetadata';
-import { Progress } from "@/core/models/tracker/ProgressBar";
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { PriorityValue } from '@/core/pages/searches/CriteriaType';
-import { SharedMetadata } from "@/core/shared/SharedMetadata";
-import { AllStatus, DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Progress } from "@/core/models/tracker/ProgressBar";
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { PriorityValue } from '@/core/pages/searches/CriteriaType';
+import type { SharedMetadata } from "@/core/shared/SharedMetadata";
+import type { AllStatus, DetailsItem } from "@/core/state/stores/DetailsListStore";
 import TodoImpl from '@/core/todos/Todo';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { TaskEntity } from '@/core/typings/entities/TaskEntity';
-import { AllTypes } from "@/core/typings/PropTypes";
-import { User } from "@/core/users/User";
+import type { TaskEntity } from '@/core/typings/entities/TaskEntity';
+import type { AllTypes } from "@/core/typings/PropTypes";
+import type { User } from "@/core/users/User";
 
 interface SubtaskData extends BaseDataEntity {
   parentId: string;
@@ -28,7 +28,7 @@ interface SubtaskData extends BaseDataEntity {
 export type TaskDataEntity = BaseDataEntity;
  
 
-interface Task<
+export interface Task<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -89,7 +89,7 @@ interface Task<
     thisArg?: any
   ) => boolean;
 }
-// Assuming TaskDetails has a structure similar to Task interface
+Assuming TaskDetails has a structure similar to Task interface
 interface TaskDetails {
   taskId: string;
   details: TaskEntity; // Complete task data structure
@@ -148,6 +148,10 @@ const createTask = <
     schema: {},
     selectedTask: {} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     participants: [],
+    metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    major: 0,
+    minor: 0,
+    patch: 0,
     ...taskData, // Merge provided data
   };
 
@@ -160,5 +164,5 @@ const createTask = <
 
 
 export { createTask };
-export type { Task, TaskDetails };
+export type { TaskDetails };
 

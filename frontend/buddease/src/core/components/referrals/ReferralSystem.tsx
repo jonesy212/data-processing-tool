@@ -1,7 +1,7 @@
-// ReferralSystem.tsx
+ReferralSystem.tsx
 import React, { useState } from 'react';
 
-// Referral System Component
+Referral System Component
 const ReferralSystem = () => {
   // State to track referral information
   const [referralCode, setReferralCode] = useState('');

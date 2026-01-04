@@ -1,10 +1,10 @@
-// Tracker.ts
-//Tracker.ts
+Tracker.ts
+Tracker.ts
 
 import { HighlightColor } from "@/core/components/styling/Palette";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { detectMetadataChanges } from "@/core/config/metadata/detectMetadataChanges";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import FileData from "@/core/models/data/FileData";
 import FolderData from "@/core/models/data/FolderData";
@@ -20,7 +20,7 @@ import {
     updateQuota,
 } from "@/core/state/redux/slices/UserSlice";
 import { Payment } from "@/core/subscriptions/SubscriptionPlan";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 import path from "path";
 
@@ -33,7 +33,7 @@ export interface SharedFormattingOptions {
   fontFamily?: string;
 }
 
-// Define a common interface for tracker properties
+Define a common interface for tracker properties
 interface CommonTrackerProps<
   T extends BaseDataEntity,
   K extends T = T,

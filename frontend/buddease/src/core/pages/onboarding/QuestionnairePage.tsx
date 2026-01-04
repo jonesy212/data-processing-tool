@@ -1,4 +1,4 @@
-// QuestionnairePage.tsx
+QuestionnairePage.tsx
 import baseQuestionnaireData from "@/core/hooks/baseQuestionnaireData";
 import generateDynamicQuestions from "@/core/hooks/dynamicHooks/dynamicQuestionGenerator";
 import { Question } from "@/core/pages/onboarding/Question"; // Adjust the import path as needed

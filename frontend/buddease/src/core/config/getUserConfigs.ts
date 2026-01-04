@@ -1,4 +1,4 @@
-// getUserConfigs.ts
+getUserConfigs.ts
 import { UserConfigs } from "@/core/api/userConfigs";
 import { userPreferences } from "@/core/config/UserPreferences";
 import userSettings from "@/core/config/UserSettings";

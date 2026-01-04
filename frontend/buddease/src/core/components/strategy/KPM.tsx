@@ -1,25 +1,25 @@
-// KPM.tsx
+KPM.tsx
 let keystrokes = 0;
 let startTime: number | undefined; // Make startTime nullable to address the initialization issue
 
-// Define a constant for the average keystrokes per minute (KPM) required for real-time transcription
+Define a constant for the average keystrokes per minute (KPM) required for real-time transcription
 const REAL_TIME_KPM_THRESHOLD = 300;
 
-// Define a constant for the average keystrokes per minute (KPM) required for batch transcription
+Define a constant for the average keystrokes per minute (KPM) required for batch transcription
 const BATCH_KPM_THRESHOLD = 50;
 
-// Function to start tracking keystrokes
+Function to start tracking keystrokes
 function startTracking() {
   keystrokes = 0;
   startTime = Date.now();
 }
 
-// Event listener to track keystrokes
+Event listener to track keystrokes
 document.addEventListener('keypress', () => {
   keystrokes++;
 });
 
-// Function to calculate KPM
+Function to calculate KPM
 function calculateKPM(startTime: number | undefined) {
   if (!startTime) {
     return 0; // or log a warning
@@ -30,7 +30,7 @@ function calculateKPM(startTime: number | undefined) {
   // Round to 2 decimal places
 }
 
-// Usage example:
+Usage example:
 startTracking();
 const calculatedStartTime = startTime ?? Date.now(); // Ensure startTime is initialized
 setTimeout(() => {
@@ -38,7 +38,7 @@ setTimeout(() => {
   console.log(`Your KPM: ${kpm}`);
 }, 60000); // Calculate KPM after 1 minute
 
-// Define a function to calculate transcription speed based on KPM
+Define a function to calculate transcription speed based on KPM
 function calculateTranscriptionSpeed(kpm: number) {
   // Define a pricing tier based on transcription speed
   if (kpm > 100) {
@@ -50,7 +50,7 @@ function calculateTranscriptionSpeed(kpm: number) {
   }
 }
 
-// Function to perform real-time transcription
+Function to perform real-time transcription
 function realTimeTranscription(kpm: number) {
   // Check if the KPM meets the threshold for real-time transcription
   if (kpm >= REAL_TIME_KPM_THRESHOLD) {
@@ -61,7 +61,7 @@ function realTimeTranscription(kpm: number) {
   }
 }
 
-// Function to perform batch transcription
+Function to perform batch transcription
 function batchTranscription(kpm: number) {
   // Check if the KPM meets the threshold for batch transcription
   if (kpm >= BATCH_KPM_THRESHOLD) {
@@ -72,7 +72,7 @@ function batchTranscription(kpm: number) {
   }
 }
 
-// Define subscription plans based on KPM
+Define subscription plans based on KPM
 function defineSubscriptionPlan(kpm: number) {
   let subscriptionPlan;
 
@@ -88,7 +88,7 @@ function defineSubscriptionPlan(kpm: number) {
   return subscriptionPlan;
 }
 
-// Integrate KPM-based services into existing platforms
+Integrate KPM-based services into existing platforms
 function integrateWithPlatform(platform: string, kpm: number) {
   let message;
 
@@ -117,7 +117,7 @@ function integrateWithPlatform(platform: string, kpm: number) {
   return message;
 }
 
-// Define functions for lyric transcription
+Define functions for lyric transcription
 function transcribeLyrics(song: string, kpm: number) {
   let transcription;
 

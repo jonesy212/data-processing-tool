@@ -2,9 +2,9 @@
 // app/state/snapshots/persistSnapshot.ts
 import { handleApiError } from '@/core/api/ApiLogs';
 import DatabaseClient from "@/core/api/DatabaseClient";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import { DatabaseConfig } from "@/core/config/DatabaseConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
@@ -136,7 +136,7 @@ export async function persistSnapshotDB<
   }
 }
 
-// Helper functions for better error handling
+Helper functions for better error handling
 const determineDatabaseErrorType = (error: unknown): string => {
   const errorStr = String(error).toLowerCase();
   

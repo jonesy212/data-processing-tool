@@ -1,4 +1,4 @@
-// src/app/error-analyzer/FixVerifier.ts
+src/app/error-analyzer/FixVerifier.ts
 import { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
 import { AppliedChange, FixExecutionResult, ValidationResult } from '@/core/error-analyzer/index';
 import fs from 'fs';

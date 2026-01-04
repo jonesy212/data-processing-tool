@@ -1,4 +1,4 @@
-// SnapshotAnalyzer.ts
+SnapshotAnalyzer.ts
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';
@@ -118,15 +118,15 @@ export class SnapshotAnalyzer {
     switch (issue.type) {
       case 'import':
         return `// Fix import paths for snapshot utilities
-// Ensure all snapshot-related imports use correct paths
+Ensure all snapshot-related imports use correct paths
 import { snapshotUtils } from '@/core/snapshots/Snapshot';
 
-// Check the import path and ensure the file exists
-// or install missing dependency if it's from node_modules`;
+Check the import path and ensure the file exists
+or install missing dependency if it's from node_modules`;
 
       case 'type':
         return `// Align snapshot types with main application types
-// Update type definitions to match component expectations
+Update type definitions to match component expectations
 interface SnapshotData<T> {
   timestamp: string;
   data: T;
@@ -136,7 +136,7 @@ interface SnapshotData<T> {
 
       case 'serialization':
         return `// Fix serialization/deserialization issues
-// Use proper data transformation for snapshots
+Use proper data transformation for snapshots
 try {
   const serializedData = JSON.stringify(data, null, 2);
   const deserializedData = JSON.parse(serializedData);
@@ -147,7 +147,7 @@ try {
 
       case 'compatibility':
         return `// Ensure snapshot compatibility
-// Add version checks and migration logic
+Add version checks and migration logic
 const CURRENT_VERSION = '1.0.0';
 if (snapshot.version !== CURRENT_VERSION) {
   return migrateSnapshot(snapshot);
@@ -155,7 +155,7 @@ if (snapshot.version !== CURRENT_VERSION) {
 
       case 'data-model':
         return `// Consider breaking down large interfaces
-// Use composition over large single interfaces
+Use composition over large single interfaces
 interface BaseSnapshot {
   id: string;
   timestamp: string;
@@ -167,8 +167,8 @@ interface ExtendedSnapshot extends BaseSnapshot {
 
       default:
         return `// Fix snapshot issue: ${issue.message}
-// Review snapshot implementation and data flow
-// Ensure proper error handling and validation`;
+Review snapshot implementation and data flow
+Ensure proper error handling and validation`;
     }
   }
 

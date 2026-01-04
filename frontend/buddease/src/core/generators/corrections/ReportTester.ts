@@ -1,4 +1,4 @@
-// ReportTester.ts
+ReportTester.ts
 
 import { CorrectionReport } from '@/core/generators/corrections/CorrectionGenerator';
 import { ReportGenerators } from '@/core/generators/corrections/ReportGenerators';
@@ -57,5 +57,5 @@ export class ReportTester {
   }
 }
 
-// Quick usage example
-// ReportTester.testWithRealComponent('src/app/components/UserProfile.tsx');
+Quick usage example
+ReportTester.testWithRealComponent('src/app/components/UserProfile.tsx');

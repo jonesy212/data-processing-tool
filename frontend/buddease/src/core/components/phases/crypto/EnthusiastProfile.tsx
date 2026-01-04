@@ -1,4 +1,4 @@
-// EnthusiastProfile.tsx
+EnthusiastProfile.tsx
 
 import useTwoFactorAuthentication from "@/core/hooks/authentication/useTwoFactorAuthentication";
 import React, { useState } from "react";

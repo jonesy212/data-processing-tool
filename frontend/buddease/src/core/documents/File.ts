@@ -1,10 +1,10 @@
-// File.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+File.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { AllTypes } from "@/core/typings/PropTypes";
 import { AppFile } from '@/core/typings/file/fileTypes';
 
-// File interface representing a file
+File interface representing a file
 interface CustomFile<T extends BaseDataEntity> extends AppFile {
   readonly name: string;                // The name of the file
   readonly size: number;                // The size of the file in bytes

@@ -1,5 +1,5 @@
-// featureB.tsx
-// FeatureB.ts
+featureB.tsx
+FeatureB.ts
 import useAsyncHookLinker from "@/core/hooks/useAsyncHookLinker";
 
 const asyncEffectB = async () => {

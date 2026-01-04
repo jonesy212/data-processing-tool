@@ -1,16 +1,16 @@
-// LazyLoadScriptConfig.ts
+LazyLoadScriptConfig.ts
 import { ApiConfig } from '@/core/api/ApiConfigService';
 import { createSystemConfigs } from '@/core/api/systemConfigs';
 import { traverseFrontendDirectory } from '@/core/api/traverse/route';
 import { UserConfigs } from '@/core/api/userConfigs';
 import { BackendConfig, backendConfig } from '@/core/config/BackendConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DocumentBuilderConfig } from '@/core/config/DocumentBuilderConfig';
 import { FrontendConfig, frontendConfig } from '@/core/config/FrontendConfig';
 import MainConfig from '@/core/config/MainConfig';
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import { DataVersions } from '@/core/configs/DataVersionsConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ShoppingCenterConfig from '@/core/shoppingCenter/ShoppingCenterConfig';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 

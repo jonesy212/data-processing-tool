@@ -1,4 +1,4 @@
-// DocumentCreationUtils.ts
+DocumentCreationUtils.ts
 import { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
 import { PDFDocument, rgb } from '@/core/documents/editing/PDFDocument';
 

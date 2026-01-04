@@ -1,4 +1,4 @@
-// CodeSnippetExtractor.ts
+CodeSnippetExtractor.ts
 export function extractCodeSnippet(content: string, pattern: RegExp, contextLines: number = 3): string {
   const lines = content.split('\n');
   let snippet = '';

@@ -1,4 +1,4 @@
-// ApiUserPreferences.ts
+ApiUserPreferences.ts
 import internalApiService from '@/core/api/ApiClient';
 import { endpointPreferences } from "@/core/api/ApiPreferencesEndpoints";
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";

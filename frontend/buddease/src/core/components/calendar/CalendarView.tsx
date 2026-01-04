@@ -1,4 +1,4 @@
-// CalendarView.tsx
+CalendarView.tsx
 
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { CommonCalendarProps } from '@/core/components/calendar/Calendar';

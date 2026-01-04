@@ -1,12 +1,12 @@
-// CalendarMonth.tsx
+CalendarMonth.tsx
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { CommonCalendarProps } from "@/core/components/calendar/Calendar";
 import { YearInfo } from "@/core/components/calendar/CalendarYear";
 import { Month, MonthInfo } from "@/core/components/calendar/Month";
 import { useCryptoManager } from "@/core/components/crypto/CryptoManager";
 import { Task } from "@/core/components/models/tasks/Task";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import React, { useEffect } from "react";
 
 interface CalendarMonthProps<

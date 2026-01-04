@@ -1,11 +1,11 @@
-// ClientSanitization.ts
+ClientSanitization.ts
 
 /**
  * Client-safe sanitization functions without server dependencies
  * Focused on XSS prevention and input validation
  */
 
-// ===== CORE SANITIZATION FUNCTIONS =====
+===== CORE SANITIZATION FUNCTIONS =====
 
 export const sanitizeComments = (input: unknown): string => {
   if (input == null || input === '') return '';
@@ -83,7 +83,7 @@ export const sanitizeHTML = (html: string, allowedTags: string[] = []): string =
   return html.replace(tagRegex, '');
 };
 
-// ===== VALIDATION FUNCTIONS =====
+===== VALIDATION FUNCTIONS =====
 
 export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -112,7 +112,7 @@ export const isValidPassword = (password: string): { isValid: boolean; errors: s
   };
 };
 
-// ===== STRING UTILITIES =====
+===== STRING UTILITIES =====
 
 export const truncateString = (str: string, maxLength: number, suffix: string = '...'): string => {
   if (str.length <= maxLength) return str;
@@ -127,7 +127,7 @@ export const normalizeWhitespace = (str: string): string => {
   return str.replace(/\s+/g, ' ').trim();
 };
 
-// ===== URL SANITIZATION =====
+===== URL SANITIZATION =====
 
 export const sanitizeURL = (url: string): string => {
   if (!url) return '';
@@ -158,7 +158,7 @@ export const isValidURL = (url: string): boolean => {
   }
 };
 
-// ===== FILE NAME SANITIZATION =====
+===== FILE NAME SANITIZATION =====
 
 export const sanitizeFileName = (fileName: string): string => {
   if (!fileName) return 'file';
@@ -179,7 +179,7 @@ export const sanitizeFileExtension = (extension: string): string => {
     .substring(0, 10);
 };
 
-// ===== OBJECT/DATA SANITIZATION =====
+===== OBJECT/DATA SANITIZATION =====
 
 export const sanitizeObject = <T extends Record<string, any>>(obj: T, depth: number = 3): Partial<T> => {
   if (depth <= 0) return {} as Partial<T>;
@@ -206,7 +206,7 @@ export const sanitizeObject = <T extends Record<string, any>>(obj: T, depth: num
   return sanitized;
 };
 
-// ===== CONTENT SPECIFIC SANITIZATION =====
+===== CONTENT SPECIFIC SANITIZATION =====
 
 export const sanitizeSearchQuery = (query: string): string => {
   return sanitizeInput(query)
@@ -231,7 +231,7 @@ export const sanitizeCSS = (css: string): string => {
     .replace(/[<>]/g, '');
 };
 
-// ===== SECURITY CHECKS =====
+===== SECURITY CHECKS =====
 
 export const hasDangerousContent = (str: string): boolean => {
   const dangerousPatterns = [
@@ -261,9 +261,9 @@ export const hasSQLInjection = (str: string): boolean => {
   return sqlPatterns.some(pattern => pattern.test(str));
 };
 
-// ===== PERFORMANCE OPTIMIZED VERSIONS =====
+===== PERFORMANCE OPTIMIZED VERSIONS =====
 
-// Fast version for high-frequency use
+Fast version for high-frequency use
 export const quickSanitize = (input: string): string => {
   return input
     .replace(/</g, '&lt;')
@@ -272,12 +272,12 @@ export const quickSanitize = (input: string): string => {
     .substring(0, 500);
 };
 
-// Batch sanitization for arrays
+Batch sanitization for arrays
 export const sanitizeArray = (inputs: unknown[]): string[] => {
   return inputs.map(input => sanitizeComments(input));
 };
 
-// ===== EXPORT ALL UTILITIES =====
+===== EXPORT ALL UTILITIES =====
 
 export default {
   // Core sanitization

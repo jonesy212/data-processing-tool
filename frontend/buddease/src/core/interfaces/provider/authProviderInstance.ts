@@ -1,5 +1,5 @@
-// authProviderInstance.ts
-// authProvidenceInstance.ts
+authProviderInstance.ts
+authProvidenceInstance.ts
 
 import { AuthProvider } from "@/core/components/Provider";
 import { Permission } from "@/core/permissions/Permission";

@@ -1,4 +1,4 @@
-// databaseConnection.ts (formerly config.ts)
+databaseConnection.ts (formerly config.ts)
 import configData from "@/core/config/endpoints/configData";
 import { PoolConfig } from 'pg';
 

@@ -1,4 +1,4 @@
-// ProfessionalTraderProfile.tsx
+ProfessionalTraderProfile.tsx
 import React, { useState } from 'react';
 
 interface ProfessionalTraderProfileProps {

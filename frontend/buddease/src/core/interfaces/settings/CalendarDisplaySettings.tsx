@@ -1,5 +1,5 @@
-// CalendarDisplaySettings.tsx
-// Define interface for CalendarDisplaySettings
+CalendarDisplaySettings.tsx
+Define interface for CalendarDisplaySettings
 interface CalendarDisplaySettings {
   showAllDayEvents: boolean;
   showWeekends: boolean;
@@ -92,7 +92,7 @@ interface CalendarDisplaySettings {
   showContextMenu: boolean;
 }
 
-// Define default settings
+Define default settings
 const defaultSettings: CalendarDisplaySettings = {
   showAllDayEvents: true,
   showWeekends: true,
@@ -150,12 +150,12 @@ const defaultSettings: CalendarDisplaySettings = {
   showEventCategories: false
 };
 
-// Define initial settings by spreading defaultSettings
+Define initial settings by spreading defaultSettings
 const initialDisplaySettings: CalendarDisplaySettings = {
   ...defaultSettings,
 };
 
-// Define function to validate settings
+Define function to validate settings
 const validateDisplaySettings = (
   settings: CalendarDisplaySettings
 ): CalendarDisplaySettings => {
@@ -225,14 +225,14 @@ const validateDisplaySettings = (
   return validatedSettings;
 };
 
-// Usage example:
+Usage example:
 let displaySettings: CalendarDisplaySettings = initialDisplaySettings;
 
-// Update display settings
+Update display settings
 displaySettings = {
   ...displaySettings,
   showAllDayEvents: false,
 };
 
-// Validate display settings
+Validate display settings
 displaySettings = validateDisplaySettings(displaySettings);

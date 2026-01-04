@@ -1,4 +1,4 @@
-// LifecycleManager.ts
+LifecycleManager.ts
 import { LifecycleConfig, LifecycleState, LifecycleTransition, PhaseOptions } from '@/core/hooks/phases/lifecycles';
 
 export class LifecycleManager {

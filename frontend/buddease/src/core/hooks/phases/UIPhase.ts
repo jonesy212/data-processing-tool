@@ -1,6 +1,6 @@
-// UIPhase.ts
-// DefaultNotification.ts
-// UIPhase.tsx
+UIPhase.ts
+DefaultNotification.ts
+UIPhase.tsx
 import { UIActions } from "@/core/actions/UIActions";
 import UserService from '@/core/api/ApiUser';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
@@ -17,10 +17,10 @@ import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { FileAttachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { FileAttachment } from '@/core/documents/attachment/Attachment';
 
-// Default alias for generic NotificationData
+Default alias for generic NotificationData
 export type DefaultNotificationData = NotificationData<
   BaseDataEntity,      // T
   BaseDataEntity,      // K
@@ -79,7 +79,7 @@ const isLoggedIn = () => true;
 
 export const notificationBarPhaseHook = createNotificationBarPhaseHook();
 
-// Custom hook to fetch and display notifications
+Custom hook to fetch and display notifications
 const fetchAndDisplayNotifications = async (
   addNotification: Function,
   clearNotifications: Function

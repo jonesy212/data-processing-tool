@@ -1,18 +1,18 @@
-// EntitySlice.ts
-// Import necessary dependencies
+EntitySlice.ts
+Import necessary dependencies
 import axiosInstance from '@/core/api/csrfToken';
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 
-// Define the entity interface
+Define the entity interface
 interface Entity {
     id: string;
     name: string;
     // Add other properties as needed
 }
 
-// Simple array-based entity state
+Simple array-based entity state
 interface EntityState {
   entities: Entity[];
   selectedEntityId: string | null;
@@ -21,13 +21,13 @@ interface EntityState {
   lastUpdated?: Date;
 }
 
-// Define the initial state for the entity slice
+Define the initial state for the entity slice
 const initialState: EntityState = {
     entities: [],
     selectedEntityId: null,
 };
 
-// Create the entity slice using createSlice
+Create the entity slice using createSlice
 export const useEntityManagerSlice = createSlice({
     name: 'entityManager',
     initialState,
@@ -92,7 +92,7 @@ export const useEntityManagerSlice = createSlice({
     },
 });
 
-// Define async thunks for fetching entities and clearing all entities
+Define async thunks for fetching entities and clearing all entities
 export const fetchEntities = createAsyncThunk<Entity[], string>(
     'entityManager/fetchEntities',
     async (entityName: string) => {
@@ -113,10 +113,10 @@ export const clearAllEntities = createAsyncThunk(
     }
 );
 
-// Export types
+Export types
 export type { EntityState };
 
-// Define selector functions to access the entity state
+Define selector functions to access the entity state
 export const selectEntities = (state: RootState) => state.entityManager.entities;
 export const selectSelectedEntityId = (state: RootState) => state.entityManager.selectedEntityId;
 export const selectSelectedEntity = (state: RootState) => 
@@ -128,7 +128,7 @@ export const selectEntityById = (id: string) => (state: RootState) =>
 export const selectEntityLoading = (state: RootState) => state.entityManager.loading;
 export const selectEntityError = (state: RootState) => state.entityManager.error;
 
-// Export the reducer and actions
+Export the reducer and actions
 export const { 
     addEntity, 
     removeEntity, 
@@ -139,5 +139,5 @@ export const {
     clearSelection
 } = useEntityManagerSlice.actions;
 
-// Export the reducer
+Export the reducer
 export const entityManagerReducer = useEntityManagerSlice.reducer;

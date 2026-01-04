@@ -1,4 +1,4 @@
-// CommunityCoinLiquidity.ts
+CommunityCoinLiquidity.ts
 interface CommunityCoinLiquidity {
   totalSupply: number;
   circulatingSupply: number;

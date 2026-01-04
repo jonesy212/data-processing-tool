@@ -1,4 +1,4 @@
-// SecurityPolicies.ts
+SecurityPolicies.ts
 class SecurityPolicies {
     constructor() {
       // Initialize security policies configuration

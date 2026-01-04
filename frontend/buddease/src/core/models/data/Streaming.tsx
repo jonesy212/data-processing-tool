@@ -1,5 +1,5 @@
-// Streaming.tsx
-// StreamProcessor.ts
+Streaming.tsx
+StreamProcessor.ts
 import { ENDPOINT } from "@/core/hooks/commHooks/useRealtimeData";
 import readline from "readline";
 import socketIOClient from "socket.io-client";

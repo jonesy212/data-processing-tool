@@ -1,10 +1,10 @@
-// TaskReportGenerator.tsx
+TaskReportGenerator.tsx
 
 import { Task } from "@/core/components/models/tasks/Task";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// Define the structure of the task report
+Define the structure of the task report
 export interface TaskReport {
     totalTasks: number;
     completedTasks: number;

@@ -1,4 +1,4 @@
-// ArtistPhase.tsx
+ArtistPhase.tsx
 import React from "react";
 
 const ArtistPhase: React.FC = () => {

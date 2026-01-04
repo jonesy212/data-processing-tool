@@ -1,4 +1,4 @@
-// generateAllHeaders.ts
+generateAllHeaders.ts
 import createCacheHeaders from "@/core/api/headers/cacheHeaders";
 import generateCustomHeaders from "@/core/api/headers/customHeaders";
 import createRequestHeaders from "@/core/api/headers/requestHeaders";
@@ -33,5 +33,5 @@ function generateAllHeaders(
 }
 export { generateAllHeaders };
 
-// Example usage when calling getSnapshot
+Example usage when calling getSnapshot
 export const additionalHeaders: Record<string, string> = generateAllHeaders({ additionalHeaders: { 'Custom-Header': 'value' } }, authToken);

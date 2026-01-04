@@ -1,5 +1,5 @@
-// useJobSearch.tsx
-// components/JobSearchComponent.tsx
+useJobSearch.tsx
+components/JobSearchComponent.tsx
 import React from 'react';
 
 interface JobSearchComponentProps {

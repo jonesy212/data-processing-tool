@@ -1,4 +1,4 @@
-// useFiltering.tsx
+useFiltering.tsx
 import { TaskActions } from "@/core/actions/TaskActions";
 import endpointConfigurations from "@/core/api/endpointConfigurations";
 import { Task } from "@/core/components/models/tasks/Task";
@@ -7,7 +7,7 @@ import {
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/core/config/BaseConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from "@/core/features/support/UnifiedNotificationTypes";
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
@@ -20,7 +20,7 @@ import { Dispatch, useCallback, useState } from "react";
 
 const { notify } = useNotification();
 
-// Reusable filtering logic
+Reusable filtering logic
 function useFiltering(options: SearchOptions) {
   const [filters, setFilters] = useState<
     SearchOptions["additionalOptions"]["filters"]

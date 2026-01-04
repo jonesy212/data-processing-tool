@@ -1,8 +1,8 @@
-// index.ts
-// export * from '@/ChatApi';
-// export * from '@/UsersApi';
-// export * from '@/configsApi';
-// export * from '@/dataframeApi';
-// export * from '@/tasksApi';
+index.ts
+export * from '@/ChatApi';
+export * from '@/UsersApi';
+export * from '@/configsApi';
+export * from '@/dataframeApi';
+export * from '@/tasksApi';
 
-// #todo update api
+#todo update api

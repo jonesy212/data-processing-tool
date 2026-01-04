@@ -1,4 +1,4 @@
-// CloudStorageProvider.ts
+CloudStorageProvider.ts
 import { FileMetadata } from '@/core/interfaces/provider/CloudStorageProvider';
 
 export class CloudStorageProvider {

@@ -1,6 +1,6 @@
 // dataConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { DataEndpoints } from '@/core/typings/categories/DataEndpoints';
+import type { DataEndpoints } from '@/core/typings/categories/DataEndpoints';
 
 export const dataConfig: DataEndpoints = {
   single: { path: "/api/data/single", method: "GET" },

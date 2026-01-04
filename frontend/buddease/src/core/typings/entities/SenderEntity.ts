@@ -1,8 +1,8 @@
-// SenderEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+SenderEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// Define the actual SenderEntity interface
+Define the actual SenderEntity interface
 interface SenderEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -20,7 +20,7 @@ interface SenderEntity extends BaseDataEntity {
   reputation?: number;
 }
 
-// Sender-specific type parameters
+Sender-specific type parameters
 type SenderK = SenderEntity;
 type SenderMeta = DefaultMeta<SenderEntity, SenderK> & {
   deviceInfo?: {
@@ -39,7 +39,7 @@ type SenderAttachment = Attachment;
 type SenderExcludedFields = DefaultExcludedFields<SenderEntity> | "email" | "ipAddress";
 type SenderIncludedFields = keyof SenderEntity;
 
-// Sender parameters container
+Sender parameters container
 type SenderBaseParams = {
   T: SenderEntity;
   K: SenderK;

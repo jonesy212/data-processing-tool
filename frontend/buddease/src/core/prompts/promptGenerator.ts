@@ -1,4 +1,4 @@
-// promptGenerator.ts
+promptGenerator.ts
 
 import { getAppContext } from '@/core/state/context/AppContextHelper';
 
@@ -38,7 +38,7 @@ export const generatePrompt = (userIdea: any): string | null => {
   return prompt;
 };
 
-// Example usage:
+Example usage:
 const userIdea = "web development"; // Replace with the actual user's idea
 const generatedPrompt = generatePrompt(userIdea);
 
@@ -48,7 +48,7 @@ if (generatedPrompt) {
   console.log("Prompt generation failed. Please provide a valid user idea.");
 }
 
-// Function to extract keywords from the document content (replace with your actual extraction logic)
+Function to extract keywords from the document content (replace with your actual extraction logic)
 const extractKeywords = (documentContent: string): string[] => {
   // Implement your logic to extract keywords, entities, or relevant information
   // Example: For simplicity, split the document content into words and use them as keywords

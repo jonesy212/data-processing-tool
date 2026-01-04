@@ -1,4 +1,4 @@
-// ThemeSlice.ts
+ThemeSlice.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { ThemeCustomizationProps } from "@/core/hooks/userInterface/ThemeCustomization";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
@@ -238,7 +238,7 @@ const handleThemeChangeEvent = (theme: Theme) => {
   // Function to handle theme update event
   handleThemeUpdateEvent(theme);
 };
-// Utility function to optimize theme performance
+Utility function to optimize theme performance
 const optimizePerformance = (theme: Theme): Theme => {
   console.log("Optimizing theme performance...");
 
@@ -626,7 +626,7 @@ const optimizePerformance = (theme: Theme): Theme => {
   };
 };
 
-// Utility function to merge the theme state
+Utility function to merge the theme state
 const mergeTheme = (currentTheme: Theme, newTheme: Partial<Theme>): Theme => {
   return { ...currentTheme, ...newTheme };
 };
@@ -638,7 +638,7 @@ const mergeTheme = (currentTheme: Theme, newTheme: Partial<Theme>): Theme => {
 
 
 
-// Helper function to apply theme to UI (comprehensive version)
+Helper function to apply theme to UI (comprehensive version)
 const applyThemeToUI = (theme: Theme, uiStore?: UIStore) => {
   if (typeof document === 'undefined') return; // Skip if not in browser
   
@@ -1004,7 +1004,7 @@ const applyThemeToUI = (theme: Theme, uiStore?: UIStore) => {
   document.dispatchEvent(themeAppliedEvent);
 };
 
-// Also create a function to initialize theme from UIStore
+Also create a function to initialize theme from UIStore
 export const initializeThemeFromUIStore = (uiStore: UIStore): Theme => {
   return {
     primaryColor: uiStore.theme.primaryColor,
@@ -1056,7 +1056,7 @@ export const initializeThemeFromUIStore = (uiStore: UIStore): Theme => {
   };
 };
 
-// Create a MobX action wrapper for applyThemeToUI
+Create a MobX action wrapper for applyThemeToUI
 export const applyThemeAction = (theme: Theme, uiStore: UIStore) => {
   return action(() => {
     // Update UIStore first
@@ -1602,8 +1602,8 @@ export const themeReducer = themeSlice.reducer;
 export { initialState as initialThemeState };
 export type { ThemeState };
 
-// Theme selectors
-// Theme selectors - Fixed
+Theme selectors
+Theme selectors - Fixed
 export const selectThemeCore = (state: { theme: ThemeState }) => state.theme.core;
 export const selectCurrentTheme = (state: { theme: ThemeState }) => state.theme.core.currentTheme;
 export const selectIsDarkMode = (state: { theme: ThemeState }) => state.theme.core.isDarkMode;
@@ -1616,7 +1616,7 @@ export const selectThemeQuality = (state: { theme: ThemeState }) => state.theme.
 export const selectThemeFunctionality = (state: { theme: ThemeState }) => state.theme.functionality;
 export const selectColorFontUsage = (state: { theme: ThemeState }) => state.theme.colorFontUsage;
 
-// Additional useful selectors
+Additional useful selectors
 export const selectTheme = (state: { theme: ThemeState }) => state.theme.core.theme;
 export const selectPrimaryColor = (state: { theme: ThemeState }) => state.theme.core.theme.primaryColor;
 export const selectSecondaryColor = (state: { theme: ThemeState }) => state.theme.core.theme.secondaryColor;
@@ -1638,7 +1638,7 @@ export const selectBrandIcon = (state: { theme: ThemeState }) => state.theme.cor
 export const selectBrandName = (state: { theme: ThemeState }) => state.theme.core.theme.brandName;
 export const selectThemeConfig = (state: { theme: ThemeState }) => state.theme.core.theme;
 
-// Selector for all theme properties
+Selector for all theme properties
 export const selectAllThemeProperties = (state: { theme: ThemeState }) => ({
   ...state.theme.core.theme,
   isDarkMode: state.theme.core.isDarkMode,
@@ -1647,7 +1647,7 @@ export const selectAllThemeProperties = (state: { theme: ThemeState }) => ({
   infoColor: state.theme.core.infoColor,
 });
 
-// Memoized selectors (for performance optimization)
+Memoized selectors (for performance optimization)
 export const createMemoizedThemeSelectors = () => {
   const memoizedSelectors = new Map<string, any>();
   

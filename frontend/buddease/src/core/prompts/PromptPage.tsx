@@ -1,5 +1,5 @@
 // PromptPage.tsx
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import DynamicTextArea from "@/core/ts/DynamicTextArea";
 import React, { useState } from "react";
  
@@ -57,6 +57,10 @@ const PromptPage: React.FC<PromptPageProps> = ({
     console.log("Updating state with value:", value);
   };
 
+  const handleTextAreaChange = (promptId: string) => (value: string) => {
+    handleDynamicTextAreaChange(value, promptId);
+  };
+
   return (
       <div>
         <h2>Prompts</h2>
@@ -77,9 +81,8 @@ const PromptPage: React.FC<PromptPageProps> = ({
                     name={prompt.id}
                     required
                     value={state[prompt.id] || ""}
-                    onChange={(value) =>
-                      handleDynamicTextAreaChange(value, prompt.id)
-                    }
+                    onChange={handleTextAreaChange(prompt.id)}
+
                   />
                 ) : prompt.type === "multipleChoice" ? (
                   <select name={prompt.id} required>

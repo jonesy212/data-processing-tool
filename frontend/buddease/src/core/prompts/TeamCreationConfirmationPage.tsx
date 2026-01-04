@@ -1,4 +1,4 @@
-// TeamCreationConfirmationPage.tsx
+TeamCreationConfirmationPage.tsx
 import { TeamData } from "@/core/models/teams/TeamData";
 import { Button as AntdButton } from "antd";
 import React from "react";

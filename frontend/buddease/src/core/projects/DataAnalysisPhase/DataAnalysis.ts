@@ -1,5 +1,5 @@
-// DataAnalysis.ts
-// models/dataAnalysis/DataAnalysis.ts
+DataAnalysis.ts
+models/dataAnalysis/DataAnalysis.ts
 
 export class DataAnalysis {
     id: number;

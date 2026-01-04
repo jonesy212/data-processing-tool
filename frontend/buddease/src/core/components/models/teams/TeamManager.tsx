@@ -1,8 +1,8 @@
-// TeamManager.tsx
+TeamManager.tsx
 import { TeamFull, createDefaultTeam } from '@/core/typings/teamTypes';
 import React, { useState } from 'react'; // Import useState
 
-// Define emptyTeam or import it from teamTypes
+Define emptyTeam or import it from teamTypes
 const emptyTeam: TeamFull = {
   id: '',
   name: '',
@@ -39,7 +39,7 @@ const TeamManager: React.FC = () => {
 
 export default TeamManager;
 
-// In API calls (separate utility function)
+In API calls (separate utility function)
 export const fetchTeam = async (teamId: string): Promise<TeamFull> => {
   const response = await api.get(`/teams/${teamId}`);
   return createDefaultTeam(response.data);

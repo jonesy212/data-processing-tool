@@ -1,8 +1,8 @@
-// GenerateButtons.tsx
-// ButtonGenerator.tsx
+GenerateButtons.tsx
+ButtonGenerator.tsx
 import { Label } from '@/core/branding/BrandingSettings';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/core/documents/RelatedProps";
 import { LifecycleConfig } from '@/core/hooks/phases/lifecycles';
 import {
@@ -97,7 +97,7 @@ interface ButtonGeneratorProps<
   // ... (other props)
 }
 
-// Define the default labels for each button type
+Define the default labels for each button type
 const defaultLabels: Record<string, string> = {
   variant: "primary",
   submit: "Submit",
@@ -153,7 +153,7 @@ const defaultVariants: Record<string, string> = {
 };
 
 
-// Generic ButtonGenerator component
+Generic ButtonGenerator component
 const ButtonGenerator = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -447,8 +447,8 @@ const ButtonGenerator = <
 
 
 
-// Define buttonGeneratorProps
-// Updated buttonGeneratorProps with proper LifecycleManager integration
+Define buttonGeneratorProps
+Updated buttonGeneratorProps with proper LifecycleManager integration
 const createButtonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -561,7 +561,7 @@ const createButtonGeneratorProps = <
 
 
 
-// Create buttonGeneratorProps with default configuration
+Create buttonGeneratorProps with default configuration
 const buttonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -582,7 +582,7 @@ const buttonGeneratorProps = <
 
 
 
-// Hook for easy usage
+Hook for easy usage
 const useButtonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -609,7 +609,7 @@ const useButtonGeneratorProps = <
   };
 };
 
-// Default lifecycle configuration
+Default lifecycle configuration
 const getDefaultLifecycleConfig = (): LifecycleConfig => ({
   phases: [
     {

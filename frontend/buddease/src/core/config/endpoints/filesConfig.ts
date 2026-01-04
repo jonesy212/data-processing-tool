@@ -1,4 +1,4 @@
-// filesConfig.ts
+filesConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { FilesEndpoints } from '@/core/typings/categories/FilesEndpoints';
 

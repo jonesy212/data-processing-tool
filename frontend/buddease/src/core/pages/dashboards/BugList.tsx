@@ -1,5 +1,5 @@
-// BugList.tsx
-// BugList.ts
+BugList.tsx
+BugList.ts
 import ListGenerator from '@/core/generators/ListGenerator';
 import { Data } from '@/core/models/data/Data';
 import { DetailsItem } from '@/core/state/stores/DetailsListStore';

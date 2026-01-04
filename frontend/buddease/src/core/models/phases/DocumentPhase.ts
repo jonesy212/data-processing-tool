@@ -1,13 +1,13 @@
-// DocumentPhase.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+DocumentPhase.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 
-// ---------------------------
-// Supporting Interfaces (New)
-// ---------------------------
+---------------------------
+Supporting Interfaces (New)
+---------------------------
 
-// Document Phase interface
+Document Phase interface
 interface DocumentPhase<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T

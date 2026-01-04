@@ -1,4 +1,4 @@
-// Search.tsx
+Search.tsx
 import { searchDocuments } from "@/core/api/ApiDocument"; // Assuming SearchResult is the type of each item in searchResults
 import { userId } from "@/core/api/ApiUser";
 import { sanitizeInput } from "@/core/components/crypto/ClientSanitization";

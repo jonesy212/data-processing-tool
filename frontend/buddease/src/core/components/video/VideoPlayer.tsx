@@ -1,5 +1,5 @@
-// VideoPlayer.tsx
-// app/features/video/components/VideoPlayer.tsx
+VideoPlayer.tsx
+app/features/video/components/VideoPlayer.tsx
 import VideoPlayerToolbar from '@/core/components/video/VideoPlayerToolbar';
 import useVideoPlayer from '@/hooks/useVideoPlayer';
 import React, { useEffect } from 'react';

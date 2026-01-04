@@ -1,5 +1,5 @@
-// analyzeDependencies.ts
-// scripts/analyzeDependencies.ts
+analyzeDependencies.ts
+scripts/analyzeDependencies.ts
 import fs from 'fs';
 import path from 'path';
 
@@ -216,7 +216,7 @@ export class TypeScriptDependencyAnalyzer {
   }
 }
 
-// Run dependency analysis
+Run dependency analysis
 async function analyzeDependencies() {
   const analyzer = new TypeScriptDependencyAnalyzer();
   const graph = await analyzer.analyzeDependencies();

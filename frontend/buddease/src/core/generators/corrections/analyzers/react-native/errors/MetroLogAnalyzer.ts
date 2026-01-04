@@ -1,4 +1,4 @@
-// MetroLogAnalyzer.ts
+MetroLogAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';

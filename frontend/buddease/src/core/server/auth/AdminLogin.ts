@@ -1,4 +1,4 @@
-// AdminLogin.ts
+AdminLogin.ts
 
 import { serverAuthService } from '@/core/server/auth/AuthService';
 import { NextApiRequest, NextApiResponse } from 'next';

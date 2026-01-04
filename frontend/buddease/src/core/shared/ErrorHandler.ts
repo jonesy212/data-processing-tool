@@ -2,7 +2,7 @@
 // utils/ErrorHandler.ts
 import { cryptoNotificationMessages } from '@/core/api/ApiCrypto';
 import { configNotificationMessages } from '@/core/api/ConfigManager';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 export type ErrorDomain = 'config' | 'crypto' | 'auth' | 'database' | 'general';
 
@@ -103,6 +103,7 @@ class ErrorHandler {
       data: { 
         originalError: errorMessage, 
         domain,
+        timestamp,
         ...additionalInfo 
       },
       timestamp: new Date(),

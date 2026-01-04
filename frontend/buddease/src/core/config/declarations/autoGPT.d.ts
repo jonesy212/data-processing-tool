@@ -1,5 +1,5 @@
-// autoGPT.d.ts
-// src/ts/autoGPT.d.ts
+autoGPT.d.ts
+src/ts/autoGPT.d.ts
 
 declare module 'AutoGPT' {
     // Custom types related to AutoGPT

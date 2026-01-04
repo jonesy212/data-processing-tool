@@ -1,4 +1,4 @@
-// app/utils/eventHandlers/AsyncEventHandler.ts
+app/utils/eventHandlers/AsyncEventHandler.ts
 import {
     AppEventListener,
     DragDropEventListener,
@@ -16,7 +16,7 @@ import {
 
 import React from 'react';
 
-// Type imports
+Type imports
 
 
 export type EventHandlerCondition = {

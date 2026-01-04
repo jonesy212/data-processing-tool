@@ -1,5 +1,5 @@
-// EscalationAction.ts
-// EscalationAction.ts
+EscalationAction.ts
+EscalationAction.ts
 export interface EscalationAction {
   id: string;
   type:

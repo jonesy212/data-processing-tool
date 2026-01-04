@@ -1,13 +1,13 @@
 // scripts/comprehensive-circular-detection.ts
+import { TypeScriptDependencyAnalyzer } from '@/app/scripts/analyzeDependencies';
+import { TypeScriptDuplicateAnalyzer } from '@/app/scripts/analyzeDuplicates';
+import { generateRoadmaps } from '@/app/scripts/generateRoadmaps';
+import { CircularDependency, CircularDependencyDetector } from '@/core/generators/corrections/CircularDependencyDetector';
+import { ImportErrorSummaryGenerator } from '@/core/generators/corrections/ImportErrorSummary';
+import { TypeRelationshipMapper } from '@/core/generators/corrections/TypeRelationshipMapper';
+import { ImportReport } from '@/core/generators/corrections/reports/ImportReport';
 import fs from 'fs';
 import path from 'path';
-import { TypeRelationshipMapper } from '@/app/generators/corrections/TypeRelationshipMapper';
-import { ImportReport } from '@/app/generators/corrections/reports/ImportReport'
-import { TypeScriptDuplicateAnalyzer } from '@/app/scripts/analyzeDuplicates';
-import { TypeScriptDependencyAnalyzer } from '@/app/scripts/analyzeDependencies';
-import { ImportErrorSummaryGenerator } from '@/app/generators/corrections/ImportErrorSummary';
-import { generateRoadmaps } from '@/app/scripts/generateRoadmaps';
-import { CircularDependencyDetector, CircularDependency } from '@/app/generators/corrections/CircularDependencyDetector'
 
 interface ComprehensiveDetectionResult {
   compilerBased: any[];

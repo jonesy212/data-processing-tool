@@ -1,4 +1,4 @@
-// TeamManagementApp.tsx
+TeamManagementApp.tsx
 import TeamData from '@/core/components/models/teams/TeamData';
 import RandomWalkVisualization from '@/core/hooks/userInterface/RandomWalkVisualization';
 import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';

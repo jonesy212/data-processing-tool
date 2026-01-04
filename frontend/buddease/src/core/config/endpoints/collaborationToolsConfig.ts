@@ -1,6 +1,6 @@
 // collaborationToolsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { CollaborationToolsEndpoints } from '@/core/typings/categories/CollaborationToolsEndpoints';
+import type { CollaborationToolsEndpoints } from '@/core/typings/categories/CollaborationToolsEndpoints';
 
 export const collaborationToolsConfig: CollaborationToolsEndpoints = {
   createTask: { path: `${BASE_URL}/api/collaboration/tasks/create`, method: "POST" },

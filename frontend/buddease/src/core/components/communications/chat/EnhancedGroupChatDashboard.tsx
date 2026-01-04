@@ -1,4 +1,4 @@
-// EnhancedGroupChatDashboard.tsx
+EnhancedGroupChatDashboard.tsx
 import React from 'react';
 
 import ChatCard from "@/core/components/cards/ChatCard";

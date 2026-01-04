@@ -1,4 +1,4 @@
-// UISlice.ts
+UISlice.ts
 import { UIActions } from "@/core/actions/UIActions";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { CollaborationState } from "@/core/state/redux/slices/CollaborationSlice";
@@ -15,7 +15,7 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 
-// Create a type alias for the collaboration state with concrete types
+Create a type alias for the collaboration state with concrete types
 type ConcreteCollaborationState = CollaborationState<CollaboratorEntity,
   CollaboratorK,
   CollaboratorMeta,
@@ -23,7 +23,7 @@ type ConcreteCollaborationState = CollaborationState<CollaboratorEntity,
   CollaboratorExcludedFields,
   CollaboratorIncludedFields>;
 
-// Define interface for UI-related state
+Define interface for UI-related state
 interface UIState {
   // Layout
   currentPage: string | null;
@@ -60,7 +60,7 @@ interface UIState {
   collaborationState: ConcreteCollaborationState | null;
 }
 
-// Define initial state for UI
+Define initial state for UI
 const initialState: UIState = {
   isLoading: false,
   error: null,
@@ -86,7 +86,7 @@ const initialState: UIState = {
 
 type DraftCollaborationState = WritableDraft<ConcreteCollaborationState>;
 
-// Create UI slice
+Create UI slice
 export const useUIManagerSlice = createSlice({
   name: "ui",
   initialState,
@@ -196,7 +196,7 @@ export const useUIManagerSlice = createSlice({
   },
 });
 
-// Export actions from UI slice
+Export actions from UI slice
 export const {
   setLoading,
   setError,
@@ -219,10 +219,10 @@ export const {
   resetUI,
 } = useUIManagerSlice.actions;
 
-// Export the reducer for the UI slice
+Export the reducer for the UI slice
 export const uiReducer = useUIManagerSlice.reducer;
 
-// Create a UI manager hook
+Create a UI manager hook
 export const useUIManager = () => {
   const dispatch = useDispatch();
 

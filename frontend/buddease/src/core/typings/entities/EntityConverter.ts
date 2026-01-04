@@ -1,5 +1,5 @@
-// EntityConverter.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+EntityConverter.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { ApiEntity } from '@/core/typings/entities/ApiEntity';
 import { AppEntity } from '@/core/typings/entities/AppEntity';
 import { AppMetadataEntity } from '@/core/typings/entities/AppMetadataEntity';
@@ -47,13 +47,13 @@ import { VersionEntity } from '@/core/typings/entities/VersionEntity';
 import { VersionHistoryEntity } from '@/core/typings/entities/VersionHistoryEntity';
 import { VideoEntity } from '@/core/typings/entities/VideoEntity';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// --------------------
-// Step 1: Define entity mapping
-// --------------------
+--------------------
+Step 1: Define entity mapping
+--------------------
 
-// Map source entity type name to target type (for type-safe conversions)
+Map source entity type name to target type (for type-safe conversions)
 type EntityConversionMap<
   T extends BaseDataEntity,
   K extends T = T,
@@ -151,9 +151,9 @@ export const entityConversionRules: EntityConversionRules = {
   // Default rule: identity (simple spread) for all other entities
 };
 
-// --------------------
-// Step 3: EntityConverter class
-// --------------------
+--------------------
+Step 3: EntityConverter class
+--------------------
 
 export class EntityConverter {
   /**
@@ -179,18 +179,18 @@ export class EntityConverter {
   }
 }
 
-// --------------------
-// Step 4: Usage Examples
-// --------------------
+--------------------
+Step 4: Usage Examples
+--------------------
 
-// Convert single UserEntity to MemberEntity
+Convert single UserEntity to MemberEntity
 const userEntity: UserEntity = { id, name, password, role, username: "user123", email: "user123@example.com", teams: [] };
 const memberEntity = EntityConverter.convertEntity<'UserEntity'>(userEntity);
 
-// Convert array of TaskEntities (identity conversion)
+Convert array of TaskEntities (identity conversion)
 const taskEntities: TaskEntity[] = [{ id: 1, name: "Task1", path, draft }, { id: 2, name: "Task2", path, draft }];
 const convertedTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(taskEntities);
 
-// Convert multiple types dynamically
+Convert multiple types dynamically
 const allEntities: any[] = [userEntity, ...taskEntities];
 const convertedAll = allEntities.map(e => EntityConverter.convertEntity(e.constructor.name as keyof EntityConversionMap));

@@ -1,4 +1,4 @@
-// LazyLoadScript.tsx
+LazyLoadScript.tsx
 import React, { ReactNode } from 'react';
 
 interface LazyLoadScriptProps {

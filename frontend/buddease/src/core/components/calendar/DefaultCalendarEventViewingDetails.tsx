@@ -1,4 +1,4 @@
-// DefaultCalendarEventViewingDetails.tsx
+DefaultCalendarEventViewingDetails.tsx
 import { handleApiError } from '@/core/api/ApiLogs';
 import ProjectService from "@/core/api/service/ProjectService";
 import { CalendarEventViewingDetailsProps } from '@/core/components/calendar/CalendarEventViewingDetails';

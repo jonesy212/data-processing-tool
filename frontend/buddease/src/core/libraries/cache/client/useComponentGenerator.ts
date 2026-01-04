@@ -1,5 +1,5 @@
-// useComponentGenerator.ts
-// client/useComponentGenerator.ts
+useComponentGenerator.ts
+client/useComponentGenerator.ts
 import { useState } from 'react';
 
 export function useComponentGenerator() {

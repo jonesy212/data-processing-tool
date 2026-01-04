@@ -1,4 +1,4 @@
-// ContentLoggerServer.ts
+ContentLoggerServer.ts
 import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
 import { saveToLocalStorage } from '@/core/hooks/useLocalStorage';
 

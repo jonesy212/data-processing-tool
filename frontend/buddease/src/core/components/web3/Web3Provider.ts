@@ -1,4 +1,4 @@
-// Web3Provider.ts
+Web3Provider.ts
 class Web3Provider {
     private provider_url: string;
     private api_key: string | undefined;

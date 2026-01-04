@@ -1,5 +1,5 @@
-// TeamReviewStep.tsx
-// TeamMembersStep.tsx
+TeamReviewStep.tsx
+TeamMembersStep.tsx
 import React, { useState } from 'react';
 
 const TeamMembersStep: React.FC<{ onSubmit: (members: any) => void }> = ({ onSubmit }) => {

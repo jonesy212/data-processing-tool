@@ -1,4 +1,4 @@
-// MonetizationEndpoints.ts
+MonetizationEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface MonetizationEndpoints extends EndpointCategoryConfig {

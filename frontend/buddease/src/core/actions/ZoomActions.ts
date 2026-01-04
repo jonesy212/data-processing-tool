@@ -1,4 +1,4 @@
-// ZoomActions.ts
+ZoomActions.ts
 
 import { createAction } from "@reduxjs/toolkit";
 

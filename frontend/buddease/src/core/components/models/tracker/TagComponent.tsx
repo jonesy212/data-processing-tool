@@ -1,8 +1,9 @@
 // TagComponent.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { TagsRecord } from '@/core/models/tracker/Tag';
-import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
+import type { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
 import { TagEntity } from '@/core/typings/entities/TagEntity';
 import { AllTypes } from '@/core/typings/PropTypes';
 import React from 'react';
@@ -18,7 +19,7 @@ interface TagProps<
   meta: Meta
 }
 
-// Functional Component TagComponent
+Functional Component TagComponent
 const TagComponent = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -51,7 +52,7 @@ const TagComponent = <
 
 export default TagComponent;
 
-// Example usage of TagComponent
+Example usage of TagComponent
 const tagOptions1: TagOptions<TagEntity> = {
   id: "1",
   name: "Important",
@@ -106,11 +107,11 @@ const meta: StructuredMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, Meta
 const tag1: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions1} />;
 const tag2: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions2} />;
 
-// Example usage of functions
+Example usage of functions
 tag1.props.children;
 tag2.props.children;
 
-// Sorting function for TagOptions
+Sorting function for TagOptions
 const localeCompare = <T extends BaseDataEntity>(
   a: TagOptions<T>,
   b: TagOptions<T>

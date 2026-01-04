@@ -1,5 +1,5 @@
-// CollaborationDisplay.tsx
-// components/collaborations/CollaborationDisplay/CollaborationDisplay.tsx
+CollaborationDisplay.tsx
+components/collaborations/CollaborationDisplay/CollaborationDisplay.tsx
 import { useDrag } from '@/core/libraries/animations/DraggableAnimation/useDrag';
 import { useCollaboration } from '@/core/state/context/CollaborationContext';
 import React, { useRef, useState } from 'react';

@@ -1,4 +1,4 @@
-// CourseLearningPhase.tsx
+CourseLearningPhase.tsx
 import { Data } from '@/core/models/data/Data';
 import { CourseDevelopmentPhase } from '@/core/pages/course/CourseDevelopmentPhaseManager';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';

@@ -1,4 +1,4 @@
-// Sidebar.tsx
+Sidebar.tsx
 import React, { ReactNode } from 'react';
 
 interface SidebarProps {

@@ -1,5 +1,5 @@
-// TrackerSlice.tsx
-// TrackerSlice.ts
+TrackerSlice.tsx
+TrackerSlice.ts
 import { Tracker } from "@/core/models/tracker/Tracker";
 import Milestone from "@/core/state/redux/slices/CalendarSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -58,7 +58,7 @@ export const trackerManagerSlice = createSlice({
   },
 });
 
-// Export actions
+Export actions
 export const {
   addTracker,
   updateTracker,
@@ -71,13 +71,13 @@ export const {
   
 } = trackerManagerSlice.actions;
 
-// Export selector for accessing the trackers from the state
+Export selector for accessing the trackers from the state
 export const selectTrackers = (state: { trackers: TrackerManagerState }) =>
   state.trackers.trackers;
 
-// Export selector for accessing the milestones from the state
+Export selector for accessing the milestones from the state
 export const selectMilestones = (state: { trackers: TrackerManagerState }) =>
   state.trackers.milestones;
 
-// Export reducer for the tracker entity slice
+Export reducer for the tracker entity slice
 export default trackerManagerSlice.reducer;

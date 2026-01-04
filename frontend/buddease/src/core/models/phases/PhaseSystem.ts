@@ -1,6 +1,7 @@
-// src/core/error-analyzer/phases/PhaseSystem.ts
-import { PhaseContext } from '@/core/error-analyzer/phases/DynamicPhaseSystem'
-import { PhaseBackupSystem } from '@/core/models/phases/PhaseBackupSystem';
+src/core/error-analyzer/phases/PhaseSystem.ts
+import type{ PhaseContext } from '@/core/error-analyzer/phases/DynamicPhaseSystem'
+import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { PhaseBackupSystemImpl } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 
 export interface PhaseDefinition {
     id: string;
@@ -73,15 +74,21 @@ export class HierarchicalPhaseExecutor {
 
 
     private createBackupSystem(): PhaseBackupSystem {
-        // Implement your backup system creation
+        const backupSystem = new PhaseBackupSystemImpl();
+        
         return {
-            createBackup: () => Promise.resolve(backupId: {'backup-id'}),
-            restoreBackup: () => Promise.resolve(),
-            listBackups: () => Promise.resolve([])
+            createBackup: backupSystem.createBackup.bind(backupSystem),
+            restoreBackup: backupSystem.restoreBackup.bind(backupSystem),
+            listBackups: backupSystem.listBackups.bind(backupSystem),
+            deleteBackup: backupSystem.deleteBackup.bind(backupSystem),
+            createRestorePoint: backupSystem.createRestorePoint.bind(backupSystem),
+            listRestorePoints: backupSystem.listRestorePoints.bind(backupSystem),
+            cleanupOldBackups: backupSystem.cleanupOldBackups.bind(backupSystem),
+            validateBackup: backupSystem.validateBackup.bind(backupSystem),
+            getBackupStats: backupSystem.getBackupStats.bind(backupSystem),
+            backupEntity: backupSystem.backupEntity.bind(backupSystem) // This exists in your class
         };
     }
-
-
     private get phaseContext(): PhaseContext {
         return {
             ...this.context,
@@ -445,7 +452,7 @@ export class HierarchicalPhaseExecutor {
     }
 }
 
-// Factory functions for easy use
+Factory functions for easy use
 export async function runHierarchicalResolution(projectRoot?: string): Promise<Map<string, any>> {
     const executor = new HierarchicalPhaseExecutor(projectRoot);
     return await executor.executeAll();

@@ -1,11 +1,11 @@
-// createLatestVersion.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
+createLatestVersion.ts
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
 import VersionImpl, { Version } from "@/core/versions/Version";
 import { VersionHistory } from "@/core/versions/VersionData";
 
-// ✅ Clean, type-safe default version generator
+✅ Clean, type-safe default version generator
 export function createLatestVersion<
   T extends BaseDataEntity,
   K extends T = T,

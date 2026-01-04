@@ -1,4 +1,4 @@
-// CustomPDFPage.ts
+CustomPDFPage.ts
 import { GlobalWorkerOptions } from "pdfjs-dist";
 
 import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
@@ -9,7 +9,7 @@ interface CustomPDFPage extends PDFPageProxy {
   getText(): Promise<string>;
 }
 
-// Utility function to add getText to a PDFPageProxy
+Utility function to add getText to a PDFPageProxy
 function addGetTextMethod(page: PDFPageProxy): CustomPDFPage {
     const customPage = page as CustomPDFPage;
   
@@ -28,7 +28,7 @@ function addGetTextMethod(page: PDFPageProxy): CustomPDFPage {
   }
   
 
-// Function to implement the getText method
+Function to implement the getText method
 CustomPDFPage.prototype.getText = async function (): Promise<string> {
   const textContent = await this.getTextContent();
   const textItems = textContent.items.map((item: any) => item.str).join(" ");

@@ -1,4 +1,4 @@
-// userSettingsConfig.ts
+userSettingsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { UserSettingsEndpoints } from '@/core/typings/categories/UserSettingsEndpoints';
 

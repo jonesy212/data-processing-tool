@@ -1,7 +1,7 @@
-// CacheResponse.ts
+CacheResponse.ts
 import { EventAttendance } from '@/core/components/calendar/AttendancePrediction';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SupportedData } from '@/core/models/CommonData';
 
 type CacheReadOptions<T extends BaseDataEntity = BaseDataRoot> = {
@@ -11,7 +11,7 @@ type CacheReadOptions<T extends BaseDataEntity = BaseDataRoot> = {
   currentEvent: EventAttendance | null;
 };
 
-// Define the structure of the response data
+Define the structure of the response data
 interface CacheResponse<
   T extends BaseDataEntity,
   K extends T = T,

@@ -1,6 +1,6 @@
 // pages/index.tsx
 import generateDynamicContent from '@/core/documents/DynamicContentGenerator';
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator";
 import { Persona } from "@/core/pages/personas/Persona";
 import PaymentForm from "@/core/payment/PaymentForm";

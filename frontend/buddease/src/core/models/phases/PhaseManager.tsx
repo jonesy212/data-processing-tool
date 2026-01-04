@@ -1,13 +1,13 @@
 // PhaseManager.tsx
 import Stopwatch from "@/core/calendar/Stopwatch";
-import { fetchUserAreaDimensions, UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import type { fetchUserAreaDimensions, UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
 import { useMetadata } from "@/core/config/useMetadata";
 import useAsyncHookLinker from "@/core/hooks/useAsyncHookLinker";
 import { Phase } from "@/core/models/phases/Phase";
 import { HierarchicalPhaseExecutor } from "@/core/models/phases/PhaseSystem"; // Your hierarchical system
-import { PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta, PhaseT } from "@/core/typings/entities/PhaseEntity";
+import type { PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta, PhaseT } from "@/core/typings/entities/PhaseEntity";
 import { createMilestone, isMilestoneOverdue, Milestone } from "@/core/typings/milestoneTypes";
 import { useEffect } from 'react';
 
@@ -1002,13 +1002,13 @@ const PhaseManager: React.FC<PhaseManagerProps> = ({ phases, projectId }) => {
 };
 
 
-// Specific phase components
+Specific phase components
 export const IdeaLifecyclePhase: React.FC = () => {
   // Implement the Idea Lifecycle phase component
   return <div>Idea Lifecycle Phase</div>;
 };
 
-// Define an array of phases with proper type parameters
+Define an array of phases with proper type parameters
 const genericLifecyclePhases: Phase<
   PhaseT,
   PhaseK,

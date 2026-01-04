@@ -1,5 +1,5 @@
-// AutoGPTPromptsConfig.ts
-// src/app/prompts/AutoGPTPromptsConfig.ts
+AutoGPTPromptsConfig.ts
+src/app/prompts/AutoGPTPromptsConfig.ts
 import { Prompt } from "@/core/prompts/PromptPage";
 
 const fetchPrompts = async (phase: string, userContext: any): Promise<Prompt[]> => {

@@ -1,18 +1,21 @@
 // articleApi.ts
 import { endpoints } from "@/core/api/endpointConfigurations";
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { Sender } from '@/core/components/communications/CommunicationPage';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { addLog } from "@/core/state/redux/slices/LogSlice";
 import { useArticleStore } from "@/core/state/stores/ArticleStore";
-import { User } from "@/core/users/User";
-import { AxiosResponse } from "axios";
+import type { User } from "@/core/users/User";
+import type { AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-
+import { createLatestVersion } from '@/core/versions/createLatestVersion';
+import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import internalApiService, { clientNotificationMessages } from '@/core/api/ApiClient';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { ArticleAttachment, ArticleEntity, ArticleExcludedFields, ArticleIncludedFields, ArticleK, ArticleMeta } from '@/core/typings/entities/ArticleEntity';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { ArticleAttachment, ArticleEntity, ArticleExcludedFields, ArticleIncludedFields, ArticleK, ArticleMeta } from '@/core/typings/entities/ArticleEntity';
+import type { Tag } from '@/core/models/tracker/Tag';
 
 const API_BASE_URL = endpoints.apiConfig;
 
@@ -40,10 +43,10 @@ const combinedMessages = {
 
 
 interface ArticleApiService<
-  T extends ArticleEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends ArticleAttachment = ArticleAttachment,
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
@@ -62,6 +65,8 @@ interface ArticleApiService<
 // Example values for the Message object
 const generateUniqueID = UniqueIDGenerator.generateMessageID();
 
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
+
 const createMessage = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -69,44 +74,33 @@ const createMessage = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(type: string, content: string): Partial<Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => ({
-  id: generateUniqueID,
-  senderId: "system",
-  sender: {
+>(type: string, content: string): Partial<Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  
+  const systemSender = {
+    id: "system",
     username: "System",
-    firstName: "System",
-    lastName: "User",
-    email: "system@example.com",
+    tags: [] as string[], // Changed from Tag<T>[] to string[]
     isUserMessage: false,
     tier: "",
-    isAuthorized: true,
-    uploadQuota: 0,
-    hasQuota: false,
-    processingTasks: [],
-    activityStatus: "",
-    persona: null,
-    friends: [],
-    blockedUsers: [],
-    activityLog: [],
-    tags: [], 
-    createdAt: new Date().toISOString(), 
-    updatedAt: new Date().toISOString(), 
-} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
-    isUserMessage: boolean;
-    tags: string[];
-    createdAt: string;
-    updatedAt: string;
-  },
-  channel: {
-    id: "",
-    creatorId: "",
-    topics: [],
-    messages: [],
-    users: [],
-  },
-  timestamp: new Date().toISOString(),
-  content,
-});
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  return {
+    id: generateUniqueID(),
+    senderId: "system",
+    sender: systemSender as Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    channel: {
+      id: "",
+      creatorId: "",
+      topics: [],
+      messages: [],
+      users: [],
+    },
+    timestamp: new Date().toISOString(),
+    content,
+  };
+};
 
 export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, ArticleMeta, ArticleAttachment, ArticleIncludedFields, ArticleExcludedFields> = observable({
   notificationContext: {
@@ -142,9 +136,10 @@ export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, Artic
     const response = await internalApiService.post<ArticleEntity>(
       "/api/articles",
       articleData,
-      undefined, // config (optional)
-      "CREATE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
-      "CREATE_ARTICLE_ERROR" as keyof typeof combinedMessages
+      {
+        successMessageId: "CREATE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+        errorMessageId: "CREATE_ARTICLE_ERROR" as keyof typeof combinedMessages
+      }
     );
     
     runInAction(() => {
@@ -154,32 +149,38 @@ export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, Artic
     return response;
   },
 
+
   fetchArticleByName: async (articleName: string): Promise<AxiosResponse<ArticleEntity>> => {
     return await internalApiService.get<ArticleEntity>(
       `/api/articles/name/${articleName}`,
-      undefined, // config
-      "FETCH_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
-      "FETCH_ARTICLE_ERROR" as keyof typeof combinedMessages
+      {
+        successMessageId: "FETCH_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+        errorMessageId: "FETCH_ARTICLE_ERROR" as keyof typeof combinedMessages
+      }
     );
   },
+
 
   fetchArticle: async (articleId?: string): Promise<AxiosResponse<ArticleEntity | ArticleEntity[]>> => {
     const url = articleId ? `/api/articles/${articleId}` : "/api/articles";
     return await internalApiService.get<ArticleEntity | ArticleEntity[]>(
       url,
-      undefined,
-      "FETCH_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
-      "FETCH_ARTICLE_ERROR" as keyof typeof combinedMessages
+      {
+        successMessageId: "FETCH_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+        errorMessageId: "FETCH_ARTICLE_ERROR" as keyof typeof combinedMessages
+      }
     );
   },
+
 
   updateArticle: async (articleId: string, updatedArticleData: Partial<ArticleEntity>): Promise<AxiosResponse<ArticleEntity>> => {
     const response = await internalApiService.put<ArticleEntity>(
       `/api/articles/${articleId}`,
       updatedArticleData,
-      undefined,
-      "UPDATE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
-      "UPDATE_ARTICLE_ERROR" as keyof typeof combinedMessages
+      {
+        successMessageId: "UPDATE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+        errorMessageId: "UPDATE_ARTICLE_ERROR" as keyof typeof combinedMessages
+      }
     );
     
     runInAction(() => {
@@ -192,9 +193,10 @@ export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, Artic
   deleteArticle: async (articleId: string): Promise<void> => {
     await internalApiService.delete(
       `/api/articles/${articleId}`,
-      undefined,
-      "DELETE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
-      "DELETE_ARTICLE_ERROR" as keyof typeof combinedMessages
+      {
+        successMessageId: "DELETE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+        errorMessageId: "DELETE_ARTICLE_ERROR" as keyof typeof combinedMessages
+      }
     );
     
     runInAction(() => {
@@ -205,9 +207,10 @@ export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, Artic
   fetchRecentArticles: async (): Promise<AxiosResponse<ArticleEntity[]>> => {
     const response = await internalApiService.get<ArticleEntity[]>(
       "/api/articles/recent",
-      undefined,
-      "FETCH_RECENT_ARTICLES_SUCCESS" as keyof typeof combinedMessages,
-      "FETCH_RECENT_ARTICLES_ERROR" as keyof typeof combinedMessages
+      {
+        successMessageId: "FETCH_RECENT_ARTICLES_SUCCESS" as keyof typeof combinedMessages,
+        errorMessageId: "FETCH_RECENT_ARTICLES_ERROR" as keyof typeof combinedMessages
+      }
     );
     
     runInAction(() => {
@@ -225,3 +228,4 @@ export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, Artic
 });
 
 // Add more functions for updating, deleting, or any other article-related API requests as needed
+export { createMessage }

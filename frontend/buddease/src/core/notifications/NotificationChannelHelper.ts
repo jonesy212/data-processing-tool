@@ -5,7 +5,7 @@ type BasicChannels = 'email' | 'push' | 'sms' | 'inApp' | 'webhook';
 type AdvancedChannelKeys = 'chat' | 'calendar' | 'audioCall' | 'videoCall' | 'screenShare';
 type AllChannels = BasicChannels | `advanced.${AdvancedChannelKeys}`;
 
-// Type guard to check if a value is a valid NotificationChannels value
+Type guard to check if a value is a valid NotificationChannels value
 const isNotificationChannelValue = (
   value: any
 ): value is 

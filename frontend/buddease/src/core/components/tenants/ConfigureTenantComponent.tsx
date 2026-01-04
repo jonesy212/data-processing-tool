@@ -1,4 +1,4 @@
-// ConfigureTenantComponent.tsx
+ConfigureTenantComponent.tsx
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { Tenant, useTenantStore } from '@/core/state/stores/TenantStore';

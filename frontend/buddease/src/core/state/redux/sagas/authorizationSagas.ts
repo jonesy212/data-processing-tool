@@ -1,4 +1,4 @@
-// authorizationSagas.ts
+authorizationSagas.ts
 import { AuthActions } from "@/core/actions/AuthActions";
 import { AuthorizationActions } from "@/core/actions/AuthorizationActions";
 import { AxiosResponse } from "axios";
@@ -67,7 +67,7 @@ function* handleRemoveData(action: ReturnType<typeof AuthActions.removeData>): G
   }
 }
 
-// Watcher saga
+Watcher saga
 function* watchAuthorizationActions() {
   yield takeLatest(AuthActions.updateDataTitle.type, handleUpdateDataTitle);
   yield takeLatest(AuthActions.updateDataDescription.type, handleUpdateDataDescription);

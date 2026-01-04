@@ -1,4 +1,4 @@
-// steps.tsx
+steps.tsx
 import TradingPreferencesStep from "@/core/components/phases/TradingPreferencesStep";
 import { TradeData } from "@/core/components/trading/TradeData";
 import TradingBasicInfoStep from "@/core/phases/steps/trading/TradingBasicInfoStep";
@@ -9,7 +9,7 @@ import IdeationPhase from "@/core/users/userJourney/IdeationPhase";
 import React, { useState } from "react";
 
 
-// BaseStepProps.ts - Common props for all step components
+BaseStepProps.ts - Common props for all step components
 interface BaseStepProps {
   title: string;
   currentStep?: number;

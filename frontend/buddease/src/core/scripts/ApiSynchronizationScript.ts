@@ -4,9 +4,9 @@ import { MiddlewareContext, MiddlewareFunction, MiddlewareNext } from '@/core/mi
 import { PersistenceLayer, createPersistenceAdapter } from '@/core/dataIntegration/persistenceLayer';
 import { CacheProxyConfig, PersistenceConfig } from '@/core/typings/persistenceTypes';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ChangeLogEntry, ChangeLogManager } from '@/core/logging/ChangeLogEntry';
 import { Version } from '@/core/versions/Version';
 

@@ -1,8 +1,8 @@
-// usePanelContents.tsx
+usePanelContents.tsx
 
 import React from 'react';
 
-// Define the function to generate panel contents
+Define the function to generate panel contents
 export const generatePanelContents = (numPanels: number): React.ReactNode[] => {
   const panels: React.ReactNode[] = [];
   for (let i = 1; i <= numPanels; i++) {
@@ -11,7 +11,7 @@ export const generatePanelContents = (numPanels: number): React.ReactNode[] => {
   return panels;
 }
 
-// Define state to hold the number of panels
+Define state to hold the number of panels
 export const usePanelContents = (initialNumPanels: number = 3) => {
   const [numPanels, setNumPanels] = useState(initialNumPanels);
 

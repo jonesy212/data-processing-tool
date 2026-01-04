@@ -1,5 +1,5 @@
-// Layouts.tsx
-// components/Layout.tsx
+Layouts.tsx
+components/Layout.tsx
 import DashboardLoader, { DashboardView } from '@/core/pages/dashboards/DashboardLoader';
 import React, { useState } from 'react';
 
@@ -14,7 +14,7 @@ interface LayoutProps {
   };
 }
 
-// Mock hook - replace with your actual implementation
+Mock hook - replace with your actual implementation
 const useDashboardConfig = () => {
   return {
     title: "Main Dashboard",

@@ -1,4 +1,4 @@
-// ShowToast.ts
+ShowToast.ts
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { toast } from 'react-toastify';
 

@@ -1,4 +1,4 @@
-// userTypes.ts
+userTypes.ts
 import ChatSettings from '@/core/hooks/userInterface/ChatSettings';
 import { UserDataDefault, UserEntity } from '@/core/typings/entities/UserEntity';
 
@@ -30,7 +30,7 @@ interface UserSettings {
   chat: ChatSettings;
 }
 
-// Helper for creating user instances
+Helper for creating user instances
 const createDefaultUser = (options: Partial<UserEntity> = {}): UserEntity => ({
   id: options.id || `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
   name: options.name || '',
@@ -43,10 +43,10 @@ const createDefaultUser = (options: Partial<UserEntity> = {}): UserEntity => ({
   ...options
 } as UserEntity);
 
-// Empty/default user
+Empty/default user
 const emptyUser: UserEntity = createDefaultUser();
 
-// Helper for creating UserData instances
+Helper for creating UserData instances
 const createDefaultUserData = (options: Partial<UserDataDefault> = {}): UserDataDefault => ({
   ...createDefaultUser(options),
   profile: options.profile || undefined,
@@ -64,7 +64,7 @@ const createDefaultUserData = (options: Partial<UserDataDefault> = {}): UserData
   ...options
 } as UserDataDefault);
 
-// Empty/default user data
+Empty/default user data
 const emptyUserData: UserDataDefault = createDefaultUserData();
 
 export type {

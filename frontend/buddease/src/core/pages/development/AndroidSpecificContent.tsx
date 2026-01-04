@@ -1,5 +1,5 @@
-// AndroidSpecificContent.tsx
-// AndroidSpecificContent.ts
+AndroidSpecificContent.tsx
+AndroidSpecificContent.ts
 import { useThemeConfig } from '@/core/hooks/userInterface/ThemeConfigContext';
 import AddContent, { ContentProps } from '@/core/models/content/AddContent';
 import ProgressBar, { Progress, ProgressBarProps, ProgressPhase } from '@/core/models/tracker/ProgressBar';

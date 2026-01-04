@@ -1,6 +1,6 @@
 // ProjectModel.tsx
 import DatabaseClient from '@/core/api/DatabaseClient';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import { ClientDatabaseService } from '@/core/config/DatabaseTypes';
 import { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/core/models/projects/Project';

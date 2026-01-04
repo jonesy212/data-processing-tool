@@ -4,14 +4,14 @@ import { ProjectManagementActions } from '@/core/actions/ProjectManagementAction
 import { SnapshotActions } from '@/core/actions/SnapshotActions';
 import { TaskActions } from '@/core/actions/TaskActions';
 import { addNotification } from '@/core/components/notifications/Notification';
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { Snapshot, Snapshots } from '@/core/snapshots/Snapshot';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { useDispatch } from 'react-redux';
 
-// Types for Redux integration
+Types for Redux integration
 export interface ReduxDispatchConfig {
   enableBatchOperations?: boolean;
   batchSize?: number;

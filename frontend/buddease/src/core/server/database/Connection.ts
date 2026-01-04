@@ -1,4 +1,4 @@
-// Connection.ts
+Connection.ts
 import { ClientConfig } from '@/core/client/Client';
 
 class Connection {

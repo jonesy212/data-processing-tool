@@ -1,4 +1,4 @@
-// useDynamicNavigation.ts
+useDynamicNavigation.ts
 import { useNavigation } from "@/core/state/context/NavigationContext";
 import { useEffect, useRef } from "react";
 

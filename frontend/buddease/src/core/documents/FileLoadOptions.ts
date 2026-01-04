@@ -1,4 +1,4 @@
-// FileLoadOptions.ts
+FileLoadOptions.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { isBrowser } from '@/utils/isBrowser';
 

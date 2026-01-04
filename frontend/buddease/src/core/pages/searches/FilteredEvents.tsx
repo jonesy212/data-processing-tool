@@ -1,17 +1,17 @@
-// FilteredEvents.tsx
+FilteredEvents.tsx
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { initialState } from "@/core/state/redux/slices/FilteredEventsSlice";
 import { FilterState } from "@/core/state/redux/slices/FilterSlice";
 import { RootState } from "@/core/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define a selector function to get filtered events from the state
-// Define your selector to get the filtered events from the state
+Define a selector function to get filtered events from the state
+Define your selector to get the filtered events from the state
 export const selectFilteredEvents = (state: RootState): FilteredEventsState<T, K> => {
   return state.filteredEvents; // Adjust this according to your state shape
 };
 
-// Create a slice for filtered events
+Create a slice for filtered events
 const filteredEventsSlice = createSlice({
   name: "filteredEvents",
   initialState,
@@ -91,7 +91,7 @@ const filteredEventsSlice = createSlice({
   },
 });
 
-// Export actions from the slice
+Export actions from the slice
 export const {
   addFilteredEvent,
   removeFilteredEvent,
@@ -101,5 +101,5 @@ export const {
   resetFilters,
 } = filteredEventsSlice.actions;
 
-// Export the reducer
+Export the reducer
 export default filteredEventsSlice.reducer;

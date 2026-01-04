@@ -1,4 +1,4 @@
-// TodoSlice.ts
+TodoSlice.ts
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import { PaginationOptions } from '@/core/pages/searches/SearchOptions';
 import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
@@ -19,10 +19,10 @@ export interface TodoManagerState extends EntityState<WritableDraft<Todo>, strin
 }
 
 
-// Adapter for managing EntityState
+Adapter for managing EntityState
 const todoAdapter = createEntityAdapter<Todo>();
 
-// Initial state using the adapter and the new structure
+Initial state using the adapter and the new structure
 const todoInitialState: TodoManagerState = {
   ...todoAdapter.getInitialState(), // Inherits EntityState properties
   todos: [], // Initialize with an empty list of todos

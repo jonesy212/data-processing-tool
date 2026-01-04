@@ -1,4 +1,4 @@
-// ProjectService.ts
+ProjectService.ts
 import { ProjectActions } from "@/core/actions/ProjectActions";
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

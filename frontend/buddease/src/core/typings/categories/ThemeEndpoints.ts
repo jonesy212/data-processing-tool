@@ -1,4 +1,4 @@
-// ThemeEndpoints.ts
+ThemeEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ThemeEndpoints extends EndpointCategoryConfig {

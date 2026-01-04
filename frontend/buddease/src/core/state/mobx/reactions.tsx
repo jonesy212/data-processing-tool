@@ -1,11 +1,11 @@
-// reactions.tsx
+reactions.tsx
 import { Task } from '@/core/components/models/tasks/Task';
 import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
 import useTodoManagerStore from '@/core/state/stores/TodoStore';
 import { Todo } from '@/core/todos/Todo';
 import { reaction } from 'mobx';
 
-// Function to set up reaction for a specific store
+Function to set up reaction for a specific store
 const setupReactionForStore = (getStore: () => any, propertyToObserve: string, onReaction: (value: any) => void) => {
   reaction(
     () => getStore()[propertyToObserve],
@@ -16,7 +16,7 @@ const setupReactionForStore = (getStore: () => any, propertyToObserve: string, o
 };
 
 
-// Set up reaction for todoManagerStore
+Set up reaction for todoManagerStore
 setupReactionForStore(
   useTaskManagerStore,
   'tasks', // Replace with the property you want to observe
@@ -26,7 +26,7 @@ setupReactionForStore(
   }
 );
 
-// Set up reaction for taskManagerStore
+Set up reaction for taskManagerStore
 setupReactionForStore(
   useTodoManagerStore,
   'todos', // Replace with the property you want to observe

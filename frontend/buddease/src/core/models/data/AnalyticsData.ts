@@ -1,6 +1,6 @@
-// AnalyticsData.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+AnalyticsData.ts
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SupportedData } from "@/core/models/CommonData";
 import { Project } from "@/core/models/projects/Project";
 

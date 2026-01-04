@@ -1,4 +1,4 @@
-// src/core/error-analyzer/phases/TypeScriptDiagnosticPhase.ts
+src/core/error-analyzer/phases/TypeScriptDiagnosticPhase.ts
 import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import { execSync, ExecSyncOptions } from 'child_process';
 import fs from 'fs';
@@ -373,7 +373,7 @@ export class TypeScriptDiagnosticPhase {
   }
 }
 
-// Factory function for easy use
+Factory function for easy use
 export async function runInitialDiagnosis(projectRoot?: string): Promise<DiagnosticResult> {
   const phase = new TypeScriptDiagnosticPhase(projectRoot);
   const result = await phase.execute();

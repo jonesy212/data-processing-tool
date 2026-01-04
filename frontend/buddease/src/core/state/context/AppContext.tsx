@@ -1,5 +1,5 @@
-// AppContext.ts
-// app/state/context/AppContext.tsx
+AppContext.ts
+app/state/context/AppContext.tsx
 import { hydrateSnapshot, persistSnapshot } from '@/core/api/persistSnapshot/route'; // <- add your snapshot helpers
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { CryptoStore } from '@/core/state/stores/CryptoStore';
@@ -32,7 +32,7 @@ export interface AppStores {
   cryptoStore: CryptoStore;
 }
 
-// Define initial value for stores
+Define initial value for stores
 const initialValue: AppStores = {
   projectStore: null as any,
   taskStore: null as any,

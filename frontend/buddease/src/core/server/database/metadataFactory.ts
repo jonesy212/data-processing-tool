@@ -1,2 +1,2 @@
-// metadataFactory.ts
+metadataFactory.ts
 metadataFactory.ts

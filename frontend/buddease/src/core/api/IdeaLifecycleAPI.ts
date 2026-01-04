@@ -1,8 +1,8 @@
-// IdeaLifecycleAPI.ts
-// services/IdeaLifecycleAPI.ts
+IdeaLifecycleAPI.ts
+services/IdeaLifecycleAPI.ts
 import axios, { AxiosResponse } from 'axios';
 
-// Types
+Types
 export interface IdeaData {
   _id: string;
   title: string;
@@ -36,10 +36,10 @@ export interface ApiResponse<T = any> {
   error?: string;
 }
 
-// API Configuration
+API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL 
 || 'http://localhost:3001/api' // comment out and set to /api
-// || '/api';
+|| '/api';
 const IDEA_BASE_PATH = '/ideas';
 
 const apiClient = axios.create({
@@ -50,7 +50,7 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor for adding auth tokens
+Request interceptor for adding auth tokens
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
@@ -62,7 +62,7 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for error handling
+Response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {

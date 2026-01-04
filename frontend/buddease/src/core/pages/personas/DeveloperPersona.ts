@@ -1,4 +1,4 @@
-// DeveloperPersona.ts
+DeveloperPersona.ts
 export interface DeveloperPersona {
   id: string;
   name: string;

@@ -1,9 +1,9 @@
-// ApiDetails.ts
-//ApiDetails.ts
+ApiDetails.ts
+ApiDetails.ts
 
 import { detailsApiService } from '@/core/api/service/DetailsService';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 import ApiService from '@/core/api/service/ApiService';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
@@ -11,7 +11,7 @@ import { useDetailsContext } from '@/core/models/data/DetailsContext';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { DetailsItem } from '@/core/state/stores/DetailsListStore';
 
-// Define notification messages for details API
+Define notification messages for details API
 interface DetailsNotificationMessages {
   FETCH_DETAILS_SUCCESS: string;
   FETCH_DETAILS_ERROR: string;
@@ -37,7 +37,7 @@ const detailsNotificationMessages: DetailsNotificationMessages = {
 
 export const apiService = new ApiService('YOUR_API_BASE_URL_HERE'); // Initialize your ApiService with the base URL
 
-// Function to handle API errors and notify
+Function to handle API errors and notify
 const handleDetailsApiErrorAndNotify = (
   error: unknown,
   errorMessageId: keyof DetailsNotificationMessages

@@ -1,3 +1,3 @@
-// createServerSnapshotStoreOptions.ts
+createServerSnapshotStoreOptions.ts
 
-// Server-specific database operations, API handlers, and payload processing
+Server-specific database operations, API handlers, and payload processing

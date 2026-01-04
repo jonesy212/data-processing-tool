@@ -1,4 +1,4 @@
-// ChatNotification.tsx
+ChatNotification.tsx
 import React from 'react';
 
 interface ChatNotificationProps {

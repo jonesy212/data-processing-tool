@@ -1,4 +1,4 @@
-// ContentManagementPhase.tsx
+ContentManagementPhase.tsx
 import BlogAndContentEditor from '@/core/components/models/content/BlogAndContentEditor';
 import ContentList from '@/core/components/models/content/ContentList';
 import { ListGeneratorProps } from '@/core/generators/ListGenerator';

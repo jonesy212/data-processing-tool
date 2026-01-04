@@ -1,8 +1,8 @@
 // scripts/CodeScaffoldingScript.ts
 
+import { ProjectConfig } from '@/core/config/ProjectConfig';
 import fs from 'fs';
 import path from 'path';
-import { ProjectConfig } from '@/app/config/ProjectConfig';
 
 export class CodeScaffoldingScript {
   async execute(projectConfig: ProjectConfig): Promise<void> {

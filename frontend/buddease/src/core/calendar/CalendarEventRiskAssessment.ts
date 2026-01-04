@@ -1,4 +1,4 @@
-// CalendarEventRiskAssessment.ts
+CalendarEventRiskAssessment.ts
 interface CalendarEventRiskAssessment {
     eventId: string; // ID of the event
     riskScore: number; // Risk score assigned to the event

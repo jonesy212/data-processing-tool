@@ -1,4 +1,4 @@
-// Transaction.ts
+Transaction.ts
 import { CustomTransactionProps } from '@/core/typings/cryptoTypes/SmartContractInteraction';
 import { AccessList, Signature } from "ethers";
 
@@ -20,7 +20,7 @@ interface BaseTransaction {
   value: bigint | null;
 }
 
-// `Transaction` extends `BaseTransaction` with specific fields
+`Transaction` extends `BaseTransaction` with specific fields
 interface Transaction extends BaseTransaction {
   amount?: number | null;
   transactionType: number | null;
@@ -32,7 +32,7 @@ interface Transaction extends BaseTransaction {
   notes?: string;
 }
 
-// Additional type for `TransactionData` to unify both types
+Additional type for `TransactionData` to unify both types
 type TransactionData = Transaction & CustomTransactionProps;
 
 class TransactionProcessor implements Transaction {

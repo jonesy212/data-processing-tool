@@ -1,4 +1,4 @@
-// CryptoEnthusiastFollowing.tsx
+CryptoEnthusiastFollowing.tsx
 import React, { useState } from 'react';
 
 interface Trader {

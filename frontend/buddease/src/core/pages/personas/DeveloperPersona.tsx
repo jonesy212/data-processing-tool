@@ -1,5 +1,5 @@
-// DeveloperPersona.tsx
-// Define attributes and permissions for Developer persona
+DeveloperPersona.tsx
+Define attributes and permissions for Developer persona
 interface DeveloperPersona {
     name: string;
     role: string;

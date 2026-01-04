@@ -1,8 +1,8 @@
-// TempData.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+TempData.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// Define types for `DebugInfo` and `TempData` to provide structure
+Define types for `DebugInfo` and `TempData` to provide structure
 type DebugInfo = {
   message: string; // Simple debug message
   timestamp: string; // When the debug info was created

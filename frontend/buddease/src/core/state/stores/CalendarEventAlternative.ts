@@ -1,4 +1,4 @@
-// CalendarEventAlternative.ts
+CalendarEventAlternative.ts
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 
 interface CalendarEventAlternative {

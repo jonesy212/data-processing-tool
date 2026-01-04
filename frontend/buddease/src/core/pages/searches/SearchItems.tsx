@@ -1,4 +1,4 @@
-// SearchItems.tsx
+SearchItems.tsx
 import SearchResultItem from "@/core/components/models/data/SearchResultItem";
 import useAsyncHookLinker, {
     AsyncHookLinkerConfig,

@@ -1,4 +1,4 @@
-// ApiConfigManager.ts
+ApiConfigManager.ts
 import ApiConfig from '@/core/api/ApiConfigService';
 import { Endpoints } from '@/core/api/ApiEndpoints';
 import { EndpointConfig, EndpointConfigurations, EndpointDefinition } from '@/core/config/EndpointConfig';

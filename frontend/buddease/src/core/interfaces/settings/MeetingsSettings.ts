@@ -1,4 +1,4 @@
-// MeetingsSettings.ts
+MeetingsSettings.ts
 interface MeetingsSettings {
   enableMeetings: boolean;
   meetingPlatform: "zoom" | "teams" | "googleMeet" | "custom"; // Preferred meeting platform
@@ -14,7 +14,7 @@ interface MeetingsSettings {
   // Add any other specific settings for meetings based on project needs
 }
 
-// Example usage
+Example usage
 const meetingsSettings: MeetingsSettings = {
   enableMeetings: true,
   meetingPlatform: "zoom",

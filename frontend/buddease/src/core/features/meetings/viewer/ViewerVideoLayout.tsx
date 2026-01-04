@@ -1,4 +1,4 @@
-// ViewerVideoLayout.tsx
+ViewerVideoLayout.tsx
 
 import VideoAPI from '@/core/api/videos/VideoAPI';
 import VideoViewer from '@/core/state/redux/sagas/VideoViewer';

@@ -1,4 +1,4 @@
-// ChatMessage.tsx
+ChatMessage.tsx
 import { ChatMessageActions } from '@/core/actions/ChatMessageActions';
 import { ChatApi } from '@/core/api/ChatApi';
 import { FileUploadModalProps } from '@/core/cards/modal/FileUploadModal';
@@ -56,7 +56,7 @@ type ChatSettingsModal = {
   // other properties and methods specific to the modal
 };
 
-// Update similar types for editor and notification if needed
+Update similar types for editor and notification if needed
 type ChatEditor = {
   dispose?: () => void;
   // other properties and methods specific to the editor
@@ -89,7 +89,7 @@ interface CancellablePromise<T> extends Promise<T> {
   close?: () => void;
 }
 
-// Define an interface for the props
+Define an interface for the props
 interface EditorComponentProps {
   editorState: EditorState;
   // Add other props if needed
@@ -99,7 +99,7 @@ export interface ChatMessageProps extends ChatMessage {
   roomId: string;
 }
 
-// Define the API endpoint for fetching chat messages
+Define the API endpoint for fetching chat messages
 const CHAT_API_ENDPOINT = "https://example.com/api/chat/messages";
 
 /**

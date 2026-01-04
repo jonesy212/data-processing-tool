@@ -1,9 +1,9 @@
-// validationSagas.ts
+validationSagas.ts
 import { ValidationActionTypes, validationFailure, validationSuccess } from '@/core/actions/ValidationActions';
 import Logger from '@/core/logging/Logger';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-//  validation saga
+ validation saga
 function* validateTask(action: any) {
   try {
     // Perform task validation logic here
@@ -34,7 +34,7 @@ function* injectEventsTask(action: any) {
 
 
 
-// Watcher saga with additional features
+Watcher saga with additional features
 export function* watchValidation() {
   yield takeLatest(ValidationActionTypes.START_VALIDATION, validateTask);
   yield takeLatest(ValidationActionTypes.INJECT_EVENTS, injectEventsTask);

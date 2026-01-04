@@ -1,4 +1,4 @@
-// DIDManager.ts
+DIDManager.ts
 
 import { generateDID, isValidDID } from '@/utils/web3/didUtils';
 

@@ -1,6 +1,6 @@
 // communicationConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { CommunicationEndpoints } from '@/core/typings/categories/CommunicationEndpoints';
+import type { CommunicationEndpoints } from '@/core/typings/categories/CommunicationEndpoints';
 
 export const communicationConfig: CommunicationEndpoints = {
   audioCall: { path: `${BASE_URL}/api/communication/audio-call`, method: "POST" },

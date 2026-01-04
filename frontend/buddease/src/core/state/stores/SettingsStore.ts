@@ -1,4 +1,4 @@
-// SettingsStore.ts
+SettingsStore.ts
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
 import { ThemeEnum } from '@/core/libraries/ui/theme/Theme';
 import { NotificationChannels } from '@/core/notifications/NotificationChannels';
@@ -593,10 +593,10 @@ export class SettingsStore {
   }
 }
 
-// -------------------
-// RootStores Integration
-// -------------------
-// at the bottom of the file, **after** the channels literal
+-------------------
+RootStores Integration
+-------------------
+at the bottom of the file, **after** the channels literal
 const channels: NotificationChannels = {
   email: { enabled: true },
   push: { enabled: true },

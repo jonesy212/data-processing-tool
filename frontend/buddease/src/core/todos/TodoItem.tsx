@@ -1,4 +1,4 @@
-// TodoItem.tsx
+TodoItem.tsx
 import { DropTargetMonitor, useDrag, useDrop } from '@/core/libraries/animations/DraggableAnimation/useDrag';
 import { ItemTypes } from '@/core/models/content/ItemTypes';
 import { Todo } from '@/core/todos/Todo'; // Adjust import path based on your file structure

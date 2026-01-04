@@ -1,4 +1,4 @@
-// useBatchProcessing.ts
+useBatchProcessing.ts
 import axios from 'axios';
 import { useState } from 'react';
 
@@ -8,7 +8,7 @@ interface BatchProcessingResult {
   data?: any;
 }
 
-// Function to process a batch on the server
+Function to process a batch on the server
 export const processBatchOnServer = async (batchData: any[]): Promise<BatchProcessingResult> => {
   try {
     // Replace '/api/process-batch' with your actual API endpoint

@@ -1,4 +1,4 @@
-// ScheduledTimersComponent.tsx
+ScheduledTimersComponent.tsx
 import React, { useEffect, useState } from 'react';
 
 interface ScheduledTimersProps {

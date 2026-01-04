@@ -1,6 +1,6 @@
-// secureMappers.ts
-// secureMappers.ts
-import { DefaultExcludedFields } from '@/core/config/BaseConfig';
+secureMappers.ts
+secureMappers.ts
+import type { DefaultExcludedFields } from '@/core/config/BaseConfig';
 
 /** -------------------------
  * Core foundation fields

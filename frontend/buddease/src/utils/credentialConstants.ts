@@ -1,4 +1,4 @@
-// credentialConstants.ts
+credentialConstants.ts
 
 export const ISSUER_DID = 'did:example:issuer'; // Example issuer DID
 export const SUBJECT_DID = 'did:example:subject'; // Example subject DID

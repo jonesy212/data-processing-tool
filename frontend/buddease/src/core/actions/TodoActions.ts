@@ -1,6 +1,6 @@
 // TodoActions.ts
 // todo/TodoActions.ts
-import { Todo } from "@/core/todos/Todo";
+import type { Todo } from "@/core/todos/Todo";
 import { createAction } from "@reduxjs/toolkit";
 
 export const TodoActions = {

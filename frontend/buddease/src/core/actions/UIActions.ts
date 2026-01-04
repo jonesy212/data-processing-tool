@@ -1,5 +1,5 @@
-// UIActions.ts
-// UIActions.tsx
+UIActions.ts
+UIActions.tsx
 import { SearchResultWithQuery } from "@/core/components/routing/SearchResult";
 import { K } from '@/core/models/data/dataStoreMethods';
 import { Progress } from "@/core/models/tracker/ProgressBar";

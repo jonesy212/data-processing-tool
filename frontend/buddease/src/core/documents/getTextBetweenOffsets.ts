@@ -1,4 +1,4 @@
-// getTextBetweenOffsets.ts
+getTextBetweenOffsets.ts
 /**
  * Extracts text between start and end offsets from the given input text.
  * @param inputText - The input text from which to extract the substring.
@@ -6,7 +6,7 @@
  * @param endOffset - The end offset of the substring.
  * @returns The extracted text between the specified offsets.
  */
-// app/utils/string/offsetUtils.ts
+app/utils/string/offsetUtils.ts
 
 /**
  * Extracts text between start and end offsets with bounds checking

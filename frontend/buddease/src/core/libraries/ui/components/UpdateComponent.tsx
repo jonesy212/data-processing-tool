@@ -1,4 +1,4 @@
-// UpdateComponent.tsx
+UpdateComponent.tsx
 import { ComponentActions } from '@/core/actions/ComponentActions';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';

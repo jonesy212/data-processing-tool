@@ -1,4 +1,4 @@
-// RealTimeDashboardPage.tsx
+RealTimeDashboardPage.tsx
 import UserProfileComponent from "@/core/components/community/UserProfileComponent";
 import DataFilterForm from "@/core/components/models/data/DataFilterForm";
 import NotificationComponent from "@/core/components/notifications/NotificationComponent";

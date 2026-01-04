@@ -1,18 +1,18 @@
-// EntityConversionRules.ts
+EntityConversionRules.ts
 
 import {
     TaskEntity
 } from '@/core/typings/entities/';
 
-import { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { ParsedData } from '@/core/dataIntegration/parseData';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CommonData, SupportedData } from "@/core/models/CommonData";
 import { UserEntity } from '@/core/typings/entities/UserEntity';
 
-// --------------------
-// Step 1: Define all entities as a const tuple
-// --------------------
+--------------------
+Step 1: Define all entities as a const tuple
+--------------------
 const entities = [
   'ApiEntity', 'AppEntity', 'AppMetadataEntity', 'ArticleEntity', 'AuthEntity', 'BlogEntity',
   'CalendarEntity', 'ChatEntity', 'ChatRoomEntity', 'CommonEntities', 'ConfigEntity', 'ContentEntity',
@@ -26,25 +26,25 @@ const entities = [
 
 type EntityName = (typeof entities)[number];
 
-// --------------------
-// Step 2: Define generic conversion rules
-// --------------------
+--------------------
+Step 2: Define generic conversion rules
+--------------------
 export const conversionRules: Record<EntityName, (source: any) => any> = Object.fromEntries(
   entities.map(name => [name, (source: any) => ({ ...source })])
 ) as Record<EntityName, (source: any) => any>;
 
-// --------------------
-// Step 3: Add custom rules for specific entities
-// --------------------
+--------------------
+Step 3: Add custom rules for specific entities
+--------------------
 conversionRules.UserEntity = (source: UserEntity) => ({
   ...source,
   memberLevel: (source as any).memberLevel ?? 'basic',
   teams: source.teams?.map(t => ({ ...t })) ?? [],
 });
 
-// --------------------
-// Step 4: Generic conversion function using the rules
-// --------------------
+--------------------
+Step 4: Generic conversion function using the rules
+--------------------
 export function convertEntityWithRules<K extends EntityName>(
   source: InstanceType<any>
 ): ReturnType<typeof conversionRules[K]> {
@@ -54,18 +54,18 @@ export function convertEntityWithRules<K extends EntityName>(
   return rule(source);
 }
 
-// --------------------
-// Step 5: Convert an array of entities
-// --------------------
+--------------------
+Step 5: Convert an array of entities
+--------------------
 export function convertEntitiesArrayWithRules<K extends EntityName>(
   sourceArray: InstanceType<any>[]
 ): ReturnType<typeof conversionRules[K]>[] {
   return sourceArray.map(source => convertEntityWithRules<K>(source));
 }
 
-// --------------------
-// Step 6: Map converted entity to CommonData
-// --------------------
+--------------------
+Step 6: Map converted entity to CommonData
+--------------------
 export const mapConvertedEntityToCommonData = <
   T extends SupportedData<any, any, Meta, Attachment, DefaultExcludedFields<T>, keyof T>,
   K extends T = T,
@@ -87,9 +87,9 @@ export const mapConvertedEntityToCommonData = <
   };
 };
 
-// --------------------
-// Step 7: Example Usage
-// --------------------
+--------------------
+Step 7: Example Usage
+--------------------
 const userEntity: UserEntity = {
   username: "user123",
   email: "user123@example.com",

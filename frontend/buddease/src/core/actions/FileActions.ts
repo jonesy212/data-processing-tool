@@ -1,4 +1,4 @@
-// FileActions.ts
+FileActions.ts
 
 import CustomFile from "@/core/documents/File";
 import { FileTypeEnum } from "@/core/documents/FileType";

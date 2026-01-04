@@ -4,8 +4,9 @@ import { TypeScriptDiagnosticPhase } from '@/core/error-analyzer/phases/TypeScri
 import { ASTParserUtils } from '@/core/error-analyzer/utils/ASTParserUtils';
 import { CodePatternDetector } from '@/core/error-analyzer/utils/CodePatternDetector';
 import { ImportErrorSummaryGenerator } from '@/core/generators/corrections/ImportErrorSummary';
-import { PhaseBackupSystem } from '@/core/models/phases/PhaseBackupSystem';
-import { ExecutionContext, PhaseDefinition } from '@/core/models/phases/PhaseSystem';
+import type { ExecutionContext, PhaseDefinition } from '@/core/models/phases/PhaseSystem';
+import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { PhaseBackupSystemImpl } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 import fs from 'fs';
 import path from 'path';
 // ========== TYPE DEFINITIONS ==========
@@ -61,8 +62,6 @@ export interface PhaseContext extends ExecutionContext {
   testResults: Map<string, any>;
   backupSystem: PhaseBackupSystem;
   config: Partial<PhaseSystemConfig>;
-
-  
 }
 
 export interface PhaseSystemConfig {
@@ -80,7 +79,7 @@ export interface PhaseExecutionResult {
   entityName: string;
   success: boolean;
   changes: Array<{
-    type: 'add' | 'remove' | 'modify';
+    type: 'add' | 'remove' | 'modify' | 'test';
     description: string;
     location: string;
     diff?: string;
@@ -290,7 +289,7 @@ export class DynamicPhaseExecutor {
       entityAnalysis: new Map(),
       patternAnalysis: new Map(),
       testResults: new Map(),
-      backupSystem: new PhaseBackupSystem(),
+      backupSystem: new PhaseBackupSystemImpl(),
     };
 
     this.patternAnalyzer = new PatternAnalyzer();
@@ -456,7 +455,12 @@ export class DynamicPhaseExecutor {
   // ========== MILESTONE IMPLEMENTATIONS ==========
 
   private async scanEntityDirectory(ctx: PhaseContext): Promise<EntityAnalysis[]> {
+    // Add null check and default value
     const entityDir = ctx.config.entityDirectory;
+    if (!entityDir) {
+      throw new Error('Entity directory configuration is missing');
+    }
+    
     console.log(`📁 Scanning entity directory: ${entityDir}`);
     
     if (!fs.existsSync(entityDir)) {
@@ -468,7 +472,7 @@ export class DynamicPhaseExecutor {
 
     for (const file of files) {
       const content = fs.readFileSync(file, 'utf-8');
-      const analysis = this.patternAnalyzer.analyzeEntity(content, file);
+      const analysis = await this.patternAnalyzer.analyzeEntity(content, file);
       ctx.entityAnalysis.set(analysis.entityName, analysis);
       entities.push(analysis);
     }
@@ -787,11 +791,19 @@ export class DynamicPhaseExecutor {
     const diagnosticPhase = new TypeScriptDiagnosticPhase(ctx.projectRoot);
     
     try {
+
+      if (!ctx.config.entityDirectory) {
+        console.warn('Entity directory not configured, skipping entity-specific error detection');
+        return errors;
+      }
+      
       const diagnosticResult = await diagnosticPhase.execute();
       
+       const entityDir = ctx.config.entityDirectory; // Now TypeScript knows it's string
+ 
       // Filter errors for entity files
-      const entityErrors = diagnosticResult.filesWithErrors.filter(file => 
-        file.includes(ctx.config.entityDirectory)
+       const entityErrors = diagnosticResult.filesWithErrors.filter(file => 
+        file.includes(entityDir) // Now safe
       );
       
       for (const errorFile of entityErrors) {
@@ -811,6 +823,10 @@ export class DynamicPhaseExecutor {
     // Check for import errors
     const importAnalyzer = new ImportErrorSummaryGenerator();
     const importErrors = await importAnalyzer.generateSummary();
+    
+    if (!ctx.config.entityDirectory) {
+      throw new Error('Entity directory configuration is missing');
+    }
     
     for (const error of importErrors.errors) {
       if (error.filePath.includes(ctx.config.entityDirectory)) {
@@ -1363,7 +1379,7 @@ export class DynamicPhaseExecutor {
       // Test type inference
       try {
         const testCode = `
-// Test type extraction
+Test type extraction
 type TestConfig = [BaseDataEntity, any, any];
 type TestParams = ExtractUpdateParamsFromConfig<TestConfig>;
 const test: TestParams = {} as any;
@@ -1463,10 +1479,10 @@ const test: TestParams = {} as any;
     try {
       // Create a test that tries to use entityA's snapshot with entityB's parameters
       const testCode = `
-// Test snapshot compatibility between ${entityA.entityName} and ${entityB.entityName}
+Test snapshot compatibility between ${entityA.entityName} and ${entityB.entityName}
 import type {  Snapshot } from '@/core/snapshots/Snapshot';
 
-// Simulate using ${entityA.entityName} snapshot with ${entityB.entityName} parameters
+Simulate using ${entityA.entityName} snapshot with ${entityB.entityName} parameters
 type TestCompatibility = Snapshot<
   ${entityB.entityName}['T'],
   ${entityB.entityName}['K'],
@@ -1476,7 +1492,7 @@ type TestCompatibility = Snapshot<
   ${entityB.entityName}['IncludedFields']
 >;
 
-// Try to assign ${entityA.entityName} snapshot to the test type
+Try to assign ${entityA.entityName} snapshot to the test type
 declare const snapshotA: ${entityA.entityName}['Snapshot'];
 const test: TestCompatibility = snapshotA;
 `;
@@ -1725,7 +1741,7 @@ const test: TestCompatibility = snapshotA;
     // Add common pattern to entity
     const patternImplementations: Record<string, string> = {
       'config-tuple-pattern': `
-// Configuration tuple pattern
+Configuration tuple pattern
 type ${analysis.entityName}Config = [
   T,
   K,
@@ -1736,7 +1752,7 @@ type ${analysis.entityName}Config = [
 ];
 `,
       'generic-interface-pattern': `
-// Generic interface pattern
+Generic interface pattern
 interface ${analysis.entityName}Interface<
   T extends BaseDataEntity,
   K extends T,
@@ -2133,7 +2149,7 @@ export async function testParameterInterchangeability(directory: string): Promis
 
 // ========== BACKUP SYSTEM EXTENSION ==========
 
-// Extend PhaseBackupSystem for entity-specific backups
+Extend PhaseBackupSystem for entity-specific backups
 declare module '@/core/error-analyzer/phases/PhaseBackupSystem' {
   interface PhaseBackupSystem {
     backupEntity(
@@ -2145,7 +2161,7 @@ declare module '@/core/error-analyzer/phases/PhaseBackupSystem' {
   }
 }
 
-PhaseBackupSystem.prototype.backupEntity = async function(
+PhaseBackupSystemImpl.prototype.backupEntity = async function(
   entityName: string,
   filePath: string,
   operation: string,
@@ -2154,10 +2170,10 @@ PhaseBackupSystem.prototype.backupEntity = async function(
   // Implementation for backing up entity files
   const timestamp = new Date();
   const backupId = `entity-${entityName}-${timestamp.getTime()}`;
-  const backupPath = path.join(this.backupDir, 'entities', `${backupId}.bak`);
+  const backupPath = path.join(this.getBackupDir(), 'entities', `${backupId}.bak`);
   
   // Ensure directory exists
-  const entityBackupDir = path.join(this.backupDir, 'entities');
+  const entityBackupDir = path.join(this.getBackupDir(), 'entities');
   if (!fs.existsSync(entityBackupDir)) {
     fs.mkdirSync(entityBackupDir, { recursive: true });
   }

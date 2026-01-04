@@ -1,6 +1,6 @@
-// Presentation.ts
+Presentation.ts
 
-// Define the Presentation interface representing the structure of a presentation
+Define the Presentation interface representing the structure of a presentation
 export interface Presentation {
     id: string;
     title: string;

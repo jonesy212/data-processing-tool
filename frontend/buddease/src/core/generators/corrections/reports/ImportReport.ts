@@ -1,7 +1,7 @@
 // ImportReport.ts
 // src/app/quality/reports/ImportReport.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { ImportFix, ParsedImport } from '@/core/generators/corrections/ImportFixServicies';
 import fs from 'fs';
 import path from 'path';
 

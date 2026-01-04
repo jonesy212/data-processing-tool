@@ -1,4 +1,4 @@
-// BlogPosts.tsx
+BlogPosts.tsx
  import { BlogPost } from '@/core/pages/blog/BlogPost';
 import React from 'react';
  

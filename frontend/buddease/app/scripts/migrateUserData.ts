@@ -1,15 +1,16 @@
 // DatabaseMigrationService.ts
-import { ProjectConfig, DatabaseConfig } from '@/app/config/ProjectConfig';
 import { LifecycleManager } from '@/app/hooks/phases/LifecycleManager';
 import { Phase } from "@/app/models/phases/Phase";
-import { useButtonGeneratorProps } from '@/app/generators/GenerateButtons';
-import { Schema, DatabaseSchema } from '@/app/typings/database';
-import { PhaseEntity,
-PhaseK,
-PhaseMeta,
-PhaseAttachment,
-PhaseExcludedFields,
-PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity'
+import { DatabaseSchema } from '@/app/typings/database';
+import {
+    PhaseAttachment,
+    PhaseEntity,
+    PhaseExcludedFields,
+    PhaseIncludedFields,
+    PhaseK,
+    PhaseMeta
+} from '@/app/typings/entities/PhaseEntity';
+import { DatabaseConfig, ProjectConfig } from '@/core/config/ProjectConfig';
 // Extend the base interfaces with migration-specific types
 export interface Database extends BackendDatabaseService {
   type: DatabaseType;

@@ -1,4 +1,4 @@
-// CourseDevelopmentPage.tsx
+CourseDevelopmentPage.tsx
 import { Data } from '@/core/models/data/Data';
 import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator";
 import SnapshotStore, {
@@ -12,7 +12,7 @@ import CoursePlanningPhase from "./CoursePlanningPhase";
 import CourseSetupPhase from "./CourseSetupPhase";
 
 const { notify } = useNotification();
-// Define course development phases
+Define course development phases
 export enum CourseDevelopmentPhase {
   PLANNING,
   SETUP,

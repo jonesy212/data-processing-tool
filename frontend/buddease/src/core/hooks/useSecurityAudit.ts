@@ -1,10 +1,10 @@
-// useSecurityAudit.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+useSecurityAudit.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useSecureUserId as fetchSecureUserId } from '@/core/hooks/useSecureUserId';
 
-// Type guard for sensitive fields
+Type guard for sensitive fields
 const isSensitiveField = (field: any): field is { isSensitive: boolean; value?: any } => {
     return field && typeof field === "object" && "isSensitive" in field;
 };

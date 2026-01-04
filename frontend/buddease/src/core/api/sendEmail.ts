@@ -1,5 +1,5 @@
-// sendEmail.ts
-// This is the utility function (no React)
+sendEmail.ts
+This is the utility function (no React)
 export async function sendEmail(
   recipient: string,
   subject: string,

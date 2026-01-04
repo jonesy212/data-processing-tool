@@ -1,7 +1,7 @@
 // ApiEndpoints.ts
+
 import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
 
-// apiEndpoints.ts
 const BASE_URL = "https://your-api-base-url";
 const FACEBOOK_API_BASE_URL = 'https://graph.facebook.com/v12.0';
 const TWITTER_API_BASE_URL = 'https://api.twitter.com/1.1';
@@ -10,7 +10,7 @@ type NestedEndpoints = {
   [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
 };
 
-// Interface representing endpoints with categories
+Interface representing endpoints with categories
 interface Endpoints {
   [category: string]: NestedEndpoints;
 }

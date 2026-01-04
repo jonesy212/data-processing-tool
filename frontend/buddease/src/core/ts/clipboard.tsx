@@ -1,5 +1,5 @@
-// clipboard.tsx
-// Clipboard.tsx
+clipboard.tsx
+Clipboard.tsx
 import React, { useState } from 'react';
 
 interface ClipboardProps {

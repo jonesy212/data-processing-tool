@@ -1,4 +1,4 @@
-// ProfessionalTraderAlerts.tsx
+ProfessionalTraderAlerts.tsx
 import React, { useState } from 'react';
 
 interface ProfessionalTraderAlertsProps {

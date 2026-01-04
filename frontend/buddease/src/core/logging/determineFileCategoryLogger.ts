@@ -1,8 +1,8 @@
-// determineFileCategoryLogger.ts
+determineFileCategoryLogger.ts
 import { FileCategory, fileMapping } from "@/core/documents/FileType";
 import { fileCategoryMapping } from '@/core/libraries//categories/fileCategoryMapping';
 
-// Function to determine file category and log any conflicts
+Function to determine file category and log any conflicts
 function determineFileCategoryLogger(fileName: string, extension: string): FileCategory | null {
     const category = Object.keys(fileCategoryMapping).find(
       (cat) => fileCategoryMapping[cat as FileCategory].includes(extension)

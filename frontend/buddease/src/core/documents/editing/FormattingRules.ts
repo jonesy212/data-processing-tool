@@ -1,4 +1,4 @@
-// FormattingRules.ts
+FormattingRules.ts
 interface FormattingRules {
   allowedFonts?: string[];
   allowedFontSizes?: number[];
@@ -10,7 +10,7 @@ interface FormattingRules {
 }
 
 
-// Helper functions (implement according to your editor framework)
+Helper functions (implement according to your editor framework)
 function containsMaliciousHTML(content: any): boolean {
   // Implement HTML sanitization check
   return false;

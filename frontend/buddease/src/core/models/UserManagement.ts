@@ -1,6 +1,6 @@
-// UserManagement.ts
+UserManagement.ts
 import { userService } from '@/core/api/ApiUser';
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import { User } from '@/core/users/User';
 
@@ -114,7 +114,7 @@ class UserManagement {
       throw error;
     }
   };
-// Assign role to user
+Assign role to user
 assignUserRole = async (userId: User['id'], role: string) => {
   try {
     // Retrieve the user object based on the userId

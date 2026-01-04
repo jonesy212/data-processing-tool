@@ -1,4 +1,4 @@
-// CommunityInteractionEndpoints.ts
+CommunityInteractionEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface CommunityInteractionEndpoints extends EndpointCategoryConfig {

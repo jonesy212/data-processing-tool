@@ -1,7 +1,7 @@
-// processSnapshotStore.ts
-// RealtimeDataComponent.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+processSnapshotStore.ts
+RealtimeDataComponent.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 
 

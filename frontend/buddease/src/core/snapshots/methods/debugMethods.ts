@@ -1,4 +1,4 @@
-// debugMethods.ts
+debugMethods.ts
 
 import { Config } from '@/core/api/ConfigManager';
 

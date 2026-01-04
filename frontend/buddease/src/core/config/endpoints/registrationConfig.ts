@@ -1,4 +1,4 @@
-// registrationConfig.ts
+registrationConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { RegistrationEndpoints } from '@/core/typings/categories/RegistrationEndpoints';
 

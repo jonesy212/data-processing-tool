@@ -1,5 +1,5 @@
 // notesConfig.ts
-import { NotesEndpoints } from '@/core/typings/categories/NotesEndpoints';
+import type { NotesEndpoints } from '@/core/typings/categories/NotesEndpoints';
 
 export const notesConfig: NotesEndpoints = {
   list: { path: "/notes", method: "GET" },

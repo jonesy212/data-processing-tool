@@ -1,5 +1,5 @@
-// DataStructureCategories.ts
-// Data related categories
+DataStructureCategories.ts
+Data related categories
 const dataCategories = {
     notes: [
         'assignedNotes'
@@ -22,7 +22,7 @@ const dataCategories = {
     ]
 };
 
-// Board related categories
+Board related categories
 const boardCategories = {
     boardItems: [
         'assignedBoardItems',
@@ -43,21 +43,21 @@ const boardCategories = {
     ]
 };
 
-// Task related categories
+Task related categories
 const taskCategories = {
     todos: [
         'assignedTodos'
     ]
 };
 
-// Team related categories
+Team related categories
 const teamCategories = {
     teams: [
         'assignedTeams'
     ]
 };
 
-// Community related categories
+Community related categories
 const communityCategories = {
     community: [
         // Add community-specific data structures here
@@ -65,7 +65,7 @@ const communityCategories = {
     ]
 };
 
-// Projects related categories
+Projects related categories
 const projectsCategories = {
     projects: [
         // Add project-specific data structures here
@@ -75,7 +75,7 @@ const projectsCategories = {
 };
 
 
-// Developer related categories
+Developer related categories
 const developerCategories = {
     developerTasks: [
         'assignedDeveloperTasks',
@@ -99,7 +99,7 @@ const developerCategories = {
     ]
 };
 
-// Define a type for categories when the user is not a developer
+Define a type for categories when the user is not a developer
 type AllCategoryValuesWithoutDeveloper = 
     typeof dataCategories[keyof typeof dataCategories][number] |
     typeof boardCategories[keyof typeof boardCategories][number] |
@@ -108,16 +108,16 @@ type AllCategoryValuesWithoutDeveloper =
     typeof communityCategories[keyof typeof communityCategories][number] |
     typeof projectsCategories[keyof typeof projectsCategories][number];
 
-// Define a type for categories when the user is a developer
+Define a type for categories when the user is a developer
 type DeveloperCategoryValues = typeof developerCategories[keyof typeof developerCategories][number];
 
 const userIsDeveloper = true;
-// Conditionally select the type based on `userIsDeveloper`
+Conditionally select the type based on `userIsDeveloper`
 type AllCategoryValues = typeof userIsDeveloper extends true 
     ? AllCategoryValuesWithoutDeveloper | DeveloperCategoryValues 
     : AllCategoryValuesWithoutDeveloper;
 
-// Merge all categories
+Merge all categories
 export const allCategories = {
     ...dataCategories,
     ...boardCategories,

@@ -1,4 +1,4 @@
-// eventEmitter.ts
+eventEmitter.ts
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import {
     EventEmitterConfig,

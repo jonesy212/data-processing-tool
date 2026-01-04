@@ -1,8 +1,8 @@
-import {
-  BaseDataEntity,
-  BaseDataRoot
-} from '@/app/config/BaseConfig';
 import { ComponentPattern } from '@/app/scripts/ComponentPatternDetector';
+import {
+    BaseDataEntity,
+    BaseDataRoot
+} from '@/core/config/BaseConfig';
 
 type GeneratorPattern = {
   componentName: string;
@@ -501,7 +501,7 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
     } = pattern;
 
     const imports = [
-      "import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';",
+      "import type { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/core/config/BaseConfig';",
       "import { Attachment } from '@/app/documents/attachment/Attachment';",
       "import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';",
       "import { storeTempData, getTempData, DebugInfo, TempData } from '@/app/utils/tempDataUtils';",
@@ -509,7 +509,7 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
 
     if (usesComponentConfig) {
       imports.push("import { useComponentConfig } from '@/app/hooks/useComponentConfig';");
-      imports.push("import type { ComponentsConfig } from '@/app/config/ComponentsConfig';");
+      imports.push("import type { ComponentsConfig } from '@/core/config/ComponentsConfig';");
     }
     if (usesErrorHandling) {
       imports.push("import { useErrorHandling } from '@/app/hooks/useErrorHandling';");

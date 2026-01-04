@@ -1,7 +1,7 @@
-// ApiPreferencesEndpoints.ts
+ApiPreferencesEndpoints.ts
 import { NestedEndpoints } from "@/core/api/ApiEndpoints";
 
-//endpointPreferences.ts
+endpointPreferences.ts
 const BASE_URL = "https://your-api-base-url";
 
 export const endpointPreferences: {

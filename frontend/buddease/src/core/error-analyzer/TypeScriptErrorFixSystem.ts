@@ -1,4 +1,4 @@
-// src/app/error-analyzer/TypeScriptErrorFixSystem.ts
+src/app/error-analyzer/TypeScriptErrorFixSystem.ts
 import { ErrorFixManager, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import { ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
 import { ReportGenerator } from '@/core/error-analyzer/ReportGenerator';
@@ -205,7 +205,7 @@ export class TypeScriptErrorFixSystem {
     }
 }
 
-// Usage helper functions
+Usage helper functions
 export async function analyzeErrorsFromJson(jsonData: string): Promise<void> {
     const system = new TypeScriptErrorFixSystem();
     await system.analyzeAndGenerateReports(jsonData);
@@ -216,7 +216,7 @@ export async function analyzeErrorsFromFile(filePath: string): Promise<void> {
     await system.analyzeFromFile(filePath);
 }
 
-// Main entry point for CLI
+Main entry point for CLI
 export async function main(): Promise<void> {
     const args = process.argv.slice(2);
 
@@ -251,6 +251,6 @@ Examples:
     await system.analyzeFromFile(filePath);
 }
 
-// Export for use in other parts of your application
+Export for use in other parts of your application
 export { ErrorFixManager };
 export type { TSCompilerError };

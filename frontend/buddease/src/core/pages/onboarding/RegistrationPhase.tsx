@@ -1,4 +1,4 @@
-// RegistrationPhase.tsx
+RegistrationPhase.tsx
 import { endpoints } from '@/core/api/endpointConfigurations';
 import EmailSetupForm from "@/core/components/communications/email/EmailSetUpForm";
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
@@ -19,7 +19,7 @@ interface RegistrationPhaseProps {
   onSuccess: (userData: UserData) => void;
 }
 
-// Define RegistrationPhase functional component
+Define RegistrationPhase functional component
 const RegistrationPhase: React.FC<RegistrationPhaseProps> = ({ onSuccess }) => {
   // Initialize state variables
   const [username, setUsername] = useState("");
@@ -176,5 +176,5 @@ const RegistrationPhase: React.FC<RegistrationPhaseProps> = ({ onSuccess }) => {
   );
 }
 
-// Export RegistrationPhase component
+Export RegistrationPhase component
 export default RegistrationPhase;

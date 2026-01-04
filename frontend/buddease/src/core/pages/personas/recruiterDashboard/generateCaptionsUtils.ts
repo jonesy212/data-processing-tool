@@ -1,8 +1,8 @@
-// generateCaptionsUtils.ts
+generateCaptionsUtils.ts
 
-// Function to generate captions for the video
+Function to generate captions for the video
 
-// Function to generate captions from spaCy extracted entities
+Function to generate captions from spaCy extracted entities
 const generateCaptionsFromEntities = (entities: any): string => {
     // Your logic to generate captions based on the extracted entities using spaCy
     // This could involve analyzing the entities, extracting relevant information, and composing captions

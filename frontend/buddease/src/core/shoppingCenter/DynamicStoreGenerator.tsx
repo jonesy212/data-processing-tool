@@ -1,4 +1,4 @@
-// DynamicStoreGenerator.tsx
+DynamicStoreGenerator.tsx
 import { generateStores } from '@/core/state/stores/StoreGenerator';
 import * as path from 'path';
 
@@ -17,7 +17,7 @@ const validateStoreMetadata = (metadata: StoreMetadataEntry[]) => {
     });
 };
 
-// Analyze project structure and extract metadata
+Analyze project structure and extract metadata
 const storeMetadata = [
   { name: 'BrowserCompatibility', components: ['BrowserCheckStore'] },
   { name: 'AuthenticationStore', components: ['auth', 'auth_routes'] },
@@ -61,8 +61,8 @@ const storeMetadata = [
 ];
 
 
-// Call the validation function
+Call the validation function
 validateStoreMetadata(storeMetadata);
 
-// Generate stores based on metadata
+Generate stores based on metadata
 generateStores(storeMetadata);

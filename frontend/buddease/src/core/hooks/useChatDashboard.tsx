@@ -1,5 +1,5 @@
-// useChatDashboard.tsx
-// hooks/useChatDashboard.ts
+useChatDashboard.tsx
+hooks/useChatDashboard.ts
 import { useEffect } from 'react';
 
 import { ChatMessage } from '@/core/communications';

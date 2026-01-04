@@ -1,4 +1,4 @@
-// CryptoEnthusiastCalendar.tsx
+CryptoEnthusiastCalendar.tsx
 import EventService from "@/core/services/EventService";
 import { CustomEvent } from "@/core/typings/eventHandlers/eventTypes";
 import React, { useState } from "react";
@@ -55,7 +55,7 @@ const CryptoEnthusiastCalendar: React.FC<CryptoEnthusiastCalendarProps> = (
   const [cryptoEvents, setCryptoEvents] = useState(eventService.getAllEvents());
 
   // Function to add a new crypto event
-// Function to add a new crypto event
+Function to add a new crypto event
 const addCryptoEvent = (
   id: string,
   title: string,

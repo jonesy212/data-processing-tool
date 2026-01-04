@@ -1,7 +1,7 @@
-// SocialMediaIntegrationService.tsx
-// SocialMediaIntegrationService.ts
+SocialMediaIntegrationService.tsx
+SocialMediaIntegrationService.ts
 
-// Import necessary modules and types
+Import necessary modules and types
 import { useSecureAccountId } from '@/core/hooks/useSecureAccountId';
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { FacebookIntegration } from '@/core/socialMedia/FacebookIntegration';
@@ -10,17 +10,17 @@ import { TikTokIntegration } from '@/core/socialMedia/TikTokIntegration';
 import { TwitterIntegration } from '@/core/socialMedia/TwitterIntegration';
 import { YouTubeIntegration } from '@/core/socialMedia/YouTubeIntegration';
 
-// Define a type for the social media platform
+Define a type for the social media platform
 type SocialMediaPlatform = 'Facebook' | 'Instagram' | 'Twitter' | 'YouTube' | 'TikTok';
 
-// Define the interface for the Social Media Integration Service
+Define the interface for the Social Media Integration Service
 interface SocialMediaIntegrationService {
   fetchMessages(platform: SocialMediaPlatform): Promise<any[]>;
   postMessage(platform: SocialMediaPlatform, message: string): Promise<void>;
 }
 
  
-// Implement the Social Media Integration Service
+Implement the Social Media Integration Service
 const userId = useSecureUserId()
 const accountId = useSecureAccountId()
 class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService {
@@ -62,5 +62,5 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
   }
 }
 
-// Export the Social Media Integration Service instance
+Export the Social Media Integration Service instance
 export const socialMediaIntegrationService: SocialMediaIntegrationService = new SocialMediaIntegrationServiceImpl();

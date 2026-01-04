@@ -1,4 +1,4 @@
-// WebSocket.tsx
+WebSocket.tsx
 import { RetryConfig } from "@/core/services/ConfigurationService";
 import { useEffect, useState } from "react";
 
@@ -61,4 +61,4 @@ export const retryConfig = {
   retryDelay: 1000,
 };
 
-// const socket = connectToChatWebSocketWithRetry(roomId, retryConfig);
+const socket = connectToChatWebSocketWithRetry(roomId, retryConfig);

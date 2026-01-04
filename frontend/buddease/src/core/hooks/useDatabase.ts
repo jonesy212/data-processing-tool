@@ -1,5 +1,5 @@
-// useDatabase.ts
-// app/state/hooks/useDatabase.ts
+useDatabase.ts
+app/state/hooks/useDatabase.ts
 
 import { DatabaseContext } from "@/core/state/context/DatabaseContext";
 import { useContext } from "react";

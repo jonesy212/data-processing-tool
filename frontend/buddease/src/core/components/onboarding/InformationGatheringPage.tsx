@@ -1,4 +1,4 @@
-// InformationGatheringPage.tsx
+InformationGatheringPage.tsx
 import generateDynamicDummyHook from '@/core/hooks/generateDynamicDummyHook';
 import React from 'react';
 

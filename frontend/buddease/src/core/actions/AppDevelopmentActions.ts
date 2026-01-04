@@ -1,8 +1,8 @@
 // AppDevelopmentActions.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from "@/core/models/data/Data";
-import { Phase } from "@/core/models/phases/Phase";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Data } from "@/core/models/data/Data";
+import type { Phase } from "@/core/models/phases/Phase";
 import { createAction } from "@reduxjs/toolkit";
 
 // Hybrid generic defaults for convenience

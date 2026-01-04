@@ -1,4 +1,4 @@
-// CommunityData.tsx
+CommunityData.tsx
 import { Team } from "@/core/components/teams/Team";
 import {
     BaseDataEntity,
@@ -6,7 +6,7 @@ import {
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Data } from "@/core/models/data/Data";
 import { Project } from "@/core/models/projects/Project";
 import { TeamMember } from "@/core/models/teams/TeamMembers";

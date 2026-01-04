@@ -1,4 +1,4 @@
-// TeamList.tsx
+TeamList.tsx
 import { Team, TeamDetails } from '@/core/components/teams/Team';
 import { observer } from 'mobx-react-lite';
 import React from 'react';

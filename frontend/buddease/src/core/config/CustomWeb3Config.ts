@@ -1,5 +1,5 @@
-// CustomWeb3Config.ts
-// erc20Balance.ts
+CustomWeb3Config.ts
+erc20Balance.ts
 
 import { Web3 } from "web3";
 import type { AbiItem } from "web3-utils";

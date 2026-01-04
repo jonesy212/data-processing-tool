@@ -1,4 +1,4 @@
-// ShoppingCenterConfig.ts
+ShoppingCenterConfig.ts
 import { ShippingOption } from "@/core/shoppingCenter/ShippingOption";
 import { AffiliateMarketingConfig } from "@/core/shoppingCenter/shopping_config/AffiliateMarketingConfig";
 

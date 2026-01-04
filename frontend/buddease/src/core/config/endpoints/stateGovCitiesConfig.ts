@@ -1,4 +1,4 @@
-// stateGovCitiesConfig.ts
+stateGovCitiesConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { StateGovCitiesEndpoints } from '@/core/typings/categories/StateGovCitiesEndpoints';
 

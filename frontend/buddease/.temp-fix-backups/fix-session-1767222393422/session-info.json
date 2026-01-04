@@ -1,0 +1,220 @@
+{
+  "sessionId": "fix-session-1767222393422",
+  "timestamp": "2025-12-31T23:07:54.751Z",
+  "totalFiles": 10,
+  "changesMade": 10,
+  "filesChanged": [
+    "src/core/snapshots/SnapshotWithCriteria.ts",
+    "src/core/models/content/AddContent.tsx",
+    "src/core/state/context/DataContext.tsx",
+    "src/core/hooks/useRoleAccess.ts",
+    "src/core/typings/entities/MeetingEntity.ts",
+    "src/core/server/repository/versionMapper.ts",
+    "src/core/typings/entities/AppMetadataEntity.ts",
+    "src/core/documents/DocumentEditor.tsx",
+    "src/core/libraries/ui/CustomContentState.tsx",
+    "src/core/models/CommunityData.tsx"
+  ],
+  "changes": [
+    {
+      "file": "src/core/snapshots/SnapshotWithCriteria.ts",
+      "changes": 4,
+      "details": [
+        "Line 11: import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig'; → import type { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';",
+        "Line 16: import { MetadataEntriesType } from '@/core/config/StructuredMetadata'; → import type { MetadataEntriesType } from '@/core/config/StructuredMetadata';",
+        "Line 17: import { Attachment } from '@/core/documents/attachment/Attachment'; → import type { Attachment } from '@/core/documents/attachment/Attachment';",
+        "Line 43: import { InitializedState } from '@/core/state/stores/DataStore'; → import type { InitializedState } from '@/core/state/stores/DataStore';"
+      ]
+    },
+    {
+      "file": "src/core/models/content/AddContent.tsx",
+      "changes": 3,
+      "details": [
+        "Line 14: import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig'; → import type { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';",
+        "Line 15: import { Attachment } from '@/core/documents/attachment/Attachment'; → import type { Attachment } from '@/core/documents/attachment/Attachment';",
+        "Line 17: import { SharedMetadata } from '@/core/shared/SharedMetadata'; → import type { SharedMetadata } from '@/core/shared/SharedMetadata';"
+      ]
+    },
+    {
+      "file": "src/core/state/context/DataContext.tsx",
+      "changes": 1,
+      "details": [
+        "Line 2: import { BaseData, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig'; → import type { BaseData, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';"
+      ]
+    },
+    {
+      "file": "src/core/hooks/useRoleAccess.ts",
+      "changes": 1,
+      "details": [
+        "Line 3: import { Attachment, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from \"@/core/documents/attachment/Attachment\"; → import type { Attachment, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from \"@/core/documents/attachment/Attachment\";"
+      ]
+    },
+    {
+      "file": "src/core/typings/entities/MeetingEntity.ts",
+      "changes": 2,
+      "details": [
+        "Line 2: import { BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig'; → import type { BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';",
+        "Line 3: import { Attachment } from '@/core/documents/attachment/Attachment'; → import type { Attachment } from '@/core/documents/attachment/Attachment';"
+      ]
+    },
+    {
+      "file": "src/core/server/repository/versionMapper.ts",
+      "changes": 1,
+      "details": [
+        "Line 4: import { DefaultExcludedFields } from '@/core/config/BaseConfig'; → import type { DefaultExcludedFields } from '@/core/config/BaseConfig';"
+      ]
+    },
+    {
+      "file": "src/core/typings/entities/AppMetadataEntity.ts",
+      "changes": 2,
+      "details": [
+        "Line 3: import { UnifiedMetadata } from \"@/core/config/MetaDataOptions\"; → import type { UnifiedMetadata } from \"@/core/config/MetaDataOptions\";",
+        "Line 4: import { StructuredMetadata } from \"@/core/config/StructuredMetadata\"; → import type { StructuredMetadata } from \"@/core/config/StructuredMetadata\";"
+      ]
+    },
+    {
+      "file": "src/core/documents/DocumentEditor.tsx",
+      "changes": 1,
+      "details": [
+        "Line 6: import { UnifiedMetadata } from '@/core/config/MetaDataOptions'; → import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';"
+      ]
+    },
+    {
+      "file": "src/core/libraries/ui/CustomContentState.tsx",
+      "changes": 1,
+      "details": [
+        "Line 2: import { StructuredMetadata } from '@/core/config/StructuredMetadata'; → import type { StructuredMetadata } from '@/core/config/StructuredMetadata';"
+      ]
+    },
+    {
+      "file": "src/core/models/CommunityData.tsx",
+      "changes": 1,
+      "details": [
+        "Line 9: import { Attachment } from '@/core/documents/attachment/Attachment'; → import type { Attachment } from '@/core/documents/attachment/Attachment';"
+      ]
+    }
+  ],
+  "folderStats": [
+    {
+      "folder": "src/core/snapshots",
+      "fileCount": 1,
+      "importCount": 4,
+      "files": [
+        "src/core/snapshots/SnapshotWithCriteria.ts"
+      ],
+      "importsByType": {
+        "BaseDataEntity": 1,
+        "BaseDataRoot": 1,
+        "DefaultExcludedFields": 1,
+        "DefaultMeta": 1,
+        "StructuredMetadata": 1,
+        "Attachment": 1,
+        "InitializedState": 1
+      }
+    },
+    {
+      "folder": "src/core/models/content",
+      "fileCount": 1,
+      "importCount": 3,
+      "files": [
+        "src/core/models/content/AddContent.tsx"
+      ],
+      "importsByType": {
+        "BaseDataEntity": 1,
+        "BaseDataRoot": 1,
+        "DefaultExcludedFields": 1,
+        "DefaultMeta": 1,
+        "Attachment": 1,
+        "SharedMetadata": 1
+      }
+    },
+    {
+      "folder": "src/core/state/context",
+      "fileCount": 1,
+      "importCount": 1,
+      "files": [
+        "src/core/state/context/DataContext.tsx"
+      ],
+      "importsByType": {
+        "BaseDataEntity": 1,
+        "DefaultExcludedFields": 1,
+        "DefaultMeta": 1
+      }
+    },
+    {
+      "folder": "src/core/hooks",
+      "fileCount": 1,
+      "importCount": 1,
+      "files": [
+        "src/core/hooks/useRoleAccess.ts"
+      ],
+      "importsByType": {
+        "BaseDataEntity": 1,
+        "DefaultExcludedFields": 1,
+        "DefaultMeta": 1,
+        "Attachment": 1
+      }
+    },
+    {
+      "folder": "src/core/typings/entities",
+      "fileCount": 2,
+      "importCount": 4,
+      "files": [
+        "src/core/typings/entities/MeetingEntity.ts",
+        "src/core/typings/entities/AppMetadataEntity.ts"
+      ],
+      "importsByType": {
+        "DefaultExcludedFields": 1,
+        "DefaultMeta": 1,
+        "Attachment": 1,
+        "UnifiedMetadata": 1,
+        "StructuredMetadata": 1
+      }
+    },
+    {
+      "folder": "src/core/server/repository",
+      "fileCount": 1,
+      "importCount": 1,
+      "files": [
+        "src/core/server/repository/versionMapper.ts"
+      ],
+      "importsByType": {
+        "DefaultExcludedFields": 1
+      }
+    },
+    {
+      "folder": "src/core/documents",
+      "fileCount": 1,
+      "importCount": 1,
+      "files": [
+        "src/core/documents/DocumentEditor.tsx"
+      ],
+      "importsByType": {
+        "UnifiedMetadata": 1
+      }
+    },
+    {
+      "folder": "src/core/libraries/ui",
+      "fileCount": 1,
+      "importCount": 1,
+      "files": [
+        "src/core/libraries/ui/CustomContentState.tsx"
+      ],
+      "importsByType": {
+        "StructuredMetadata": 1
+      }
+    },
+    {
+      "folder": "src/core/models",
+      "fileCount": 1,
+      "importCount": 1,
+      "files": [
+        "src/core/models/CommunityData.tsx"
+      ],
+      "importsByType": {
+        "Attachment": 1
+      }
+    }
+  ],
+  "backupLocation": "/Users/dixiejones/data_analysis/frontend/buddease/.temp-fix-backups/fix-session-1767222393422"
+}

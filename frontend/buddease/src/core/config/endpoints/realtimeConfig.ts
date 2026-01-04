@@ -1,4 +1,4 @@
-// realtimeConfig.ts
+realtimeConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { RealtimeEndpoints } from '@/core/typings/categories/RealtimeEndpoints';
 

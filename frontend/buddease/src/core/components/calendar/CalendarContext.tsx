@@ -1,16 +1,16 @@
-// CalendarContext.tsx
+CalendarContext.tsx
 import { transformTasksToEvents, transformTodosToEvents } from '@/core/calendar/CalendarEvents';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { Member } from '@/core/models/members/Member';
 import { Project } from '@/core/models/projects/Project';
 import { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
-import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
+import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-// Define the type for calendar data
+Define the type for calendar data
 export type SimpleCalendarEvent<
   T extends BaseDataEntity,
   K extends T = T,
@@ -48,7 +48,7 @@ export type SimpleCalendarEvent<
   projects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 };
 
-// Define the context type
+Define the context type
 type CalendarContextType<    
   T extends BaseDataEntity = CalendarEntity,
   K extends T = T,
@@ -65,16 +65,16 @@ type CalendarContextType<
   ) => void;
 };
 
-// Create the context with defaults
+Create the context with defaults
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
-// Props for the provider
+Props for the provider
 interface CalendarProviderProps {
   children: ReactNode;
   useTaskManager?: boolean; // Optional: whether to auto-fetch from task manager
 }
 
-// Provider component
+Provider component
 export const CalendarProvider: React.FC<CalendarProviderProps> = ({ 
   children, 
   useTaskManager = false 
@@ -121,7 +121,7 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   );
 };
 
-// Custom hook for consuming the context
+Custom hook for consuming the context
 export const useCalendarContext = (): CalendarContextType => {
   const context = useContext(CalendarContext);
   if (!context) {
@@ -132,7 +132,7 @@ export const useCalendarContext = (): CalendarContextType => {
   return context;
 };
 
-// Additional hook for calendar operations
+Additional hook for calendar operations
 export const useCalendarOperations = () => {
   const { calendarData, updateCalendarData } = useCalendarContext();
 

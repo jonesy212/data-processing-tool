@@ -1,7 +1,7 @@
-// versionMapper.ts
-// server/repository/versionMapper.ts
+versionMapper.ts
+server/repository/versionMapper.ts
 
-import { DefaultExcludedFields } from '@/core/config/BaseConfig';
+import type { DefaultExcludedFields } from '@/core/config/BaseConfig';
 import { VersionEntityDataInterface } from '@/core/typings/entities/VersionEntity';
 
 

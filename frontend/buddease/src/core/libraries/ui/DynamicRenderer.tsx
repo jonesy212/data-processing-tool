@@ -1,4 +1,4 @@
-// DynamicRenderer.tsx
+DynamicRenderer.tsx
 import { useDynamicComponents } from "@/core/components/DynamicComponentsContext";
 import DynamicTable from "@/core/documents/DynamicTable";
 import { Task } from "@/core/models/tasks/Task";

@@ -1,7 +1,7 @@
-// createSharedSnapshotContainer.ts
+createSharedSnapshotContainer.ts
 
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, SharedConfig } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, SharedConfig } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { SharedPhaseData, SharedRelationshipData } from '@/core/models/data/Data';
 import SnapshotStore from '@/core/snapshots/Snapshot';

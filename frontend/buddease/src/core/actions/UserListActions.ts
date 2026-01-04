@@ -1,4 +1,4 @@
-// UserListActions.ts
+UserListActions.ts
 import { User } from "@/core/users/User";
 import { createAction } from "@reduxjs/toolkit";
 

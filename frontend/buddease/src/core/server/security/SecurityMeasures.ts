@@ -1,11 +1,11 @@
-// SecurityMeasures.ts
-// security/SecurityMeasures
+SecurityMeasures.ts
+security/SecurityMeasures
 import { createHeaders } from "@/core/api/ApiClient";
 import { SecurityMeasure, SecurityMeasureHeader, SecurityMeasureLogger, SecurityMeasureType } from '@/core/typings/securityMeasureTypes';
 
 
 
-// Action to implement security measures
+Action to implement security measures
 const requestHeaders = createHeaders();
 export const implementSecurityMeasures = (
   securityMeasures: SecurityMeasure[]
@@ -95,7 +95,7 @@ const implementLoggerSecurity = (loggerMeasure: any, loggerConfig: any) => {
   return loggerConfig;
 };
 
-// Example usage
+Example usage
 const securityHeader: SecurityMeasureHeader = {
   id: "1",
   type: SecurityMeasureType.Header,
@@ -107,12 +107,12 @@ const securityHeader: SecurityMeasureHeader = {
   priority: 'low'
 };
 
-// Call the function with the security header
+Call the function with the security header
 implementHeaderSecurity(securityHeader, requestHeaders);
 
-// #TODO REMOVE
-// Total Issues : 4932
-// Critical     : 125
-// High         : 401
-// Medium       : 2890
-// Low          : 1516
+#TODO REMOVE
+Total Issues : 4932
+Critical     : 125
+High         : 401
+Medium       : 2890
+Low          : 1516

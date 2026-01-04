@@ -1,4 +1,4 @@
-// CryptoService.tsx
+CryptoService.tsx
 import { CryptoActions } from "@/core/actions/CryptoActions";
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { rootStores } from "@/core/state/stores/RootStores"; // Import rootStores

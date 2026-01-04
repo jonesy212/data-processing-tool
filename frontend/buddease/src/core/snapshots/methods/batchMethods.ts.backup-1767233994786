@@ -1,0 +1,307 @@
+// batchMethods.ts
+import { SnapshotActions } from "@/core/actions/SnapshotActions";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import SnapshotStore from "@/core/snapshots/SnapshotStore";
+import { Subscriber } from "@/core/subscribers/Subscriber";
+import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+;
+
+export const BatchMethods = {
+  /**
+   * Take snapshots of multiple items in batch.
+   */
+  batchTakeSnapshot: async function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    itemsOrSnapshotId: T[] | string,
+    snapshotManagerOrStore?: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | { snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> {
+    
+    // Method 1: Take snapshots of multiple items using snapshot manager
+    if (Array.isArray(itemsOrSnapshotId) && snapshotManagerOrStore instanceof SnapshotManager) {
+      const items = itemsOrSnapshotId as T[];
+      const snapshotManager = snapshotManagerOrStore as SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      
+      const takenSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+      for (const item of items) {
+        const snapshot = await snapshotManager.takeSnapshot(item);
+        takenSnapshots.push(snapshot);
+        // Optionally add to store
+        this.snapshots.push(snapshot);
+      }
+      return takenSnapshots;
+    }
+    
+    // Method 2: Delegate pattern for batch snapshot operation
+    else if (typeof itemsOrSnapshotId === 'string' && snapshotManagerOrStore instanceof SnapshotStore && snapshots) {
+      const snapshotId = itemsOrSnapshotId as string;
+      const snapshotStore = snapshotManagerOrStore as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      
+      const delegate = this.ensureDelegate();
+      const result = await delegate.batchTakeSnapshot(snapshotId, snapshotStore, snapshots);
+      return result;
+    }
+    
+    // Invalid parameter combination
+    throw new Error('Invalid parameters for batchTakeSnapshot. Use either: ' +
+      '(items: T[], snapshotManager: SnapshotManager) or ' +
+      '(snapshotId: string, snapshotStore: SnapshotStore, snapshots: Snapshots)');
+  },
+  
+  /**
+   * Update multiple snapshots at once.
+   */
+  batchUpdateSnapshots: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    updates: Array<{ id: string; newData: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>
+  ): void {
+    for (const update of updates) {
+      const index = this.snapshots.findIndex(s => s.id === update.id);
+      if (index !== -1) {
+        this.snapshots[index] = {
+          ...this.snapshots[index],
+          ...update.newData,
+        };
+      }
+    }
+  },
+
+  /**
+   * Remove multiple snapshots by ID in batch.
+   */
+  batchRemoveSnapshots: function <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    ids: string[]
+  ): void {
+    this.snapshots = this.snapshots.filter(s => !ids.includes(s.id));
+  },
+
+  /**
+   * Add multiple snapshots to the store at once.
+   */
+  batchAddSnapshots: function <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ): void {
+    this.snapshots.push(...snapshots);
+  },
+
+  batchFetchSnapshots: async function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    criteria: CriteriaType,
+    snapshotData?: (
+      snapshotIds: string[],
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ) => Promise<{
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    }>,
+    ids?: string[]
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    
+    // If IDs are provided directly, fetch by IDs
+    if (ids && ids.length > 0) {
+      const fetched: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+      for (const id of ids) {
+        const snapshot = this.snapshots.find(s => s.id === id);
+        if (snapshot) fetched.push(snapshot);
+      }
+      return fetched;
+    }
+    
+    // If using delegate pattern with criteria and snapshotData callback
+    if (criteria && snapshotData) {
+      const delegate = this.ensureDelegate();
+      
+      // Call the delegate method and handle the result
+      const result = await delegate.batchFetchSnapshots(criteria, snapshotData);
+      
+      // The result is already the snapshots array, no need to extract
+      const snapshots = result;
+
+      // Convert Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to array
+      if (Array.isArray(snapshots)) {
+        return snapshots;
+      } else if (snapshots instanceof Map) {
+        return Array.from(snapshots.values());
+      } else if (typeof snapshots === 'object' && snapshots !== null) {
+        return Object.values(snapshots);
+      }
+      
+      return [];
+    }
+    
+    // Fallback: return empty array if no valid parameters
+    return [];
+  },
+
+  async batchTakeSnapshotsRequest<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void> {
+    const delegate = this.ensureDelegate();
+    await delegate.batchTakeSnapshotsRequest(snapshotData);
+  },
+
+  batchUpdateSnapshotsRequest<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshotData: (
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ) => Promise<{
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    }>
+  ): Promise<void> {
+    const delegate = this.ensureDelegate();
+    snapshotData(this.subscribers).then(({ snapshots }) => {
+      delegate.batchUpdateSnapshotsRequest(async (subscribers) => {
+        const { snapshots } = await snapshotData(subscribers);
+        return { subscribers, snapshots };
+      });
+    });
+    return Promise.resolve();
+  },
+
+  batchFetchSnapshotsSuccess<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): void {
+    const delegate = this.ensureDelegate();
+    delegate.batchFetchSnapshotsSuccess(subscribers, snapshots);
+  },
+
+  batchFetchSnapshotsFailure<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    date: Date,
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    payload: { error: Error; }
+  ): void {
+    const delegate = this.ensureDelegate();
+    delegate.batchFetchSnapshotsFailure(payload);
+  },
+
+  batchUpdateSnapshotsSuccess<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): void {
+    const delegate = this.ensureDelegate();
+    if (delegate.batchUpdateSnapshotsSuccess) {
+      delegate.batchUpdateSnapshotsSuccess(subscribers, snapshots);
+    } else {
+      console.error(
+        "Delegate's batchUpdateSnapshotsSuccess is undefined. Cannot perform batch update."
+      );
+    }
+  },
+
+  batchUpdateSnapshotsFailure<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    date: Date, 
+    snapshotId: string, 
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    payload: { error: Error; }
+  ): void {
+    const delegate = this.ensureDelegate();
+    delegate.batchUpdateSnapshotsFailure(payload);
+  },
+
+  handleSnapshotSuccess<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    message: string,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+    snapshotId: string
+  ): void {
+    if (snapshot) {
+      SnapshotActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>().handleTaskSnapshotSuccess({ message, snapshot, snapshotId });
+      console.log(`Handling success for snapshot ID: ${snapshotId}`);
+    }
+  },
+};

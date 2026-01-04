@@ -3,12 +3,12 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from "axios";
 
 

@@ -1,18 +1,18 @@
 // Component.tsx - FIXED VERSION
 import { ComponentActions } from "@/core/actions/ComponentActions";
 import ProjectService from "@/core/api/service/ProjectService";
-import { ComponentConfig } from '@/core/config/ComponentConfig';
+import type { ComponentConfig } from '@/core/config/ComponentConfig';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { StatusType } from "@/core/models/data/StatusType";
-import { Project } from '@/core/models/projects/Project';
+import type { Project } from '@/core/models/projects/Project';
 import { NotificationChannelHelper } from '@/core/notifications/NotificationChannelHelper';
-import { NotificationChannels } from '@/core/notifications/NotificationChannels';
+import type { NotificationChannels } from '@/core/notifications/NotificationChannels';
 import UpdatedProjectDetails from "@/core/projects/UpdateProjectDetails";
 import useNotificationManagerService from "@/core/services/NotificationService";
-import { EmailSettings, PushNotificationSettings } from '@/core/settings/Reminder';
+import type { EmailSettings, PushNotificationSettings } from '@/core/settings/Reminder';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addNotification } from "@/core/state/redux/slices/CalendarSlice";
 import { createSuccessLog } from '@/utils/logDataHelpers';

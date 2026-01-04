@@ -1,4 +1,4 @@
-// FeatureTogglePage.tsx
+FeatureTogglePage.tsx
 import featureStore from '@/core/state/featureStateManagement';
 import { Switch } from 'antd'; // Assuming the use of Ant Design for UI components
 import React, { useState } from 'react';

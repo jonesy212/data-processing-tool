@@ -1,4 +1,4 @@
-// VoiceControl.ts
+VoiceControl.ts
 const startVoiceRecognition = (onSpeechResult: (result: string) => void): SpeechRecognition | undefined => {
     const recognition = new (window.SpeechRecognition || (window as any).webkitSpeechRecognition)() as SpeechRecognition;
     recognition.continuous = true;

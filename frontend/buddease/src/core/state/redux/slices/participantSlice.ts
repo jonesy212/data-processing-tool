@@ -1,8 +1,9 @@
 // participantSlice.ts
 // useParticipantSlice.ts
  
-import { Participant } from "@/core/pages/management/ParticipantManagementPage";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { Participant } from "@/core/pages/management/ParticipantManagementPage";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 
 

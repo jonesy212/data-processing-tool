@@ -1,1 +1,1 @@
-// sharedErrorHandling.d.ts
+sharedErrorHandling.d.ts

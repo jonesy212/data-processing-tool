@@ -1,4 +1,4 @@
-// ProfileSetupPhase.tsx
+ProfileSetupPhase.tsx
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import React, { useState } from 'react';

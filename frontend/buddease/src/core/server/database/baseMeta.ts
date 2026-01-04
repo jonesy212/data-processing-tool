@@ -1,5 +1,5 @@
-// baseMeta.ts
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+baseMeta.ts
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { createMetadata } from '@/core/config/metadata/createMetadata';
 
 export const baseMeta = createMetadata<any, string, StructuredMetadata<any, string>>({

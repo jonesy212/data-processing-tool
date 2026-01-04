@@ -1,4 +1,4 @@
-// FeedbackService.tsx
+FeedbackService.tsx
 import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
 import { Feedback } from '@/core/features/support/Feedback';
 import { Channel, ChannelType } from "@/core/interfaces/chat/Channel";
@@ -110,7 +110,7 @@ class FeedbackService {
   }
 }
 
-// Example usage in your project management app
+Example usage in your project management app
 try {
   const feedbackService = FeedbackService.getInstance();
 

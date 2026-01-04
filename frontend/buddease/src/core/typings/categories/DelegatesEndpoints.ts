@@ -1,4 +1,4 @@
-// DelegatesEndpoints.ts
+DelegatesEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DelegatesEndpoints extends EndpointCategoryConfig {

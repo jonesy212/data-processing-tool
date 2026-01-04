@@ -1,4 +1,4 @@
-// CorrectionGenerator.ts
+CorrectionGenerator.ts
 import { BuildAnalyzer } from '@/core/generators/corrections/analyzers/BuildAnalyzer';
 import { ComprehensiveBreakdown, ComprehensiveBreakdownAnalyzer } from '@/core/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer';
 import { PatternAnalyzer } from '@/core/generators/corrections/analyzers/PatternAnalyzer';
@@ -46,7 +46,7 @@ interface Correction {
     documentationLink?: string;
 }
 
-// Add new interface for complex fixes
+Add new interface for complex fixes
 export interface ComplexFix {
     type: 'import' | 'refactor' | 'move' | 'rename';
     data: any;
@@ -504,12 +504,12 @@ export class CorrectionGenerator {
         switch (issue.type) {
             case 'import':
                 return `// Fix import paths for snapshot utilities
-// Ensure all snapshot-related imports use correct paths
+Ensure all snapshot-related imports use correct paths
 import { snapshotUtils } from '@/core/snapshots/Snapshot';`;
 
             case 'type':
                 return `// Align snapshot types with main application types
-// Update type definitions to match component expectations
+Update type definitions to match component expectations
 interface SnapshotData<T> {
   timestamp: string;
   data: T;
@@ -518,20 +518,20 @@ interface SnapshotData<T> {
 
             case 'serialization':
                 return `// Fix serialization/deserialization issues
-// Use proper data transformation for snapshots
+Use proper data transformation for snapshots
 const serializedData = JSON.stringify(data, null, 2);
 const deserializedData = JSON.parse(serializedData);`;
 
             case 'compatibility':
                 return `// Ensure snapshot compatibility
-// Add version checks and migration logic
+Add version checks and migration logic
 if (snapshot.version !== CURRENT_VERSION) {
   return migrateSnapshot(snapshot);
 }`;
 
             default:
                 return `// Fix snapshot issue: ${issue.message}
-// Review snapshot implementation and data flow`;
+Review snapshot implementation and data flow`;
         }
     }
 
@@ -1166,7 +1166,7 @@ if (snapshot.version !== CURRENT_VERSION) {
     }
 }
 
-// CLI execution
+CLI execution
 if (process.argv[1] && process.argv[1].includes('CorrectionGenerator.ts')) {
     const args = process.argv.slice(2);
     const generator = new CorrectionGenerator();

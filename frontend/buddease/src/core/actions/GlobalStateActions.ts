@@ -1,4 +1,4 @@
-// GlobalStateActions.ts
+GlobalStateActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const GlobalStateActions = {

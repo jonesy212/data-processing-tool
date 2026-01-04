@@ -1,4 +1,4 @@
-// DynamicEventHandlerService.tsx
+DynamicEventHandlerService.tsx
 
 import { CalendarActions } from '@/core/actions/CalendarEventActions';
 import { HighlightActions } from '@/core/highlighting/screenFunctionality/HighlightActions';

@@ -1,10 +1,9 @@
 // conductTestingAndOptimization.ts
 // testingAndOptimization.ts
 
-import { Feedback } from "@/core/features/support/Feedback";
-import FeedbackReportGenerator, {
-    FeedbackReport,
-} from "@/core/generators/FeedbackReportGenerator";
+import type { Feedback } from "@/core/features/support/Feedback";
+import type {FeedbackReport} from "@/core/generators/FeedbackReportGenerator";
+import FeedbackReportGenerator from "@/core/generators/FeedbackReportGenerator";
 import TradingStrategy, { MarketData, TradingStrategyOptions } from "@/core/trading/TradingStrategy";
 
 const calculateHistoricalVolatility = (prices: number[]): number => {
@@ -39,18 +38,18 @@ const calculateStopLoss = (
   return stopLossPrice;
 };
 
-// Example usage:
+Example usage:
 const entryPrice = 100; // Entry price of the asset
 const stopLossPercentage = 5; // Stop loss percentage (e.g., 5%)
 const stopLoss = calculateStopLoss(entryPrice, stopLossPercentage);
 console.log("Stop Loss Price:", stopLoss);
 
-// Example usage:
+Example usage:
 const historicalPrices = [100, 110, 120, 115, 125, 130, 135, 140, 145, 150];
 const volatility = calculateHistoricalVolatility(historicalPrices);
 console.log("Historical Volatility:", volatility);
 
-// Define a function to conduct thorough testing and optimization
+Define a function to conduct thorough testing and optimization
 const conductTestingAndOptimization = () => {
   // Step 1: Collect historical data for backtesting
   const historicalData = [100, 110, 120, 130, 140, 150, 160, 170, 180, 190]; // Example historical price data
@@ -243,7 +242,7 @@ const conductTestingAndOptimization = () => {
     // Set the calculated stop-loss value using the setStopLoss method
     tradingStrategy.setStopLoss(stopLoss);
   };
-// Step 9: Execute the trading strategy in real-time using live market data
+Step 9: Execute the trading strategy in real-time using live market data
 const executeTradingStrategy = (tradingStrategy: TradingStrategy): void => {
     // Connect to the exchange API and subscribe to live market data
     // Implement trading logic to execute buy and sell orders based on the strategy

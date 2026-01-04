@@ -1,5 +1,5 @@
-// HeaderActions.ts
-// headerActions.ts
+HeaderActions.ts
+headerActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const HeaderActions = {

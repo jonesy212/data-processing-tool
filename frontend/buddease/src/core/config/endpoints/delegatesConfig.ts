@@ -1,5 +1,5 @@
 // delegatesConfig.ts
-import { DelegatesEndpoints } from '@/core/typings/categories/DelegatesEndpoints';
+import type { DelegatesEndpoints } from '@/core/typings/categories/DelegatesEndpoints';
 
 export const delegatesConfig: DelegatesEndpoints = {
   list: { path: "/api/delegates", method: "GET" },

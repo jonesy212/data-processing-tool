@@ -1,4 +1,4 @@
-// VideoLifecycleHooks.ts
+VideoLifecycleHooks.ts
 import { PhaseOptions } from "@/core/hooks/phases/lifecycles";
 import { VideoLifecyclePhase } from "@/core/phases/VideoLifecyclePhase";
 

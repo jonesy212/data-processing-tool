@@ -1,5 +1,5 @@
-// EndpointConfigManager.ts
-// Automated endpoint configuration manager
+EndpointConfigManager.ts
+Automated endpoint configuration manager
 import { EndpointConfigurations } from '@/core/config/EndpointConfig';
 
 class EndpointConfigManager {
@@ -129,15 +129,15 @@ class EndpointConfigManager {
   }
 }
 
-// Initialize the manager
+Initialize the manager
 const endpointManager = new EndpointConfigManager();
 endpointManager.registerConfigs();
 
-// Export everything from the manager
+Export everything from the manager
 export const endpointConfigurations = endpointManager.getEndpointConfigurations();
 export const individualExports = endpointManager.getIndividualExports();
 
-// Destructure individual exports for backward compatibility
+Destructure individual exports for backward compatibility
 export const {
   apiWebBaseConfig,
   commentsConfig,

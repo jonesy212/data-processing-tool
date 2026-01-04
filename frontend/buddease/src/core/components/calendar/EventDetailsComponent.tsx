@@ -1,4 +1,4 @@
-// EventDetailsComponent.tsx
+EventDetailsComponent.tsx
 import { enhancePromptWithEntities } from "@/core/intelligence/EventEmitterIntegration";
 import ProjectEventEmitter from '@/core/libraries/eventSystem/ProjectEventEmitter';
 import React, { useEffect, useState } from "react";
@@ -6,8 +6,8 @@ import {
     CalendarEventViewingDetailsProps,
     EventDetails,
 } from "./CalendarEventViewingDetails";
-// Assuming you have a function named fetchEventDetails that fetches event details
-// and eventId is available in the scope where you use EventDetailsComponent
+Assuming you have a function named fetchEventDetails that fetches event details
+and eventId is available in the scope where you use EventDetailsComponent
 const eventDetailsFunction = async () => {
   try {
     const response = await fetchEventDetails(eventId);
@@ -81,8 +81,8 @@ const EventDetailsComponent: React.FC<CalendarEventViewingDetailsProps>  = ({
 
 export default EventDetailsComponent;
 
-// exampe usage:
+exampe usage:
 
-// Render EventDetailsComponent and pass the eventDetailsFunction as a prop
+Render EventDetailsComponent and pass the eventDetailsFunction as a prop
 {/* <EventDetailsComponent eventId={eventId} eventDetails={eventDetailsFunction} /> */}
 

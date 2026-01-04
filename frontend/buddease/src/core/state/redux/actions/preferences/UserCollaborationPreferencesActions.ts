@@ -1,4 +1,4 @@
-// UserCollaborationPreferencesActions.ts
+UserCollaborationPreferencesActions.ts
 import { createSlice } from '@reduxjs/toolkit';
 
 interface UserCollaborationPreferencesState {

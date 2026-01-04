@@ -1,7 +1,7 @@
-// PreferencesStep.tsx
+PreferencesStep.tsx
 import React, { useState } from "react";
 
-// Generic Preferences Step Component
+Generic Preferences Step Component
 const PreferencesStep: React.FC<{
   title: string;
   label: string;

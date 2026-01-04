@@ -1,4 +1,4 @@
-// CalendarEventEngagementMetrics.ts
+CalendarEventEngagementMetrics.ts
 import { EngagementMetrics } from "@/core/models/data/EventPriorityClassification";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 

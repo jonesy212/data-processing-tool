@@ -1,4 +1,4 @@
-// Visualization.tsx
+Visualization.tsx
 import { ImageCard } from "@/core/cards/index";
 import ChartComponent from "@/core/components/charts/ChartComponent";
 import { DatasetModel } from "@/core/todos/tasks/DataSetModel";

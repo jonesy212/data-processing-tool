@@ -6,13 +6,13 @@ let content = fs.readFileSync(filePath, 'utf8');
 
 // Comment out the problematic imports
 content = content.replace(
-  'import ApiMethod, { InterfaceInfo } from \'@/app/generators/ApiCodeGenerator\'',
-  '// import ApiMethod, { InterfaceInfo } from \'@/app/generators/ApiCodeGenerator\' // TEMP: Commented out to fix CSS import issue'
+  'import ApiMethod, { InterfaceInfo } from \'@/core/generators/ApiCodeGenerator\'',
+  '// import ApiMethod, { InterfaceInfo } from \'@/core/generators/ApiCodeGenerator\' // TEMP: Commented out to fix CSS import issue'
 );
 
 content = content.replace(
-  'import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";',
-  '// import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds"; // TEMP: Commented out to fix CSS import issue'
+  'import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";',
+  '// import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds"; // TEMP: Commented out to fix CSS import issue'
 );
 
 fs.writeFileSync(filePath, content);

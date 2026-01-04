@@ -1,10 +1,10 @@
-// EventContentAnalysis.tsx
+EventContentAnalysis.tsx
 
 import axiosInstance from '@/core/api/csrfToken';
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { processAutoGPTOutputWithSpaCy } from "@/core/intelligence/AutoGPTSpaCyIntegration";
 
-// Define a class or interface for content analysis
+Define a class or interface for content analysis
 export interface ScheduleOptimization {
   eventId: string;
   suggestedStartTime: Date;
@@ -33,7 +33,7 @@ export class EventContentAnalysis {
   constructor(public result: string) {}
 }
 
-// Function to perform content analysis on calendar event
+Function to perform content analysis on calendar event
 export const performContentAnalysis = async (
   event: CalendarEvent
 ): Promise<EventContentAnalysis> => {
@@ -55,7 +55,7 @@ export const performContentAnalysis = async (
   }
 };
 
-// Function to fetch content of the calendar event
+Function to fetch content of the calendar event
 const fetchEventContent = async (event: CalendarEvent): Promise<string> => {
   try {
     // Example: Fetch event content from backend using event ID
@@ -69,9 +69,9 @@ const fetchEventContent = async (event: CalendarEvent): Promise<string> => {
   }
 };
 
-// Function to analyze event content
+Function to analyze event content
 
-// Function to analyze event content using spaCy integration
+Function to analyze event content using spaCy integration
 const analyzeContent = async (content: string): Promise<string> => {
   try {
     // Process content with spaCy for enhanced analysis

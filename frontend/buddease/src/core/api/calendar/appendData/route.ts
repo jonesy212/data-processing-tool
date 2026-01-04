@@ -1,117 +1,188 @@
 // route.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
+import PizZip from "pizzip";
 
-// Define the event data type that matches your frontend
-
-interface AppendDataRequest<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = never,
-  IncludedFields extends keyof T = keyof T
-> {
-  event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  // Add other fields if needed
-  snapshotId?: string;
-  userId?: string;
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+  }
+  
+  try {
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to read from cache' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: AppendDataRequest = await request.json();
-    const { event, snapshotId, userId } = body;
-
-    // Validate required fields
-    if (!event || !event.id || !event.title || !event.date) {
-      return NextResponse.json(
-        { error: 'Missing required event fields' },
-        { status: 400 }
-      );
-    }
-
-    // Validate date format
-    if (isNaN(Date.parse(event.date))) {
-      return NextResponse.json(
-        { error: 'Invalid date format' },
-        { status: 400 }
-      );
-    }
-
-    // Here you would typically:
-    // 1. Save to your database
-    // 2. Update your snapshot store
-    // 3. Trigger any related business logic
-
-    // Example database operation (replace with your actual DB logic)
-    // const result = await prisma.calendarEvent.create({
-    //   data: {
-    //     id: event.id,
-    //     title: event.title,
-    //     date: new Date(event.date),
-    //     description: event.description,
-    //     category: event.category,
-    //     priority: event.priority,
-    //     metadata: event.metadata,
-    //     snapshotId: snapshotId,
-    //     userId: userId
-    //   }
-    // });
-
-    // Example response with the created event
-    const result = {
-      id: event.id,
-      title: event.title,
-      date: event.date,
-      // Include any server-generated fields
-      createdAt: new Date().toISOString(),
-      status: 'active'
-    };
-
-    // Return success response
-    return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Event appended successfully',
-        data: result 
-      },
-      { status: 201 }
-    );
-
-  } catch (error) {
-    console.error('Error in appendData API:', error);
+    const { key, data } = await request.json();
     
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
+    
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
+    });
+  } catch (error: any) {
     return NextResponse.json(
       { 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        success: false, 
+        error: error.message 
       },
       { status: 500 }
     );
   }
 }
 
-// Optional: Add GET method if you want to retrieve events
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const snapshotId = searchParams.get('snapshotId');
-    
-    // Example: Fetch events from database
-    // const events = await prisma.calendarEvent.findMany({
-    //   where: snapshotId ? { snapshotId } : {},
-    //   orderBy: { date: 'asc' }
-    // });
 
-    const events = []; // Replace with actual data fetch
-    
-    return NextResponse.json({ events });
-    
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
+    }
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error("Error generating document:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch events' },
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
+
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
+
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
+}
+
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
+}
+
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
       { status: 500 }
     );
   }

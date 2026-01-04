@@ -1,4 +1,4 @@
-// DynamicPromptPhaseHook.tsx
+DynamicPromptPhaseHook.tsx
 
 import createDynamicHook, { DynamicHookParams } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { useEffect, useState } from 'react';
@@ -24,7 +24,7 @@ export const createDynamicPromptPhaseHook = (
   });
 }
 
-// useDynamicPrompt Phase Hook
+useDynamicPrompt Phase Hook
 
 const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
   condition: async () => {
@@ -63,7 +63,7 @@ const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
 
 
 
-// Function to generate prompts based on user input
+Function to generate prompts based on user input
 export const generatePrompt = (userInput: string): string | null => {
   const [prompt, setPrompt] = useState<string | null>(null);
 
@@ -199,11 +199,11 @@ export const generatePrompt = (userInput: string): string | null => {
   ],
 };
 
-// Example usage
+Example usage
 const teamBuildingPrompts = promptMappings['Teambuilding Phase'];
 console.log('Teambuilding Phase Prompts:', teamBuildingPrompts);
 
-// Add more phases and prompts as needed
+Add more phases and prompts as needed
 
 
     // Check if the user input has an associated prompt

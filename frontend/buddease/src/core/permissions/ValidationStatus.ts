@@ -1,4 +1,4 @@
-// ValidationStatus.ts
+ValidationStatus.ts
 export enum ValidationStatus {
   Pending = 'Pending',
   Approved = 'Approved',

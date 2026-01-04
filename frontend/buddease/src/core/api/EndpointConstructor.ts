@@ -1,4 +1,4 @@
-// EndpointConstructor.ts
+EndpointConstructor.ts
 import { Endpoints } from '@/core/api/ApiEndpoints';
 import { endpoints } from "@/core/api/endpointConfigurations";
 
@@ -48,7 +48,7 @@ const constructTarget = <K extends keyof typeof endpoints>(
   }
 };
 
-// Example usage
+Example usage
 export const target = constructTarget("apiWebBase", "login", {
   sortBy: "",
   limit: 0,

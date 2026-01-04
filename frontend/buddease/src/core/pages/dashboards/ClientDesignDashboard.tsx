@@ -1,4 +1,4 @@
-// ClientDesignDashboard.tsx
+ClientDesignDashboard.tsx
 import connectToChatWebSocket from '@/core/components/communications/WebSocket';
 import { TodoList } from '@/core/components/lists/TodoList';
 import InviteFriends from "@/core/components/referrals/InviteFriends";

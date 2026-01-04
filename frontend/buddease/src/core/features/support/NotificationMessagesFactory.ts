@@ -1,5 +1,5 @@
-// NotificationMessagesFactory.ts
-// NotificationMessagesFactory.js
+NotificationMessagesFactory.ts
+NotificationMessagesFactory.js
 
 class NotificationMessagesFactory {
   static createWelcomeMessage(userName: string): string {

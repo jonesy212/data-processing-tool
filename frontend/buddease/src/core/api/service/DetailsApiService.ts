@@ -1,4 +1,4 @@
-// DetailsApiService.ts
+DetailsApiService.ts
 import ApiConfig from '@/core/api/ApiConfigService';
 import { endpointConfigurations, endpoints } from '@/core/api/endpointConfigurations';
 

@@ -1,16 +1,18 @@
 // CategoryApi.ts
+import internalApiService from "./ApiClient";
 import { handleApiError } from "@/core/api/ApiLogs";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { AxiosError, AxiosResponse } from "axios";
-import internalApiService from "./ApiClient";
+import { AxiosError } from "axios";
+import type { CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { AxiosResponse } from "axios";
 
 // ---------------------------
 // Notification Messages
 // ---------------------------
+
 interface CategoryNotificationMessages {
   FETCH_CATEGORY_SUCCESS: string;
   FETCH_CATEGORY_ERROR: string;

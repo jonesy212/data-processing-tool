@@ -1,6 +1,6 @@
 // dataContracts.ts
-import { PaginationOptions, SortingOption } from "@/core/pages/searches/SearchOptions";
-import {
+import type { PaginationOptions, SortingOption } from "@/core/pages/searches/SearchOptions";
+import type {
     BaseKey,
     BaseRecord,
     CreateManyParams,

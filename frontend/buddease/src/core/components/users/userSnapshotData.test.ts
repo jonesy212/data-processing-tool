@@ -1,4 +1,4 @@
-// userSnapshotData.test.ts
+userSnapshotData.test.ts
 import useUserProfile from "@/core/hooks/useUserProfile";
 import { myInitUserSnapshotData } from "@/core/snapshots/userSnapshotData";
 

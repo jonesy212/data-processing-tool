@@ -1,4 +1,4 @@
-// UserJourneyManager.tsx
+UserJourneyManager.tsx
 import { PhaseActions } from "@/core/actions/phases/PhaseActions";
 import EmailConfirmationPage from "@/core/components/communications/email/EmaiConfirmation";
 import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";
@@ -17,7 +17,7 @@ import TeamCreationProcess from "@/core/components/phases/steps/TeamCreationMana
 import { TaskPhase } from '@/core/components/phases/TaskPhaseEnum';
 import TaskProcess from "@/core/components/phases/TaskProcess";
 import TradingProcess from "@/core/components/phases/TradingProcess";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import {
     ContentCreation,
     ContentEditing,
@@ -25,7 +25,7 @@ import {
     ContentOrganization,
     ContentPublishing,
 } from "@/core/content/ContentMaintenance";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UserSupportPhase from "@/core/features/support/UserSupportPhaseComponent";
 import {
     DevelopmentPhaseEnum,
@@ -77,7 +77,7 @@ interface UserJourneyManagerProps<
   phaseName: PhaseOptions;
 }
 
-// Define the mapping of phases to components
+Define the mapping of phases to components
 const phaseComponents: Record<string, React.FC<any>> = {
   // Onboarding Phases
   [OnboardingPhase.EMAIL_CONFIRMATION]: EmailConfirmationPage,

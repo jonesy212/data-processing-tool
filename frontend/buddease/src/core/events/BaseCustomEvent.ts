@@ -1,6 +1,6 @@
-// BaseCustomEvent.ts
-// CustomEvent.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+BaseCustomEvent.ts
+CustomEvent.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { SharedSnapshotEvent } from "@/core/typings/appEventTypes";
 
 const ClipboardData = {
@@ -106,7 +106,7 @@ interface CustomEventExtension<
     BUBBLING_PHASE: 3;
 }
 
-// Type assertion for compatibility
+Type assertion for compatibility
 const CustomEventExtensionConstructor = CustomEvent as unknown as {
   new (type: string, eventInitDict?: EventInit): CustomEventExtension;
 };

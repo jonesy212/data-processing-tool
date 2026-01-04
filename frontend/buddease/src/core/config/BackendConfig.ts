@@ -1,4 +1,4 @@
-// BackendConfig.ts
+BackendConfig.ts
 import { ApiConfig } from '@/core/api/ApiConfigService';
 import { CacheConfig } from "@/core/config/CacheConfig";
 import { RetryConfig } from "@/core/services/ConfigurationService";
@@ -14,7 +14,7 @@ const normalizeCacheKey = (
   }
   return cacheKey;
 };
-// Helper constants for cache timing (in milliseconds)
+Helper constants for cache timing (in milliseconds)
 const CACHE_TIMING = {
   FIVE_MINUTES: 5 * 60 * 1000,    // 300000
   TEN_MINUTES: 10 * 60 * 1000,    // 600000
@@ -23,7 +23,7 @@ const CACHE_TIMING = {
   ONE_HOUR: 60 * 60 * 1000,        // 3600000
 } as const;
 
-// Default cache configurations for different use cases
+Default cache configurations for different use cases
 const DEFAULT_CACHE_CONFIGS = {
   API: {
     enabled: true,
@@ -138,5 +138,5 @@ const backendConfig: BackendConfig = {
 
 export { backendConfig };
 
-// Optional: Export the cache constants for reuse elsewhere
+Optional: Export the cache constants for reuse elsewhere
     export { CACHE_TIMING, DEFAULT_CACHE_CONFIGS, normalizeCacheKey };

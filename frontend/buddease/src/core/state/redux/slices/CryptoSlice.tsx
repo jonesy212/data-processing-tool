@@ -1,4 +1,4 @@
-// CryptoSlice.tsx
+CryptoSlice.tsx
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CryptoState {
@@ -39,6 +39,6 @@ export const selectBitcoinPrice = (state: { crypto: CryptoState }) =>
 
 export const selectEthereumPrice = (state: { crypto: CryptoState }) =>
   state.crypto.ethereumPrice;
-// Add more selectors as needed
+Add more selectors as needed
 
 export default cryptoSlice.reducer;

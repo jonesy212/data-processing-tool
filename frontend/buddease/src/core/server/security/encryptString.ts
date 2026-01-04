@@ -1,11 +1,11 @@
-// encryptString.ts
-// Import any necessary cryptographic libraries or utilities
+encryptString.ts
+Import any necessary cryptographic libraries or utilities
 import crypto from 'crypto';
 
-// Define a secret key for encryption (replace with your actual secret key)
+Define a secret key for encryption (replace with your actual secret key)
 const secretKey = 'your_secret_key_here';
 
-// Function to encrypt a string using AES encryption algorithm
+Function to encrypt a string using AES encryption algorithm
 export function encryptString(text: string): string {
   // Generate a random initialization vector
   const iv = crypto.randomBytes(16);

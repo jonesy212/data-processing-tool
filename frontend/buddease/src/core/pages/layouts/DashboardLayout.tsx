@@ -1,4 +1,4 @@
-// DashboardLayout.tsx
+DashboardLayout.tsx
 
 import CryptoSectionToolbar from '@/core/components/crypto/CryptoSectionToolbar';
 import ProjectManagementToolbar from '@/core/components/documents/ProjectManagementToolbar';

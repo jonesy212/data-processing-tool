@@ -1,4 +1,4 @@
-// UserManagementEndpoints.ts
+UserManagementEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface UserManagementEndpoints extends EndpointCategoryConfig {

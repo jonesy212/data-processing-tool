@@ -2,7 +2,7 @@
 import { makeAutoObservable } from "mobx";
 
 
-// Tenant.ts
+Tenant.ts
 interface Tenant {
   id: string;
   name: string;

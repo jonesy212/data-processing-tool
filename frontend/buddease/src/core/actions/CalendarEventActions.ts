@@ -1,13 +1,13 @@
 // CalendarEventActions.ts
 // CalendarActions.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { default as CustomFile, default as File } from "@/core/documents/File";
-import { Theme } from "@/core/libraries/ui/theme/Theme";
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { CustomFile, File } from "@/core/documents/File";
+import type { Theme } from "@/core/libraries/ui/theme/Theme";
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
-import { AppNotificationData } from '@/core/typings/entities/CommonEntities';
-import { AppCalendarEvent } from '@/core/typings/meetingTypes';
+import type { AppNotificationData } from '@/core/typings/entities/CommonEntities';
+import type { AppCalendarEvent } from '@/core/typings/meetingTypes';
 import { createAction } from "@reduxjs/toolkit";
 
 // Define the action using createAction

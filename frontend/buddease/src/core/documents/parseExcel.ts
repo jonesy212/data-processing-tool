@@ -1,4 +1,4 @@
-// parseExcel.ts
+parseExcel.ts
 import ExcelJS from 'exceljs';
 
 /**

@@ -1,4 +1,4 @@
-// SortableTableHeaders.tsx
+SortableTableHeaders.tsx
 import { HeadersConfig } from '@/core/api/headers/HeadersConfig';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import React from "react";

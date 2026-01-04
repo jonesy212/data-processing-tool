@@ -1,4 +1,4 @@
-// src/app/error-analyzer/rules/app-specific-rules.ts
+src/app/error-analyzer/rules/app-specific-rules.ts
 
 export const APP_SPECIFIC_RULES = {
     // Rule 1: All interfaces should be exported as types

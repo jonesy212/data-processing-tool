@@ -1,12 +1,12 @@
-// MappingConfig.tsx
+MappingConfig.tsx
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CryptoData, ParsedData } from "@/core/dataIntegration/parseData";
 import { CommonData } from '@/core/models/CommonData';
 import { StatusType } from "@/core/models/data/StatusType";
 import { AllTypes } from '@/core/typings/PropTypes';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
 export interface MappingConfig<

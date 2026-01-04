@@ -1,4 +1,4 @@
-// src/core/error-analyzer/phases/PhaseExecutor.ts
+src/core/error-analyzer/phases/PhaseExecutor.ts
 import {
     FileCategory // Move this from separate import
 } from '@/core/documents/FileType';
@@ -902,7 +902,7 @@ private analyzeByFileCategory(filePath: string, category: FileCategory): any {
   }
 }
 
-// Factory function for specific app areas
+Factory function for specific app areas
 export async function runAppAreaDiagnosis(
   area: 'frontend' | 'backend' | 'shared' | 'all' = 'all',
   projectRoot?: string
@@ -919,7 +919,7 @@ export async function runAppAreaDiagnosis(
   };
 }
 
-// Main execution function with area support
+Main execution function with area support
 export async function runFullResolution(
   area: 'frontend' | 'backend' | 'shared' | 'all' = 'all',
   projectRoot?: string
@@ -956,7 +956,7 @@ export async function runFullResolution(
   };
 }
 
-// Area-specific phase runners
+Area-specific phase runners
 export const phaseRunners = {
   frontend: async (projectRoot?: string) => 
     runFullResolution('frontend', projectRoot),

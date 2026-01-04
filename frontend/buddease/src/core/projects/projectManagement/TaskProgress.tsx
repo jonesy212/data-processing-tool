@@ -1,5 +1,5 @@
-// TaskProgress.tsx
-// TodoProgress.tsx
+TaskProgress.tsx
+TodoProgress.tsx
 import ListGenerator from "@/core/generators/ListGenerator";
 import { Data } from '@/core/models/data/Data';
 import { Task } from "@/core/models/tasks/Task";

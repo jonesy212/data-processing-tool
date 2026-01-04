@@ -1,0 +1,177 @@
+// ExampleEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { UnifiedMetadata } from '@/core/config/MetaDataOptions';
+import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import SnapshotStore from '@/core/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import { AppMetadata } from '@/core/typings/metadataTypes';
+import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+
+// --- Core entity definition ---
+interface ExampleEntity extends BaseDataEntity {
+  name: string;
+  description?: string;
+  isActive?: boolean;
+  priority?: number;
+  // Add any other Example-specific properties
+  category?: string;
+  tags?: string[];
+  metadata?: Record<string, any>;
+}
+
+// --- 6-type alias pattern ---
+type ExampleK = ExampleEntity;
+type ExampleMeta = DefaultMeta<ExampleEntity, ExampleK>;
+type ExampleAttachment = Attachment;
+type ExampleExcludedFields = DefaultExcludedFields<ExampleEntity>;
+type ExampleIncludedFields = keyof ExampleEntity;
+
+// --- App Metadata ---
+type AppExampleMetadata = AppMetadata<
+  ExampleEntity,
+  ExampleK,
+  ExampleMeta,
+  ExampleAttachment,
+  ExampleExcludedFields,
+  ExampleIncludedFields
+>;
+
+// --- Structured & Unified Metadata ---
+type ExampleStructuredMetadata = StructuredMetadata<
+  ExampleEntity,
+  ExampleK,
+  ExampleMeta,
+  ExampleAttachment,
+  ExampleExcludedFields,
+  ExampleIncludedFields
+>;
+
+type ExampleUnifiedMetadata = UnifiedMetadata<
+  ExampleEntity,
+  ExampleK,
+  ExampleMeta,
+  ExampleAttachment,
+  ExampleExcludedFields,
+  ExampleIncludedFields
+>;
+
+// --- Parameters container ---
+type ExampleBaseParams = {
+  T: ExampleEntity;
+  K: ExampleK;
+  Meta: ExampleMeta;
+  AttachmentType: ExampleAttachment;
+  ExcludedFields: ExampleExcludedFields;
+  IncludedFields: ExampleIncludedFields;
+};
+
+// --- Snapshot types ---
+type ExampleSnapshot = Snapshot<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleSnapshotData = SnapshotData<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleSnapshotStore = SnapshotStore<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleSnapshotWithCriteria = SnapshotWithCriteria<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleSubscriberCollection = SubscriberCollection<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleRealtimeDataItem = RealtimeDataItem<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleCollection = ExampleEntity[];
+
+// --- Config types ---
+type ExampleSnapshotStoreConfig = SnapshotStoreConfig<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleSnapshotsArray = SnapshotsArray<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+type ExampleParams = SnapshotConfigParams<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields>;
+
+// --- Utility types ---
+type ApplyExampleFieldFilters<
+  T extends BaseDataEntity,
+  Excluded extends keyof T = never,
+  Included extends Exclude<keyof T, Excluded> = Exclude<keyof T, Excluded>
+> = Pick<Omit<T, Excluded>, Included>;
+
+// --- Extended types for specific use cases ---
+
+// Example-specific metadata extension
+interface ExampleExtendedMetadata extends ExampleMeta {
+  customExampleField?: string;
+  exampleConfig?: {
+    maxItems?: number;
+    validationRules?: string[];
+    uiSettings?: Record<string, any>;
+  };
+}
+
+// Example-specific entity with additional properties
+interface ExampleExtendedEntity extends ExampleEntity {
+  extendedProperty?: string;
+  calculatedField?: number;
+  relationships?: {
+    parentId?: string;
+    childrenIds?: string[];
+    relatedExamples?: ExampleEntity[];
+  };
+}
+
+// Example-specific unified metadata
+type ExampleExtendedUnifiedMetadata = UnifiedMetadata<
+  ExampleExtendedEntity,
+  ExampleK,
+  ExampleExtendedMetadata,
+  ExampleAttachment,
+  ExampleExcludedFields,
+  ExampleIncludedFields
+>;
+
+// Factory type for creating example instances
+type ExampleFactory = {
+  create: (data: Partial<ExampleEntity>) => ExampleEntity;
+  createExtended: (data: Partial<ExampleExtendedEntity>) => ExampleExtendedEntity;
+  validate: (entity: ExampleEntity) => boolean;
+};
+
+// Query types for example entities
+type ExampleQuery = {
+  filters?: {
+    isActive?: boolean;
+    priority?: number;
+    category?: string;
+    tags?: string[];
+  };
+  sortBy?: keyof ExampleEntity;
+  sortOrder?: 'asc' | 'desc';
+  pagination?: {
+    page: number;
+    pageSize: number;
+  };
+};
+
+// Export all types
+export type {
+
+    // Metadata types
+    AppExampleMetadata,
+    // Utility types
+    ApplyExampleFieldFilters, ExampleAttachment,
+    // Params and base
+    ExampleBaseParams, ExampleCollection,
+    // Core types
+    ExampleEntity, ExampleExcludedFields,
+    // Extended types
+    ExampleExtendedEntity,
+    ExampleExtendedMetadata,
+    ExampleExtendedUnifiedMetadata,
+    ExampleFactory, ExampleIncludedFields, ExampleK,
+    ExampleMeta, ExampleParams, ExampleQuery, ExampleRealtimeDataItem,
+    // Snapshot and store types
+    ExampleSnapshot,
+    ExampleSnapshotData, ExampleSnapshotsArray, ExampleSnapshotStore, ExampleSnapshotStoreConfig, ExampleSnapshotWithCriteria, ExampleStructuredMetadata, ExampleSubscriberCollection, ExampleUnifiedMetadata
+};
+
+
+// Optional: Default exports for commonly used types
+export type DefaultExampleEntity = ExampleEntity;
+export type DefaultExampleUnifiedMetadata = ExampleUnifiedMetadata;

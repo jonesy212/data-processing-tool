@@ -1,4 +1,4 @@
-// ClientInformation.ts
+ClientInformation.ts
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
 import { MediaMetadata } from "@/core/config/MetaDataOptions";
 

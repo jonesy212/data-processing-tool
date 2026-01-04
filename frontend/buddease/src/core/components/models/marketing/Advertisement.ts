@@ -1,5 +1,5 @@
-// Advertisement.ts
-// Define interfaces for advertisements and campaigns
+Advertisement.ts
+Define interfaces for advertisements and campaigns
 interface Advertisement {
     id: string;
     title: string;

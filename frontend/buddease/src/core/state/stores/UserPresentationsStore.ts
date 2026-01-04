@@ -1,10 +1,10 @@
-// UserPresentationsStore.ts
+UserPresentationsStore.ts
 
 import CalendarEventTimingOptimization, {
     ExtendedCalendarEvent,
 } from "@/core/calendar/CalendarEventTimingOptimization";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from "@/core/generators/GenerateChatInterfaces";

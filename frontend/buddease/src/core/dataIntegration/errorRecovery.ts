@@ -1,4 +1,4 @@
-// errorRecovery.ts
+errorRecovery.ts
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import {
     getFromLocalStorage,
@@ -345,7 +345,7 @@ export class EmergencyShutdownService {
   }
 }
 
-// Hook version
+Hook version
 export const useEmergencyShutdown = () => {
 
   const { notify } = useNotification();

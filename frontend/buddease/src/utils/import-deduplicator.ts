@@ -1,4 +1,4 @@
-// scripts/deduplicate-imports.ts
+scripts/deduplicate-imports.ts
 import { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
 import fs from 'fs';
 import path from 'path';
@@ -647,10 +647,10 @@ async function analyzeImportsForDuplicates(): Promise<void> {
   }
 }
 
-// Export the class for use in other files (like fix-imports.ts)
+Export the class for use in other files (like fix-imports.ts)
 export default ImportDeduplicator;
 
-// For standalone script execution
+For standalone script execution
 const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 if (isMainModule) {
   runDeduplicationCLI(process.argv.slice(2));

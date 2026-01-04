@@ -1,5 +1,5 @@
-// DatabaseClient.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+DatabaseClient.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { AxiosResponse } from "axios";
 
 import internalApiService from '@/core/api/ApiClient';
@@ -847,7 +847,7 @@ class DatabaseClient {
 }
 
 
-// Then update your route to ensure table exists before operations:
+Then update your route to ensure table exists before operations:
 export async function POST(request: NextRequest) {
   try {
     const { snapshotData, config, snapshotId, operationType } = await request.json();

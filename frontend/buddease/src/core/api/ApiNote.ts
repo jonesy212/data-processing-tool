@@ -1,31 +1,29 @@
 // ApiNote.ts
-// ApiNotes.ts
 import internalApiService from '@/core/api/ApiClient';
-import { SearchResponseData } from '@/core/api/ApiSearch';
+import type { SearchResponseData } from '@/core/api/ApiSearch';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from '@/core/documents/DocType';
-import { NoteData } from '@/core/documents/NoteData';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { ModifiedDate } from '@/core/documents/DocType';
+import type { NoteData } from '@/core/documents/NoteData';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import FolderData from '@/core/models/data/FolderData';
-import { Tag } from '@/core/models/tracker/Tag';
+import type { Tag } from '@/core/models/tracker/Tag';
 import { Encryption } from '@/core/server/security/Encryption';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import {
+import { NoteEntity, NoteK } from '@/core/typings/entities/NoteEntity';
+import type {
     NoteAttachment,
-    NoteEntity,
     NoteExcludedFields,
     NoteIncludedFields,
-    NoteK,
     NoteMeta
 } from '@/core/typings/entities/NoteEntity';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import AccessHistory from '@/core/versions/AccessHistory';
 import SearchHistory from '@/core/versions/SearchHistory';
-import { Version } from '@/core/versions/Version';
+import type { Version } from '@/core/versions/Version';
 import { AxiosError } from 'axios';
 
 // Define the API base URL

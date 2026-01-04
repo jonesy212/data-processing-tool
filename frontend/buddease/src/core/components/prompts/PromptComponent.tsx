@@ -1,4 +1,4 @@
-// PromptComponent.tsx
+PromptComponent.tsx
 import { Prompt, PromptPageProps } from "@/core/prompts/PromptPage";
 import React from "react";
 

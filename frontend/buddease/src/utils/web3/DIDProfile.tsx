@@ -1,4 +1,4 @@
-// DIDProfile.tsx
+DIDProfile.tsx
 
 import React from 'react';
 

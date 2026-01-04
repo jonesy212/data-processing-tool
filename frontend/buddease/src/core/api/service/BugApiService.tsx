@@ -1,5 +1,5 @@
-// BugApiService.tsx
-// BugApiService
+BugApiService.tsx
+BugApiService
 
 import { ClientNotificationMessages, clientNotificationMessages } from '@/core/api/ApiClient';
 import { handleApiError } from '@/core/api/ApiLogs';

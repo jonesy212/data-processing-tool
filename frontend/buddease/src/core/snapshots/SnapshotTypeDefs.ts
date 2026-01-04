@@ -1,4 +1,4 @@
-// SnapshotTypeDefs.ts
+SnapshotTypeDefs.ts
 import { ExtractEntityTypes } from '@/core/typings/BaseTypes';
 
 
@@ -7,7 +7,7 @@ import {
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import {
     Snapshots,
     SnapshotsArray,
@@ -19,7 +19,7 @@ import { SnapshotConfig as ExistingSnapshotConfig } from '@/core/snapshots/Snaps
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { isSnapshotsArray } from '@/core/snapshots/createSnapshotStoreOptions';
 
-// Utility types that maintain 6 parameters
+Utility types that maintain 6 parameters
 export type SnapshotTypeName = 'array' | 'object' | 'store' | 'union';
 
 export type GetSnapshotType<
@@ -37,7 +37,7 @@ export type GetSnapshotType<
   Name extends 'union' ? SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> :
   never;
 
-// Type extractor for your 6-parameter system
+Type extractor for your 6-parameter system
 export type ExtractSnapshotParams<
   T extends BaseDataEntity,
   K extends T = T,
@@ -56,7 +56,7 @@ export type ExtractSnapshotParams<
   SnapshotType: SnapshotType;
 };
 
-// Type constructor for your 6-parameter system
+Type constructor for your 6-parameter system
 export type CreateSnapshotType<
   T extends BaseDataEntity,
   K extends T = T,
@@ -72,7 +72,7 @@ export type CreateSnapshotType<
   snapshotConfig: ExistingSnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
-// SnapshotUnion definition with 6 parameters
+SnapshotUnion definition with 6 parameters
 export type SnapshotUnion<
   T extends BaseDataEntity,
   K extends T = T,
@@ -98,7 +98,7 @@ export const isSnapshotsObject = <
   return !Array.isArray(obj) && typeof obj === 'object';
 };
 
-// Safe conversion utilities with 6 parameters
+Safe conversion utilities with 6 parameters
 export const snapshotsToArray = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -146,7 +146,7 @@ export const snapshotsToObject = <
 };
 
 
-// Export convenience types for your entities
+Export convenience types for your entities
 export type TaskSnapshotTypes = ExtractEntityTypes<import('@/core/typings/entities/TaskEntity').TaskEntity>;
 export type ProjectSnapshotTypes = ExtractEntityTypes<import('@/core/typings/entities/ProjectEntity').ProjectEntity>;
 export type UserSnapshotTypes = ExtractEntityTypes<import('@/core/typings/entities/UserEntity').UserEntity>;

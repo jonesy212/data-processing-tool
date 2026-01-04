@@ -1,4 +1,4 @@
-// DataPreview.tsx
+DataPreview.tsx
 import { UserData } from '@/core/users/User';
 import React from 'react';
 

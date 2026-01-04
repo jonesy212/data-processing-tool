@@ -1,4 +1,4 @@
-// ProgressBar.tsx
+ProgressBar.tsx
   import { UIActions } from "@/core/actions/UIActions";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 
 
-// Updated ProgressBar component to utilize the ProgressPhase enum
+Updated ProgressBar component to utilize the ProgressPhase enum
 const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
   barStyle,

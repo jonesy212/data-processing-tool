@@ -1,5 +1,5 @@
-// supportTypes.ts
-// app/features/user-support/types/userSupport.ts
+supportTypes.ts
+app/features/user-support/types/userSupport.ts
 export enum UserSupportPhase {
   USER_PHASE_PLANNING = 0,
   EXECUTION = 1,

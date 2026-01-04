@@ -1,5 +1,5 @@
-// AuthValidation.ts
-// AuthValidation.ts
+AuthValidation.ts
+AuthValidation.ts
 const isValidAuthToken = (authToken: string | null): boolean => {
   if (!authToken) return false;
   

@@ -1,8 +1,8 @@
-// loadMarkdownDocumentContent.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+loadMarkdownDocumentContent.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import fs from "fs";
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 async function loadMarkdownDocumentContent<
   T extends BaseDataEntity,

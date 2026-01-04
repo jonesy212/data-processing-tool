@@ -1,4 +1,4 @@
-// EnhancePhase.tsx
+EnhancePhase.tsx
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
 import usePhaseHooks, { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "@/core/hooks/phaseHooks/PhaseHooks";
 import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
@@ -110,7 +110,7 @@ const myPhaseHook = createPhaseHook(
 });
 
 
-// Ensure myPhaseHook is used somewhere to avoid the warning
+Ensure myPhaseHook is used somewhere to avoid the warning
 console.log(myPhaseHook); // This line will prevent the warning
 
 const enhancedPhaseHook = enhancePhaseHook({

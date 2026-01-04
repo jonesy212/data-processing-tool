@@ -1,4 +1,4 @@
-// UserQuestionnaire.tsx
+UserQuestionnaire.tsx
 import { Question } from '@/core/pages/onboarding/Question';
 import QuestionnairePage from '@/core/pages/onboarding/QuestionnairePage';
 import axios from 'axios';

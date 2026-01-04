@@ -1,4 +1,4 @@
-// FrontendConfigComponent.tsx
+FrontendConfigComponent.tsx
 import { FrontendConfig } from "@/core/config/FrontendConfig";
 import React from "react";
 

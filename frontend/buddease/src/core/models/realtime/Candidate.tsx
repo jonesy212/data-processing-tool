@@ -1,5 +1,5 @@
-// Candidate.tsx
-// Candidate.ts
+Candidate.tsx
+Candidate.ts
 
 interface Candidate {
     id: string;

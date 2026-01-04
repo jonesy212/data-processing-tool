@@ -1,7 +1,7 @@
-// DataEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+DataEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 interface DataEntity extends BaseDataEntity {
   id: string;                        // required for uniqueness

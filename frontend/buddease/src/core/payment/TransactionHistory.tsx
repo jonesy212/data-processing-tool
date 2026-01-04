@@ -1,4 +1,4 @@
-// TransactionHistory.tsx
+TransactionHistory.tsx
 import React from 'react';
 
 const TransactionHistory: React.FC = () => {

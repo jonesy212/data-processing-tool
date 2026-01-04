@@ -1,4 +1,4 @@
-// ErrorPatternMatcher.ts
+ErrorPatternMatcher.ts
 
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';

@@ -1,5 +1,6 @@
 // useDrag.tsx
-import { MovementAnimationActions, useMovementAnimations } from "@/core/libraries/animations/movementAnimations/MovementAnimationActions";
+import type { MovementAnimationActions } from "@/core/libraries/animations/movementAnimations/MovementAnimationActions";
+import { useMovementAnimations } from "@/core/libraries/animations/movementAnimations/MovementAnimationActions";
 import { useEffect, useRef } from "react";
 
 interface DragEventHandlers extends MovementAnimationActions {

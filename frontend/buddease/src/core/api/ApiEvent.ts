@@ -1,4 +1,4 @@
-// ApiEvent.ts
+ApiEvent.ts
 
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
@@ -7,7 +7,7 @@ import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addLog } from '@/core/state/redux/slices/LogSlice';
-import { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';
+import type { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';
 import { AxiosError } from 'axios';
 
 const API_BASE_URL = endpoints.events; // Directly access the events endpoint
@@ -33,7 +33,7 @@ const eventNotificationMessages: EventNotificationMessages = {
 };
 
 
-// Helper function to retrieve eventId
+Helper function to retrieve eventId
 const fetchEventId = (events: any): string | undefined => {
   if (!events || typeof events !== 'object') {
     console.warn('No valid events object provided');
@@ -49,7 +49,7 @@ const fetchEventId = (events: any): string | undefined => {
   return undefined;
 };
 
-// Main event processing function
+Main event processing function
 const processEventsWithHandlers = (events: any, newData: any): void => {
   const eventId = fetchEventId(events);
   if (!eventId) {

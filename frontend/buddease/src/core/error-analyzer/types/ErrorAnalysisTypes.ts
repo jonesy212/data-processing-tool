@@ -1,5 +1,5 @@
 // src/app/error-analyzer/types/ErrorAnalysisTypes.ts
-import { FixStrategyTypeDef } from '@/core/error-analyzer/types/FixStrategyTypes';
+import type { FixStrategyTypeDef } from '@/core/error-analyzer/types/FixStrategyTypes';
 
 // ========== SHARED INTERFACES ==========
 export interface SharedErrorLocation {

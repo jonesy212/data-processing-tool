@@ -1,4 +1,4 @@
-// NFTService.ts
+NFTService.ts
 
 class NFTService {
   static async convertNFT(nftData: string): Promise<string> {

@@ -1,4 +1,4 @@
-// PhaseStore.tsx
+PhaseStore.tsx
 import { Data } from '@/core/models/data/Data';
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";
 import { snapshotStore } from "@/core/snapshots/SnapshotStore";

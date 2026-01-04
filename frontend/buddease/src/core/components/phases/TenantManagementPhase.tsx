@@ -1,4 +1,4 @@
-// TenantManagementPhase.tsx
+TenantManagementPhase.tsx
 import ConfigureTenantComponent from '@/core/components/tenants/ConfigureTenantComponent';
 import { DocumentManagement } from '@/core/documents/DocumentManagement';
 import React, { useEffect } from "react";

@@ -1,4 +1,4 @@
-// openVideoOptionsMenu.ts
+openVideoOptionsMenu.ts
 import { VideoActions } from '@/core/actions/VideoActions';
 import VideoAPI from '@/core/api/videos/VideoAPI';
 import { VideoOptions } from '@/core/cards/modal/ChatSettingsModal';

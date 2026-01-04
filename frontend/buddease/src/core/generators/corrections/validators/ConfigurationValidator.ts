@@ -1,4 +1,4 @@
-// ConfigurationValidator.ts
+ConfigurationValidator.ts
 import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';

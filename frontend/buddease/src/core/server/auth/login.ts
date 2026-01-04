@@ -1,4 +1,4 @@
-// login.ts
+login.ts
 
 import { createPostgresAuthService } from '@/core/server/auth/AuthServerService';
 import { NextApiRequest, NextApiResponse } from 'next';

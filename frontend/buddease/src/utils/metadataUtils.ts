@@ -1,8 +1,8 @@
-// metadataUtils.ts
+metadataUtils.ts
 import { contentApiService } from '@/core/api/service/ContentApiService';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CategoryKeys, getCategoryProperties } from '@/core/libraries/categories/CategoryManager';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import nlp from 'compromise'; // lightweight NLP library

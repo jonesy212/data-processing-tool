@@ -1,4 +1,4 @@
-// DocType.ts
+DocType.ts
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { PDFData } from "@/core/documents/parsePDF";
 
@@ -7,7 +7,7 @@ interface ModifiedDate extends Date {
   isModified: boolean;
 }
 
-// export type DocType<T> = YourPDFType | YourDocxType | ParsedData<object>;
+export type DocType<T> = YourPDFType | YourDocxType | ParsedData<object>;
 interface DocData<T extends object> {
   parsedData: ParsedData<T>[];
 }

@@ -1,4 +1,4 @@
-// FolderCard.tsx
+FolderCard.tsx
 import DraggableAnimation from '@/core/libraries/animations/DraggableAnimation';
 import { useMovementAnimations } from '@/core/libraries/animations/movementAnimations/MovementAnimationActions';
 import React from 'react';

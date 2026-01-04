@@ -1,4 +1,4 @@
-// ApiRealtimeData.ts
+ApiRealtimeData.ts
 import { handleApiErrorAndNotify } from '@/core/api/ApiData';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

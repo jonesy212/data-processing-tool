@@ -1,7 +1,8 @@
 // CircularDependencyDetector.ts
-import ApiMethod, { InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
+import type { InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
+import type ApiMethod from '@/core/generators/ApiCodeGenerator';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import fs from 'fs';
 import path from 'path';
 
@@ -1060,11 +1061,11 @@ private async findGenericCircularDependencies(): Promise<void> {
     return [...new Set(dependencies)];
   }
 
-  private extractDependenciesFromMethod(method: ApiMethod): string[] {
+private extractDependenciesFromMethod(method: ApiMethod): string[] {
     const dependencies: string[] = [];
     
     // Extract from parameters
-    method.parameters.forEach(param => {
+    method.parameters.forEach((param: ApiParameter) => {
       const typeRefs = this.extractTypeReferences(param);
       dependencies.push(...typeRefs);
     });
@@ -1074,7 +1075,7 @@ private async findGenericCircularDependencies(): Promise<void> {
     dependencies.push(...returnTypeRefs);
     
     return [...new Set(dependencies)];
-  }
+}
 
   private extractTypeReferences(typeString: string): string[] {
     if (!typeString) return [];

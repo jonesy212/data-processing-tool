@@ -1,4 +1,4 @@
-// ProjectsEndpoints.ts
+ProjectsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 

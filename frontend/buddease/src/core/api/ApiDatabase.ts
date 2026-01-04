@@ -1,11 +1,12 @@
 // ApiDatabase.ts
 import { handleApiError } from "@/core/api/ApiLogs";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from "@/core/models/data/StatusType";
-import { NotificationDataPayload, useNotification } from "@/core/state/context/NotificationContext";
-import { User } from "@/core/users/User";
+import { useNotification } from "@/core/state/context/NotificationContext";
+import type { NotificationDataPayload } from "@/core/state/context/NotificationContext";
+import type { User } from "@/core/users/User";
 import { AxiosError } from "axios";
 
 // Define API notification messages for user fetch operations
@@ -180,4 +181,4 @@ export {
 };
 
 // Export types for use elsewhere
-    export type { UserApiNotificationKeys };
+export type { UserApiNotificationKeys };

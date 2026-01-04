@@ -1,5 +1,5 @@
-// PhaseActivity.ts
-// Activity tracking utility for phases
+PhaseActivity.ts
+Activity tracking utility for phases
 const ACTIVITY_STORAGE_KEY = 'phase-activity-tracker';
 
 interface PhaseActivity {
@@ -30,7 +30,7 @@ export const getLastActivityTimeForPhase = (phaseName: string): number => {
   }
 };
 
-// Helper function to update phase activity
+Helper function to update phase activity
 export const updatePhaseActivity = (phaseName: string, timestamp?: number): void => {
   try {
     const storedData = localStorage.getItem(ACTIVITY_STORAGE_KEY);
@@ -59,7 +59,7 @@ export const updatePhaseActivity = (phaseName: string, timestamp?: number): void
   }
 };
 
-// Function to record activity (call this whenever phase activity occurs)
+Function to record activity (call this whenever phase activity occurs)
 export const recordPhaseActivity = (phaseName: string): void => {
   updatePhaseActivity(phaseName);
 };

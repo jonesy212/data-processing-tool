@@ -1,5 +1,5 @@
 // ApiCodeGenerator.ts
-import ApiCodeOptions from "./ApiCodeOptions";
+import type ApiCodeOptions from "./ApiCodeOptions";
 // Base interface for all code entities
 interface BaseCodeEntity {
   name: string;
@@ -39,9 +39,10 @@ interface Property {
 
 // Normalized InterfaceInfo interface
 interface InterfaceInfo extends BaseCodeEntity {
-  properties?: Property[];
-  definition?: string;
+  file: string;
   extends?: string[];
+  definition?: string;
+  properties?: Property[];
   type: 'interface' | 'type' | 'enum';
 }
 
@@ -184,8 +185,7 @@ const apiCodeOptions: ApiCodeOptions = {
   },
 };
 
-export default ApiMethod;
-export type { ApiInfo, ComponentInfo, InterfaceInfo };
+export type { ApiInfo, ComponentInfo, InterfaceInfo, ApiMethod };
 
 export const generatedApiCode = generateApiCode(apiCodeOptions);
 console.log(generatedApiCode); // Output generated TypeScript API code

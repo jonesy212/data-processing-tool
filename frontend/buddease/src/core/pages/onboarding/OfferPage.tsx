@@ -1,4 +1,4 @@
-// OfferPage.tsx
+OfferPage.tsx
 import React from 'react';
 
 const OfferPage: React.FC = () => {

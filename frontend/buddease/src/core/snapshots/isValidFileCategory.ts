@@ -1,7 +1,7 @@
-// isValidFileCategory.ts
+isValidFileCategory.ts
 import { FileCategory } from "@/core/documents/FileType";
 
-// isValidFileCategory.tsy
+isValidFileCategory.tsy
 function isValidFileCategory(key: string): key is keyof typeof FileCategory {
     return key in FileCategory;
 }

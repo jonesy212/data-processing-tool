@@ -1,11 +1,11 @@
-// idleTimeoutHooks.ts
+idleTimeoutHooks.ts
 import { IdleTimeoutType } from "@/core/config/UserSettings";
 import EXTENDED_NOTIFICATION_MESSAGES from "@/core/features/support/ExtendedNotificationMessages";
 import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "@/core/hooks/commHooks/idleTimeoutUtils";
 import { DynamicHookParams } from "./DynamicHookParams";
 import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 
-// Use NodeJS.Timeout instead of custom TimeoutHandle
+Use NodeJS.Timeout instead of custom TimeoutHandle
 const useIdleTimeout = (name?: string | undefined, props?: any): IdleTimeoutType => {
   let timeoutId: NodeJS.Timeout | null = null; // Change to NodeJS.Timeout
 

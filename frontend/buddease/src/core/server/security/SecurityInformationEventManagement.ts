@@ -1,4 +1,4 @@
-// SecurityInformationEventManagement.ts
+SecurityInformationEventManagement.ts
 class SecurityInformationEventManagement {
     constructor() {
       // Initialize security information and event management configuration

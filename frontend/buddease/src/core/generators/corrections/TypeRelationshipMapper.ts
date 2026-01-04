@@ -1,4 +1,4 @@
-// TypeRelationshipMapper.ts
+TypeRelationshipMapper.ts
 import ApiMethod, { InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
 import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import path from 'path';

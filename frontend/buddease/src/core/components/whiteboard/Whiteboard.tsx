@@ -1,4 +1,4 @@
-// Whiteboard.tsx
+Whiteboard.tsx
 import { DrawingActions } from "@/core/actions/DrawingActions";
 import { setIsDrawing } from "@/core/state/redux/slices/DrawingSlice";
 import { RootState } from "@/core/state/redux/slices/RootSlice";

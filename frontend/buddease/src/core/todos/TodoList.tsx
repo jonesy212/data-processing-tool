@@ -1,4 +1,4 @@
-// TodoList.tsx
+TodoList.tsx
 import { CommonDetails } from "@/core/components/models/details/CommonDetails";
 import { CommonData } from "@/core/models/CommonData";
 import { Data } from '@/core/models/data/Data';

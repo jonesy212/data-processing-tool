@@ -1,4 +1,4 @@
-// BugSort.tsx
+BugSort.tsx
 import React from 'react';
 
 interface BugSortProps {

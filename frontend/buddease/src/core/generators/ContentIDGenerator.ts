@@ -1,15 +1,15 @@
-// ContentIDGenerator.ts
+ContentIDGenerator.ts
 
 import {
     BaseDataEntity,
     DefaultMeta
 } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { Data, DataDetails } from '@/core/models/data/Data';
 import { DetailsItem } from '@/core/state/stores/DetailsListStore';
-import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
+import type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
 import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator
 
 export class ContentIDGenerator<
@@ -56,7 +56,7 @@ export class ContentIDGenerator<
   }
 }
 
-// Example usage:
+Example usage:
 const contentItem: DetailsItem<Data<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields>> = {
   _id: uuidV4(),
   id: ContentIDGenerator.generateContentID("Sample Content", "This is a sample content item.", new Date(), NotificationTypeEnum.CONTENT_ITEM),

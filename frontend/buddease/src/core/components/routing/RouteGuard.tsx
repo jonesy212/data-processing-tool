@@ -1,4 +1,4 @@
-// RouteGuard.tsx
+RouteGuard.tsx
 import { fuzzyMatchEntities } from '@/core/routing/FuzzyMatch';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -12,7 +12,7 @@ interface RouteGuardProps {
   enableFuzzyAuth?: boolean;
 }
 
-// Main component as default export
+Main component as default export
 const RouteGuard: React.FC<RouteGuardProps> = ({
   children,
   requiredPermissions = [],
@@ -81,7 +81,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({
   return <>{children}</>;
 };
 
-// Higher Order Component version (named export)
+Higher Order Component version (named export)
 export const withRouteGuard = (
   Component: React.ComponentType,
   guardOptions: Omit<RouteGuardProps, 'children'> = {}
@@ -95,5 +95,5 @@ export const withRouteGuard = (
   };
 };
 
-// Export RouteGuard as default
+Export RouteGuard as default
 export default RouteGuard;

@@ -1,5 +1,5 @@
-// TeamBuildingPhaseManagement.tsx
-// TeamBuildingPhase.tsx
+TeamBuildingPhaseManagement.tsx
+TeamBuildingPhase.tsx
 import ConceptValidation from '@/core/users/userJourney/ConceptValidation';
 import RequirementsGathering from '@/core/users/userJourney/RequirementsGathering';
 import React, { useState } from 'react';

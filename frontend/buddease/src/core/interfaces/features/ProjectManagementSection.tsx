@@ -1,5 +1,5 @@
-// ProjectManagementSection.tsx
-// ProjectManagementSection component
+ProjectManagementSection.tsx
+ProjectManagementSection component
 import React from 'react';
 
 const ProjectManagementSection = () => {

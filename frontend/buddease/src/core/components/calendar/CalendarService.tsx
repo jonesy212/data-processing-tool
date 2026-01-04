@@ -1,4 +1,4 @@
-// CalendarService.tsx
+CalendarService.tsx
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';

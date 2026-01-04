@@ -454,17 +454,17 @@ src/app/calendar/formatCalendarAsDOCX.ts (4 errors):
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/calendar/CalendarEvent" to "@/app/components/calendar/CalendarEvent" (Fix @/app imports)
 
-  2. Line 6: "@/app/config/declarations/global"
+  2. Line 6: "@/core/config/declarations/global"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/config/declarations/global" to "@/app/config/declarations/global" (Fix @/app imports)
+     Fix: Change "@/core/config/declarations/global" to "@/core/config/declarations/global" (Fix @/app imports)
 
   3. Line 3: "@/app/components/calendar/CalendarEvent"
      Type: MISSING, Severity: high
      Fix: Change "@/app/components/calendar/CalendarEvent" to "@/app/components/calendar/CalendarEvent" (Fix @/app imports)
 
-  4. Line 6: "@/app/config/declarations/global"
+  4. Line 6: "@/core/config/declarations/global"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/config/declarations/global" to "@/app/config/declarations/global" (Fix @/app imports)
+     Fix: Change "@/core/config/declarations/global" to "@/core/config/declarations/global" (Fix @/app imports)
 
 src/app/calendar/formatCalendarAsXLS.ts (2 errors):
   1. Line 3: "@/app/components/calendar/CalendarEvent"

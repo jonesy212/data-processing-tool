@@ -1,4 +1,4 @@
-// OnboardingScreen.tsx
+OnboardingScreen.tsx
 import { TwoFactorSetupPhase } from '@/core/pages/personas/UserJourneyManager';
 import React from 'react';
 

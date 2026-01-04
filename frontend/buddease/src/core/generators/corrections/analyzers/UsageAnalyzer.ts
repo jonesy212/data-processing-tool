@@ -568,10 +568,8 @@ export async function getUsageData(projectRoot?: string): Promise<Usage[]> {
   return analyzer.getUsageData();
 }
 
-/**
- * Helper function to analyze type context from usage data
- * This is the function you were missing for your code
- */
+
+
 /**
  * Helper function to analyze type context from usage data
  * This function uses your original checking logic

@@ -1,4 +1,4 @@
-// CommonLoginLogic.ts
+CommonLoginLogic.ts
 import { DashboardConfig } from '@/core/typings/authTypes';
 
 type LoginResult = {

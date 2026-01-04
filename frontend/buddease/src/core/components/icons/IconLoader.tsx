@@ -1,5 +1,5 @@
-// IconLoader.tsx
-//iconloader.tsx
+IconLoader.tsx
+iconloader.tsx
 import Image from "next/image";
 import React from "react";
 
@@ -40,4 +40,4 @@ export const loadYandexIcon: IconLoader = createIconLoader(
 
 
 
-// Add more functions to load other icons as needed
+Add more functions to load other icons as needed

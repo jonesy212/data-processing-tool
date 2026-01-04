@@ -1,4 +1,4 @@
-// useNotificationManagerServiceProps.tsx
+useNotificationManagerServiceProps.tsx
 import {
     NotificationType,
     NotificationTypeEnum,

@@ -1,8 +1,8 @@
-// phaseTypes.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+phaseTypes.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
@@ -10,7 +10,7 @@ import { CustomPhaseHooks, Phase, PhaseData } from "@/core/models/phases/Phase";
 import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
 
 
-// Phase-specific type parameters
+Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
 type PhaseK = PhaseEntity;
 type PhaseMeta = DefaultMeta<PhaseEntity, PhaseK>;
@@ -18,7 +18,7 @@ type PhaseAttachment = Attachment;
 type PhaseExcludedFields = DefaultExcludedFields<PhaseEntity>;
 type PhaseIncludedFields = keyof PhaseEntity;
 
-// Base phase parameters type
+Base phase parameters type
 type PhaseBaseParams = {
   T: PhaseEntity;
   K: PhaseK;
@@ -28,7 +28,7 @@ type PhaseBaseParams = {
   IncludedFields: PhaseIncludedFields;
 };
 
-// Core phase types using the pattern
+Core phase types using the pattern
 type PhaseDataDefault = PhaseData<
   PhaseBaseParams['T'],
   PhaseBaseParams['K'],
@@ -59,7 +59,7 @@ type CustomPhaseHooksDefault = CustomPhaseHooks<
 >;
 
 
-// Phase Metadata Types
+Phase Metadata Types
 type PhaseUnifiedMetadata = UnifiedMetadata<
   PhaseBaseParams['T'],
   PhaseBaseParams['K'], 
@@ -97,7 +97,7 @@ type CustomAppPhaseHooks = CustomPhaseHooks<
 
 const phaseName = "default phase";
 const generatePhaseId = UniqueIDGenerator.generatePhaseID(phaseName);
-// Helper for creating phase instances
+Helper for creating phase instances
 const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault => ({
   id: options.id || generatePhaseId,
   name: options.name || '',
@@ -110,7 +110,7 @@ const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault =
   ...options
 } as PhaseDefault);
 
-// Empty/default phase
+Empty/default phase
 const emptyPhase: PhaseDefault = createDefaultPhase();
 
 
@@ -127,7 +127,7 @@ export enum PhaseType {
   Maintenance = 'maintenance'
 }
 
-// Unified PhaseType type
+Unified PhaseType type
 export type UnifiedPhaseType = 
   | ProjectPhaseTypeEnum 
   | ProgressPhase 
@@ -135,7 +135,7 @@ export type UnifiedPhaseType =
   | string 
   | undefined;; // Allow string for flexibility
 
-// Default phase type
+Default phase type
 export type PhaseDefaultEnum = UnifiedPhaseType | undefined;
 
 export type {

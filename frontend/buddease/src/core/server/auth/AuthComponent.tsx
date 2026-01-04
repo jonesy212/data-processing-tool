@@ -1,4 +1,4 @@
-// AuthComponent.tsx
+AuthComponent.tsx
 import { loadDashboardState } from '@/core/api/ApiDashboard';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

@@ -1,5 +1,5 @@
-// BasicAuthService.ts
-// BaseAuthService.ts (NO server or client imports)
+BasicAuthService.ts
+BaseAuthService.ts (NO server or client imports)
 import { AuthenticationProvider } from '@/core/server/auth/AuthService';
 
 abstract class BaseAuthService {

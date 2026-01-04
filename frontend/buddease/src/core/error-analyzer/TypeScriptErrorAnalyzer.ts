@@ -1,4 +1,4 @@
-// src/app/error-analyzer/TypeScriptErrorAnalyzer.ts
+src/app/error-analyzer/TypeScriptErrorAnalyzer.ts
 import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import fs from 'fs';
 import path from 'path';

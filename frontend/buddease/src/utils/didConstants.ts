@@ -1,4 +1,4 @@
-// didConstants.ts
+didConstants.ts
 
 export const DID_METHOD = 'ethr'; // Example DID method (Ethereum-based)
 export const DID_NETWORK = 'mainnet'; // Example DID network (Mainnet)

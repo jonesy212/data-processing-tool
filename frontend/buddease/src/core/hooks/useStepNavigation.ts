@@ -1,5 +1,5 @@
-// useStepNavigation.ts
-// app/hooks/useStepNavigation.ts
+useStepNavigation.ts
+app/hooks/useStepNavigation.ts
 import { useState } from 'react';
 
 export interface Step {

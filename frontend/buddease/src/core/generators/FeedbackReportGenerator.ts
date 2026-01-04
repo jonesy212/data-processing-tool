@@ -1,4 +1,4 @@
-// FeedbackReportGenerator.ts
+FeedbackReportGenerator.ts
 import { Feedback } from "@/core/features/support/Feedback";
 
 export interface FeedbackReport {

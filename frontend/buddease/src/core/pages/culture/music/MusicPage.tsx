@@ -1,4 +1,4 @@
-// MusicPage.tsx
+MusicPage.tsx
 
 import MusicSection from '@/core/components/users/artist/MusicSection';
 import React from 'react';

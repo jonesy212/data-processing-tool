@@ -1,4 +1,4 @@
-// DynamicFormConfig.ts
+DynamicFormConfig.ts
 
 interface QuestionOption {
     value: string;

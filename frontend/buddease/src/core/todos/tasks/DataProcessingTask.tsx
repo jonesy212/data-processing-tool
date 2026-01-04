@@ -1,7 +1,7 @@
-// DataProcessingTask.tsx
-// dataProcessingTaskInterfaces.tsx
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+DataProcessingTask.tsx
+dataProcessingTaskInterfaces.tsx
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { UserExcludedFields, UserIncludedFields } from '@/core/typings//entities/UserEntity';
 import { User } from "@/core/users/User";
 

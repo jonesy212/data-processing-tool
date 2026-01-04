@@ -1,8 +1,8 @@
-// idleTimeoutParams.ts
+idleTimeoutParams.ts
 
 import { DynamicHookParams } from "@/core/hooks/DynamicHookParams";
 
-// Define the type for the idleTimeoutParams object
+Define the type for the idleTimeoutParams object
 interface IdleTimeoutParams extends DynamicHookParams {
     intervalId: undefined;
     isActive: boolean;

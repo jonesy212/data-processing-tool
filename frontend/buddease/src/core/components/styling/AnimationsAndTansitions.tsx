@@ -1,5 +1,5 @@
-// AnimationsAndTansitions.tsx
-// components/AnimationsAndTransitions.tsx
+AnimationsAndTansitions.tsx
+components/AnimationsAndTransitions.tsx
 import React, { ReactNode } from 'react';
 
 export interface AnimatedComponentProps {

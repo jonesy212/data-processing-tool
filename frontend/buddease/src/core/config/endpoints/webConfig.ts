@@ -1,5 +1,5 @@
 // webConfig.ts
-import { WebEndpoints } from '@/core/typings/categories/WebEndpoints';
+import type { WebEndpoints } from '@/core/typings/categories/WebEndpoints';
 
 export const webConfig: WebEndpoints = {
   send: { path: "/api/messages/web/send", method: "POST" },

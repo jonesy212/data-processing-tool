@@ -1,7 +1,7 @@
-// generatePresentationJSON.ts
+generatePresentationJSON.ts
 import { Presentation } from "@/core/documents/editing/Presentation";
 
-// Function to generate JSON from a Presentation object
+Function to generate JSON from a Presentation object
 function generatePresentationJSON(presentation: Presentation): string {
   try {
     // Convert the Presentation object to JSON string

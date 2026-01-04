@@ -1,5 +1,5 @@
 // UserRoles.ts
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 
 // Extend the UserRole interface to include JobRole
 export interface JobRole extends UserRole {

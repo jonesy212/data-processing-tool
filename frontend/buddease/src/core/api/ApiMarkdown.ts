@@ -1,5 +1,5 @@
-// ApiMarkdown.ts
-// pages/api/documents/load-markdown.ts (or app/api/documents/load-markdown/route.ts)
+ApiMarkdown.ts
+pages/api/documents/load-markdown.ts (or app/api/documents/load-markdown/route.ts)
 import { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs/promises';
 

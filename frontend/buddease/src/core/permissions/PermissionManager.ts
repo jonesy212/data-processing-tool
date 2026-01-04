@@ -1,5 +1,5 @@
-// PermissionManager.ts
-// Permission management utilities that extend your existing structure
+PermissionManager.ts
+Permission management utilities that extend your existing structure
 class PermissionManager {
   static hasPermission(
     userPermissions: UserPermissions,

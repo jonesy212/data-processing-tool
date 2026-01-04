@@ -1,5 +1,5 @@
-// ServiceData.tsx
-// Define the extended interface for serviceData
+ServiceData.tsx
+Define the extended interface for serviceData
 interface ServiceData {
   serviceName: string;
   serviceDescription: string;
@@ -17,7 +17,7 @@ interface ServiceData {
   // Add other properties as needed
 }
 
-// Create an object of type ServiceData
+Create an object of type ServiceData
 const serviceData: ServiceData = {
     serviceName: "Project Management App",
     serviceDescription:

@@ -1,4 +1,4 @@
-// BiometricAuthentication.ts
+BiometricAuthentication.ts
 class BiometricAuthentication {
     constructor() {
       // Initialize biometric authentication configuration

@@ -1,10 +1,10 @@
-// PortfolioService.ts
+PortfolioService.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { priceService } from '@/core/api/service/PriceApiService';
 import { TradeLogger } from '@/core/logging/TradeLogger';
 import { AxiosError } from 'axios';
-// Types
+Types
 export interface PortfolioAsset {
   symbol: string;
   amount: number;
@@ -60,7 +60,7 @@ export interface RebalanceRecommendation {
   reason: string;
 }
 
-// Cache for portfolio data
+Cache for portfolio data
 const portfolioCache = new Map<string, { portfolio: UserPortfolio; timestamp: number }>();
 const CACHE_DURATION = 60000; // 1 minute cache
 
@@ -717,15 +717,15 @@ class PortfolioService {
   }
 }
 
-// Export singleton instance
+Export singleton instance
 export const portfolioService = PortfolioService.getInstance();
 
-// Export individual functions for convenience
+Export individual functions for convenience
 export { PortfolioService };
 
-// Create singleton instance
+Create singleton instance
 const portfolioServiceInstance = PortfolioService.getInstance();
 
-// Export bound instance methods as named functions
+Export bound instance methods as named functions
 export const updateUserPortfolio = portfolioServiceInstance.updateUserPortfolio.bind(portfolioServiceInstance);
 export const logTradeActivity = portfolioServiceInstance.logTradeActivity.bind(portfolioServiceInstance);

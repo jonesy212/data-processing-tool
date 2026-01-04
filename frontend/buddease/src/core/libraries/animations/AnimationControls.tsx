@@ -1,4 +1,4 @@
-// AnimationControls.tsx
+AnimationControls.tsx
 import { AnimatedComponentRef } from '@/core/libraries/animations/AnimationComponent'; // Replace with your actual AnimatedComponent import
 import React, { useRef } from 'react';
 

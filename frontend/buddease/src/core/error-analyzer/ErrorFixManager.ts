@@ -7,7 +7,7 @@ import { ImportSuggestionGenerator } from '@/core/error-analyzer/ImportSuggestio
 import { ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
 import { ReportGenerator } from '@/core/error-analyzer/ReportGenerator';
 import { TypeRelationshipAnalyzer } from '@/core/error-analyzer/TypeRelationshipAnalyzer';
-import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import { TypeScriptErrorAnalyzer } from '@/core/error-analyzer/TypeScriptErrorAnalyzer';
 
 export interface TSCompilerError {
@@ -236,14 +236,14 @@ export class ErrorFixManager {
       const [actualType, expectedType] = this.extractTypesFromMessage(message);
       
       return `// Type mismatch fix:
-// Actual: ${actualType}
-// Expected: ${expectedType}
+Actual: ${actualType}
+Expected: ${expectedType}
 
-// Option 1: Update the actual type to match expected
-// Option 2: Update the interface/type definition
-// Option 3: Add type assertion with caution
+Option 1: Update the actual type to match expected
+Option 2: Update the interface/type definition
+Option 3: Add type assertion with caution
 
-// Recommended: Check related type definitions in:
+Recommended: Check related type definitions in:
 ${this.getRelatedTypeFiles(expectedType, relationshipMap).join('\n')}`;
     }
     
@@ -262,16 +262,16 @@ ${this.getRelatedTypeFiles(expectedType, relationshipMap).join('\n')}`;
         const typeName = typeMatch[1];
         
         return `// Missing property fix:
-// Property: ${propertyName}
-// Required in type: ${typeName}
+Property: ${propertyName}
+Required in type: ${typeName}
 
-// Add to interface/type:
+Add to interface/type:
 interface ${typeName} {
   ${propertyName}: /* appropriate type */;
   // ... existing properties
 }
 
-// Or update the object to include the property:
+Or update the object to include the property:
 const obj: ${typeName} = {
   ${propertyName}: /* value */,
   // ... other properties

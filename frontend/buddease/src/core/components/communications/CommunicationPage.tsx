@@ -1,10 +1,12 @@
 // CommunicationPage.tsx
 // Communication.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { Tag } from '@/core/models/tracker/Tag';
-import { User } from "@/core/users/User";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta, AppAttachment } from '@/core/typings/entities/AppEntity';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import { TagsRecord } from '@/core/models/tracker/Tag';
+import type { Tag } from '@/core/models/tracker/Tag';
+import type { User } from "@/core/users/User";
 import React from "react";
 
 // Fix the Sender type with the correct role type
@@ -17,13 +19,12 @@ interface Sender<
   IncludedFields extends keyof T = keyof T
 >  extends Partial<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   id?: string | number;
-  tags: Tag<T>[];
+  tags?: string[] | TagsRecord<T>;
   isUserMessage: boolean;
   tier: string;
   createdAt: string;
   updatedAt: string;
 }
-
 
 interface Communication<
   T extends BaseDataEntity,
@@ -53,7 +54,7 @@ interface CommunicationProps<
 }
 
 
-const CommunicationPage: React.FC<CommunicationProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = ({ message, sender, timestamp }) => {
+const CommunicationPage: React.FC<CommunicationProps<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>> = ({ message, sender, timestamp }) => {
   return (
     <div className="communication">
       <div className="communication-sender">{sender.username}</div>

@@ -1,6 +1,6 @@
-// PersonaPage.tsx
-// PersonaPage.ts
-// app/pages/personas/PersonaPage.tsx
+PersonaPage.tsx
+PersonaPage.ts
+app/pages/personas/PersonaPage.tsx
 import { Persona } from '@/core/pages/personas/Persona';
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import React from 'react';

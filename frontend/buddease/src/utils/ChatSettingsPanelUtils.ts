@@ -1,7 +1,7 @@
-// chatSettingsPanelUtils.ts
+chatSettingsPanelUtils.ts
 import { useState } from 'react';
 
-// Function to open the chat settings panel
+Function to open the chat settings panel
 export const openChatSettingsPanel = () => {
   const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);
 

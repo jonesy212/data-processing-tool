@@ -1,4 +1,4 @@
-// GenerateTokens.tsx
+GenerateTokens.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";

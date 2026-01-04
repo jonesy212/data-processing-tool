@@ -1,4 +1,4 @@
-// CollaborationSettingsPhase.tsx
+CollaborationSettingsPhase.tsx
 import React from 'react';
 
 interface CollaborationSettingsPhaseProps {

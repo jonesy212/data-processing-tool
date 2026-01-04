@@ -1,4 +1,4 @@
-// WebSocketServer.ts
+WebSocketServer.ts
 import Logger from '@/core/logging/Logger';
 import { WebSocketServer } from 'ws'; // Changed import
 
@@ -11,5 +11,5 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({ type: 'log', message: 'Backend log message' }));
 });
 
-// Your existing logging code
+Your existing logging code
 Logger.log('Info', 'Log message', 'uniqueID');

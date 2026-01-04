@@ -1,10 +1,10 @@
 // Video.ts
 
-import { Label } from '@/core/branding/BrandingSettings';
-import { BaseDataEntity } from '@/core/config/BaseConfig';
-import { UnifiedMetadata } from '@/core/config/MetaDataOptions';
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
-import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/core/typings/entities/VideoEntity';
+import type { Label } from '@/core/branding/BrandingSettings';
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
+import type { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/core/typings/entities/VideoEntity';
 
 
 export interface Video {

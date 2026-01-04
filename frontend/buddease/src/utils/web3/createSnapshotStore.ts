@@ -5,22 +5,22 @@ import {
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData } from '@/core/models/data/Data';
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { SnapshotsArray, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties'
+import type { BaseData } from '@/core/models/data/Data'
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder'
+import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore'
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData'
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig'
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { SnapshotEvents } from '@/core/typings/snapshotTypes';
-;
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection'
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes'
+import type { SnapshotEvents } from '@/core/typings/snapshotTypes'
+
 
 // createSnapshotStore.ts
 export function createSnapshotStore <

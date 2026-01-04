@@ -1,4 +1,4 @@
-// EnhancedDesignDashboard.tsx
+EnhancedDesignDashboard.tsx
 import { ResponsiveDesign } from "@/core/components/styling/ResponsiveDesign"; // Import the ResponsiveDesign component
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";

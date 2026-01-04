@@ -1,4 +1,4 @@
-// IdeaLifecycleProcess.tsx
+IdeaLifecycleProcess.tsx
 import { useState } from "react";
 
 import * as IdeaLifecycleAPI from "@/core/api/IdeaLifecycleAPI";

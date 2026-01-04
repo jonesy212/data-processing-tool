@@ -1,4 +1,4 @@
-// SettingsSlice.ts
+SettingsSlice.ts
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
 import { RootState } from "@/core/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -84,10 +84,10 @@ export const {
   deleteSettingsFailure,
 } = useSettingsManagerSlice.actions;
 
-// Export reducer
+Export reducer
 export default useSettingsManagerSlice.reducer;
 
-// Selectors
+Selectors
 export const selectSettings = (state: RootState) => state.settingsManager.settings;
 export const selectSettingsLoading = (state: RootState) => state.settingsManager.loading;
 export const selectSettingsError = (state: RootState) => state.settingsManager.error;

@@ -1,5 +1,5 @@
-// TeamBasicInfoStep.tsx
-// 
+TeamBasicInfoStep.tsx
+
 import React, { useState } from 'react';
 
 const TeamBasicInfoStep: React.FC<{ onSubmit: (basicInfo: any) => void }> = ({ onSubmit }) => {

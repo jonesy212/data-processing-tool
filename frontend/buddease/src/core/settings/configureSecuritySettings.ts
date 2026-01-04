@@ -1,4 +1,4 @@
-// configureSecuritySettings.ts
+configureSecuritySettings.ts
 import SecurityAPI from "@/core/api/SecurityAPI";
 import { openSecuritySettingsModal } from "@/core/cards/modal/openSecuritySettingsModal";
 import { isEqual } from "lodash";
@@ -27,7 +27,7 @@ const configureSecuritySettings = async (securitySettings: SecuritySettings): Pr
   }
 };
 
-// Helper function to check if the value is of type SecuritySettings
+Helper function to check if the value is of type SecuritySettings
 function isSecuritySettings(value: any): value is SecuritySettings {
   return (
     typeof value === "object" &&

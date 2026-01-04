@@ -1,4 +1,4 @@
-// UserBrandingPreferences.ts
+UserBrandingPreferences.ts
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 

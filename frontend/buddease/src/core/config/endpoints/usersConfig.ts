@@ -1,5 +1,5 @@
 // usersConfig.ts
-import { UsersEndpoints } from '@/core/typings/categories/UsersEndpoints';
+import type { UsersEndpoints } from '@/core/typings/categories/UsersEndpoints';
 
 export const usersConfig: UsersEndpoints = {
   list: { 

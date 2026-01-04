@@ -1,4 +1,4 @@
-// GenerateInterfaces.ts
+GenerateInterfaces.ts
 import { CacheData } from '@/core/generators/GenerateCache'; // Import CacheData type
 import { generateUniqueApiId } from '@/core/generators/generateNewApiConfig';
 import { readCache, writeCache } from '@/utils/ReadAndWriteCache';
@@ -28,14 +28,14 @@ export async function generateInterfaces(backendModelPaths: string[]): Promise<v
   });
 }
 
-// Function to extract the model name from the backend model path
+Function to extract the model name from the backend model path
 function extractModelName(backendModelPath: string): string {
   // Extract the model name from the path
   // Adjust this based on your actual backend model structure
   return backendModelPath.split('/').pop()!.replace('.py', '');
 }
 
-// Function to generate the interface code based on the model name
+Function to generate the interface code based on the model name
 function generateInterfaceCode(modelName: string): string {
   return `export interface ${modelName} {\n` +
          `  id: number;\n` +

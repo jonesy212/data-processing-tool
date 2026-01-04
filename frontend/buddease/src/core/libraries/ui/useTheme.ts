@@ -1,7 +1,7 @@
-// useTheme.ts
+useTheme.ts
 import { useEnhancedTheme } from '@/core/platform/styles/EnhancedThemeContextType';
 
-// Hook for backward compatibility with your existing code
+Hook for backward compatibility with your existing code
 export const useTheme = () => {
   
   const enhancedTheme = useEnhancedTheme();
@@ -20,7 +20,7 @@ export const useTheme = () => {
   };
 };
 
-// Hook to get design tokens only
+Hook to get design tokens only
 export const useDesignTokens = () => {
   const { tokens, updateTokens } = useEnhancedTheme();
   return { tokens, updateTokens };

@@ -1,3 +1,3 @@
-// getSnapshotConfig.ts
+getSnapshotConfig.ts
 
 

@@ -1,4 +1,4 @@
-// LayoutCustomization.tsx
+LayoutCustomization.tsx
 import {
     AnimationLibrary,
     AnimationType,

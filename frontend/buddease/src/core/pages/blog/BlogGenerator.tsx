@@ -1,4 +1,4 @@
-// BlogGenerator.tsx
+BlogGenerator.tsx
 import { BlogPost } from '@/core/pages/blog/BlogPost';
 import React from 'react';
 

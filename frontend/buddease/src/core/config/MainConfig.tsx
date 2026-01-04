@@ -1,6 +1,6 @@
-// MainConfig.tsx
+MainConfig.tsx
 import { BackendConfig } from "@/core/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { FrontendConfig } from "@/core/config/FrontendConfig";
 import {
     ButtonGenerator,
@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import FrontendStructure from "./appStructure/FrontendStructure";
 import getAppPath from "./appStructure/appPath";
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
 const { TabPane } = Tabs;

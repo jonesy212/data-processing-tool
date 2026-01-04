@@ -1,36 +1,37 @@
 import { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
 import internalApiService from '@/core/api/ApiClient';
 import axiosInstance from '@/core/api/csrfToken';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { environmentAwareEndpointManager } from '@/core/config/endpoints/EnvironmentAwareEndpointManager';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CombinedEvents, SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData } from '@/core/models/data/Data';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties'
+import type { BaseData } from '@/core/models/data/Data'
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder'
 import { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
-import type {  Snapshot } from '@/core/snapshots/Snapshot';
+import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore'
+import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData'
 import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig'
 import { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { DataStore } from '@/core/state/stores/DataStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection'
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes'
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { VideoData } from '@/core/typings/videoTypes/Video';
 import { convertSnapshotToMap } from '@/core/typings/YourSpecificSnapshotType';

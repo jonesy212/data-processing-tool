@@ -1,12 +1,12 @@
-// AppVersionToVersionAdapter.ts
+AppVersionToVersionAdapter.ts
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import AppVersionImpl from "@/core/versions/AppVersion";
 import { Version } from "@/core/versions/Version";
 import { VersionData, VersionHistory } from '@/core/versions/VersionData';
 
-// Create an adapter that bridges AppVersionImpl to Version interface
+Create an adapter that bridges AppVersionImpl to Version interface
 class AppVersionToVersionAdapter<
   T extends BaseDataEntity,
   K extends T = T,

@@ -1,4 +1,4 @@
-// appThunk.ts
+appThunk.ts
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { Action, ThunkAction } from '@reduxjs/toolkit';
 

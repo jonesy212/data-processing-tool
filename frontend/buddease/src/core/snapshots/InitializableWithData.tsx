@@ -1,5 +1,5 @@
-// InitializableWithData.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+InitializableWithData.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
 
 interface InitializableWithData<

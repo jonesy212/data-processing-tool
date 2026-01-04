@@ -1,4 +1,4 @@
-// components/styles/StyleSheetComponent.tsx
+components/styles/StyleSheetComponent.tsx
 "use client";
 
 import { ColorPicker } from '@/core/components/styles/ColorPicker';

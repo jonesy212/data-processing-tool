@@ -1,4 +1,4 @@
-// DexEndpoints.ts
+DexEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DexEndpoints extends EndpointCategoryConfig {

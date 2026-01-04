@@ -1,17 +1,295 @@
-// SafePhaseExecutor.ts
+SafePhaseExecutor.ts
 import { Phase } from '@/core/models/phases/Phase';
-import { BackupRecord, PhaseBackupSystem } from '@/core/models/phases/PhaseBackupSystem';
 import { Milestone } from '@/core/typings/milestoneTypes';
+import { BackupRecord, PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { AutosaveLogActions } from "@/core/actions/AutosaveLogActions";
+import { useErrorHandling } from '@/core/hooks/useErrorHandling';
+import VersionGenerator, { getCurrentAppInfo } from '@/core/versions/VersionGenerator';
+import { useDispatch } from "react-redux";
 
 export class SafePhaseExecutor {
   private backupSystem: PhaseBackupSystem;
   private rollbackStack: BackupRecord[] = [];
+  private autoSaveEnabled: boolean = true;
+  private phaseStorage: Map<string, Phase<any>> = new Map();
 
   constructor(projectRoot: string = process.cwd()) {
     this.backupSystem = new PhaseBackupSystem(projectRoot);
+    this.initializePhaseStorage();
   }
 
-  // ========== SAFE PHASE OPERATIONS ==========
+  // ========== PHASE STORAGE IMPLEMENTATION ==========
+
+  private async initializePhaseStorage(): Promise<void> {
+    try {
+      // Load phases from autosave storage
+      const savedPhases = localStorage.getItem('phaseStorage');
+      if (savedPhases) {
+        const phases = JSON.parse(savedPhases);
+        phases.forEach((phase: Phase<any>) => {
+          this.phaseStorage.set(phase.id, phase);
+        });
+        console.log(`📂 Loaded ${phases.length} phases from storage`);
+      }
+    } catch (error) {
+      console.error('Failed to initialize phase storage:', error);
+    }
+  }
+
+  private async autosavePhase(phase: Phase<any>): Promise<boolean> {
+    if (!this.autoSaveEnabled) {
+      console.log("Autosave is disabled. Skipping phase autosave.");
+      return false;
+    }
+
+    try {
+      // Retrieve version information
+      const { versionNumber, appVersion } = getCurrentAppInfo();
+
+      // Generate version for the phase
+      const { version, info } = await VersionGenerator.generateVersion({
+        getData: () => Promise.resolve(phase),
+        determineChanges: (data) => ({ 
+          phaseId: data.id,
+          phaseName: data.name,
+          progress: data.progress,
+          status: data.status 
+        }),
+        additionalProperties: {
+          type: 'phase',
+          operation: 'autosave'
+        },
+        file: `phase-${phase.id}`,
+        folder: 'phases',
+        componentName: 'SafePhaseExecutor',
+        properties: {
+          timestamp: new Date().toISOString()
+        },
+      });
+
+      console.log(`💾 Autosaving phase: ${phase.name}`);
+      console.log(`   Version: ${version}`);
+      console.log(`   Progress: ${phase.progress}%`);
+
+      // Store phase in memory
+      this.phaseStorage.set(phase.id, phase);
+
+      // Save to local storage for persistence
+      localStorage.setItem('phaseStorage', JSON.stringify(Array.from(this.phaseStorage.values())));
+
+      // Simulate network save (would be replaced with actual API call)
+      await this.simulateNetworkSave(phase);
+
+      console.log(`✅ Phase autosave completed: ${phase.name}`);
+      return true;
+
+    } catch (error) {
+      console.error(`❌ Phase autosave failed for ${phase.name}:`, error);
+      return false;
+    }
+  }
+
+  private async simulateNetworkSave(phase: Phase<any>): Promise<void> {
+    // Simulate network connectivity issues
+    const randomErrorProbability = Math.random();
+    if (randomErrorProbability <= 0.1) {
+      throw new Error("Network connectivity issue encountered. Autosave failed.");
+    }
+
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
+  // ========== IMPLEMENT MISSING METHODS ==========
+
+  private phaseExists(phaseId: string): boolean {
+    // Check memory storage
+    if (this.phaseStorage.has(phaseId)) {
+      return true;
+    }
+
+    // Check local storage
+    try {
+      const savedPhases = localStorage.getItem('phaseStorage');
+      if (savedPhases) {
+        const phases = JSON.parse(savedPhases);
+        return phases.some((phase: Phase<any>) => phase.id === phaseId);
+      }
+    } catch (error) {
+      console.error('Error checking phase existence:', error);
+    }
+
+    return false;
+  }
+
+  private getAllPhases(): Phase<any>[] {
+    // Combine memory storage and any other sources
+    const phases: Phase<any>[] = Array.from(this.phaseStorage.values());
+    
+    // Also check local storage for any additional phases
+    try {
+      const savedPhases = localStorage.getItem('phaseStorage');
+      if (savedPhases) {
+        const storedPhases = JSON.parse(savedPhases);
+        storedPhases.forEach((storedPhase: Phase<any>) => {
+          if (!phases.some(p => p.id === storedPhase.id)) {
+            phases.push(storedPhase);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading phases from storage:', error);
+    }
+
+    return phases;
+  }
+
+  private getRestorePoints(): any[] {
+    try {
+      // Get restore points from backup system
+      const points = this.backupSystem.listRestorePoints();
+      
+      // Also check for autosave restore points
+      const autosavePoints = localStorage.getItem('autosaveRestorePoints');
+      if (autosavePoints) {
+        const parsedPoints = JSON.parse(autosavePoints);
+        return [...points, ...parsedPoints];
+      }
+      
+      return points;
+    } catch (error) {
+      console.error('Error getting restore points:', error);
+      return [];
+    }
+  }
+
+  // ========== ENHANCED BACKUP MANAGEMENT ==========
+
+  async getBackupStatistics() {
+    const stats = this.backupSystem.getBackupStats();
+    
+    // Add autosave statistics
+    const autosaveStats = this.getAutosaveStatistics();
+    
+    return {
+      ...stats,
+      autosave: {
+        totalPhases: this.phaseStorage.size,
+        lastAutosave: this.getLastAutosaveTime(),
+        autosaveSuccessRate: autosaveStats.successRate
+      }
+    };
+  }
+
+  private getAutosaveStatistics() {
+    const autosaveLogs = localStorage.getItem('autosaveLogs');
+    let totalAttempts = 0;
+    let successfulAttempts = 0;
+    
+    if (autosaveLogs) {
+      const logs = JSON.parse(autosaveLogs);
+      totalAttempts = logs.length;
+      successfulAttempts = logs.filter((log: any) => log.success).length;
+    }
+    
+    return {
+      totalAttempts,
+      successfulAttempts,
+      successRate: totalAttempts > 0 ? (successfulAttempts / totalAttempts) * 100 : 0
+    };
+  }
+
+  private getLastAutosaveTime(): Date | null {
+    const autosaveLogs = localStorage.getItem('autosaveLogs');
+    if (autosaveLogs) {
+      const logs = JSON.parse(autosaveLogs);
+      if (logs.length > 0) {
+        const lastLog = logs[logs.length - 1];
+        return new Date(lastLog.timestamp);
+      }
+    }
+    return null;
+  }
+
+  async cleanupOldBackups(): Promise<{ removed: number; kept: number }> {
+    console.log('🧹 Starting comprehensive cleanup...');
+    
+    const stats = await this.getBackupStatistics();
+    const totalBackups = stats.totalBackups;
+    let removed = 0;
+    
+    // 1. Cleanup old system backups
+    const systemCleanup = await this.backupSystem.cleanupOldBackups();
+    removed += systemCleanup;
+    
+    // 2. Cleanup old autosave data
+    const autosaveCleanup = this.cleanupOldAutosaves();
+    removed += autosaveCleanup;
+    
+    // 3. Cleanup old restore points
+    const restorePointCleanup = this.cleanupOldRestorePoints();
+    removed += restorePointCleanup;
+    
+    console.log(`✅ Cleanup completed: removed ${removed} items, kept ${totalBackups - removed}`);
+    
+    return { removed, kept: totalBackups - removed };
+  }
+
+  private cleanupOldAutosaves(): number {
+    try {
+      const autosaveLogs = localStorage.getItem('autosaveLogs');
+      if (!autosaveLogs) return 0;
+      
+      const logs = JSON.parse(autosaveLogs);
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - 7); // Keep only last 7 days
+      
+      const filteredLogs = logs.filter((log: any) => 
+        new Date(log.timestamp) > cutoffDate
+      );
+      
+      const removed = logs.length - filteredLogs.length;
+      
+      if (removed > 0) {
+        localStorage.setItem('autosaveLogs', JSON.stringify(filteredLogs));
+        console.log(`🗑️  Removed ${removed} old autosave logs`);
+      }
+      
+      return removed;
+    } catch (error) {
+      console.error('Error cleaning up autosave logs:', error);
+      return 0;
+    }
+  }
+
+  private cleanupOldRestorePoints(): number {
+    try {
+      const restorePoints = this.getRestorePoints();
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - 30); // Keep only last 30 days
+      
+      const filteredPoints = restorePoints.filter((point: any) => 
+        new Date(point.timestamp) > cutoffDate
+      );
+      
+      const removed = restorePoints.length - filteredPoints.length;
+      
+      if (removed > 0) {
+        // Save filtered restore points
+        localStorage.setItem('autosaveRestorePoints', JSON.stringify(
+          filteredPoints.filter((p: any) => p.source === 'autosave')
+        ));
+        console.log(`🗑️  Removed ${removed} old restore points`);
+      }
+      
+      return removed;
+    } catch (error) {
+      console.error('Error cleaning up restore points:', error);
+      return 0;
+    }
+  }
+
+  // ========== ENHANCED PHASE OPERATIONS WITH AUTOSAVE ==========
 
   async safeExecutePhase<T extends BaseDataEntity>(
     phase: Phase<T>,
@@ -19,10 +297,16 @@ export class SafePhaseExecutor {
   ): Promise<{ success: boolean; result: any; rollbackPossible: boolean }> {
     console.log(`🛡️ Safe execution starting for: ${phase.name}`);
     
+    // Autosave before execution
+    await this.autosavePhase(phase);
+    
     const result = await this.backupSystem.executePhaseWithBackup(phase, executor, true);
     
     if (result.success && result.backupId) {
       this.rollbackStack.push(this.backupSystem.getBackupRecord(result.backupId)!);
+      
+      // Autosave after successful execution
+      await this.autosavePhase(phase);
     }
     
     return {
@@ -32,163 +316,28 @@ export class SafePhaseExecutor {
     };
   }
 
-  async safeCompleteMilestone<T extends BaseDataEntity>(
-    phase: Phase<T>,
-    milestone: Milestone,
-    completionAction: (milestone: Milestone) => Promise<void>
-  ): Promise<{ success: boolean; backupId?: string; error?: string }> {
-    try {
-      // Backup before milestone completion
-      const backup = await this.backupSystem.backupMilestone(phase, milestone, 'complete');
-      
-      // Execute milestone completion
-      await completionAction(milestone);
-      
-      // Update phase progress if milestone completion should affect it
-      if (phase.milestones) {
-        const completedCount = phase.milestones.filter(m => m.completed).length;
-        const totalCount = phase.milestones.length;
-        phase.progress = (completedCount / totalCount) * 100;
-      }
-      
-      // Create post-completion backup
-      await this.backupSystem.backupPhase(phase, 'milestone-complete', `Milestone ${milestone.name} completed`);
-      
-      console.log(`✅ Milestone safely completed: ${milestone.name}`);
-      
-      this.rollbackStack.push(backup);
-      
-      return {
-        success: true,
-        backupId: backup.id
-      };
-      
-    } catch (error: any) {
-      console.error(`❌ Milestone completion failed: ${milestone.name}`, error.message);
-      
-      // Auto-rollback on error
-      const latestBackup = this.rollbackStack[this.rollbackStack.length - 1];
-      if (latestBackup) {
-        console.log(`🔄 Auto-rolling back due to milestone completion error`);
-        await this.backupSystem.restorePhase(latestBackup.id);
-      }
-      
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
-
-  // ========== ROLLBACK OPERATIONS ==========
-
-  async rollbackLastOperation(): Promise<{ success: boolean; operation: string }> {
-    if (this.rollbackStack.length === 0) {
-      return { success: false, operation: 'No operations to rollback' };
-    }
-    
-    const lastBackup = this.rollbackStack.pop()!;
-    
-    try {
-      const restoreResult = await this.backupSystem.restorePhase(lastBackup.id);
-      
-      if (restoreResult.success) {
-        console.log(`✅ Successfully rolled back: ${lastBackup.phaseName} (${lastBackup.operation})`);
-        return { success: true, operation: lastBackup.operation };
-      } else {
-        // Put it back on stack if restore failed
-        this.rollbackStack.push(lastBackup);
-        return { success: false, operation: `Failed to restore: ${restoreResult.message}` };
-      }
-      
-    } catch (error: any) {
-      console.error(`❌ Rollback failed:`, error.message);
-      return { success: false, operation: `Rollback error: ${error.message}` };
-    }
-  }
-
-  async rollbackToRestorePoint(restorePointId: string): Promise<{
-    success: boolean;
-    restored: number;
-    failed: number;
-    restorePointName: string;
-  }> {
-    console.log(`🛡️ Safe rollback to restore point: ${restorePointId}`);
-    
-    // Create restore point before rollback (meta-backup)
-    const currentPhases = this.getAllPhases();
-    await this.backupSystem.backupMultiplePhases(
-      currentPhases,
-      'phase-modification',
-      `Pre-rollback-${restorePointId}`,
-      `Backup before rolling back to restore point ${restorePointId}`
-    );
-    
-    const result = await this.backupSystem.restoreToPoint(restorePointId, 'full');
-    
-    // Clear rollback stack since we're doing a major rollback
-    this.rollbackStack = [];
-    
-    return {
-      success: result.success,
-      restored: result.restored,
-      failed: result.failed,
-      restorePointName: restorePointId
-    };
-  }
-
-  // ========== VALIDATION & SAFETY CHECKS ==========
-
-  async validatePhaseBeforeExecution<T extends BaseDataEntity>(
-    phase: Phase<T>
-  ): Promise<{ isValid: boolean; warnings: string[]; errors: string[] }> {
-    const warnings: string[] = [];
-    const errors: string[] = [];
-    
-    // Check required fields
-    if (!phase.id) errors.push('Phase ID is required');
-    if (!phase.name) errors.push('Phase name is required');
-    
-    // Check date validity
-    if (phase.startDate && phase.endDate && phase.startDate > phase.endDate) {
-      errors.push('Start date cannot be after end date');
-    }
-    
-    // Check milestone consistency
-    if (phase.milestones) {
-      const duplicateIds = this.findDuplicateMilestoneIds(phase.milestones);
-      if (duplicateIds.length > 0) {
-        warnings.push(`Duplicate milestone IDs: ${duplicateIds.join(', ')}`);
-      }
-      
-      // Check milestone dates are within phase dates
-      phase.milestones.forEach(milestone => {
-        if (milestone.dueDate && phase.startDate && milestone.dueDate < phase.startDate) {
-          warnings.push(`Milestone ${milestone.name} due date is before phase start`);
-        }
-        if (milestone.dueDate && phase.endDate && milestone.dueDate > phase.endDate) {
-          warnings.push(`Milestone ${milestone.name} due date is after phase end`);
-        }
-      });
-    }
-    
-    // Check dependency validity
-    if (phase.dependencies) {
-      const invalidDeps = phase.dependencies.filter(dep => !this.phaseExists(dep));
-      if (invalidDeps.length > 0) {
-        errors.push(`Invalid dependencies: ${invalidDeps.join(', ')}`);
-      }
-    }
-    
-    return {
-      isValid: errors.length === 0,
-      warnings,
-      errors
-    };
-  }
-
   async createSafetyCheckpoint(name: string): Promise<string> {
     const phases = this.getAllPhases();
+    
+    // Create autosave checkpoint
+    const autosaveData = {
+      id: `autosave-${Date.now()}`,
+      name,
+      timestamp: new Date(),
+      phases: phases.map(phase => ({
+        id: phase.id,
+        name: phase.name,
+        progress: phase.progress,
+        status: phase.status
+      }))
+    };
+    
+    // Save autosave checkpoint
+    const checkpoints = JSON.parse(localStorage.getItem('autosaveCheckpoints') || '[]');
+    checkpoints.push(autosaveData);
+    localStorage.setItem('autosaveCheckpoints', JSON.stringify(checkpoints));
+    
+    // Also create system restore point
     const restorePoint = await this.backupSystem.backupMultiplePhases(
       phases,
       'phase-modification',
@@ -201,79 +350,61 @@ export class SafePhaseExecutor {
     return restorePoint.id;
   }
 
-  // ========== EMERGENCY RECOVERY ==========
+  // ========== IMPORT/EXPORT PHASES ==========
 
-  async emergencyRecovery(): Promise<{ success: boolean; restored: number }> {
-    console.log('🚨 EMERGENCY RECOVERY INITIATED');
+  async exportPhases(): Promise<string> {
+    const phases = this.getAllPhases();
+    const data = {
+      version: '1.0.0',
+      exportDate: new Date().toISOString(),
+      phaseCount: phases.length,
+      phases: phases
+    };
     
-    // Find the most recent successful restore point
-    const restorePoints = this.getRestorePoints();
-    const recentPoints = restorePoints
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-      .slice(0, 3); // Last 3 restore points
+    const jsonData = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
     
-    if (recentPoints.length === 0) {
-      console.error('❌ No restore points available for emergency recovery');
-      return { success: false, restored: 0 };
-    }
+    // Create download link
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `phases-export-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     
-    // Try each recent restore point until one works
-    for (const point of recentPoints) {
-      console.log(`🔄 Attempting recovery with restore point: ${point.name}`);
+    console.log(`📤 Exported ${phases.length} phases`);
+    
+    return jsonData;
+  }
+
+  async importPhases(jsonData: string): Promise<{ imported: number; skipped: number }> {
+    try {
+      const data = JSON.parse(jsonData);
+      let imported = 0;
+      let skipped = 0;
       
-      const result = await this.backupSystem.restoreToPoint(point.id, 'full');
-      
-      if (result.success && result.restored > 0) {
-        console.log(`✅ Emergency recovery successful using ${point.name}`);
-        return { success: true, restored: result.restored };
+      for (const phaseData of data.phases) {
+        if (this.phaseExists(phaseData.id)) {
+          console.log(`⚠️  Phase ${phaseData.id} already exists, skipping`);
+          skipped++;
+        } else {
+          this.phaseStorage.set(phaseData.id, phaseData);
+          await this.autosavePhase(phaseData);
+          imported++;
+        }
       }
+      
+      // Save updated storage
+      localStorage.setItem('phaseStorage', JSON.stringify(Array.from(this.phaseStorage.values())));
+      
+      console.log(`📥 Import completed: ${imported} imported, ${skipped} skipped`);
+      
+      return { imported, skipped };
+    } catch (error) {
+      console.error('Error importing phases:', error);
+      throw new Error(`Failed to import phases: ${error.message}`);
     }
-    
-    console.error('❌ All emergency recovery attempts failed');
-    return { success: false, restored: 0 };
-  }
-
-  // ========== UTILITY METHODS ==========
-
-  private findDuplicateMilestoneIds(milestones: Milestone[]): string[] {
-    const idCounts: Record<string, number> = {};
-    milestones.forEach(m => {
-      idCounts[m.id] = (idCounts[m.id] || 0) + 1;
-    });
-    
-    return Object.keys(idCounts).filter(id => idCounts[id] > 1);
-  }
-
-  private phaseExists(phaseId: string): boolean {
-    // Implement based on your phase storage
-    return false;
-  }
-
-  private getAllPhases(): any[] {
-    // Implement based on your phase storage
-    return [];
-  }
-
-  private getRestorePoints(): any[] {
-    // Implement based on your phase storage
-    return [];
-  }
-
-  // ========== BACKUP MANAGEMENT ==========
-
-  getBackupStatistics() {
-    return this.backupSystem.getBackupStats();
-  }
-
-  cleanupOldBackups(): { removed: number; kept: number } {
-    const stats = this.getBackupStatistics();
-    console.log(`🧹 Cleaning up old backups (currently ${stats.totalBackups} backups)`);
-    
-    // This would implement cleanup logic based on your retention policy
-    return { removed: 0, kept: stats.totalBackups };
-  }
-
-  exportBackups(destination: string): string {
-    return this.backupSystem.exportBackups(destination);
   }
 }

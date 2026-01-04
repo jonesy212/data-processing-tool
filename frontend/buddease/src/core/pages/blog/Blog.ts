@@ -1,4 +1,4 @@
-// Blog.ts
+Blog.ts
 export interface Blog {
   id: string; // Unique identifier for the blog
   title: string; // Title of the blog
@@ -28,7 +28,7 @@ interface NewsArticle extends Article{
 }
 
 
-// Create a new blog
+Create a new blog
 const newBlog: Blog = {
   id: "1",
   title: "Tech Blog",
@@ -39,7 +39,7 @@ const newBlog: Blog = {
   articles: [], // Initialize the articles array
 };
 
-// Create a new article
+Create a new article
 const newArticle: Article = {
   id: "1",
   title: "Introduction to React",
@@ -49,10 +49,10 @@ const newArticle: Article = {
   updatedAt: new Date(),
 };
 
-// Associate the article with the blog
+Associate the article with the blog
 newBlog.articles.push(newArticle);
 
-// Display the blog with associated articles
+Display the blog with associated articles
 console.log(newBlog);
 
 export type {NewsArticle}

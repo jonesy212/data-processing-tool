@@ -1,11 +1,11 @@
-// ProductEntity.ts
-// ProductEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+ProductEntity.ts
+ProductEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CommonData } from '@/core/models/CommonData';
 import { VisualizationData } from '@/core/users/User';
 
-// Define the actual ProductEntity interface
+Define the actual ProductEntity interface
 interface ProductEntity extends BaseDataEntity, BaseEntity {
   // ✅ Product-specific required fields
   productId: string;
@@ -57,7 +57,7 @@ interface ProductEntity extends BaseDataEntity, BaseEntity {
   
 }
 
-// Product-specific type parameters
+Product-specific type parameters
 type ProductK = ProductEntity;
 type ProductMeta = DefaultMeta<ProductEntity, ProductK> & {
   supplier?: string;
@@ -77,7 +77,7 @@ type ProductAttachment = Attachment;
 type ProductExcludedFields = DefaultExcludedFields<ProductEntity> | "costPrice" | "reviews" | "ratings";
 type ProductIncludedFields = keyof ProductEntity;
 
-// Product parameters container
+Product parameters container
 type ProductBaseParams = {
   T: ProductEntity;
   K: ProductK;

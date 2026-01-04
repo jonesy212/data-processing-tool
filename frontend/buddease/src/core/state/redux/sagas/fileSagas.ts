@@ -1,6 +1,6 @@
-// fileSagas.ts
+fileSagas.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
-// import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/core/components/configs/DetermineFileType';
+import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/core/components/configs/DetermineFileType';
 import { fetchDataFrame, removeFile, updateDataFrame } from '@/core/api/DataframeApi';
 import { DataActions } from '@/core/actions/DataActions';
 import { DataFrameActions } from '@/core/actions/DataFrameActions';
@@ -18,15 +18,15 @@ const { handleError } = useErrorHandling();
 import { default as archiveFile, default as batchRemoveFiles, default as createFileVersion, default as determineFileType, default as exportFile, default as fetchFiles, default as fetchFileVersions, default as importFile, default as markFileAsComplete, default as receiveFileUpdate, default as requestAccessToFile, default as shareFile, default as startCollaborativeEdit, default as uploadFile } from '@/core/api/ApiFiles';
 
 
-// Import other unused imports
+Import other unused imports
 
-// Define the fileSagasConfig object
+Define the fileSagasConfig object
 const fileSagasConfig = {
   BASE_URL: endpoints.BASE_API_URL,
   headersConfig,
 };
 
-// Define UpdateDataTitle function
+Define UpdateDataTitle function
 const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
   try {
     const response = await axios.post(
@@ -42,7 +42,7 @@ const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
   }
 };
 
-// Define fetchNewFileData saga
+Define fetchNewFileData saga
 function* fetchNewFileData(
   action: ReturnType<typeof fetchDataFrame>
 ): Generator<any, void, any> {
@@ -55,7 +55,7 @@ function* fetchNewFileData(
   }
 }
 
-// Define handleUpdateDataTitle saga
+Define handleUpdateDataTitle saga
 function* handleUpdateDataTitle(action: ReturnType<typeof updateDataTitle>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -69,7 +69,7 @@ function* handleUpdateDataTitle(action: ReturnType<typeof updateDataTitle>): Gen
   }
 }
 
-// Define handleFetchFilesRequest saga
+Define handleFetchFilesRequest saga
 function* handleFetchFilesRequest(): Generator<any, void, any> {
   try {
     const files = yield call(fetchFiles);
@@ -81,7 +81,7 @@ function* handleFetchFilesRequest(): Generator<any, void, any> {
 }
 
 
-// Define handleUploadFileRequest saga
+Define handleUploadFileRequest saga
 function* handleUploadFileRequest(): Generator<any, void, any> {
   try {
     const file = yield call(uploadFile);
@@ -93,7 +93,7 @@ function* handleUploadFileRequest(): Generator<any, void, any> {
 }
 
 
-// Define handleBatchRemoveFilesRequest saga
+Define handleBatchRemoveFilesRequest saga
 function* handleBatchRemoveFilesRequest(): Generator<any, void, any> {
   try {
     const files = yield call(batchRemoveFiles);
@@ -105,7 +105,7 @@ function* handleBatchRemoveFilesRequest(): Generator<any, void, any> {
 }
 
 
-// Define handleMarkFileAsCompleteRequest saga
+Define handleMarkFileAsCompleteRequest saga
 function* handleMarkFileAsCompleteRequest(): Generator<any, void, any> {
   try {
     const file = yield call(markFileAsComplete);
@@ -119,7 +119,7 @@ function* handleMarkFileAsCompleteRequest(): Generator<any, void, any> {
 
 
 
-// Define handleStartCollaborativeEdit saga
+Define handleStartCollaborativeEdit saga
 function* handleStartCollaborativeEdit(action: ReturnType<typeof FileActions.startCollaborativeEdit>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -132,7 +132,7 @@ function* handleStartCollaborativeEdit(action: ReturnType<typeof FileActions.sta
 }
 
 
-// Define handleCreateFileVersion saga
+Define handleCreateFileVersion saga
 function* handleCreateFileVersion(action: ReturnType<typeof FileActions.createFileVersion>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -145,7 +145,7 @@ function* handleCreateFileVersion(action: ReturnType<typeof FileActions.createFi
 }
 
 
-// Define handleFetchFileVersions saga
+Define handleFetchFileVersions saga
 function* handleFetchFileVersions(): Generator<any, void, any> {
   try {
     const fileVersions = yield call(fetchFileVersions);
@@ -156,7 +156,7 @@ function* handleFetchFileVersions(): Generator<any, void, any> {
   }
 }
 
-// Define handleShareFile saga
+Define handleShareFile saga
 function* handleShareFile(action: ReturnType<typeof FileActions.shareFile>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -169,7 +169,7 @@ function* handleShareFile(action: ReturnType<typeof FileActions.shareFile>): Gen
 }
 
 
-// Define handleRequestAccessToFile saga
+Define handleRequestAccessToFile saga
 function* handleRequestAccessToFile(action: ReturnType<typeof FileActions.requestAccessToFile>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -183,7 +183,7 @@ function* handleRequestAccessToFile(action: ReturnType<typeof FileActions.reques
 }
 
 
-// Define handleReceiveFileUpdate saga
+Define handleReceiveFileUpdate saga
 function* handleReceiveFileUpdate(action: ReturnType<typeof FileActions.receiveFileUpdate>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -196,7 +196,7 @@ function* handleReceiveFileUpdate(action: ReturnType<typeof FileActions.receiveF
 }
 
 
-// Define handleExportFile saga
+Define handleExportFile saga
 function* handleExportFile(action: ReturnType<typeof FileActions.exportFile>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -209,7 +209,7 @@ function* handleExportFile(action: ReturnType<typeof FileActions.exportFile>): G
 }
 
 
-// Define handleArchiveFile saga
+Define handleArchiveFile saga
 function* handleArchiveFile(action: ReturnType<typeof FileActions.archiveFile>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -222,7 +222,7 @@ function* handleArchiveFile(action: ReturnType<typeof FileActions.archiveFile>):
 }
 
 
-// Define handleDetermineFileType saga
+Define handleDetermineFileType saga
 function* handleDetermineFileType(action: ReturnType<typeof FileActions.determineFileType>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -235,7 +235,7 @@ function* handleDetermineFileType(action: ReturnType<typeof FileActions.determin
 }
 
 
-// Define handleImportFile saga
+Define handleImportFile saga
 function* handleImportFile(action: ReturnType<typeof FileActions.importFile>): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -248,7 +248,7 @@ function* handleImportFile(action: ReturnType<typeof FileActions.importFile>): G
 }
 
 
-// Define handleRemoveFileRequest saga
+Define handleRemoveFileRequest saga
 function* handleRemoveFileRequest(action: ReturnType<typeof FileActions.removeFile>): Generator<any, void, any> {
   try {
     const file = yield call(removeFile, action.payload);
@@ -283,7 +283,7 @@ function* handleFetchDataFrame(): Generator<any, void, any> {
 }
 
 
-// Add additional sagas for DataFrame actions
+Add additional sagas for DataFrame actions
 function* fileSagas() {
   // File actions
   yield takeLatest(FileActions.updateFile.type, handleUpdateDataTitle);

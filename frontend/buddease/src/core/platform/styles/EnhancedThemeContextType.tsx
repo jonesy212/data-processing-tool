@@ -1,4 +1,4 @@
-// EnhancedThemeContextType.ts
+EnhancedThemeContextType.ts
 
 import { Theme, ThemeEnum } from '@/core/libraries/ui/theme/Theme';
 import { defaultTokens, DesignTokens, themeToDesignTokens } from '@/core/platform/styles/design-tokens';

@@ -1,15 +1,15 @@
-// generateAppTree.tsx
+generateAppTree.tsx
 import { treeDataService } from '@/core/api/service/TreeDataService';
 import { getUsersData } from "@/core/api/UsersApi";
 import { isUserLoggedIn } from "@/core/pages/forms/utils/CommonLoginLogic";
 import { DocumentNode, DocumentTree } from "@/core/users/User";
 
-// Define a type for your tree structure
+Define a type for your tree structure
 type AppTree = {
   [key: string]: AppTree | DocumentNode | string; // Allow string values
 };
 
-// The rest of your existing functions remain the same...
+The rest of your existing functions remain the same...
 const generateInitialAppTree = async (): Promise<AppTree | null> => {
   try {
     const userStatus = await isUserLoggedIn();
@@ -42,7 +42,7 @@ const generateInitialAppTree = async (): Promise<AppTree | null> => {
   }
 };
 
-// Define a function to retrieve the tree data from the database or any other source
+Define a function to retrieve the tree data from the database or any other source
 const getTree = async (): Promise<DocumentTree | null> => {
   try {
     // Use the hybrid service
@@ -100,7 +100,7 @@ const generateAppTree = (treeData: DocumentTree): AppTree => {
 };
 
 
-// Convert user data to document tree structure
+Convert user data to document tree structure
 const convertToDocumentTree = (userData: any): DocumentTree => {
   if (!userData) return {};
 

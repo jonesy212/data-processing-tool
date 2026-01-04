@@ -1,4 +1,4 @@
-// factoryHandlers.ts
+factoryHandlers.ts
 import { AppMessage } from '@/core/typings/entities/MessageEntity';
 import { ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
 
@@ -42,12 +42,12 @@ function stopImmediatePropagation(
   event.nativeEvent.stopImmediatePropagation(); // Stop the immediate propagation of the event
 }
 
-// Function to check if the event is of type ReactiveMouseEvent
+Function to check if the event is of type ReactiveMouseEvent
 function isReactiveMouseEvent(event: any): event is ReactiveMouseEvent {
   return (event as ReactiveMouseEvent).settings !== undefined;
 }
 
-// Export all the functions
+Export all the functions
 export {
     createEventHandler,
     generateNextPhaseRoute, isReactiveEventHandler, isReactiveMouseEvent, stopImmediatePropagation

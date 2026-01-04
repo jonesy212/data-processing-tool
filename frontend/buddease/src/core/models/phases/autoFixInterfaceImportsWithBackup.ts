@@ -1,4 +1,4 @@
-import { createBackup, restoreBackup } from './PhaseBackupSystem';
+import { createBackup, restoreBackup } from '../../error-analyzer/phases/PhaseBackupSystem';
 
 async function autoFixInterfaceImportsWithBackup(projectRoot: string, files: string[]) {
     // Step 1: Backup before applying fixes

@@ -1,4 +1,4 @@
-// TeamManagerComponent.tsx
+TeamManagerComponent.tsx
 import { useAssignTeamMemberStore } from '@/core/state/stores/AssignTeamMemberStore';
 import { useTeamManagerStore } from '@/core/state/stores/TeamStore';
 import React, { useState } from 'react';

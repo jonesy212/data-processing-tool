@@ -1,4 +1,4 @@
-// VideoAPI.ts
+VideoAPI.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { VideoOptions } from '@/core/cards/modal/ChatSettingsModal';

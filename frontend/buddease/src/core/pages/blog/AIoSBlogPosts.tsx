@@ -1,12 +1,16 @@
 // AIoSBlogPosts.tsx
 
 import axiosInstance from '@/core/api/csrfToken';
-import BlogGenerator from '@/core/pages/blog/BlogGenerator'; // Assuming BlogGenerator is located in the same directory
-import { BlogPost } from '@/core/pages/blog/BlogPost';
+import BlogGenerator from '@/core/pages/blog/BlogGenerator';
+
+import type { BlogPost } from '@/core/pages/blog/BlogPost';
 import BlogPostList from '@/core/pages/blog/BlogPosts';
 import React, { useEffect, useState } from 'react';
+import type { Article } from 'core/pages/blog/Blog'
+
 const AndroidBlogPosts: React.FC = () => {
   const [androidPosts, setAndroidPosts] = useState<BlogPost[]>([]);
+  const [articles, setarticles] = useState<Article[]>([])
 
   useEffect(() => {
     const fetchAndroidPosts = async () => {
@@ -24,8 +28,14 @@ const AndroidBlogPosts: React.FC = () => {
 
   return (
     <div>
-      <BlogPostList platform="android" posts={androidPosts} />
-      <BlogGenerator posts={androidPosts} generateBlogPosts={() => []} />
+      <BlogPostList platform="android"
+        posts={androidPosts}
+        articles={articles}
+      />
+      <BlogGenerator
+        posts={androidPosts}
+        articles={articles}
+        generateBlogPosts={() => []} />
     </div>
   );
 };

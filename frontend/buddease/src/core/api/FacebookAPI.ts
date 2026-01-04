@@ -1,6 +1,6 @@
-// FacebookAPI.ts
+FacebookAPI.ts
 
-// Import necessary modules and types
+Import necessary modules and types
 import { Note, handleNoteApiErrorAndNotify } from '@/core/api/ApiNote';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -8,15 +8,15 @@ import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { authToken } from '@/core/server/auth/authToken';
 import axios, { AxiosError } from 'axios';
 
-// Define the base URL for Facebook API
+Define the base URL for Facebook API
 const FACEBOOK_API_BASE_URL = 'https://graph.facebook.com/v12.0';
 
-// Define your Facebook access token
+Define your Facebook access token
 const FACEBOOK_ACCESS_TOKEN = 'YOUR_FACEBOOK_ACCESS_TOKEN';
 
 
 const BASE_URL = endpoints.details.facebook
-// Define the Facebook API module
+Define the Facebook API module
 const FacebookAPI = {
 
   async fetchMessages(): Promise<any[]> {
@@ -141,5 +141,5 @@ const FacebookAPI = {
   // Add more methods as needed for other Facebook API functionalities
 };
 
-// Export the FacebookAPI module
+Export the FacebookAPI module
 export default FacebookAPI;

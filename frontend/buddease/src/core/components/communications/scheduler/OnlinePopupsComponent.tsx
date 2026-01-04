@@ -1,4 +1,4 @@
-// OnlinePopupsComponent.tsx
+OnlinePopupsComponent.tsx
 import React from 'react';
 
 const OnlinePopupsComponent: React.FC = () => {

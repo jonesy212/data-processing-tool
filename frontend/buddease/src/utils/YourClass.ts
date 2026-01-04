@@ -1,13 +1,13 @@
-// YourClass.ts
+YourClass.ts
 import ApiConfig from '@/core/api/ApiConfigService';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import UserRoles from '@/core/models/UserRoles';
 import { CustomDocumentOptionProps } from "@/utils/web3/dAppAdapter/DApp";
 import { DappProps, fluenceApiKey } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 
-// Example implementation of YourClass with combined functionality
+Example implementation of YourClass with combined functionality
 class YourClass<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -267,7 +267,7 @@ class YourClass<
 
 
 
-// Example usage:
+Example usage:
 const concreteInstance = new YourClass();
 const themeConfig = {
   fonts: { primary: 'Roboto', heading: 'Arial' },
@@ -523,7 +523,7 @@ const dappProps: DappProps = {
   customThemes: {},
 };
 
-// Use the concrete instance to call methods
+Use the concrete instance to call methods
 concreteInstance.enableRealtimeCollaboration()
   .enableChatFunctionality()
   .implementAnalytics()

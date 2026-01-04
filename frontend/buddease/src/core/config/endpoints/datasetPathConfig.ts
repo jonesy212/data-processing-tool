@@ -1,4 +1,4 @@
-// datasetPathConfig.ts
+datasetPathConfig.ts
 
 import { DataEndpoints } from '@/core/typings/categories/DataEndpoints';
 

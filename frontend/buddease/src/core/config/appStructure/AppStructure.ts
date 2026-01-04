@@ -1,9 +1,9 @@
-// AppStructure.ts
+AppStructure.ts
 import * as apiFile from '@/core/api/ApiFiles';
 import SecurityAPI from '@/core/api/SecurityAPI';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DataVersions } from '@/core/configs/DataVersionsConfig';
-import { Attachment, FileType } from '@/core/documents/attachment/Attachment';
+import type { Attachment, FileType } from '@/core/documents/attachment/Attachment';
 import { BaseEntityProperties } from '@/core/documents/RelatedProps';
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { Content } from '@/core/models/content/AddContent';
@@ -28,10 +28,10 @@ export type UnifiedVersionMap<
   structure: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
-//
-// Corrected AppStructureItem interface
-// Note: it now *extends* BaseEntityProperties (previously missing `extends`)
-//
+
+Corrected AppStructureItem interface
+Note: it now *extends* BaseEntityProperties (previously missing `extends`)
+
 interface AppStructureItem<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -109,7 +109,7 @@ interface AppStructurePermissions extends Permission {
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 
-// Interface for file system operations - abstracted away from fs
+Interface for file system operations - abstracted away from fs
 interface FileSystemService {
   readdir(dir: string): Promise<string[]>;
   stat(path: string): Promise<{ isDirectory: boolean }>;

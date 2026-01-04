@@ -1,4 +1,4 @@
-// ProjectManagementFeatures.ts
+ProjectManagementFeatures.ts
 interface ProjectManagementFeatures {
     // Existing features
     communicationOptions: string[]; // Options for communication (audio, video, text, etc.)

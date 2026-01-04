@@ -1,4 +1,4 @@
-// useServerFileSystem.ts
+useServerFileSystem.ts
 import { useAuthToken } from '@/core/hooks/useAuthToken';
 import { ServerFileSystem } from '@/core/server/serverFileSystem';
 

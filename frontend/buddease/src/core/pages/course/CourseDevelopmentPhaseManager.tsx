@@ -1,4 +1,4 @@
-// CourseDevelopmentPhaseManager.tsx
+CourseDevelopmentPhaseManager.tsx
 import { Data } from '@/core/models/data/Data';
 import generateTimeBasedCode from '@/core/models/realtime/TimeBasedCodeGenerator';
 import CourseLearningPhase from '@/core/pages/course/CourseLearningPhase';
@@ -10,7 +10,7 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 import React, { useState } from 'react';
 
 
-// Define course development phases
+Define course development phases
 export enum CourseDevelopmentPhase {
   PLANNING,
   SETUP,

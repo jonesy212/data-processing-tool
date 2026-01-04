@@ -1,8 +1,8 @@
-// stepTypes.ts
-// StepTypes.ts - Optimized hybrid solution for your project management + crypto app
-// ============================================================================
-// CORE TYPES - Define your app's specific domains
-// ============================================================================
+stepTypes.ts
+StepTypes.ts - Optimized hybrid solution for your project management + crypto app
+============================================================================
+CORE TYPES - Define your app's specific domains
+============================================================================
 
 export type AppStepType = 
   | 'onboarding'        // User registration & setup
@@ -16,9 +16,9 @@ export type AppStepType =
   | 'communication'     // Audio/video/text communication
   | 'task-management';  // Project task management
 
-// ============================================================================
-// DOMAIN INTERFACES - App-specific data structures
-// ============================================================================
+============================================================================
+DOMAIN INTERFACES - App-specific data structures
+============================================================================
 
 export interface ProjectData {
   id: string;
@@ -67,9 +67,9 @@ export interface Message {
   timestamp: Date;
 }
 
-// ============================================================================
-// COMPOSABLE BUILDING BLOCKS - Reusable prop interfaces
-// ============================================================================
+============================================================================
+COMPOSABLE BUILDING BLOCKS - Reusable prop interfaces
+============================================================================
 
 export interface CommonStepProps {
   title: string;
@@ -126,9 +126,9 @@ export interface ActionProps {
   onSave?: () => void;
 }
 
-// ============================================================================
-// DISCRIMINATED UNION TYPES - Type-safe step definitions
-// ============================================================================
+============================================================================
+DISCRIMINATED UNION TYPES - Type-safe step definitions
+============================================================================
 
 export interface OnboardingStepProps extends
   CommonStepProps,
@@ -199,9 +199,9 @@ export interface CommunicationStepProps extends
   onInviteParticipant?: (userId: string) => void;
 }
 
-// ============================================================================
-// UNION TYPE - All possible step types
-// ============================================================================
+============================================================================
+UNION TYPE - All possible step types
+============================================================================
 
 export type AppStepProps = 
   | OnboardingStepProps
@@ -212,20 +212,20 @@ export type AppStepProps =
   | CryptoManagementStepProps
   | CommunicationStepProps;
 
-// ============================================================================
-// COMPOSABLE TYPE - Maximum reusability
-// ============================================================================
+============================================================================
+COMPOSABLE TYPE - Maximum reusability
+============================================================================
 
 export type ComposableAppStepProps = CommonStepProps & {
   type: AppStepType;
 } & Partial<NavigationProps & ProjectProps & TaskProps & CryptoProps & 
            CommunicationProps & CommunityProps & FormProps & ActionProps>;
 
-// ============================================================================
-// UTILITY TYPES & HELPERS
-// ============================================================================
+============================================================================
+UTILITY TYPES & HELPERS
+============================================================================
 
-// Extract required props for specific step type
+Extract required props for specific step type
 export type RequiredPropsFor<T extends AppStepType> = 
   T extends 'onboarding' ? OnboardingStepProps :
   T extends 'ideation' ? IdeationStepProps :
@@ -235,7 +235,7 @@ export type RequiredPropsFor<T extends AppStepType> =
   T extends 'crypto-management' ? CryptoManagementStepProps :
   T extends 'communication' ? CommunicationStepProps : never;
 
-// Type guard helpers
+Type guard helpers
 export function isOnboardingStep(props: AppStepProps): props is OnboardingStepProps {
   return props.type === 'onboarding';
 }
@@ -248,11 +248,11 @@ export function isCryptoTradingStep(props: AppStepProps): props is CryptoTrading
   return props.type === 'crypto-trading';
 }
 
-// ============================================================================
-// FACTORY FUNCTIONS
-// ============================================================================
+============================================================================
+FACTORY FUNCTIONS
+============================================================================
 
-// Create step props with type safety
+Create step props with type safety
 export function createStepProps<T extends AppStepType>(
   type: T,
   baseProps: CommonStepProps,
@@ -265,7 +265,7 @@ export function createStepProps<T extends AppStepType>(
   } as RequiredPropsFor<T>;
 }
 
-// Step factory for common patterns
+Step factory for common patterns
 export const StepFactory = {
   createOnboarding: (props: Omit<OnboardingStepProps, 'type'>): OnboardingStepProps => ({
     type: 'onboarding',
@@ -283,11 +283,11 @@ export const StepFactory = {
   }),
 };
 
-// ============================================================================
-// REACT COMPONENTS & HOOKS
-// ============================================================================
+============================================================================
+REACT COMPONENTS & HOOKS
+============================================================================
 
-// Type-safe step renderer
+Type-safe step renderer
 export const AppStepRenderer: React.FC<AppStepProps> = (props) => {
   switch (props.type) {
     case 'onboarding':
@@ -311,7 +311,7 @@ export const AppStepRenderer: React.FC<AppStepProps> = (props) => {
 };
 
 
-// Hook for step-specific logic
+Hook for step-specific logic
 export function useStep<T extends AppStepType>(type: T, props: RequiredPropsFor<T>) {
   const commonLogic = {
     canProceed: !props.isLoading,
@@ -348,7 +348,7 @@ export function useStep<T extends AppStepType>(type: T, props: RequiredPropsFor<
   }
 }
 
-// Phase progression helper
+Phase progression helper
 export function getNextPhase(current: AppStepType): AppStepType | null {
   const phaseOrder: AppStepType[] = [
     'onboarding',
@@ -365,11 +365,11 @@ export function getNextPhase(current: AppStepType): AppStepType | null {
   return currentIndex < phaseOrder.length - 1 ? phaseOrder[currentIndex + 1] : null;
 }
 
-// ============================================================================
-// EXAMPLE USAGE
-// ============================================================================
+============================================================================
+EXAMPLE USAGE
+============================================================================
 
-// Example 1: Type-safe step creation
+Example 1: Type-safe step creation
 const onboardingExample = StepFactory.createOnboarding({
   title: 'Create Account',
   currentStep: 1,
@@ -381,7 +381,7 @@ const onboardingExample = StepFactory.createOnboarding({
   onSubmit: () => console.log('Submit'),
 });
 
-// Example 2: Flexible composable component
+Example 2: Flexible composable component
 export const FlexibleStep: React.FC<ComposableAppStepProps> = (props) => {
   const stepLogic = useStep(props.type, props as any);
   

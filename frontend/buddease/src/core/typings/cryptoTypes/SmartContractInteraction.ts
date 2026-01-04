@@ -1,4 +1,4 @@
-// SmartContractInteraction.ts
+SmartContractInteraction.ts
 import { SubscriptionTypeEnum } from "@/core/models/data/StatusType";
 import { BaseTransaction, Transaction } from "@/core/payment/Transaction";
 import { AccessList, Signature } from "ethers";
@@ -121,7 +121,7 @@ type CustomTransaction = Transaction & {
   subscriptionType?: SubscriptionTypeEnum;
 };
 
-// Helper function for null-safe transaction type checking
+Helper function for null-safe transaction type checking
 function isTransactionType(transaction: { transactionType: number | null }, type: number): boolean {
   return transaction.transactionType !== null && transaction.transactionType === type;
 }

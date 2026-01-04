@@ -1,5 +1,5 @@
-// UserEventManagementPreferencesSlice.ts
-// UserDataManagementPreferencesActions.ts
+UserEventManagementPreferencesSlice.ts
+UserDataManagementPreferencesActions.ts
 import { createSlice } from "@reduxjs/toolkit";
 
 interface UserDataManagementPreferencesState {

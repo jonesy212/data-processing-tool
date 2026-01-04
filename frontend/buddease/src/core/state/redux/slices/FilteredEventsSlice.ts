@@ -1,4 +1,4 @@
-// FilteredEventsSlice.ts
+FilteredEventsSlice.ts
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
 import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
@@ -8,11 +8,11 @@ import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
-import { FilterAttachment, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/core/typings/entities/FilterEntity';
+import type { FilterAttachment, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/core/typings/entities/FilterEntity';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
 interface FilteredEventsState<
@@ -338,16 +338,16 @@ export const {
 } = useFilteredEventsSlice.actions;
 
 
-// ✅ Your main slice reducer export
+✅ Your main slice reducer export
 export default useFilteredEventsSlice.reducer;
 
-// ✅ Explicit type export
+✅ Explicit type export
 export type { FilteredEventsState };
 
-// ✅ Selector: gets the entire filteredEvents slice
-// export const selectFilteredEvents = (state: RootState): FilteredEventsState => state.filteredEvents;
+✅ Selector: gets the entire filteredEvents slice
+export const selectFilteredEvents = (state: RootState): FilteredEventsState => state.filteredEvents;
 
-// ✅ Optional: get only the event IDs
+✅ Optional: get only the event IDs
 export const selectFilteredEventIds = createSelector(
   (state: RootState) => state.filteredEvents.filteredEvents,
   (filteredEvents) => filteredEvents.map(event => event.id)

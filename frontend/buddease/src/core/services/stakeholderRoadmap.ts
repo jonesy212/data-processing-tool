@@ -1,6 +1,6 @@
-// stakeholderRoadmap.ts
-// services/stakeholderRoadmap.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+stakeholderRoadmap.ts
+services/stakeholderRoadmap.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { AnalysisNode } from '@/core/typings/AnalysisNode';
 import { RoadmapNode } from '@/core/typings/roadmap';
 

@@ -52,7 +52,7 @@ class PaginationStore {
   }
 }
 
-// Create an instance of the PaginationStore
+Create an instance of the PaginationStore
 const paginationStore = new PaginationStore();
 
 export default paginationStore;
@@ -63,11 +63,11 @@ export default paginationStore;
 
 
 
-// import paginationStore from "./PaginationStore";
+import paginationStore from "./PaginationStore";
 
-// // Example usage:
-// paginationStore.setCurrentPage(1);
-// paginationStore.setPageSize(20);
-// await paginationStore.fetchData();
-// console.log("Total items:", paginationStore.totalItems);
-// console.log("Total pages:", paginationStore.totalPages);
+ Example usage:
+paginationStore.setCurrentPage(1);
+paginationStore.setPageSize(20);
+await paginationStore.fetchData();
+console.log("Total items:", paginationStore.totalItems);
+console.log("Total pages:", paginationStore.totalPages);

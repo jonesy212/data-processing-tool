@@ -1,4 +1,4 @@
-// AntivirusSoftware.ts
+AntivirusSoftware.ts
 class AntivirusSoftware {
   constructor() {
     // Initialize antivirus software configuration

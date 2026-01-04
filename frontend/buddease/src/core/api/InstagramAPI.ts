@@ -1,4 +1,4 @@
-// InstagramAPI.ts
+InstagramAPI.ts
 import { Note, handleNoteApiErrorAndNotify } from '@/core/api/ApiNote';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

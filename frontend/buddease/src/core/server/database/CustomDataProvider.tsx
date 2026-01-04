@@ -1,7 +1,11 @@
 // CustomDataProvider.tsx
 // CustomDataProvider.ts
-import { BaseRecord, CreateParams, CreateResponse, DataProvider, DeleteOneParams, DeleteOneResponse, GetListParams, GetListResponse, GetOneParams, GetOneResponse, UpdateParams, UpdateResponse } from "@/core/models/data/dataContracts";
+import type { BaseRecord, CreateResponse, DeleteOneParams, CreateParams, DeleteOneResponse, GetListParams, GetListResponse, GetOneParams, GetOneResponse, UpdateParams, UpdateResponse } from "@refinedev/core";
 import { useAuth } from "@/core/state/context/AuthContext";
+import { fetchProviderData, createProviderRecord,
+deleteProviderRecord, fetchProviderRecord, updateProviderRecord} from '@/core/api/ApiDataProvider'
+
+import type { DataProvider } from '@/core/state/context/DataContext'
 
 const CustomDataProvider: DataProvider = {
   getList: async <TData extends BaseRecord = BaseRecord>(

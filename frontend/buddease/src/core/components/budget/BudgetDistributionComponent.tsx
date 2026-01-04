@@ -1,8 +1,8 @@
-// BudgetDistributionComponent.tsx
+BudgetDistributionComponent.tsx
 import { usePresetPercentages } from "@/core/generators/presetPercentages";
 import React from 'react';
 
-// Define the list of departments
+Define the list of departments
 const departments = ["Marketing", "R&D", "HR", "Operations", "Sales"];
 
 const BudgetDistributionComponent: React.FC = () => {

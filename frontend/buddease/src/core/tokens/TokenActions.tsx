@@ -19,7 +19,7 @@ export const TokenActions = {
 };
 
 
-// Defiypene the action types
+Defiypene the action types
 export type TokenActionTypes =
   | ReturnType<typeof TokenActions.addToken>
   | ReturnType<typeof TokenActions.addTokens>

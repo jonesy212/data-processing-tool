@@ -1,5 +1,5 @@
-// GenerateText.ts
-// generateText.ts
+GenerateText.ts
+generateText.ts
 
 import { DocumentGenerator } from '@/core/server/ServerDocumentGenerator';
 import fs from 'fs';

@@ -1,4 +1,4 @@
-// BrandingUpdater.tsx
+BrandingUpdater.tsx
 
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import RandomWalkSuggestions from '@/core/hooks/userInterface/RandomWalkSuggestions';
@@ -10,7 +10,7 @@ import ReactDOM from 'react-dom';
 
 
 
-// Automated system setup process
+Automated system setup process
 const setupAutomationSystem = (
   config: SnapshotStoreConfigType<SnapshotStore<Snapshot<Data, Data>>>
 ) => {
@@ -30,7 +30,7 @@ const setupAutomationSystem = (
 }
 
 
-// Run the setup process with a valid config object
+Run the setup process with a valid config object
 const config = configServiceInstance.getSnapshotConfig(); // Example: Get the config from a service or provide a valid config object
 setupAutomationSystem(config); // Pass the config object as an argument
 

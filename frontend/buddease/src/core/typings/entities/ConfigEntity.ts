@@ -1,8 +1,8 @@
-// ConfigEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+ConfigEntity.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-// Core Config base types
+Core Config base types
 type ConfigEntity = BaseDataEntity;
 type ConfigK = ConfigEntity;
 type ConfigMeta = DefaultMeta<ConfigEntity, ConfigK>;
@@ -10,7 +10,7 @@ type ConfigAttachment = Attachment;
 type ConfigExcludedFields = DefaultExcludedFields<ConfigEntity>;
 type ConfigIncludedFields = keyof ConfigEntity;
 
-// Parameter container for consistent referencing
+Parameter container for consistent referencing
 type ConfigBaseParams = {
   T: ConfigEntity;
   K: ConfigK;

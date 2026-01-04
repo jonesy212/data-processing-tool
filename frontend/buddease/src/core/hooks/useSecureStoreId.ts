@@ -1,5 +1,4 @@
 // useSecureStoreId.ts
-// useSecureStoreId
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useEffect, useState } from "react";

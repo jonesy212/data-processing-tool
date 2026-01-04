@@ -1,5 +1,5 @@
-// TableComponent.tsx
-// Import necessary components and styles
+TableComponent.tsx
+Import necessary components and styles
 import { Table } from 'antd';
 import React from 'react';
 
@@ -7,7 +7,7 @@ if (typeof window !== 'undefined') {
   import('antd/dist/antd.css'); // Import CSS for styling
 }
 
-// Your component
+Your component
 const YourTableComponent = () => {
   // Sample data for the table
   const dataSource = [

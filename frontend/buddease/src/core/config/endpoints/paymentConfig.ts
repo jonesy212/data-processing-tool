@@ -1,4 +1,4 @@
-// paymentConfig.ts
+paymentConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { PaymentEndpoints } from '@/core/typings/categories/PaymentEndpoints';
 

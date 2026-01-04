@@ -1,0 +1,56 @@
+// createMeta.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { useSecurityAudit } from "@/core/hooks/useSecurityAudit";
+import { BaseData } from '@/core/models/data/Data';
+import { UserConfigData } from '@/core/models/data/dataStoreMethods';
+
+const createMeta = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  data: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+
+  const { useSecureUserId, sanitizeMetadata } = useSecurityAudit();
+  const id = useSecureUserId();
+
+  // Optionally sanitize incoming data
+  const sanitizedData = sanitizeMetadata(data);
+
+  return {
+    id,
+    description: "",
+    metadataEntries: {},
+    childIds: [],
+    relatedData: [],
+    version: { id: "", name: "", createdAt: new Date() }, // Adjust `Version` fields
+    lastUpdated: { versionData: {} }, // Adjust `VersionHistory` fields
+    isActive: false,
+    config: {},
+    permissions: [],
+    customFields: {},
+    baseUrl: "",
+    apiEndpoint: sanitizedData.apiEndpoint || "default-endpoint", // Ensure apiEndpoint is a string
+    ...sanitizedData,
+  };
+};
+
+
+
+const meta = createMeta<
+  BaseData<any, any, StructuredMetadata<any, any>>,
+  UserConfigData<BaseData<any, any, StructuredMetadata<any, any>>>
+>(
+  "metaId",
+  {},
+  [], // children
+  []  // related
+);
+
+export { createMeta };

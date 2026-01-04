@@ -1,4 +1,4 @@
-// NotificationComponent.tsx
+NotificationComponent.tsx
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';

@@ -1,4 +1,4 @@
-// usePagination.ts
+usePagination.ts
 import { useEffect, useState } from 'react';
 
 interface PaginationData {

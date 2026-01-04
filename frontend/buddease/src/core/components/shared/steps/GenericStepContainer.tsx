@@ -1,4 +1,4 @@
-// GenericStepContainer.tsx
+GenericStepContainer.tsx
 
 import { StepComponentProps } from '@/core/hooks/useStepNavigation';
 import React from 'react';

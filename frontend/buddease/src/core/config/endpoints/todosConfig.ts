@@ -1,6 +1,6 @@
 // todosConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { TodosEndpoints } from '@/core/typings/categories/TodosEndpoints';
+import type { TodosEndpoints } from '@/core/typings/categories/TodosEndpoints';
 
 export const todosConfig: TodosEndpoints = {
   // EndpointConfig objects (not strings)

@@ -1,5 +1,5 @@
-// identityService.ts
-// services/identityService.ts
+identityService.ts
+services/identityService.ts
 
 /**
  * Service for managing user identities.

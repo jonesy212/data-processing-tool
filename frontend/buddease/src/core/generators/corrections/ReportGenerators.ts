@@ -1,4 +1,4 @@
-// ReportGenerators.ts
+ReportGenerators.ts
 import { SecurityIssue } from '@/core/generators/corrections/SecurityAuditor';
 import { Correction, CorrectionReport, } from '@/core/generators/corrections/CorrectionGenerator';
 import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
@@ -1206,14 +1206,14 @@ export class ReportGenerators {
         // Generate fix suggestions based on error patterns
         if (message?.includes('undefined') || message?.includes('cannot find')) {
             return `// Import missing dependencies or check variable definitions
-// Verify the referenced item exists and is properly exported`; // ← Remove extra indentation
+Verify the referenced item exists and is properly exported`; // ← Remove extra indentation
         }
 
         if (category === 'compilation') {
             return `// Fix compilation error:
-// 1. Check imports and exports
-// 2. Verify TypeScript types
-// 3. Ensure all dependencies are installed`; // ← Remove extra indentation
+1. Check imports and exports
+2. Verify TypeScript types
+3. Ensure all dependencies are installed`; // ← Remove extra indentation
         }
 
         if (category === 'runtime') {

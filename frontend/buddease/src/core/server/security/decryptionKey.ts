@@ -1,7 +1,7 @@
-// decryptionKey.ts
+decryptionKey.ts
 import crypto from 'crypto';
 
-// Function to generate a decryption key
+Function to generate a decryption key
 export const generateDecryptionKey = (): string => {
   // Define the length of the decryption key (in bytes)
   const keyLength = 32; // 256 bits

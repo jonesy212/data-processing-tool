@@ -1,4 +1,4 @@
-// presentationLibrary.ts
+presentationLibrary.ts
 import { BaseMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import { Presentation, Slide } from "@/core/documents/editing/Presentation";
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
@@ -17,7 +17,7 @@ enum PresentationType {
 }
 
 
-// Extending BaseMeta for PresentationMetadata
+Extending BaseMeta for PresentationMetadata
 interface PresentationMetadata extends BaseMetadata, UnifiedMetaDataOptions {
   duration?: number;
   author?: string;
@@ -25,7 +25,7 @@ interface PresentationMetadata extends BaseMetadata, UnifiedMetaDataOptions {
 }
 
 
-// Extending BaseData for PresentationData
+Extending BaseData for PresentationData
 interface PresentationData<T extends Data = Data> {
   metadata: PresentationMetadata;
   content: T;
@@ -34,7 +34,7 @@ interface PresentationData<T extends Data = Data> {
   customAttributes?: Record<string, any>;
 }
 
-// Function to create a new presentation
+Function to create a new presentation
 function createPresentation(title: string, slides: Slide[]): Presentation {
   // Generate a unique ID for the presentation
   const presentationName = title;
@@ -73,7 +73,7 @@ function createPresentation(title: string, slides: Slide[]): Presentation {
 
 
   
-// Function to add a new slide to a presentation
+Function to add a new slide to a presentation
 function addSlideToPresentation(
   presentation: Presentation,
   content: string,
@@ -107,7 +107,7 @@ function addSlideToPresentation(
 }
 
 
-// Function to remove a slide from a presentation
+Function to remove a slide from a presentation
 function removeSlideFromPresentation(
   presentation: Presentation,
   slideId: string
@@ -119,7 +119,7 @@ function removeSlideFromPresentation(
   return presentation;
 }
 
-// Export the presentation library functions and types
+Export the presentation library functions and types
 export {
     addSlideToPresentation, createPresentation, removeSlideFromPresentation
 };

@@ -1,5 +1,5 @@
-// Payload.tsx
-// Payload.ts
+Payload.tsx
+Payload.ts
 
 import { SnapshotActions } from "@/core/actions/SnapshotActions";
 import { SubscriptionPayload } from "@/core/actions/SubscriptionActions";
@@ -83,9 +83,9 @@ const { subscribe, unsubscribe } = useSubscription({
   enabled: true, // Enable subscription
 });
 
-// ------------------------------
-// 6️⃣ Example SubscriptionPayload using the template
-// ------------------------------
+------------------------------
+6️⃣ Example SubscriptionPayload using the template
+------------------------------
 const payload: SubscriptionPayload<
   SubscriptionEntityTemplate["T"]
   > = {

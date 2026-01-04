@@ -1,4 +1,4 @@
-// AuthServerService.ts
+AuthServerService.ts
 import { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import { ClientDatabaseService } from '@/core/config/DatabaseTypes';
 import { generateToken } from '@/core/generators/generateTokens';
@@ -473,7 +473,7 @@ export const databaseConfig: DatabaseConfig = {
   authToken: process.env.AUTH_TOKEN,
 };
 
-// Factory functions
+Factory functions
 export const createAuthService = (dbType: DatabaseType = DatabaseType.POSTGRES) => 
   new AuthServerService(databaseConfig, dbType);
 
@@ -483,6 +483,6 @@ export const createPostgresAuthService = () =>
 export const createMysqlAuthService = () => 
   new AuthServerService(databaseConfig, DatabaseType.MYSQL);
 
-// Default export
+Default export
 export default createPostgresAuthService;
 export { AuthServerService };

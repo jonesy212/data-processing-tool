@@ -1,9 +1,9 @@
-// RealTimeDataStore.tsx
+RealTimeDataStore.tsx
 import { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/core/typings/entities/AppEntity";
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 
 
-// Use these defaults for the generic
+Use these defaults for the generic
 type AppRealtimeData = RealtimeData<
   AppEntity,       // T
   AppK,            // K
@@ -12,7 +12,7 @@ type AppRealtimeData = RealtimeData<
 >;
 
 
-// RealTimeDataStore.ts
+RealTimeDataStore.ts
 interface RealTimeDataStore {
   realTimeDataList: AppRealtimeData[];
   currentRealTimeDataId: string;

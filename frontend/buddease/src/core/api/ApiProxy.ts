@@ -1,6 +1,6 @@
-// ApiProxy.ts
-// ApiProxy.ts/
-// Typed proxy for ergonomic endpoint access
+ApiProxy.ts
+ApiProxy.ts/
+Typed proxy for ergonomic endpoint access
 type EndpointFunction = (...params: any[]) => string;
 
 type ApiProxy<T extends EndpointConfigurations> = {

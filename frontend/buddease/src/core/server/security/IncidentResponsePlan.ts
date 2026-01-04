@@ -1,4 +1,4 @@
-// IncidentResponsePlan.ts
+IncidentResponsePlan.ts
 class IncidentResponsePlan {
   constructor() {
     // Initialize incident response plan configuration

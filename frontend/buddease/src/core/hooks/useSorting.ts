@@ -1,12 +1,12 @@
-// useSorting.ts
+useSorting.ts
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { SortCriteria } from '@/core/settings/SortCriteria';
 import { useState } from 'react';
 
-// Generic sorting hook
+Generic sorting hook
 const useSorting = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -220,7 +220,7 @@ const useSorting = <
   };
 };
 
-// Non-generic version for easier use (if you don't need the generics)
+Non-generic version for easier use (if you don't need the generics)
 export const useSimpleSorting = () => {
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>(SortCriteria.Date);
 

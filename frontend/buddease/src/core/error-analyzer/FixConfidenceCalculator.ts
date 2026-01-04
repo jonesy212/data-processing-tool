@@ -1,7 +1,7 @@
 // src/app/error-analyzer/FixConfidenceCalculator.ts
 
-import { ConfidenceFactors, FixPlan, TSCompilerError } from '@/core/error-analyzer/index';
-import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+import type { ConfidenceFactors, FixPlan, TSCompilerError } from '@/core/error-analyzer/index';
+import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import { getUsageData, analyzeTypeContext, isMethodUsage } from '@/core/generators/corrections/analyzers/UsageAnalyzer'
 
 export class FixConfidenceCalculator {
@@ -143,21 +143,15 @@ export class FixConfidenceCalculator {
       if (allUsages.length > 0) {
         score += 5;
         
-        // Bonus for clear type context
-        const hasTypeContext = allUsages.some(usage => {
-          // Check if usage is a property (has context property)
-          if ('context' in usage) {
-            return usage.context.includes(':') || usage.context.includes('interface');
+        try {
+          // Use the imported analyzeTypeContext function
+          const { hasTypeContext } = analyzeTypeContext(allUsages);
+          
+          if (hasTypeContext) {
+            score += 3;
           }
-          // For method usages, check signature or returnType
-          if ('signature' in usage) {
-            return usage.signature.includes(':') || usage.returnType.includes(':');
-          }
-          return false;
-        });
-        
-        if (hasTypeContext) {
-          score += 3;
+        } catch (error) {
+          console.warn('Failed to analyze type context:', error);
         }
       }
     }
@@ -367,113 +361,3 @@ export class FixConfidenceCalculator {
     return lines.join('\n');
   }
 }
-
-
-
-// More type guards if you have additional usage types
-function isFunctionUsage(usage: any): usage is { 
-  file: string; 
-  line: number; 
-  params: string[]; 
-  returnType: string 
-} {
-  return 'params' in usage && 'returnType' in usage;
-}
-
-function isPropertyUsage(usage: any): usage is { 
-  type: 'property'; 
-  context: string; 
-  valueType: string;  // Changed from 'type' to 'valueType'
-} {
-  return usage?.type === 'property' && 'context' in usage && 'valueType' in usage;
-}
-
-function isClassUsage(usage: any): usage is { 
-  file: string; 
-  line: number; 
-  className: string; 
-  extends?: string;
-  implements?: string[];
-} {
-  return 'className' in usage;
-}
-
-function isInterfaceUsage(usage: any): usage is { 
-  file: string; 
-  line: number; 
-  interfaceName: string; 
-  members: string[];
-} {
-  return 'interfaceName' in usage;
-}
-
-const allUsages: any[] = await getUsageData(); // or whatever your data source is
-
-const { hasTypeContext, typeUsages, valueUsages } = analyzeTypeContext(allUsages);
-  
-const hasTypeContext = allUsages.some(usage => {
-  if (isPropertyUsage(usage)) {
-    // Property usage - use valueType instead of type
-    return usage.context.includes(':') || 
-           usage.context.includes('interface') ||
-           usage.valueType.includes(':') ||  // Changed from usage.type
-           usage.context.includes('as ') ||
-           usage.context.includes('satisfies');
-  }
-  
-  if (isMethodUsage(usage)) {
-    // Method usage
-    return usage.signature.includes(':') || 
-           usage.signature.includes('=>') ||
-           usage.signature.includes('<') ||
-           usage.returnType.includes(':') ||
-           usage.returnType.includes('<');
-  }
-  
-  if (isFunctionUsage(usage)) {
-    // Function usage
-    return usage.returnType.includes(':') ||
-           usage.params.some((param: string) => param.includes(':'));
-  }
-  
-  if (isClassUsage(usage)) {
-    // Class usage
-    return !!usage.extends || 
-           (usage.implements && usage.implements.length > 0);
-  }
-  
-  if (isInterfaceUsage(usage)) {
-    // Interface usage - always has type context
-    return true;
-  }
-  
-  if ('type' in usage) {
-    // Generic usage with type property
-    const type = usage.type;
-    return type.includes(':') || 
-           type.includes('=>') ||
-           type.includes('<') ||
-           type.includes('interface');
-  }
-  
-  if ('genericTypes' in usage) {
-    // Has generic type annotations
-    return usage.genericTypes.length > 0;
-  }
-  
-  if ('typeConstraints' in usage) {
-    // Has type constraints
-    return usage.typeConstraints.length > 0;
-  }
-  
-  // Check for TypeScript-specific type patterns
-  if ('source' in usage && typeof usage.source === 'string') {
-    return usage.source.includes(':') || 
-           usage.source.includes('as ') ||
-           usage.source.includes('satisfies') ||
-           usage.source.includes('extends ') ||
-           usage.source.includes('implements ');
-  }
-  
-  return false;
-});

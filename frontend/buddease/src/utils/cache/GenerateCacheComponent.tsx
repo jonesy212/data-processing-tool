@@ -1,5 +1,5 @@
-// GenerateCacheComponent.ts
-// components/cache/GenerateCacheComponent.tsx
+GenerateCacheComponent.ts
+components/cache/GenerateCacheComponent.tsx
 "use client";
 
 import React from 'react';

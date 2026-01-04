@@ -1,4 +1,4 @@
-// LoginCard.tsx
+LoginCard.tsx
 import LoginForm from "@/core/pages/forms/LoginForm";
 import React, { useState } from "react";
 

@@ -1,11 +1,11 @@
-// toolbarSagas.ts
+toolbarSagas.ts
 import { ToolbarActions } from '@/core/actions/ToolbarActions';
 import useModalFunctions from '@/core/pages/dashboards/ModalFunctions';
 import { takeLatest } from "redux-saga/effects";
-// Import API functions or other utilities as needed
+Import API functions or other utilities as needed
 
 
-// Function to toggle a feature in the toolbar
+Function to toggle a feature in the toolbar
 function* toggleFeatureSaga(action: any) {
     try {
       const { feature, isEnabled } = action.payload;

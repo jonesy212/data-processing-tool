@@ -1,7 +1,7 @@
-// ImportTasksPayload.ts
+ImportTasksPayload.ts
 import { Task } from "@/core/models/tasks/Task";
 
-// ImportTasksPayload.tsx
+ImportTasksPayload.tsx
 interface ImportTasksPayload {
     data: string; // Data containing tasks to be imported, e.g., JSON data
     format: ImportFormat; // Format of the imported data

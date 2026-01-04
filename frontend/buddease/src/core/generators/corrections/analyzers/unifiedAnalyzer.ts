@@ -1,4 +1,4 @@
-// utils/unifiedAnalyzer.ts
+utils/unifiedAnalyzer.ts
 import { ComprehensiveFrontendAnalyzer } from '@/core/generators/corrections/analyzers/ComprehensiveFrontendAnalyzer';
 
 /**
@@ -85,5 +85,5 @@ export class UnifiedFrontendAnalyzer {
   }
 }
 
-// Export singleton instance
+Export singleton instance
 export const unifiedAnalyzer = new UnifiedFrontendAnalyzer();

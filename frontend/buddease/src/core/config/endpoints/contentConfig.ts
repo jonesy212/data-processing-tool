@@ -1,5 +1,5 @@
 // contentConfig.ts
-import { ContentEndpoints } from '@/core/typings/categories/ContentEndpoints';
+import type { ContentEndpoints } from '@/core/typings/categories/ContentEndpoints';
 
 export const contentConfig: ContentEndpoints = {
   fetchContent: { path: "/api/content/fetch", method: "GET" },

@@ -1,4 +1,4 @@
-// DummyCard.tsx
+DummyCard.tsx
 import DraggableAnimation from "@/core/libraries/animations/DraggableAnimation";
 import { useMovementAnimations } from "@/core/libraries/animations/movementAnimations/MovementAnimationActions";
 import React, { useRef } from "react";

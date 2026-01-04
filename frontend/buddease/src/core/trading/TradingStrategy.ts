@@ -124,7 +124,7 @@ class TradingStrategy {
 
 const initialCapital: number = 10000;
 
-// Example usage:
+Example usage:
 const strategyOptions: TradingStrategyOptions = {
   entryThreshold: 100,
   exitThreshold: 90,
@@ -132,7 +132,7 @@ const strategyOptions: TradingStrategyOptions = {
 
 const tradingStrategy = new TradingStrategy(strategyOptions, initialCapital);
 
-// Example market data
+Example market data
 const marketData: MarketData[] = [
   {
     timestamp: new Date("2024-03-01"), price: 95, volume: 1000, target: null,
@@ -156,7 +156,7 @@ const marketData: MarketData[] = [
 ];
 
 
-// Execute the trading strategy
+Execute the trading strategy
 const position = tradingStrategy.executeStrategy(marketData);
 console.log("Current Position:", position);
 

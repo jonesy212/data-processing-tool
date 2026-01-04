@@ -1,4 +1,4 @@
-// decompress.ts
+decompress.ts
 import pako from "pako";
 
 /**

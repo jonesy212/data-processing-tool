@@ -1,5 +1,5 @@
-// ErrorBoundary.tsx
-// ErrorBoundary.ts
+ErrorBoundary.tsx
+ErrorBoundary.ts
 import axiosInstance from '@/core/api/csrfToken';
 import React, { Component, ErrorInfo, ReactNode } from '@/core/shared/ErrorHandler';
 

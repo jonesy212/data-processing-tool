@@ -1,12 +1,12 @@
-// useRealtimeExchangeData.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+useRealtimeExchangeData.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import useRealtimeData, { RealtimeUpdateCallback } from "@/core/hooks/commHooks/useRealtimeData";
 import { ExchangeEnum } from "@/core/models/cypto/exchangeIntegration";
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
 const useRealtimeExchangeData = <
@@ -59,7 +59,7 @@ const useRealtimeExchangeData = <
   return { fetchExchangeData };
 };export default useRealtimeExchangeData;
 
-// Example function to fetch exchange data for a specific exchange
+Example function to fetch exchange data for a specific exchange
 const fetchDataForExchange = async (exchange: ExchangeEnum): Promise<any[]> => {
   // Replace with actual fetch logic based on the ExchangeEnum
   // Example:

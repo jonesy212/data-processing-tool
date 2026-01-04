@@ -1,4 +1,4 @@
-// ValidationActions.ts
+ValidationActions.ts
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import { createAction } from "@reduxjs/toolkit";
 
@@ -17,7 +17,7 @@ export const ValidationActions = {
   // Add more validation actions as needed
 };
 
-// Define action types
+Define action types
 export enum ValidationActionTypes {
   START_VALIDATION = "START_VALIDATION",
   VALIDATION_SUCCESS = "VALIDATION_SUCCESS",
@@ -27,7 +27,7 @@ export enum ValidationActionTypes {
   VALIDATE_THEME_SETTINGS = "VALIDATE_THEME_SETTINGS", // New action type
 }
 
-// Define action interfaces
+Define action interfaces
 interface StartValidationAction {
   type: ValidationActionTypes.START_VALIDATION;
 }
@@ -41,13 +41,13 @@ interface ValidationFailureAction {
   error: string;
 }
 
-// Define a union type for all action types
+Define a union type for all action types
 export type ValidationAction =
   | StartValidationAction
   | ValidationSuccessAction
   | ValidationFailureAction;
 
-// Define action creators
+Define action creators
 export const startValidation = (): StartValidationAction => ({
   type: ValidationActionTypes.START_VALIDATION,
 });

@@ -1,4 +1,4 @@
-// CardFrame.tsx
+CardFrame.tsx
 import React from "react";
 import DummyCard from "./DummyCard";
 

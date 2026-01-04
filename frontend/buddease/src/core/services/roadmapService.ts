@@ -1,6 +1,6 @@
-// roadmapService.ts
-// roadmapService
-// services/roadmapService.ts
+roadmapService.ts
+roadmapService
+services/roadmapService.ts
 
 import { AnalysisNode } from '@/core/typings/AnalysisNode';
 import { RoadmapAudience, RoadmapItem } from '@/core/typings/roadmap';
@@ -65,7 +65,7 @@ function simplifyForCommunity<T>(nodes: AnalysisNode<T>[]): RoadmapItem[] {
 }
 
 
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { generateRoadmap } from '@/core/services/roadmapService';
 import { VersionData } from '@/core/versions/VersionData';
 

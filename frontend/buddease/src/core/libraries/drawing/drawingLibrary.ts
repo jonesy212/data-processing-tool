@@ -1,10 +1,10 @@
-// drawingLibrary.ts
-// Import type declarations from the corresponding .d.ts file
+drawingLibrary.ts
+Import type declarations from the corresponding .d.ts file
 import { DrawingFunctions, DrawingOptions } from '@/core/libraries/drawing/drawingLibrary';
 import { Drawing } from '@/core/libraries/drawing/generateDrawingJSON';
 import 'drawingLibrary';
 
-// Class implementation for DrawingError
+Class implementation for DrawingError
 export class DrawingError extends Error {
   
   errorType: string;
@@ -18,7 +18,7 @@ export class DrawingError extends Error {
 
 
 
-// Implementation of drawing functions
+Implementation of drawing functions
 const drawingFunctions: DrawingFunctions = {
   drawCircle: (
     x: number,
@@ -639,4 +639,4 @@ const drawingFunctions: DrawingFunctions = {
 };
 
 export { drawingFunctions as DrawingFunctions }; // Exporting the drawingFunctions as DrawingFunctions
-// Export the mock implementation
+Export the mock implementation

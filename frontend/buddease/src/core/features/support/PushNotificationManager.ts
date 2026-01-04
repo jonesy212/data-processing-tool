@@ -1,4 +1,4 @@
-// PushNotificationManager.ts
+PushNotificationManager.ts
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 const { notify } = useNotification()
@@ -32,7 +32,7 @@ class PushNotificationManager {
   }
 }
 
-// Usage:
+Usage:
 PushNotificationManager.sendPushNotification({
   message: "Hello world",
   sender: "System"

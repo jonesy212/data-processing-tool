@@ -1,8 +1,8 @@
-// getCategoryFromFilePath.ts
+getCategoryFromFilePath.ts
 import { FileCategory, fileMapping } from "@/core/documents/FileType";
 import { fileCategoryMapping } from "@/core/libraries/categories/fileCategoryMapping";
 
-// Function to extract category from a file path
+Function to extract category from a file path
 function getCategoryFromFilePath(filePath: string): FileCategory | null {
     // Extract the file extension from the file path
     const extension = filePath.split('.').pop() || '';
@@ -41,7 +41,7 @@ export { getCategoryFromFilePath };
 
 
 
-// Example Usage: 
+Example Usage: 
 const filePath = "some/path/to/file.ts";
 const category = getCategoryFromFilePath(filePath);
 if (category) {

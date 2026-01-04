@@ -1,5 +1,16 @@
-// DynamicIntroTooltip.tsx
+DynamicIntroTooltip.tsx
 import React, { useEffect } from 'react';
+import IntroJs from 'intro.js';
+
+
+export interface IntroStep {
+  element?: HTMLElement | string;
+  intro?: string;
+  title?: string;
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
+  tooltipClass?: string;
+  highlightClass?: string;
+}
 
 interface DynamicIntroTooltipProps {
   steps: Partial<IntroStep>[];
@@ -36,7 +47,7 @@ export default DynamicIntroTooltip;
 
 
 
-//TODO CREATE a button with the id 
+// TODO CREATE a button with the id 
 // voiceControlButton that triggers the voice - controlled 
 // navigation feature. You would customize the steps and 
 // integration points based on your specific application 

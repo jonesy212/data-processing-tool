@@ -1,4 +1,4 @@
-// dynamicQuestionGenerator.ts
+dynamicQuestionGenerator.ts
 import { Question } from "@/core/pages/onboarding/Question";
 
 const generateDynamicQuestions = (userResponses: any): Question[] => {

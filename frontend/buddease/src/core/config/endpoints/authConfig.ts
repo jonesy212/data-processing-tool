@@ -1,6 +1,6 @@
 // authConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { AuthEndpoints } from '@/core/typings/categories/AuthEndpoints';
+import type { AuthEndpoints } from '@/core/typings/categories/AuthEndpoints';
 
 export const authConfig: AuthEndpoints = {
   admin: { path: `${BASE_URL}/api/admin/login`, method: "POST" },

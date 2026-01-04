@@ -1,4 +1,4 @@
-// DataAnalysisPhase.tsx
+DataAnalysisPhase.tsx
 import Visualization from "@/core/hooks/userInterface/Visualization";
 import { PhaseProps } from "@/core/pages/development/PlanningPhase";
 import { sendDataToBackend } from "@/core/services/dataAnalysisOrchestrator";
@@ -21,7 +21,7 @@ enum DataAnalysisSubPhase {
 }
 
 interface DataAnalysisPhaseProps extends PhaseProps{
-// add props as necess specific to data anaylsis phase
+add props as necess specific to data anaylsis phase
 }
 
 const dataAnalysisReducer = (

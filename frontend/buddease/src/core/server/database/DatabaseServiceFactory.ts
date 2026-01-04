@@ -1,4 +1,4 @@
-// DatabaseServiceFactory.ts
+DatabaseServiceFactory.ts
 import { DatabaseConfig } from '@/core/config/DatabaseConfig';
 import { BaseDatabaseService } from '@/core/server/database/DatabaseService';
 import { DatabaseType } from '@/core/server/database/DatabaseServiceFactory';

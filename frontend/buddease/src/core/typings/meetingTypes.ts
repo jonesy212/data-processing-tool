@@ -1,4 +1,4 @@
-// meetingTypes.ts
+meetingTypes.ts
 
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { Meeting } from '@/core/components/communications/scheduler/Meeting';

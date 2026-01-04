@@ -1,10 +1,10 @@
-// CollaborationOptions.ts
+CollaborationOptions.ts
 interface CollaborationOptions {
   id: string;
   name: string;
   description: string;
 }
-// Define the type for TeamCollaborationAnalysis
+Define the type for TeamCollaborationAnalysis
 interface TeamCollaborationAnalysis {
   teamId: string; // ID of the team being analyzed
   collaborationScore: number; // Score representing the level of collaboration within the team
@@ -12,7 +12,7 @@ interface TeamCollaborationAnalysis {
   // Add more properties as needed
 }
 
-// Define types/interfaces for collaboration options
+Define types/interfaces for collaboration options
 interface CommunicationOption {
   id: string;
   name: string;
@@ -60,7 +60,7 @@ interface Decision {
 }
 
 
-// Generate collaboration options based on the provided content
+Generate collaboration options based on the provided content
 function generateCollaborationOptions(): CollaborationOptions[] {
   const options: CollaborationOptions[] = [];
 
@@ -232,7 +232,7 @@ function generateCollaborationOptions(): CollaborationOptions[] {
   return options;
 }
 
-// Usage example:
+Usage example:
 const communicationOption: CollaborationOptions = {
   name: "Audio Calls",
   description: "Real-time voice communication",
@@ -240,7 +240,7 @@ const communicationOption: CollaborationOptions = {
 };
 
 console.log(communicationOption);
-// Usage example:
+Usage example:
 const collaborationOptions: CollaborationOptions[] =
   generateCollaborationOptions();
 console.log(collaborationOptions);

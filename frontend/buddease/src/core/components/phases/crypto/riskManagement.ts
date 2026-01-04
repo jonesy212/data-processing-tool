@@ -1,4 +1,4 @@
-// riskManagement.ts
+riskManagement.ts
 interface ArbitrageTrade {
     symbol: string;
     buyExchange: string;
@@ -65,7 +65,7 @@ class ArbitrageRiskManager {
     }
 }
 
-// Example usage
+Example usage
 const riskManagementOptions: RiskManagementOptions = {
     maxTransactionCost: 2, // 2% maximum transaction cost
     maxVolatility: 1.5, // 1.5% maximum volatility

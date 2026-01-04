@@ -1,5 +1,5 @@
-// createMiddlewarePipeline.ts
-// pipeline.ts
+createMiddlewarePipeline.ts
+pipeline.ts
 import { MiddlewareFunction } from '@/core/libraries/cache/client/types';
 
 export const createMiddlewarePipeline = (
@@ -22,7 +22,7 @@ export const createMiddlewarePipeline = (
   );
 };
 
-// Alternative implementation (left-to-right composition)
+Alternative implementation (left-to-right composition)
 export const createMiddlewarePipelineLR = (
   middlewares: MiddlewareFunction[]
 ): MiddlewareFunction => {

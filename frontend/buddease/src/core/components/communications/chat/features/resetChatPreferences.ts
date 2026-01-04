@@ -1,4 +1,4 @@
-// resetChatPreferences.ts
+resetChatPreferences.ts
 const resetChatPreferences = () => {
     // Implementation to reset chat preferences
   };

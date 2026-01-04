@@ -1,4 +1,4 @@
-// SecurityEventSlice.ts
+SecurityEventSlice.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { StatusUpdate, SubscriptionCriteria } from '@/core/generators/SubscriptionCriteria';
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
@@ -27,7 +27,7 @@ const initialState: SecurityEventState = {
 };
 
 
-// Async thunk to create a new security event
+Async thunk to create a new security event
 export const createEvent = createAsyncThunk(
   'securityEvents/createEvent',
   async (newEvent: SecurityEvent) => {
@@ -85,7 +85,7 @@ export const exportEvents = createAsyncThunk(
 );
 
 
-// Define the thunk
+Define the thunk
 export const subscribeToEvents = createAsyncThunk(
   'securityEvents/subscribeToEvents',
   async (subscriptionCriteria: SubscriptionCriteria, { rejectWithValue }) => {
@@ -114,7 +114,7 @@ export const subscribeToEvents = createAsyncThunk(
 
 
 
-// Define the thunk
+Define the thunk
 export const manageEventStatus = createAsyncThunk(
   'securityEvents/manageEventStatus',
   async (statusUpdate: StatusUpdate, { rejectWithValue }) => {

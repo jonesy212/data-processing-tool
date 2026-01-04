@@ -1,4 +1,4 @@
-// CalendarEventAttendeeAvailabilityAnalysis.tsx
+CalendarEventAttendeeAvailabilityAnalysis.tsx
 import { AttendeeAvailability, AttendeeAvailabilityAnalysis } from "@/core/components/calendar/Attendee";
 
 interface CalendarEventAttendeeAvailabilityAnalysis extends AttendeeAvailabilityAnalysis {
@@ -6,7 +6,7 @@ interface CalendarEventAttendeeAvailabilityAnalysis extends AttendeeAvailability
   
 }
 
-// Function to analyze attendee availability for a calendar event
+Function to analyze attendee availability for a calendar event
 function analyzeAttendeeAvailability(
   eventId: string,
   attendees: string[]
@@ -38,7 +38,7 @@ function analyzeAttendeeAvailability(
   };
 }
 
-// Example usage
+Example usage
 const eventId = "your_event_id";
 const attendees = ["attendee1@example.com", "attendee2@example.com"];
 

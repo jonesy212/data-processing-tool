@@ -1,4 +1,4 @@
-// SecureBoot.ts
+SecureBoot.ts
 class SecureBoot {
   constructor() {
     // Initialize secure boot configuration

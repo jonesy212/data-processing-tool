@@ -1,9 +1,9 @@
-// NotificationProvider.tsx
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { VideoMetadata } from '@/core/config/StructuredMetadata';
+NotificationProvider.tsx
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { VideoMetadata } from '@/core/config/StructuredMetadata';
 import { useMeta } from '@/core/config/useMeta';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';

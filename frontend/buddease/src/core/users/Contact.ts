@@ -1,4 +1,4 @@
-// Contact.ts
+Contact.ts
 interface Contact {
     id: number;
     name: string;

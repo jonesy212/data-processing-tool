@@ -1,7 +1,7 @@
-// presetPercentages.ts
+presetPercentages.ts
 import { useState } from "react";
 
-// Define the function to generate preset percentages
+Define the function to generate preset percentages
 export function generatePresetPercentages(
   numPercentages: number,
   presetPercentages: number[] = []
@@ -19,7 +19,7 @@ export function generatePresetPercentages(
   return percentages;
 }
 
-// Define the hook to hold the percentages for the presets
+Define the hook to hold the percentages for the presets
 export const usePresetPercentages = (initialNumPercentages: number = 5) => {
   const [percentages, setPercentages] = useState<number[]>(
     generatePresetPercentages(initialNumPercentages)

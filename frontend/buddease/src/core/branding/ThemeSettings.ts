@@ -1,4 +1,4 @@
-// ThemeSettings.ts
+ThemeSettings.ts
 import { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
 
 interface ThemeSettings {

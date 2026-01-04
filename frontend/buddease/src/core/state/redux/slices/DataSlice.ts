@@ -1,4 +1,4 @@
-// DataSlice.ts
+DataSlice.ts
 import { Data } from '@/core/models/data/Data';
 import { DataStatus } from "@/core/models/data/StatusType";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
@@ -133,9 +133,9 @@ export const {
   removeData,
 } = useDataManagerSlice.actions;
 
-// Export selector for accessing the data from the state
+Export selector for accessing the data from the state
 export const selectData = (state: { data: DataSliceState }) => state.data.data;
 
-// Export reducer for the data entity slice
+Export reducer for the data entity slice
 export default useDataManagerSlice.reducer;
 export type { DataSliceState };

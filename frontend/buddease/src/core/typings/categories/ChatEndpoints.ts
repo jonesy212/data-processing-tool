@@ -1,4 +1,4 @@
-// ChatEndpoints.ts
+ChatEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ChatEndpoints extends EndpointCategoryConfig {

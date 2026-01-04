@@ -1,4 +1,4 @@
-// PreviewForm.tsx
+PreviewForm.tsx
 import { saveDrawingToDatabase } from "@/core/api/ApiDrawing";
 import { ValidationRule } from '@/core/snapshots/ValidationRule';
 import React, { useState } from "react";

@@ -1,6 +1,6 @@
-// NotificationTypes.ts
+NotificationTypes.ts
 
-// Base types - System & Technical
+Base types - System & Technical
 export const BaseNotificationTypes = {
   ERROR: 'Error',
   WARNING: 'Warning',
@@ -18,7 +18,7 @@ export const BaseNotificationTypes = {
   DISMISS: 'Dismiss',
 } as const;
 
-// Authentication & Account
+Authentication & Account
 export const AuthNotificationTypes = {
   WELCOME: 'Welcome',
   ACCOUNT_CREATED: 'AccountCreated',
@@ -27,7 +27,7 @@ export const AuthNotificationTypes = {
   PROFILE_UPDATED: 'ProfileUpdated',
 } as const;
 
-// Team & Collaboration
+Team & Collaboration
 export const TeamNotificationTypes = {
   TEAM_JOIN_REQUEST: 'TeamJoinRequest',
   TEAM_JOIN_APPROVED: 'TeamJoinApproved',
@@ -36,7 +36,7 @@ export const TeamNotificationTypes = {
   ADD_PARTICIPANT: 'ADD_PARTICIPANT',
 } as const;
 
-// Chat & Messaging
+Chat & Messaging
 export const ChatNotificationTypes = {
   NEW_CHAT_MESSAGE: 'NewChatMessage',
   CHAT_MENTION: 'ChatMention',
@@ -47,7 +47,7 @@ export const ChatNotificationTypes = {
   MESSAGE_ID: 'Message'
 } as const;
 
-// Operations & System Actions
+Operations & System Actions
 export const OperationNotificationTypes = {
   OPERATION_SUCCESS: 'OperationSuccess',
   OPERATION_ERROR: 'OperationError',
@@ -60,7 +60,7 @@ export const OperationNotificationTypes = {
   DISPLAY_SUCCESS: 'DisplaySuccess',
 } as const;
 
-// Content & Media
+Content & Media
 export const ContentNotificationTypes = {
   CONTENT_ID: 'ContentID',
   CONTENT_ITEM: 'ContentItem',
@@ -82,7 +82,7 @@ export const EventNotificationTypes = {
   EVENT: 'Event'
 }
 
-// Calendar & Events
+Calendar & Events
 export const CalendarNotificationTypes = {
   CALENDAR_EVENT: 'CalendarEvent',
   CALENDAR_ID: 'CalendarID',
@@ -93,13 +93,13 @@ export const CalendarNotificationTypes = {
   MEETING_ID: 'MeetingId',
 } as const;
 
-// Payments & Commerce
+Payments & Commerce
 export const PaymentNotificationTypes = {
   PAYMENT_RECEIVED: 'PaymentReceived',
   COUPON_CODE: 'CouponCode',
 } as const;
 
-// App Development & Features
+App Development & Features
 export const AppNotificationTypes = {
   APP_VERSION: 'AppVersion',
   APP_STRUCTURE_ID: 'AppStructureID',
@@ -115,7 +115,7 @@ export const AppNotificationTypes = {
   BRAINSTORMING_SESSION_ID: 'BrainstormingSessionID',
 } as const;
 
-// Analytics & Logging
+Analytics & Logging
 export const AnalyticsNotificationTypes = {
   ANALYTICS_ID: 'AnalyticsID',
   LOGGING_ERROR: 'LoggingError',
@@ -125,7 +125,7 @@ export const AnalyticsNotificationTypes = {
   TASK_LOGGED: 'TaskLogged',
 } as const;
 
-// Custom & Miscellaneous
+Custom & Miscellaneous
 export const CustomNotificationTypes = {
   CUSTOM_NOTIFICATION_1: 'CustomNotification1',
   CUSTOM_NOTIFICATION_2: 'CustomNotification2',
@@ -141,7 +141,7 @@ export const CustomNotificationTypes = {
   __FILE_PATH__: 'filePath',
 } as const;
 
-// Onboarding & Setup (for your phases)
+Onboarding & Setup (for your phases)
 export const OnboardingNotificationTypes = {
   PROFILE_SETUP_START: 'ProfileSetupStart',
   PROFILE_SETUP_COMPLETE: 'ProfileSetupComplete',
@@ -161,7 +161,7 @@ export const OnboardingNotificationTypes = {
 
 
 
-// Phase & Progress Notifications
+Phase & Progress Notifications
 export const PhaseNotificationTypes = {
   // User Support Phases
   USER_SUPPORT_PLANNING_START: 'UserSupportPlanningStart',
@@ -335,7 +335,7 @@ export const PhaseNotificationTypes = {
 
 } as const;
 
-// Add this to your notification types
+Add this to your notification types
 export const ApiNotificationTypes = {
   // API Status notifications
   API_SUCCESS: 'APISuccess',
@@ -402,7 +402,7 @@ export const ApiNotificationTypes = {
   API_SCHEMA_CHANGED: 'APISchemaChanged',
 } as const;
 
-// Combine all types
+Combine all types
 export const NOTIFICATION_TYPES = {
   ...BaseNotificationTypes,
   ...AuthNotificationTypes,

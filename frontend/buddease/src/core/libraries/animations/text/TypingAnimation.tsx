@@ -1,4 +1,4 @@
-// TypingAnimation.tsx
+TypingAnimation.tsx
 import { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
 import React, { useEffect, useState } from "react";
 

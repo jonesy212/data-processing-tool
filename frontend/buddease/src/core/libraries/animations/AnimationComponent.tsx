@@ -1,4 +1,4 @@
-// AnimationComponent.tsx
+AnimationComponent.tsx
 import { AnimatedComponentProps } from '@/core/components/styling/AnimationsAndTansitions';
 import createDynamicHook, { DynamicHookResult } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import useIdleTimeout from '@/core/hooks/idleTimeoutHooks';

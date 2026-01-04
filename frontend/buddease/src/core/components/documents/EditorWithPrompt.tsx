@@ -1,4 +1,4 @@
-// EditorWithPrompt.tsx
+EditorWithPrompt.tsx
 import React, { ReactNode, useState } from "react";
 
 import { ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";

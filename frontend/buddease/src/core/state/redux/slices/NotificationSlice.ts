@@ -1,7 +1,7 @@
-// NotificationSlice.ts
-// useNotificationManagerSlice.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+NotificationSlice.ts
+useNotificationManagerSlice.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { RootState } from "@/core/state/redux/slices/RootSlice";
@@ -105,10 +105,10 @@ export const {
   clearNotifications,
 } = useNotificationManagerSlice.actions;
 
-// Export reducer
+Export reducer
 export default useNotificationManagerSlice.reducer;
 
-// Selectors
+Selectors
 export const selectNotifications = (state: RootState) =>
   state.notificationManager.notifications;
 export const selectNotificationLoading = (state: RootState) =>

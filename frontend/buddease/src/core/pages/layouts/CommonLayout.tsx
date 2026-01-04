@@ -1,5 +1,5 @@
-// CommonLayout.tsx
-// CommonLayout.ts
+CommonLayout.tsx
+CommonLayout.ts
 
 import React from 'React';
 import axios from 'axios';

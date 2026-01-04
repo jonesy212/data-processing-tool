@@ -1,4 +1,4 @@
-// src/app/error-analyzer/TypeRelationshipAnalyzer.ts
+src/app/error-analyzer/TypeRelationshipAnalyzer.ts
 import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import fs from 'fs';

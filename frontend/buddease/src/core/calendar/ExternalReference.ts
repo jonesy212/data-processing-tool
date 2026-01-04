@@ -1,5 +1,5 @@
-// ExternalReference.ts
-//todo: move to the right foder
+ExternalReference.ts
+todo: move to the right foder
 
 export interface ExternalReference {
   id: string;
@@ -8,7 +8,7 @@ export interface ExternalReference {
   metadata?: Record<string, any>;
 }
 
-// Example: Create a reference
+Example: Create a reference
 const ref: ExternalReference = {
   id: "ext-123",
   source: "GitHub",

@@ -1,4 +1,4 @@
-// HistoryStore.tsx
+HistoryStore.tsx
 
 import UserService from "@/core/api/ApiUser";
 import { getUsersData, saveUserProfiles } from "@/core/api/UsersApi";

@@ -1,5 +1,6 @@
-// UserTaskManagementPreferencesActions.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+UserTaskManagementPreferencesActions.ts
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface UserTaskManagementPreferencesState {
   notificationsEnabled: boolean;

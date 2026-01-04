@@ -1,4 +1,4 @@
-// ForgotPasswordForm.tsx
+ForgotPasswordForm.tsx
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions'; // Import sanitizeInput function
 import React, { useState } from 'react';
 

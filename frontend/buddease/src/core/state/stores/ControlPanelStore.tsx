@@ -1,4 +1,4 @@
-// ControlPanelStore.tsx
+ControlPanelStore.tsx
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 
@@ -133,10 +133,10 @@ class ControlPanelStore {
   }
 }
 
-// Create an instance of ControlPanelStore
+Create an instance of ControlPanelStore
 const controlPanelStoreInstance = new ControlPanelStore();
 
-// Define the useControlPanelStore hook
+Define the useControlPanelStore hook
 const useControlPanelStore = () => {
   const [theme, setTheme] = useState("light");
 

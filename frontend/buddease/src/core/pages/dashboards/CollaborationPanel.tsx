@@ -1,4 +1,4 @@
-// CollaborationPanel.tsx
+CollaborationPanel.tsx
 import React, { useState } from 'react';
 
 interface CollaborationPanelProps {

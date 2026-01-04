@@ -1,4 +1,4 @@
-// PromptActions.ts
+PromptActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const PromptActions = {

@@ -1,4 +1,4 @@
-// useUIStore.ts
+useUIStore.ts
 import { useStore } from '@/core/hooks/useStore';
 import UIStore from '@/core/state/stores/UIStore';
 

@@ -1,4 +1,6 @@
 // src/models/workflow/TransitionEvaluationContext.ts
+import { ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
+
 export interface TransitionEvaluationContext {
     // Workflow instance information
     workflowInstance: {
@@ -88,6 +90,43 @@ export interface TransitionEvaluationContext {
         retryCount: number;
         maxRetries: number;
         totalTimeSpent: number;
+    };
+
+    progressContext?: {
+        tracker?: ProgressTracker;
+        currentProgress?: {
+            percentage: number;
+            completedSteps: number;
+            totalSteps: number;
+            lastUpdate: Date;
+            estimatedCompletion?: Date;
+        };
+        requirements?: {
+            minimumProgress?: number;
+            requiredSteps?: string[];
+            conditions?: Array<{
+                type: string;
+                description: string;
+                check: (progress: any) => boolean;
+            }>;
+        };
+        metrics?: {
+            performance: {
+                averageTimePerStep: number;
+                fastestStep: number;
+                slowestStep: number;
+            };
+            accuracy: {
+                successRate: number;
+                errorRate: number;
+                retryRate: number;
+            };
+            completion: {
+                onTimeRate: number;
+                delayedRate: number;
+                averageDelay: number;
+            };
+        };
     };
     
     // External dependencies status
@@ -353,6 +392,3 @@ export function hasUIContext(context: TransitionEvaluationContext): context is T
 export function hasBusinessMetrics(context: TransitionEvaluationContext): context is TransitionEvaluationContext & { analytics: { businessMetrics: NonNullable<TransitionEvaluationContext['analytics']['businessMetrics']> } } {
     return context.analytics.businessMetrics !== undefined;
 }
-
-// Export default
-export default TransitionEvaluationContext;

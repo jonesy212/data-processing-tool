@@ -1,4 +1,4 @@
-// DEX.ts
+DEX.ts
 export type DEX = {
     name: string;
     apiUrl: string;

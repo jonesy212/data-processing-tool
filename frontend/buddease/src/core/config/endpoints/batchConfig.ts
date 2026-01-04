@@ -1,4 +1,4 @@
-// batchConfig.ts
+batchConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { BatchEndpoints } from '@/core/typings/categories/BatchEndpoints';
 

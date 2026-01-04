@@ -1,4 +1,4 @@
-// DesignDashboard.tsx
+DesignDashboard.tsx
 "use client";
 
 import YourParentComponent from "@/core/components/prompts/YourParentComponent";
@@ -10,8 +10,8 @@ import DynamicTypography, {
     HeadingProps,
 } from "@/core/components/styling/DynamicTypography";
 import FrontendStructure from "@/core/config/appStructure/FrontendStructureComponent";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { LogData } from '@/core/models/LogData';
 import DataPreview, {
@@ -21,7 +21,7 @@ import { UserData } from "@/core/users/User";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 
-// Dynamically import components with proper typing
+Dynamically import components with proper typing
 const RouteGuard = dynamic(
   () => import("@/core/components/routing/RouteGuard")
     .then((mod) => mod.default || mod),

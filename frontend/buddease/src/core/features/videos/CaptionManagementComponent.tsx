@@ -1,4 +1,4 @@
-// CaptionManagementComponent.tsx
+CaptionManagementComponent.tsx
 
 import CaptionManagementPage from '@/core/pages/content/CaptionManagementPage';
 import React from 'react';

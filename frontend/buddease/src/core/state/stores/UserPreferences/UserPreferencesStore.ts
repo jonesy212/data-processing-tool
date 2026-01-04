@@ -1,5 +1,5 @@
-// UserPreferencesStore.ts
-// src/app/state/stores/UserPreferences/UserPreferencesStore.ts
+UserPreferencesStore.ts
+src/app/state/stores/UserPreferences/UserPreferencesStore.ts
 
 import themeSettings from '@/core/config/endpoints/themeConfig';
 import { action, makeObservable, observable } from 'mobx';

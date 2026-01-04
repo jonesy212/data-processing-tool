@@ -1,6 +1,7 @@
 // scripts/detect-type-import-mismatches.ts
-import { execSync } from 'child_process';
 
+import { execSync } from 'child_process';
+import path from 'path'
 function detectTypeImportMismatches() {
   console.log('🔍 Detecting type import mismatches...\n');
   
@@ -29,7 +30,7 @@ function detectTypeImportMismatches() {
       
       // Create a quick fix script
       const quickFixScript = `
-// Quick fix for type imports
+Quick fix for type imports
 const fs = require('fs');
 const path = require('path');
 

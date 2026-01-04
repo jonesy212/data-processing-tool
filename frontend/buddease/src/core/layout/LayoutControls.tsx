@@ -1,6 +1,6 @@
-// LayoutControls.tsx
-// LayoutControls.ts
-// app/layout/LayoutControls.tsx
+LayoutControls.tsx
+LayoutControls.ts
+app/layout/LayoutControls.tsx
 import React from "react";
 
 interface LayoutControlsProps {

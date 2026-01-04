@@ -1,18 +1,18 @@
-// lifecycles.ts
+lifecycles.ts
 
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/core/config/BaseConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Lesson } from "@/core/documents/editing/CourseBuilder";
 import { enhancedPhaseHook } from "@/core/hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "@/core/hooks/phaseHooks/PhaseHooks";
 import { getLastActivityTimeForPhase } from '@/core/hooks/phases/PhaseActivity';
 import { CustomPhaseHooks, Phase } from "@/core/models/phases/Phase";
 import { IdeaLifecyclePhase } from "@/core/models/phases/PhaseManager";
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
+import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
 
 export interface PhaseOptions<
   T extends BaseDataEntity,
@@ -88,7 +88,7 @@ export interface PhaseOptions<
   subPhases: string[];
 }
 
-// Define a function to generate a phase object
+Define a function to generate a phase object
 const generatePhase = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -161,7 +161,7 @@ const generatePhase = <
 
 
 
-// Common Functions
+Common Functions
 const generateGenericPhase = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -269,7 +269,7 @@ const ideaLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAtt
 ];
 
 
-// Define Unique Phases
+Define Unique Phases
 const appPlanningLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   generateGenericPhase("App Planning", ["Idea Validation", "Feature Planning", "Timeline Setup"]),
   generateGenericPhase("Development", ["Coding", "Testing", "Debugging", "Deployment"]),
@@ -298,7 +298,7 @@ const projectLifecycleManagementPhases: PhaseOptions<PhaseEntity, PhaseK, PhaseM
   generateGenericPhase("Project Review and Documentation", ["Lessons Learned", "Documentation", "Report Generation"]),
 ];
 
-// Final Array of All Phases
+Final Array of All Phases
 const allLifecyclePhases = [
   ...ideaLifecyclePhases,
   ...appPlanningLifecyclePhases,
@@ -314,4 +314,4 @@ export {
     ideaLifecyclePhases,
     projectLifecycleManagementPhases
 };
-// Rest of the code remains unchanged
+Rest of the code remains unchanged

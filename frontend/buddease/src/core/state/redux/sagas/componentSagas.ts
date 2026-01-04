@@ -1,5 +1,5 @@
-// componentSagas.ts
-// /app/sagas/componentSagas.ts
+componentSagas.ts
+/app/sagas/componentSagas.ts
 import { ComponentActions } from "@/core/actions/ComponentActions";
 import { apiComponentService } from "@/core/services/apiComponentService";
 import { call, put, takeLatest } from "redux-saga/effects";

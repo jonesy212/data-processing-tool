@@ -1,4 +1,4 @@
-// ErrorTracker.ts
+ErrorTracker.ts
 import { Correction, CorrectionReport } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';

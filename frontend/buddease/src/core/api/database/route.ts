@@ -1,153 +1,189 @@
 // route.ts
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool, PoolConfig } from 'pg';
+import PizZip from "pizzip";
 
-const poolConfig: PoolConfig = {
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-};
-
-const pool = new Pool(poolConfig);
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+  }
+  
+  try {
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to read from cache' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, tableName, data, query, params, conditions, updateData, id } = await request.json();
+    const { key, data } = await request.json();
     
-    switch (action) {
-      case 'insert':
-        const insertResult = await insertData(tableName, data);
-        return NextResponse.json(insertResult);
-      
-      case 'query':
-        const queryResult = await executeQuery(query, params);
-        return NextResponse.json(queryResult);
-      
-      case 'select':
-        const selectResult = await selectData(tableName, conditions, params);
-        return NextResponse.json(selectResult);
-      
-      case 'update':
-        const updateResult = await updateData(tableName, updateData, conditions, params);
-        return NextResponse.json(updateResult);
-      
-      case 'delete':
-        const deleteResult = await deleteData(tableName, conditions, params);
-        return NextResponse.json(deleteResult);
-      
-      case 'remove':
-        const removeResult = await removeData(tableName, id);
-        return NextResponse.json(removeResult);
-      
-      case 'share':
-        const shareResult = await shareData(tableName, data);
-        return NextResponse.json(shareResult);
-      
-      default:
-        return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
+    
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error.message 
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
     }
   } catch (error) {
-    console.error('Database API error:', error);
-    return NextResponse.json({ error: 'Database operation failed' }, { status: 500 });
+    console.error("Error generating document:", error);
+    return NextResponse.json(
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
   }
 }
 
-// INSERT operation
-async function insertData(tableName: string, data: any) {
-  const columns = Object.keys(data).join(', ');
-  const placeholders = Object.keys(data).map((_, index) => `$${index + 1}`).join(', ');
-  const values = Object.values(data);
-  
-  const sql = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
-  const result = await pool.query(sql, values);
-  return result.rows[0];
-}
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
 
-// SELECT operation
-async function selectData(tableName: string, conditions?: string, params: any[] = []) {
-  let sql = `SELECT * FROM ${tableName}`;
-  if (conditions) {
-    sql += ` WHERE ${conditions}`;
-  }
-  
-  const result = await pool.query(sql, params);
-  return result.rows;
-}
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
 
-// UPDATE operation
-async function updateData(tableName: string, updateData: any, conditions?: string, params: any[] = []) {
-  const setClause = Object.keys(updateData)
-    .map((key, index) => `${key} = $${index + 1}`)
-    .join(', ');
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
   
-  const values = Object.values(updateData);
-  let sql = `UPDATE ${tableName} SET ${setClause}`;
-  
-  if (conditions) {
-    sql += ` WHERE ${conditions}`;
-    // Add condition parameters after update values
-    values.push(...params);
-  }
-  
-  const result = await pool.query(sql, values);
-  return { 
-    success: true, 
-    rowCount: result.rowCount,
-    message: `${result.rowCount} row(s) updated`
-  };
-}
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
 
-// DELETE operation with conditions
-async function deleteData(tableName: string, conditions?: string, params: any[] = []) {
-  let sql = `DELETE FROM ${tableName}`;
-  if (conditions) {
-    sql += ` WHERE ${conditions}`;
-  }
-  
-  const result = await pool.query(sql, params);
-  return {
+  return NextResponse.json({
     success: true,
-    rowCount: result.rowCount,
-    message: `${result.rowCount} row(s) deleted`
-  };
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
 }
 
-// REMOVE operation (delete by ID)
-async function removeData(tableName: string, id: number | string) {
-  const sql = `DELETE FROM ${tableName} WHERE id = $1`;
-  const result = await pool.query(sql, [id]);
-  return {
-    success: true,
-    rowCount: result.rowCount,
-    message: `${result.rowCount} row(s) removed`
-  };
-}
-
-// SHARE operation (for data sharing functionality)
-async function shareData(tableName: string, data: any) {
-  // This could create a shared access record, update permissions, etc.
-  // Example: Insert into a shares table or update a shared flag
-  const { resourceId, userId, permissionLevel = 'read' } = data;
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
   
-  const sql = `
-    INSERT INTO data_shares (table_name, resource_id, user_id, permission_level, shared_at) 
-    VALUES ($1, $2, $3, $4, NOW()) 
-    RETURNING *
-  `;
-  
-  const result = await pool.query(sql, [tableName, resourceId, userId, permissionLevel]);
-  return {
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
     success: true,
-    share: result.rows[0],
-    message: 'Data shared successfully'
-  };
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
 }
 
-// Generic query execution
-async function executeQuery(query: string, params: any[] = []) {
-  const result = await pool.query(query, params);
-  return result.rows;
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
+      { status: 500 }
+    );
+  }
 }

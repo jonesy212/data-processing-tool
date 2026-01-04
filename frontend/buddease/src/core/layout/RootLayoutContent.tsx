@@ -1,10 +1,10 @@
-// RootLayoutContent.tsx
-// app/layout/RootLayoutContent.tsx
+RootLayoutContent.tsx
+app/layout/RootLayoutContent.tsx
 "use client";
 
 import React, { RefObject } from "react";
 
-// Define the props interface
+Define the props interface
 export interface RootLayoutContentProps {
   children: React.ReactNode;
   isMinimized: boolean;

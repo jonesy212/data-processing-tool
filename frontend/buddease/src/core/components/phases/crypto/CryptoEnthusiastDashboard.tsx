@@ -1,4 +1,4 @@
-// CryptoEnthusiastDashboard.tsx
+CryptoEnthusiastDashboard.tsx
 import { CryptoActions } from '@/core/actions/CryptoActions';
 import { tradeApi } from '@/core/api/ApiTrade';
 import { MarketData } from '@/core/trading/TradingStrategy';

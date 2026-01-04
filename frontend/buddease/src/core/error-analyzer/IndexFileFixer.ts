@@ -1,4 +1,4 @@
-// src/app/error-analyzer/IndexFileFixer.ts
+src/app/error-analyzer/IndexFileFixer.ts
 import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import path from 'path';
 

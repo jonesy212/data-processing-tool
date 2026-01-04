@@ -1,4 +1,4 @@
-// UserRolesNFTEndpoints.ts
+UserRolesNFTEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface UserRolesNFTEndpoints extends EndpointCategoryConfig {

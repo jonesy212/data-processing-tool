@@ -1,14 +1,15 @@
 // createMessage.ts
-import { ChatRoom } from '@/core/communications/ChatRoom';
-import { Sender } from '@/core/components/communications/CommunicationPage';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UserPreferences } from "@/core/config/UserPreferences";
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { Content } from '@/core/models/content/AddContent';
-import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
+import type { ChatRoom } from '@/core/communications/ChatRoom';
+import type { Sender } from '@/core/components/communications/CommunicationPage';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UserPreferences } from "@/core/config/UserPreferences";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { Content } from '@/core/models/content/AddContent';
+import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
+import { UserRoleEnum } from '@/core/models/UserRoles';
 
 type MessageProps<
   T extends BaseDataEntity,
@@ -26,16 +27,23 @@ type MessageProps<
 }
 
 // The corrected createMessage function
-export const createMessage = (
+export const createMessage = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   type: NotificationType, // The type of notification
   content: string, // The main content of the message
   additionalData?: string, // Additional data, if any
   userId?: number, // User ID, optional
-  sender?: Sender<SenderEntity, SenderK, SenderMeta, SenderAttachment, SenderExcludedFields, SenderIncludedFields>,
+  sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   channel?: ChatRoom, // Channel information, optional
-): Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields> => {
+): Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Default system sender
-  const defaultSender: Sender<SenderEntity, SenderK, SenderMeta, SenderAttachment, SenderExcludedFields, SenderIncludedFields>= {
+  const defaultSender: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>= {
     _id: "system",
     id: "system",
     username: "System",
@@ -62,7 +70,7 @@ export const createMessage = (
       permissions: [],
       positions: [{ title: "", level: 0 }],
       includes: [],
-      roleType: ''
+      roleType: UserRoleEnum.System
     },
     bannerUrl: null,
     persona: null,
@@ -88,10 +96,7 @@ export const createMessage = (
   };
 
   // Construct the Message object
- const message: Message<MessageEntity, MessageK,
-  MessageMeta, MessageAttachment, 
-  MessageExcludedFields, MessageIncludedFields
- > = {
+ const message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
 
     id: uuidv4(),
     sender: sender || defaultSender,

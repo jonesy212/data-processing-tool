@@ -1,4 +1,4 @@
-// DetailsListActions.ts
+DetailsListActions.ts
 import { Data } from '@/core/models/data/Data';
 import { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import { createAction } from '@reduxjs/toolkit';

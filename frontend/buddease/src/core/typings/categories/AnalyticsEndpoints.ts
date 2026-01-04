@@ -1,4 +1,4 @@
-// AnalyticsEndpoints.ts
+AnalyticsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface AnalyticsEndpoints extends EndpointCategoryConfig {

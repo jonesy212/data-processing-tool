@@ -1,4 +1,4 @@
-// DynamicRouteComponent.tsx
+DynamicRouteComponent.tsx
 import React from 'react';
 
 interface DynamicRouteComponentProps {

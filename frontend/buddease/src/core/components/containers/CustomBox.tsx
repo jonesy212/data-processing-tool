@@ -1,4 +1,4 @@
-// CustomBox.tsx
+CustomBox.tsx
 import DynamicComponent from "@/core/components/styling/DynamicComponents";
 import DynamicSpacingAndLayout from "@/core/components/styling/DynamicSpacingAndLayout";
 import DynamicTypography from "@/core/components/styling/DynamicTypography";

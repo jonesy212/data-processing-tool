@@ -1,4 +1,4 @@
-// ProjectManagementApp.js
+ProjectManagementApp.js
 import PhasesNavigation from '@/core/components/phases/PhasesNavigation';
 import ProjectTimelineDashboard from '@/core/dashboards/ProjectTimelineDashboard';
 import RandomWalkVisualization from '@/core/hooks/userInterface/RandomWalkVisualization';

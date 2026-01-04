@@ -1,4 +1,4 @@
-// TimeBasedCodeGenerator.ts
+TimeBasedCodeGenerator.ts
 const generateTimeBasedCode = () => {
     // Get the current timestamp in milliseconds
     const currentTimestamp = new Date().getTime();

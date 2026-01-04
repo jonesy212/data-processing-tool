@@ -1,8 +1,8 @@
-// src/app/error-analyzer/CircularDependencyResolver.ts
+//app/error-analyzer/CircularDependencyResolver.ts
 
-import { FixPlan, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
-import { CircularBreakStrategy } from '@/core/error-analyzer/index';
-import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+import type { FixPlan, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { CircularBreakStrategy } from '@/core/error-analyzer/index';
+import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 
 interface PropertyUsage {
   context: string;

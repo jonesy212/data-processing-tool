@@ -1,4 +1,4 @@
-// components/state/stores/AquaStore.ts
+components/state/stores/AquaStore.ts
 import { AquaSession } from '@/core/state/AquaState';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 import { action, makeAutoObservable } from 'mobx';
@@ -35,5 +35,5 @@ export class AquaStore {
   });
 }
 
-// Create a singleton instance
+Create a singleton instance
 export const aquaStore = new AquaStore();

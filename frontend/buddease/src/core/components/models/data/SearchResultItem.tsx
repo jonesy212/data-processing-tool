@@ -1,4 +1,4 @@
-// SearchResultItem.tsx
+SearchResultItem.tsx
 import { BaseEntity } from '@/core/config/BaseConfig';
 import ListGenerator from '@/core/generators/ListGenerator';
 import { Data } from '@/core/models/data/Data';

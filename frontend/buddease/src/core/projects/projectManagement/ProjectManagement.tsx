@@ -1,5 +1,5 @@
-// ProjectManagement.tsx
-// Example usage in a parent component
+ProjectManagement.tsx
+Example usage in a parent component
 import { ClientProjectEntity } from '@/core/models/projects/Project';
 import ProjectCreationForm from '@/core/pages/forms/ProjectCreationForm';
 import React, { useState } from 'react';

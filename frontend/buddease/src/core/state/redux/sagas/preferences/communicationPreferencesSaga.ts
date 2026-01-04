@@ -1,4 +1,4 @@
-// communicationPreferencesSaga.ts
+communicationPreferencesSaga.ts
 import { UserCommunicationPreferencesActions } from '@/core/config/UserPreferencesActions';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -225,7 +225,7 @@ function* handleEnableRealTimeCollaboration(action: PayloadAction) {
     }
   }
   
-// Other preference sagas for communication preferences...
+Other preference sagas for communication preferences...
 export function* communicationPreferencesSaga() {
   yield all([
     // Actions for setting theme and project phases

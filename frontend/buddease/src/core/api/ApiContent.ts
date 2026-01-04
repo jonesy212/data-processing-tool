@@ -1,11 +1,11 @@
-// ApiContent.ts
+ApiContent.ts
 import internalApiService from "@/core/api/ApiClient";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import { NotificationPosition } from '@/core/models/data/StatusType';
@@ -15,10 +15,10 @@ import { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from 'axios';
 import { ContentState } from 'draft-js';
 
-// Define the API base URL
+Define the API base URL
 const API_BASE_URL = endpoints.content
 
-// Define API notification messages for content operations
+Define API notification messages for content operations
 interface ContentNotificationMessages {
   FETCH_CONTENT_SUCCESS: string;
   FETCH_CONTENT_ERROR: string;
@@ -50,8 +50,8 @@ const contentNotificationMessages: ContentNotificationMessages = {
 };
 
 
-// Function to handle API errors and notify
-// Updated function to handle API errors and notify
+Function to handle API errors and notify
+Updated function to handle API errors and notify
 const handleContentApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
@@ -76,7 +76,7 @@ const handleContentApiErrorAndNotify = (
 
 
 
-// Function to fetch contentId from API based on contentState
+Function to fetch contentId from API based on contentState
 const fetchContentIdFromAPI = async (contentState: ContentState): Promise<string> => {
   try {
     // Make an API call to fetch the content ID
@@ -96,7 +96,7 @@ const fetchContentIdFromAPI = async (contentState: ContentState): Promise<string
   }
 };
 
-// Fetch content data
+Fetch content data
 const fetchContent = <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -135,7 +135,7 @@ const fetchContent = <
 };
 
 
-// Create a new content
+Create a new content
 const createContent = async (newContentData: any): Promise<void> => {
   try {
     const createContentEndpoint = `${API_BASE_URL}/create`; // Adjust the endpoint as needed
@@ -193,7 +193,7 @@ const updateContent = async (
   }
 };
 
-// Delete a content
+Delete a content
 const deleteContent = async (contentId: number): Promise<void> => {
   try {
     const deleteContentEndpoint = `${API_BASE_URL}/delete/${contentId}`;

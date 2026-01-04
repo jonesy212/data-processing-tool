@@ -1,6 +1,6 @@
-// getDefaultValueForField.tsx
+getDefaultValueForField.tsx
 
-// Example function to get default values for new fields
+Example function to get default values for new fields
 function getDefaultValueForField(defaultType: string): any {
   switch (defaultType as 'string' | 'number' | 'boolean' | 'array' | 'object') {
     case 'string':

@@ -1,5 +1,5 @@
-// LazyIconProps.tsx
-// LazyIcon.tsx
+LazyIconProps.tsx
+LazyIcon.tsx
 import LazyLoadScript from "@/LazyLoadScript";
 import React, { ReactNode } from "react";
 

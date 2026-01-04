@@ -1,4 +1,4 @@
-// ToolbarOptions.tsx
+ToolbarOptions.tsx
 import { toolbarOptions } from "@/core/components/documents/Toolbar";
 import CustomModifier from "@/core/documents/CustomModifier";
 import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import ToolbarItem from "./ToolbarItem";
 
 
-// Define a new type for the toolbar options
+Define a new type for the toolbar options
 type ToolbarOptions = {
   [key in keyof typeof toolbarOptions]: string[];
 } & { calendar: boolean | string[] };

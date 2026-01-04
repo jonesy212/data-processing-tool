@@ -1,4 +1,4 @@
-// roadmapOutline.ts
+roadmapOutline.ts
 import { RoadmapAudience } from '@/core/server/repository/roadmapMapper';
 
 
@@ -15,7 +15,7 @@ export function generateOutline<T>(nodes: RoadmapNode<T>[], audience: RoadmapAud
   }
 }
 
-// Simplified, human-readable outline for non-technical stakeholders
+Simplified, human-readable outline for non-technical stakeholders
 function generateStakeholderOutline<T>(nodes: RoadmapNode<T>[], level = 0): string {
   return nodes
     .map(node => `${'  '.repeat(level)}- ${node.name}${node.phase ? ` [${node.phase}]` : ''}`)
@@ -26,7 +26,7 @@ function generateStakeholderOutline<T>(nodes: RoadmapNode<T>[], level = 0): stri
     .join('\n');
 }
 
-// Detailed outline for developers
+Detailed outline for developers
 function generateDeveloperOutline<T>(nodes: RoadmapNode<T>[], level = 0): string {
   return nodes
     .map(node => {
@@ -40,7 +40,7 @@ function generateDeveloperOutline<T>(nodes: RoadmapNode<T>[], level = 0): string
     .join('\n');
 }
 
-// High-level outline for community/public audience
+High-level outline for community/public audience
 function generateCommunityOutline<T>(nodes: RoadmapNode<T>[], level = 0): string {
   return nodes
     .map(node => `${'  '.repeat(level)}- ${node.name}`)

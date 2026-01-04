@@ -1,13 +1,13 @@
-// SupportTicketComponent.tsx
-// SupportTicketComponent.ts
-// app/features/support/SupportTicketComponent.tsx
+SupportTicketComponent.tsx
+SupportTicketComponent.ts
+app/features/support/SupportTicketComponent.tsx
 import UserSupportPhase from '@/core/features/support/UserSupportPhaseComponent';
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { provideCustomerSupport } from '@/core/state/slices/ApiManagerSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-// Support Ticket Types
+Support Ticket Types
 export interface SupportTicket {
   id: string;
   title: string;

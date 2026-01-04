@@ -1,4 +1,4 @@
-// IdeationPhase.tsx
+IdeationPhase.tsx
 import React from 'react';
 
 const IdeationPhase

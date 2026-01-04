@@ -1,8 +1,8 @@
-// RealtimeEndpoints.ts
+RealtimeEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 
-// Update RealtimeEndpoints to match the pattern
+Update RealtimeEndpoints to match the pattern
 export interface RealtimeEndpoints extends EndpointCategoryConfig {
   // Core CRUD
   list: EndpointConfig;

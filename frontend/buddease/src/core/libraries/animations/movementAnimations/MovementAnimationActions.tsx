@@ -1,6 +1,7 @@
 // MovementAnimationActions.tsx
 // movementAnimations/useMovementAnimations.ts
-import { RefObject, useState } from "react";
+import { useState } from "react";
+import type { RefObject } from "react";
 
 interface MovementAnimationActions {
   slide: (

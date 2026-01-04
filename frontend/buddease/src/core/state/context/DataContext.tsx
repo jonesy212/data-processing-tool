@@ -1,12 +1,15 @@
 // DataContext.tsx
-import { BaseData, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseData } from '@/core/config/BaseConfig';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type {
     DataStore,
-    useDataStore,
     VersionedData,
 } from "@/core/state/stores/DataStore";
-import { createContext, ReactNode, useContext } from "react";
+import { useDataStore } from "@/core/state/stores/DataStore";
+import { ReactNode } from "react";
+import { createContext, useContext } from "react";
 
 interface DataContextProps<
   T extends BaseDataEntity = BaseDataEntity,
@@ -22,8 +25,8 @@ interface DataContextProps<
 }
 
 // Fix the createContext to use correct generics
-const DataContext = createContext<DataContextProps<any, any>>({
-  dataStore: {} as DataStore<any, any> & VersionedData<any, any>,
+const DataContext = createContext<DataContextProps<any, any, any, any, any, any>>({
+  dataStore: {} as DataStore<any, any> & VersionedData<any, any, any, any, any, any>,
   useSimulatedDataSource: false,
   simulatedDataSource: [],
 });
@@ -41,12 +44,12 @@ export const DataProvider = <
   children: ReactNode;
 }) => {
   // Initialize the data store
-  const dataStore = useDataStore<T, K>() as DataStore<T, K> &
-    VersionedData<T, K>;
+  const dataStore = useDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>() as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
+    VersionedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   const simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
   // Define the DataContext here to bind T, K dynamically
-  const DataContext = createContext<DataContextProps<T, K, Meta> | undefined>(
+  const DataContext = createContext<DataContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(
     undefined
   );
 
@@ -66,9 +69,9 @@ export const DataProvider = <
 
 // Hook to access DataContext
 export const useDataContext = <
-  T extends BaseData<any>,
-  K extends T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 >() => {
   const context = useContext<DataContextProps<T, K, Meta> | undefined>(DataContext as any);
   if (!context) {

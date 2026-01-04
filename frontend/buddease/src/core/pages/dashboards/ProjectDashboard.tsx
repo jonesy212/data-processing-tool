@@ -1,5 +1,5 @@
-// ProjectDashboard.tsx
-// In your main component or layout
+ProjectDashboard.tsx
+In your main component or layout
 import FrontendStructureViewer from '@/core/components/development/FrontendStructureViewer';
 import AccessGuard from './AccessGuard';
 import FileStructureViewer from './FileStructureViewer';

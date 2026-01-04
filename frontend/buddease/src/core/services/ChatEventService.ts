@@ -1,4 +1,4 @@
-// ChatEventService.ts
+ChatEventService.ts
 import axiosInstance from '@/core/api/csrfToken';
 import ChatMessage from '@/core/components/communications/chat/ChatMessage';
 import ChatEvent from '@/core/state/stores/ChatEvent';

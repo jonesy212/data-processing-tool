@@ -1,7 +1,7 @@
 // YourParentComponent.tsx
 import useSearchPagination from '@/core/hooks/commHooks/useSearchPagination';
 import useAsyncHookLinker from "@/core/hooks/useAsyncHookLinker";
-import { PromptPageProps } from "@/core/prompts/PromptPage";
+import type { PromptPageProps } from "@/core/prompts/PromptPage";
 import React, { useState } from "react";
 import PromptComponent from "./PromptComponent";
 

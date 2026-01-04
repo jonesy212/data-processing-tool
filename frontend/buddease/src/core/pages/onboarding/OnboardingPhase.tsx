@@ -1,4 +1,4 @@
-// OnboardingPhase.tsx
+OnboardingPhase.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import DetailsProps from "@/core/components/models/data/Details";
 import { CommonDetails } from '@/core/components/models/details/CommonDetails';
@@ -75,7 +75,7 @@ const handleRegistrationSuccess = (userData: UserData) => {
   }
 };
 
-// Optional helper function
+Optional helper function
 const resendVerificationEmail = (email: string) => {
   console.log(`Resending verification email to: ${email}`);
   // Implement actual resend logic here

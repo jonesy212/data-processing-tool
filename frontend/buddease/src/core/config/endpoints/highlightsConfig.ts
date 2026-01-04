@@ -1,5 +1,5 @@
 // highlightsConfig.ts
-import { HighlightsEndpoints } from '@/core/typings/categories/HighlightsEndpoints';
+import type { HighlightsEndpoints } from '@/core/typings/categories/HighlightsEndpoints';
 
 export const highlightsConfig: HighlightsEndpoints = {
   list: { path: "/api/highlights", method: "GET" },

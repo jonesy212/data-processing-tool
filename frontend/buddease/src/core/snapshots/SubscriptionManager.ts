@@ -1,9 +1,9 @@
-// SubscriptionManager.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+SubscriptionManager.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
-// 1. SUBSCRIPTION MANAGER (Handles subscription lifecycle)
+1. SUBSCRIPTION MANAGER (Handles subscription lifecycle)
 interface SubscriptionManager<
   T extends BaseDataEntity,
   K extends T = T,

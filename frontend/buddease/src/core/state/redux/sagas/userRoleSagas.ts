@@ -1,10 +1,10 @@
-// userRoleSagas.ts
+userRoleSagas.ts
 import { UserRoleActions } from "@/core/actions/UserRoleActions";
 import * as UserRolesApi from "@/core/api/ApiUserRole";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { call, put, takeLatest } from "redux-saga/effects";
 
-// Worker saga for fetching user roles
+Worker saga for fetching user roles
 function* fetchUserRolesSaga(): Generator<any, void, any> {
   try {
     const fetchedUserRoles = yield call(UserRolesApi.fetchUserRoles); // Assuming fetchUserRoles is a function that fetches user roles from the API
@@ -16,7 +16,7 @@ function* fetchUserRolesSaga(): Generator<any, void, any> {
   }
 }
 
-// Worker saga for updating user role
+Worker saga for updating user role
 function* updateUserRoleSaga(action: ReturnType<typeof UserRoleActions.updateUserRoleRequest>) {
   try {
     const { id, newRole } = action.payload;
@@ -29,7 +29,7 @@ function* updateUserRoleSaga(action: ReturnType<typeof UserRoleActions.updateUse
   }
 }
 
-// Worker saga for removing user role
+Worker saga for removing user role
 function* removeUserRoleSaga(action: ReturnType<typeof UserRoleActions.removeUserRoleRequest>) {
   try {
     const id = action.payload;
@@ -42,7 +42,7 @@ function* removeUserRoleSaga(action: ReturnType<typeof UserRoleActions.removeUse
   }
 }
 
-// Watcher saga to listen for fetch, update, and remove user role actions
+Watcher saga to listen for fetch, update, and remove user role actions
 export function* userRoleSaga() {
   yield takeLatest(UserRoleActions.fetchUserRolesRequest.type, fetchUserRolesSaga);
   yield takeLatest(UserRoleActions.updateUserRoleRequest.type, updateUserRoleSaga);

@@ -1,5 +1,5 @@
-// CallActions.ts
-// actions/CallActions.ts
+CallActions.ts
+actions/CallActions.ts
 export const START_AUDIO_CALL = 'START_AUDIO_CALL';
 export const END_AUDIO_CALL = 'END_AUDIO_CALL';
 export const START_VIDEO_CALL = 'START_VIDEO_CALL';

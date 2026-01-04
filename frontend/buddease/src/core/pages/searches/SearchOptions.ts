@@ -1,9 +1,9 @@
 // SearchOptions.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/core/communications/LanguageEnum";
-import { FilterOptions } from "@/core/components/models/data/DataFilterForm";
+import type { FilterOptions } from "@/core/components/models/data/DataFilterForm";
 import { NotificationPreferenceEnum } from "@/core/components/notifications/Notification";
 import { DashboardPreferenceEnum } from "@/core/dashboards/DashboardSettings";
-import { FileTypeEnum } from "@/core/documents/FileType";
+import { FileTypeEnum } from '@/core/documents/FileType'
 import { PrivacySettingEnum } from "@/core/models/data/StatusType";
 import { SecurityFeatureEnum } from "@/core/server/security/SecurityFeatureEnum";
 import { CalendarSettingsEnum } from "@/core/settings/CalendarSettingsEnum";

@@ -1,4 +1,4 @@
-// ReminderCondition.ts
+ReminderCondition.ts
 import { CustomAction } from '@/core/settings/CustomAction';
 import CustomActionEngine from '@/core/settings/CustomActionEngine';
 import ReminderConditionEngine from '@/core/settings/ReminderConditionEngine';
@@ -66,7 +66,7 @@ export const condition: ReminderCondition = {
   logicOperator: "AND"
 };
 
-// Context example
+Context example
 export const context = {
   event: {
     id: "event-123",
@@ -80,7 +80,7 @@ export const context = {
   }
 };
 
-// Async function to handle the execution
+Async function to handle the execution
 export async function evaluateAndExecute(
   conditionEngine: ReminderConditionEngine,
   actionEngine: CustomActionEngine,
@@ -95,6 +95,6 @@ export async function evaluateAndExecute(
   return false;
 }
 
-// Usage example in another file:
-// import { evaluateAndExecute, condition, context } from '@/core/settings/ReminderCondition';
-// const result = await evaluateAndExecute(conditionEngine, actionEngine, action);
+Usage example in another file:
+import { evaluateAndExecute, condition, context } from '@/core/settings/ReminderCondition';
+const result = await evaluateAndExecute(conditionEngine, actionEngine, action);

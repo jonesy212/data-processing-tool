@@ -1,4 +1,4 @@
-// ToolbarStore.ts
+ToolbarStore.ts
 import { action, makeAutoObservable } from 'mobx';
 
 import { Theme } from '@/core/libraries/ui/theme/Theme';
@@ -265,10 +265,10 @@ export class ToolbarStore {
   }
 }
 
-// Create a singleton instance
+Create a singleton instance
 export const toolbarStore = new ToolbarStore();
 
-// Hook for React components
+Hook for React components
 export const useToolbarStore = () => toolbarStore;
 
 export type { ToolbarState };

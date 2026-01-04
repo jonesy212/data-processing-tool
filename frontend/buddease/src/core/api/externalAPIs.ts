@@ -1,5 +1,5 @@
-// externalAPIs.ts
-//externalAPIs.ts
+externalAPIs.ts
+externalAPIs.ts
 export const externalAPIs = {
     wix: {
         name: 'Wix API',

@@ -1,7 +1,7 @@
-// ChatRoom.ts
+ChatRoom.ts
 import ChatMessage from '@/core/components/communications/chat/ChatMessage';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { User } from '@/core/users/User';
 
 export interface ChatRoom<

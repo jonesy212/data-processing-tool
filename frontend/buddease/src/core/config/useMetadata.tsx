@@ -1,8 +1,8 @@
-// useMetadata.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { UserRole } from "@/core/models/UserRole";
+useMetadata.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { UserRole } from "@/core/models/UserRole";
 import UserRoles, { UserRoleEnum } from '@/core/models/UserRoles';
 import SecurityAudit from "@/core/server/security/SecurityAudit";
 import { useAuth } from '@/core/state/context/AuthContext';

@@ -1,6 +1,6 @@
 // WorkflowTransition.ts
-import { ProgressMetrics } from '@/core/error-analyzer/ProgressTracker';
-import {
+import type { ProgressMetrics } from '@/core/error-analyzer/ProgressTracker';
+import type {
     TransitionAction,
     TransitionAnimations,
     TransitionButtonProps,
@@ -8,7 +8,8 @@ import {
     TransitionUIConfig,
     WorkflowTransition
 } from '@/core/models/phases/WorkflowTransition';
-import { Progress } from '@/models/tracker/ProgressBar';
+import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { Progress } from '@/core/models/tracker/ProgressBar';
 import StorageService from '@/src/utils/storage/StorageService';
 // Create a storage service instance
 export const storageService = new StorageService();
@@ -256,7 +257,7 @@ async function executePhaseTransition(
     return await executeCurrentPhaseTransition(transition, context, phaseManager, backupSystem);
 }
 
-// Execute transition using PhaseManager
+Execute transition using PhaseManager
 async function executePhaseManagerTransition(
     transition: WorkflowTransition,
     context: TransitionEvaluationContext,

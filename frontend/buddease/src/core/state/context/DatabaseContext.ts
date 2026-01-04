@@ -1,4 +1,4 @@
-// app/interfaces/provider/DatabaseContext.ts
+app/interfaces/provider/DatabaseContext.ts
 'use client';
 
 import DatabaseClient from "@/core/api/DatabaseClient";

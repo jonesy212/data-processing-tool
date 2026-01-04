@@ -1,4 +1,4 @@
-// BlogGroup.tsx
+BlogGroup.tsx
 import Group from "@/core/components/communications/chat/Group";
 import GroupGenerator from "@/core/generators/GroupGenerator";
 import ListGenerator from "@/core/generators/ListGenerator";

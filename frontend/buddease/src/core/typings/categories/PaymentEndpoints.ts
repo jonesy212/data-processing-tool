@@ -1,4 +1,4 @@
-// PaymentEndpoints.ts
+PaymentEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface PaymentEndpoints extends EndpointCategoryConfig {

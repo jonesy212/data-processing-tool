@@ -1,8 +1,8 @@
-// components/frontend/TraverseFrontendComponent.tsx
 "use client";
+// components/frontend/TraverseFrontendComponent.tsx
 
 import { analyzeFrontendStructure } from '@/core/generators/corrections/analyzers/frontendAnalyzer';
-import { TreeNode } from '@/core/models/TreeNode';
+import type { TreeNode } from '@/core/models/TreeNode';
 import { generateTree } from '@/core/scripts/generateTree';
 import React, { useEffect, useState } from 'react';
 

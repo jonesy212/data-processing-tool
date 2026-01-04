@@ -1,4 +1,4 @@
-// TradingReviewStep.tsx
+TradingReviewStep.tsx
 import React from "react";
 
 import { TradeData } from "@/core/components/trading/TradeData";
@@ -10,7 +10,7 @@ interface TradingReviewStep extends StepProps {
 }
 
 
-// Specific Review Step Components
+Specific Review Step Components
 const TradingReviewStep: React.FC<TradingReviewStep> = ({ onSubmit, tradeData }) => {
   const tradingContent = (
     <div>

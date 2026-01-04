@@ -1,6 +1,6 @@
-// callbackRegistry.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+callbackRegistry.ts
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { EventFilter, EventHandler } from '@/core/typings/eventHandlers/eventTypes';
@@ -316,5 +316,5 @@ export class CallbackRegistry {
   }
 }
 
-// Create a global instance
+Create a global instance
 export const globalCallbackRegistry = new CallbackRegistry();

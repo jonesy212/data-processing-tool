@@ -2,23 +2,23 @@
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import React, { useState } from "react";
 
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import ChatSettingsPanel from "@/app/components/communications/chat/ChatSettingsPanel";
-import RichTextEditor from "@/app/documents/RichTextEditor";
 import {
-  ToolbarOptionsComponent,
-  ToolbarOptionsProps
+    ToolbarOptionsComponent,
+    ToolbarOptionsProps
 } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
-import { usePanelContents } from "@/app/generators/usePanelContents";
+import RichTextEditor from "@/app/documents/RichTextEditor";
 import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
 import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import Clipboard from "@/app/ts/clipboard";
 import {
-  DocumentTypeEnum
+    DocumentTypeEnum
 } from "@/app/typings/documentTypes";
+import { usePanelContents } from "@/core/generators/usePanelContents";
 
 interface TemplateDataProps {
   id: number;

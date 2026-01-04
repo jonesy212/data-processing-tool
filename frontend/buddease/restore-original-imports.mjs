@@ -6,7 +6,7 @@ const filePath = resolve(process.cwd(), 'src/app/snapshots/snapshotContainerUtil
 const content = `import { additionalHeaders } from '@/core/api/headers/generateAllHeaders';
 import createSnapshot, * as snapshotApi from '@/core/api/SnapshotApi';
 import { Category, generateCategoryProperties, isCategoryProperties } from '@/core/components/libraries/categories/generateCategoryProperties';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { Attachment } from '@/core/documents/attachment/Attachment';
 import { dataStoreMethods } from "@/core/models/data/dataStoreMethods";

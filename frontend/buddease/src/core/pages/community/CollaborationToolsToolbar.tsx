@@ -1,4 +1,4 @@
-// CollaborationToolsToolbar.tsx
+CollaborationToolsToolbar.tsx
 import ToolbarItem from "@/core/components/documents/ToolbarItem";
 import React from "react";
 

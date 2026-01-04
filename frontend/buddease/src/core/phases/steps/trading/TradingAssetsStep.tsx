@@ -1,8 +1,8 @@
-// TradingAssetsStep.tsx
+TradingAssetsStep.tsx
 import { BlockchainAsset } from '@/core/typings/cryptoTypes/BlockchainAsset';
 import React, { useState } from 'react';
 
-// Import the BlockchainAsset interface
+Import the BlockchainAsset interface
 
 const TradingAssetsStep: React.FC<{ onSubmit: (assets: BlockchainAsset[]) => void }> = ({ onSubmit }) => {
   // Initialize state to manage trading assets

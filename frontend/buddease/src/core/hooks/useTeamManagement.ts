@@ -1,4 +1,4 @@
-// useTeamManagement.ts
+useTeamManagement.ts
 import { TeamActions } from "@/core/actions/TeamActions";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { Team } from '@/core/components/teams/Team';

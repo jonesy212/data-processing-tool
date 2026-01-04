@@ -1,7 +1,7 @@
 // run-circular-detector.ts
-import { CircularDependencyDetector } from '@/app/generators/corrections/CircularDependencyDetector';
-import { generateRoadmaps } from '@/app/scripts/generateRoadmaps';
 import { EnhancedFixStrategy } from '@/app/error-analyzer/fix-strategy';
+import { generateRoadmaps } from '@/app/scripts/generateRoadmaps';
+import { CircularDependencyDetector } from '@/core/generators/corrections/CircularDependencyDetector';
 import fs from 'fs';
 import path from 'path';
 

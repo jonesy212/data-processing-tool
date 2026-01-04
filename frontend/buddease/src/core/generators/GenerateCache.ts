@@ -1,4 +1,4 @@
-// GenerateCache.ts
+GenerateCache.ts
 
 import { FileTypeEnum } from "@/core/documents/FileType";
 
@@ -6,11 +6,11 @@ import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import { IBackendStructure } from "@/core/config/appStructure/IBackendStructure";
 import { backendConfig } from "@/core/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { frontendConfig } from "@/core/config/FrontendConfig";
 import userSettings from "@/core/config/UserSettings";
 import { DataVersions } from "@/core/configs/DataVersionsConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import {
     useBrainstormingPhase,
@@ -41,9 +41,9 @@ import { VersionHistory } from "@/core/versions/VersionData";
 const initialData: any = {}; 
 
 export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
-// export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
+export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
 
-// Updated cache data structure based on the provided tree structure
+Updated cache data structure based on the provided tree structure
 export interface CacheData<  
     T extends BaseDataEntity,
     K extends T = T,
@@ -89,4 +89,4 @@ export interface CacheData<
   data: any,
 }
 
-// Rest of the code remains unchanged...
+Rest of the code remains unchanged...

@@ -1,4 +1,4 @@
-// SearchHistory.ts
+SearchHistory.ts
 class SearchHistory {
   // Properties
   query: string;
@@ -16,7 +16,7 @@ class SearchHistory {
   // You can add methods here if needed
 }
 
-// Example usage:
+Example usage:
 const searchRecord1 = new SearchHistory("Search query 1", new Date(), 1234);
 const searchRecord2 = new SearchHistory("Search query 2", new Date(), 5678);
 

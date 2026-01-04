@@ -1,12 +1,12 @@
-// ProjectManagerStore.ts
+ProjectManagerStore.ts
 import internalApiService from '@/core/api/ApiClient';
 import { ApiProject } from "@/core/api/ApiProject";
-import { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project } from "@/core/models/projects/Project";
 import { Task } from "@/core/models/tasks/Task";
 import { Product } from "@/core/products/Product";
-import { BaseDataEntity } from "@/core/snapshots/ValidationRule";
+import type { BaseDataEntity } from "@/core/snapshots/ValidationRule";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import {
     ProjectAttachment,
@@ -26,7 +26,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-// state/hybrid/ProjectManagerStore.ts
+state/hybrid/ProjectManagerStore.ts
 /**
  * Project Manager Store
  * ---------------------

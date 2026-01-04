@@ -1,14 +1,14 @@
-// TeamMembers.ts
-import { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+TeamMembers.ts
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Member } from "@/core/models/members/Member";
-import { UserRole } from "@/core/models/UserRole";
+import type { UserRole } from "@/core/models/UserRole";
 import UserRoles from '@/core/models/UserRoles';
 import { Persona } from "@/core/pages/personas/Persona";
 import { BasePermissions, MemberPermission, Permission } from '@/core/permissions/Permission';
-import { MemberAttachment, MemberData, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/core/typings/entities/MemberEntity';
+import type { MemberAttachment, MemberData, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/core/typings/entities/MemberEntity';
 
-// Team member settings
+Team member settings
 interface TeamMemberSettings {
   notificationPreferences?: {
     teamAnnouncements?: boolean;
@@ -67,7 +67,7 @@ interface TeamMember<
 }
 
 
-// Team-specific Permissions
+Team-specific Permissions
 interface TeamPermission extends Permission {
   scope: 'team';
   resourceType: 'team' | 'team_member' | 'team_data' | 'team_settings';
@@ -80,7 +80,7 @@ interface TeamPermission extends Permission {
 }
 
 
-// Team Member Permissions (combines both)
+Team Member Permissions (combines both)
 interface TeamMemberPermissions extends BasePermissions {
   basePermissions: Permission[];
   memberPermissions: MemberPermission[];

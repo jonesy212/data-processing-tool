@@ -1,7 +1,7 @@
 // AppEntity.ts
 import AppStructure from '@/core/config/appStructure/AppStructure';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
@@ -63,8 +63,23 @@ type ApplyFieldFilters<
 
 
 export type {
-    AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
-    AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot, AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppSubscriberCollection,
-    MainApp
+  AppEntity,
+  AppK,
+  AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields,
+  ApplyFieldFilters,
+  AppParams,
+  AppBaseParams,
+  AppRealtimeDataItem,
+  AppSnapshot,
+  AppSnapshotData,
+  AppSnapshotsArray,
+  AppSnapshotStore,
+  AppSnapshotStoreConfig,
+  AppSnapshotWithCriteria,
+  AppSubscriberCollection,
+  MainApp
 };
 

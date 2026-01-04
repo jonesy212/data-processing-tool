@@ -1,4 +1,4 @@
-// InteractiveForm.tsx
+InteractiveForm.tsx
 import { AppDevelopmentActions } from '@/core/actions/AppDevelopmentActions';
 import { AppDevelopmentPhase } from '@/core/components/phases/AppDevelopmentPhase';
 import BrainstormingPhase from '@/core/components/phases/BrainstormingPhase';

@@ -1,4 +1,4 @@
-// UserJourneyManager.test.tsx
+UserJourneyManager.test.tsx
 import UserJourneyManager from '@/core/pages/personas/UserJourneyManager';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';

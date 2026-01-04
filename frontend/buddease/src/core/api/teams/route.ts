@@ -1,107 +1,189 @@
 // route.ts
-// app/api/teams/route.ts
-import { DatabaseClient } from '@/core/api/DatabaseClient';
+import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import { BaseData } from '@/core/models/data/Data';
+import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
+import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
+import PizZip from "pizzip";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { key: string } }
+) {
+  const key = request.nextUrl.pathname.split('/').pop();
+  
+  if (!key) {
+    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
+  }
+  
   try {
-    const { searchParams } = new URL(request.url);
-    const teamId = searchParams.get('teamId');
-    const action = searchParams.get('action');
-    
-    const dbClient = new DatabaseClient();
-    await dbClient.connect();
-    
-    if (action === 'reassignment-history') {
-      const projectId = searchParams.get('projectId');
-      if (!projectId) {
-        return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
-      }
-      
-      const history = await dbClient.getReassignmentHistory(projectId);
-      return NextResponse.json({ success: true, data: { history } });
-    }
-    
-    if (action === 'progress') {
-      if (!teamId) {
-        return NextResponse.json({ error: 'Team ID is required' }, { status: 400 });
-      }
-      
-      const progress = await dbClient.getTeamProgress(teamId);
-      return NextResponse.json({ success: true, data: { progress } });
-    }
-    
-    // Default: get team(s)
-    if (teamId) {
-      const team = await dbClient.getTeamById(teamId);
-      return NextResponse.json({ success: true, data: { team } });
-    } else {
-      const teams = await dbClient.getAllTeams();
-      return NextResponse.json({ success: true, data: { teams } });
-    }
+    const data = await readServerCache(key);
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error in teams API:', error);
-    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to read from cache' },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { action } = body;
+    const { key, data } = await request.json();
     
-    const dbClient = new DatabaseClient();
-    await dbClient.connect();
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
     
-    switch (action) {
-      case 'reassign-project':
-        const { newTeamId, projectId, previousTeamId, reassignmentDate } = body;
-        await dbClient.reassignProject(newTeamId, projectId, previousTeamId, new Date(reassignmentDate));
-        return NextResponse.json({ 
-          success: true, 
-          message: `Project reassigned successfully` 
-        });
-        
-      case 'assign-project':
-        const { teamId, projectId: assignProjectId } = body;
-        await dbClient.assignProjectToTeam(teamId, assignProjectId);
-        return NextResponse.json({ 
-          success: true, 
-          message: `Project assigned to team successfully` 
-        });
-        
-      case 'unassign-project':
-        const { teamId: unassignTeamId, projectId: unassignProjectId } = body;
-        await dbClient.unassignProjectFromTeam(unassignTeamId, unassignProjectId);
-        return NextResponse.json({ 
-          success: true, 
-          message: `Project unassigned from team successfully` 
-        });
-        
-      case 'update-progress':
-        const { teamId: progressTeamId, projectUpdates } = body;
-        const progress = await dbClient.updateTeamProgress(progressTeamId, projectUpdates);
-        return NextResponse.json({ 
-          success: true, 
-          data: { progress } 
-        });
-        
-      case 'bulk-assign':
-        const { teamId: bulkTeamId, projectIds } = body;
-        await dbClient.bulkAssignProjects(bulkTeamId, projectIds);
-        return NextResponse.json({ 
-          success: true, 
-          message: `Projects bulk assigned successfully` 
-        });
-        
-      default:
-        return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { key, data } = await request.json();
+    
+    if (!key || data === undefined) {
+      return NextResponse.json(
+        { error: 'Key and data are required' },
+        { status: 400 }
+      );
+    }
+    
+    await writeServerCache(key, data);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to write to cache' },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { options, documents } = await request.json();
+    const generator = new ServerDocumentGenerator();
+    
+    const result = await generator.createFinancialReport(options, documents);
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: result 
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error.message 
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { type, options, fileContent, documents } = await request.json();
+
+    if (type === 'financialReport') {
+      return await handleFinancialReport(options, documents);
+    } else {
+      return await handleTextDocument(options, fileContent);
     }
   } catch (error) {
-    console.error('Error in teams API POST:', error);
-    return NextResponse.json({ 
-      error: 'Failed to process request',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    console.error("Error generating document:", error);
+    return NextResponse.json(
+      { error: "Failed to generate document" },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleTextDocument(options: DocumentOptions, fileContent: string) {
+  const content = options.content || "Default Text Document Content";
+  const contentData = { content };
+
+  const buffer = Buffer.from(fileContent, 'base64');
+  const zip = new PizZip(buffer);
+  const docx = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  docx.setData(contentData);
+  docx.render();
+
+  const result = docx.getZip().generate({ type: "nodebuffer" });
+  const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, result);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Text Document created successfully at ${generatedFilePath}.`
+  });
+}
+
+async function handleFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>) {
+  // Your financial report generation logic here
+  const financialReportContent = "Financial Report Content";
+  const financialReportFileName = "financial_report.docx";
+  const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
+  
+  await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
+  await fs.promises.writeFile(generatedFilePath, financialReportContent);
+
+  return NextResponse.json({
+    success: true,
+    filePath: generatedFilePath,
+    message: `Financial Report created successfully at ${generatedFilePath}.`
+  });
+}
+
+// Additional API endpoints for document management
+export async function GET() {
+  try {
+    const generatedDir = path.join(process.cwd(), 'generated');
+    await fs.promises.mkdir(generatedDir, { recursive: true });
+    const files = await fs.promises.readdir(generatedDir);
+    
+    return NextResponse.json({ files });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to read documents" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { fileName } = await request.json();
+    const filePath = path.join(process.cwd(), 'generated', fileName);
+    
+    await fs.promises.unlink(filePath);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete document" },
+      { status: 500 }
+    );
   }
 }

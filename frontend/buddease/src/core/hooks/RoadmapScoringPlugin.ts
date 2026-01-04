@@ -1,8 +1,8 @@
-// RoadmapScoringPlugin.ts
+RoadmapScoringPlugin.ts
 
-// Purpose:
-// Decouple roadmap priority logic from code → allow PM-driven weighting.
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+Purpose:
+Decouple roadmap priority logic from code → allow PM-driven weighting.
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 
 export type SystemRole = 'founder' | 'pm' | 'developer' | 'community' | 'investor';
 

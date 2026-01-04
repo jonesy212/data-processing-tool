@@ -1,10 +1,10 @@
-// ApiReport.ts
+ApiReport.ts
 import internalApiService from '@/core/api/ApiClient';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { FinancialMetrics, processFinancialMetrics } from '@/core/components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '@/core/components/metrics/TechnicalSpecifications';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import {
     AddReportBase,
     BaseReport, FinancialReport, ReportOptions,
@@ -18,12 +18,12 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 
 
-// Define the API base URL for reports
+Define the API base URL for reports
 const API_BASE_URL = endpoints.reports.list
 
 export type AddReportType = FinancialReport | TechnicalReport | ResearchReport;
 
-// The combined interface
+The combined interface
 interface AddReport<T extends BaseDataEntity> extends AddReportBase<T> {
   title?: string;
   reportType?: "financial" | "technical" | "research";
@@ -186,7 +186,7 @@ const saveToSnapshotStore = (snapshot: Snapshot<AddReportType>): void => {
 };
 
 
-// Function to fetch a list of reports
+Function to fetch a list of reports
 export const fetchReports = async (options: ReportOptions = {}): Promise<BaseReport[]> => {
   try {
     // Construct query parameters based on options
@@ -208,7 +208,7 @@ export const fetchReports = async (options: ReportOptions = {}): Promise<BaseRep
 };
 
 
-// Function to add a new report
+Function to add a new report
 export const addReport = async (newReport: Omit<AddReportType, 'id'>): Promise<void> => {
   try {
     // Process metrics before adding
@@ -223,7 +223,7 @@ export const addReport = async (newReport: Omit<AddReportType, 'id'>): Promise<v
   }
 };
 
-// Function to remove a report
+Function to remove a report
 export const removeReport = async (reportId: number): Promise<void> => {
   try {
     const removeReportEndpoint = `${API_BASE_URL}.remove.${reportId}`;
@@ -234,7 +234,7 @@ export const removeReport = async (reportId: number): Promise<void> => {
   }
 };
 
-// Helper function to process metrics based on report type
+Helper function to process metrics based on report type
 const processReportMetrics = async (report: ProcessableReport): Promise<void> => {
   switch (report.reportType) {
     case "financial":
@@ -277,7 +277,7 @@ const processReportMetrics = async (report: ProcessableReport): Promise<void> =>
 };
 
 
-// Dedicated metrics processing function
+Dedicated metrics processing function
 const processReportWithMetrics = async (report: ProcessableReport): Promise<ProcessableReport> => {
 
   console.log(`🔍 Processing metrics for report: ${report.title}`);

@@ -1,7 +1,7 @@
 // DrawingActions.ts
 import TextType from "@/core/documents/TextType";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import Milestone from "@/core/typings/milestoneTypes";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { Milestone } from "@/core/typings/milestoneTypes";
 import { createAction } from "@reduxjs/toolkit";
 
 export const DrawingActions = {

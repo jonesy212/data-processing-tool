@@ -1,4 +1,4 @@
-// CalendarViewSlice.ts
+CalendarViewSlice.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { formatCalendarAsCSV } from "@/core/calendar/formatCalendarAsCSV";
@@ -19,11 +19,11 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";
 
-// Define a union type for calendar events
+Define a union type for calendar events
 type CalendarEventUnion = SimpleCalendarEvent<AppCalendarEvent> | CalendarEvent<AppCalendarEvent>;
 const dispatch = useDispatch();
 
-// Define the slice state interface
+Define the slice state interface
 interface CalendarViewManagerState {
   currentView: "day" | "week" | "month" | "quarter" | "year";
   showAllDayEvents: boolean;
@@ -41,7 +41,7 @@ interface CalendarViewManagerState {
 
 }
 
-// Define the action payload interface
+Define the action payload interface
 interface SetEventReminderPayload {
   eventId: string;
   reminder: string; // Update the type to string if reminder is expected to be a string
@@ -69,7 +69,7 @@ interface AttachEventFilePayload {
 
 
 
-// Adjust the return type of formatCalendarAsDOCX to string
+Adjust the return type of formatCalendarAsDOCX to string
 const formatCalendarAsDOCX = (
   events: CalendarEventUnion[],
   calendarDisplaySettings: CalendarDisplaySettings
@@ -83,7 +83,7 @@ const formatCalendarAsDOCX = (
 
 
 
-// Define your initial state
+Define your initial state
 const initialState: CalendarViewManagerState = {
   currentView: "day",
   showAllDayEvents: false,
@@ -134,7 +134,7 @@ export const importCalendarFailure = () => ({
 
 
 
-// Define thunk action for importing calendar
+Define thunk action for importing calendar
 export const importCalendar = createAsyncThunk(
   'calendarViewManager/importCalendar',
   async (payload: { fileName: string; sendStatus: SendStatus }, thunkAPI) => {
@@ -160,7 +160,7 @@ export const importCalendar = createAsyncThunk(
 
 
 
-// Create the slice
+Create the slice
 export const calendarViewManagerSlice = createSlice({
   name: "calendarViewManager",
   initialState,
@@ -560,10 +560,10 @@ export const calendarViewManagerSlice = createSlice({
   },
 });
 
-// Export the reducer
+Export the reducer
 export default calendarViewManagerSlice.reducer;
 
-// Export actions
+Export actions
 export const {
   // Calendar Views
 

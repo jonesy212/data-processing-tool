@@ -1,4 +1,4 @@
-// DeleteComponent.tsx
+DeleteComponent.tsx
 import { ComponentActions } from '@/core/actions/ComponentActions';
 import { useDispatch } from 'react-redux';
 

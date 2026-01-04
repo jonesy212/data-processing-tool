@@ -1,12 +1,12 @@
 // ResponsiveDesign.tsx
 // components/ResponsiveDesign.tsx
 import { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import BackendStructure from '@/core/server/database/BackendStructure';
-import { BoardItem, CollaborationBoardStore } from "@/core/state/stores/CollaborationBoardStore";
+import type { BoardItem, CollaborationBoardStore } from "@/core/state/stores/CollaborationBoardStore";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
@@ -18,7 +18,7 @@ interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
   dataTip?: string;
 }
 
-// let newExample: ResponsiveExample | null = null; // Declare the variable
+let newExample: ResponsiveExample | null = null; // Declare the variable
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
@@ -582,6 +582,8 @@ const handleSelectExample = (example: ResponsiveExample, index: number) => {
 
 const ResponsiveDesign: React.FC<ResponsiveDesignProps> = observer(() => {
   let indexToUpdate: number | null = null; // Declare the variable
+  
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const responsiveDesignStore = useLocalStore<ResponsiveDesignStore>(
     () => new ResponsiveDesignStore()

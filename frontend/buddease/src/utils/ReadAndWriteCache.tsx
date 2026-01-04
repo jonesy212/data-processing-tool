@@ -6,11 +6,11 @@ import {
     frontendStructure,
 } from "@/core/config/appStructure/FrontendStructure";
 import { BackendConfig, backendConfig } from "@/core/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { FrontendConfig, frontendConfig } from "@/core/config/FrontendConfig";
 import userSettings, { UserSettings } from "@/core/config/UserSettings";
 import { DataVersions, dataVersions } from "@/core/configs/DataVersionsConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CacheData, realtimeData } from "@/core/generators/GenerateCache";
 import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";

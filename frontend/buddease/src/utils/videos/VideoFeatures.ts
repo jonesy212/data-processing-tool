@@ -1,4 +1,4 @@
-// VideoFeatures.ts
+VideoFeatures.ts
 
 export const  additionalFeatures = {
     motionGraphics: true,

@@ -1,4 +1,5 @@
 // CommunicationAPI.ts
+
 import internalApiService from "@/core/api/ApiClient";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
@@ -103,7 +104,7 @@ class CommunicationAPI {
     this.baseURL = baseURL;
   }
 
-    private handleCommunicationApiErrorAndNotify = (
+private handleCommunicationApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   errorMessageId: keyof CommunicationNotificationMessage,

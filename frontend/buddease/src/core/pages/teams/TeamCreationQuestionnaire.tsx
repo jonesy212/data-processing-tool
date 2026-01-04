@@ -1,4 +1,4 @@
-// TeamCreationQuestionnaire.tsx
+TeamCreationQuestionnaire.tsx
 import React from "react";
 
 interface TeamCreationQuestionnaireProps {

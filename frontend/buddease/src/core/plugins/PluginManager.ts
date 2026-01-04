@@ -1,4 +1,4 @@
-// PluginManager.ts
+PluginManager.ts
 import { CallbackRegistry } from "@/core/libraries/eventSystem/callbackRegistry";
 import loadPlugins from "@/utils/web3/pluginSystem/plugins/loader";
 import { DAppPlugin } from "@/utils/web3/pluginSystem/plugins/PluginInterface";

@@ -1,4 +1,4 @@
-// PersonaCard.tsx
+PersonaCard.tsx
 import DetailsProps from "@/core/components/models/data/Details";
 import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { SupportedData } from '@/core/models/CommonData';
@@ -42,7 +42,7 @@ const PersonaCard: React.FC<PersonaCardProps> = ({
   );
 };
 
-// Card Generator Component
+Card Generator Component
 const CardGenerator: React.FC<{
   cardType: string;
   persona: string;

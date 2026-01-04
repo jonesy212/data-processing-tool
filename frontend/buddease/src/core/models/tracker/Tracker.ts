@@ -1,9 +1,9 @@
-// Tracker.ts
-//Tracker.ts
+Tracker.ts
+Tracker.ts
 import { HighlightColor } from "@/core/components/styling/Palette";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { detectMetadataChanges } from "@/core/config/metadata/detectMetadataChanges";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import FileData from "@/core/models/data/FileData";
 import FolderData from "@/core/models/data/FolderData";
@@ -30,7 +30,7 @@ export interface SharedFormattingOptions {
   fontFamily?: string;
 }
 
-// Define a common interface for tracker properties
+Define a common interface for tracker properties
 interface CommonTrackerProps<  
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,

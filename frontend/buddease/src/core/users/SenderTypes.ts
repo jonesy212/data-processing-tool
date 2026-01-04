@@ -1,4 +1,4 @@
-// SenderTypes.ts
+SenderTypes.ts
 
 import { Sender } from '@/core/components/communications/CommunicationPage';
 
@@ -71,7 +71,7 @@ export type {
 
 
 
-// Example usage:
+Example usage:
 const sender1: StudentSender = {
     id: "123",
     username: "student123",

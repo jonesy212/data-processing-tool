@@ -1,9 +1,9 @@
 // ChatActions.ts
 // chat/ChatActions.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { ChatRoom } from '@/core/communications/ChatRoom';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { ChatRoom } from '@/core/communications/ChatRoom';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { createAction } from "@reduxjs/toolkit";
 
 export const ChatActions = {

@@ -1,4 +1,4 @@
-// MarkerEndpoints.ts
+MarkerEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface MarkerEndpoints extends EndpointCategoryConfig {

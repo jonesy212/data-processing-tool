@@ -1,4 +1,4 @@
-// FluenceConnection.ts
+FluenceConnection.ts
 class FluenceConnection {
   private isConnected: boolean = false;
 

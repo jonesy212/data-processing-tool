@@ -1,4 +1,4 @@
-// ChatComponent.tsx
+ChatComponent.tsx
 import { AquaChat } from "@/core/components/communications/chat/AquaChat";
 import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";

@@ -1,4 +1,4 @@
-// parsePDF.tsx
+parsePDF.tsx
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { YourPDFType } from "@/core/documents/DocType";
 import { extractTextFromPDF } from "@/core/documents/DocumentGeneratorMethods";
@@ -19,7 +19,7 @@ interface PDFData {
 
 const { handleError } = useErrorHandling(); // Get error handling functions
 
-// Function to extract text content from a PDF file
+Function to extract text content from a PDF file
 function extractText(pdfFilePath: string): string {
     try {
         // Load the PDF file
@@ -43,7 +43,7 @@ function extractText(pdfFilePath: string): string {
 }
 
 
-// Function to extract text content from a PDF page
+Function to extract text content from a PDF page
 function extractTextFromPage(page: PDFPage): Promise<string> {
     // Implement your logic to extract text from the page here
     // You can use libraries like pdf.js or other PDF parsing libraries
@@ -56,7 +56,7 @@ function extractTextFromPage(page: PDFPage): Promise<string> {
 
 
 
-// Function to parse PDF and extract text content
+Function to parse PDF and extract text content
 const pdfParser = async (pdfFilePath: string): Promise<string> => {
   try {
     const pdfData = await PDFDocument.load(pdfFilePath); // Load PDF using pdf-lib
@@ -130,7 +130,7 @@ function loadPDF(pdfFilePath: string): YourPDFType[] {
     // Return the loaded PDF data
     return pdf;
 }
-// Function to parse PDF files and populate the pdfContent field in ParsedData objects
+Function to parse PDF files and populate the pdfContent field in ParsedData objects
 function parsePDFData<T extends object>(
   { pdfDataType,
     parsedData,
@@ -161,7 +161,7 @@ function parsePDFData<T extends object>(
 
 
   // Update parsePDF function call
-// Update parsePDF function call
+Update parsePDF function call
 async function parsePDF<T extends PDFData>(
   pdfData: string | Uint8Array,
   pdfFilePath: string,
@@ -180,7 +180,7 @@ async function parsePDF<T extends PDFData>(
 }
 
 
-// Function to extract content from a PDF file
+Function to extract content from a PDF file
 function extractPDFContent(pdf: YourPDFType): string {
     try {
         // Implement logic to extract content from the PDF file

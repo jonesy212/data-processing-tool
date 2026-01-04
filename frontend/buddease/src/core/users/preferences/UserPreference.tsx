@@ -1,4 +1,4 @@
-// UserPreference.tsx
+UserPreference.tsx
 import { NotificationChannelsSettings } from '@/core/features/support/NotificationSettings';
 import React, { useState } from 'react';
 

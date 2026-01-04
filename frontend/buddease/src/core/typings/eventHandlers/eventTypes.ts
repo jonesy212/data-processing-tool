@@ -1,4 +1,4 @@
-// eventTypes.ts
+eventTypes.ts
 import { EventDetails } from "@/core/components/calendar/CalendarEventViewingDetails";
 
 import { ProgressDataProps } from "@/core/components/models/data/ProgressData";
@@ -15,7 +15,7 @@ export type EventHandler<T = any> = (event: T) => void | Promise<void>;
 export type EventFilter<T = any> = (event: T) => boolean;
 
 
-// app/typings/eventHandlers/eventTypes.ts
+app/typings/eventHandlers/eventTypes.ts
 
 export interface EventHandlerConfig {
   // Basic configuration
@@ -84,24 +84,24 @@ export interface EventEmitterConfig {
 }
 
 
-// Define the type of the event parameter to match ReactiveEventHandler
+Define the type of the event parameter to match ReactiveEventHandler
 type ReactiveClipboardEvent = React.ClipboardEvent<HTMLElement>;
 
 type ReactiveBaseMouse = BaseSyntheticEvent & React.MouseEvent<HTMLElement, MouseEvent>
 
-// Define the type of the event parameter to match ReactiveEventHandler
+Define the type of the event parameter to match ReactiveEventHandler
 type ReactiveMouseEvent = React.MouseEvent<HTMLElement, MouseEvent> & {
   settings?: any;
   progress?: ProgressDataProps;
 };
 
-// React.MouseEvent<HTMLDivElement, MouseEvent>;
+React.MouseEvent<HTMLDivElement, MouseEvent>;
 type CustomEvent = MouseEvent | ClipboardEvent | SettingsEvent;
 
-// Define a type for DynamicEventType
+Define a type for DynamicEventType
 type DynamicEventType<T> = T extends EventType<infer U> ? EventType<U> : never;
 
-// Example usage
+Example usage
 type OriginalEventType = EventType<{ id: number; name: string }>;
 type DynamicType = DynamicEventType<OriginalEventType>;
 
@@ -183,9 +183,9 @@ export interface EventListener<T = any> {
   once?: boolean;
 }
 
-// app/typings/eventHandlers/eventTypes.ts
+app/typings/eventHandlers/eventTypes.ts
 
-// Base event listener interface
+Base event listener interface
 export interface BaseEventListener {
   id: string;
   handler: EventHandler;
@@ -193,7 +193,7 @@ export interface BaseEventListener {
   once?: boolean;
 }
 
-// Mouse-related events
+Mouse-related events
 export interface MouseEventListener {
   handleMouseClick: (event: ReactiveEventHandler) => void;
   handleMouseEvent: (event: ReactiveEventHandler) => void;
@@ -202,13 +202,13 @@ export interface MouseEventListener {
   handleAuxClick: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-// Keyboard-related events
+Keyboard-related events
 export interface KeyboardEventListener {
   handleKeyboardEvent: (event: React.KeyboardEvent<HTMLDivElement>) => void;
   handleKeyboardShortcuts: (event: React.SyntheticEvent) => void;
 }
 
-// Drag & Drop events
+Drag & Drop events
 export interface DragDropEventListener {
   handleDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
   handleDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -218,7 +218,7 @@ export interface DragDropEventListener {
   handleDragLeave: (event: React.DragEvent<HTMLElement>) => void;
 }
 
-// Focus events
+Focus events
 export interface FocusEventListener {
   handleFocus: (event: React.FocusEvent<HTMLElement>) => void;
   handleBlur: (event: React.FocusEvent<HTMLElement>) => void;
@@ -226,7 +226,7 @@ export interface FocusEventListener {
   handleFocusOut: (event: React.FocusEvent<HTMLElement>) => void;
 }
 
-// Touch/Pointer events
+Touch/Pointer events
 export interface TouchEventListener {
   handleTouchStart: (event: React.TouchEvent<HTMLDivElement>) => void;
   handleTouchMove: (event: React.TouchEvent<HTMLDivElement>) => void;
@@ -242,7 +242,7 @@ export interface TouchEventListener {
   handlePointerOut: (event: React.PointerEvent<HTMLDivElement>) => void;
 }
 
-// UI component events
+UI component events
 export interface UIComponentEventListener {
   handleAnnotations: (event: React.MouseEvent<HTMLElement>) => void;
   handleCopyPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void;
@@ -252,7 +252,7 @@ export interface UIComponentEventListener {
   handleSelect: (event: React.SyntheticEvent) => void;
 }
 
-// App-specific events
+App-specific events
 export interface AppEventListener {
   handleSettingsPanel: (event: React.MouseEvent<HTMLElement>) => void;
   handleFullscreenMode: (event: React.MouseEvent<HTMLElement>) => void;
@@ -262,21 +262,21 @@ export interface AppEventListener {
   handleUndoRedo: (event: React.SyntheticEvent) => void;
 }
 
-// Lifecycle events
+Lifecycle events
 export interface LifecycleEventListener {
   handleUnload: (event: BeforeUnloadEvent) => void;
   handleBeforeUnload: (event: BeforeUnloadEvent) => void;
   handleResize: (event: React.UIEvent<HTMLDivElement, UIEvent>) => void;
 }
 
-// Gesture events (mobile)
+Gesture events (mobile)
 export interface GestureEventListener {
   handleGestureStart: (event: GestureHandlerGestureEvent) => void;
   handleGestureChange: (event: GestureHandlerGestureEvent) => void;
   handleGestureEnd: (event: GestureHandlerGestureEvent) => void;
 }
 
-// Factory interface
+Factory interface
 export interface EventHandlerFactory {
   createEventHandler: (
     eventName: string,
@@ -295,7 +295,7 @@ export type EventListenerOrEventListenerObject =
   handleEvent: (event: Event) => void;
 }
 
-// Update the EventHandlerFactory interface to use it
+Update the EventHandlerFactory interface to use it
 export interface EventHandlerFactory {
   createEventHandler: (
     eventName: string,
@@ -303,7 +303,7 @@ export interface EventHandlerFactory {
   ) => EventListenerOrEventListenerObject;
 }
 
-// Keep the original for backward compatibility
+Keep the original for backward compatibility
 export interface CustomEventListener extends 
   BaseEventListener,
   EventHandlerFactory,

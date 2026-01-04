@@ -1,5 +1,5 @@
-// EventHanderActions.ts
-// SelectActions
+EventHanderActions.ts
+SelectActions
 
 import { createAction } from "@reduxjs/toolkit";
 import { MouseEvent } from "react";

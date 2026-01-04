@@ -1,4 +1,4 @@
-// AppRoutes.tsx
+AppRoutes.tsx
 import { RouteGuard } from '@/core/components/routing/RouteGuard';
 import AccessDenied from '@/core/pages/AccessDenied';
 import ProfilePage from '@/core/pages/profile/ProfilePage';

@@ -1,12 +1,12 @@
-// MetadataComponent.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetadata } from '@/core/config/MetaDataOptions';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+MetadataComponent.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { StatusType } from "@/core/models/data/StatusType";
 import { useEffect, useState } from 'react';
 
 
-// Assume selectedmetadata is derived based on your logic (e.g., API call, user action, etc.)
+Assume selectedmetadata is derived based on your logic (e.g., API call, user action, etc.)
 type MetadataComponentProps<
   T extends BaseDataEntity,
   K extends T = T,
@@ -78,7 +78,7 @@ export default MetadataComponent;
 
 
 
-// Sample API function
+Sample API function
 const getMetadataFromAPI = async (): Promise<AppMetadataEntity> => {
   // Simulate an API call or metadata fetching
   return {

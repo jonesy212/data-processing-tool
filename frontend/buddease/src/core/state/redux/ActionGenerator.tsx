@@ -1,5 +1,5 @@
-// ActionGenerator.tsx
-//ActionGenerator.tsx
+ActionGenerator.tsx
+ActionGenerator.tsx
 import { TodoActions } from "@/core/actions/TodoActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft } from "immer";
@@ -54,7 +54,7 @@ const createEntityActions = <EntityData extends { id: string }>() => {
   } as EntityActions<EntityData>;
 };
 
-// Example usage:
+Example usage:
 
 type EntityData = {
   id: string;

@@ -1,6 +1,6 @@
-// OnboardingQuestionnaireData.ts
+OnboardingQuestionnaireData.ts
 
-// onboardingQuestionnaireData.ts
+onboardingQuestionnaireData.ts
 import { Question } from "@/core/pages/onboarding/Question";
 
 const onboardingQuestionnaireData: {

@@ -1,9 +1,9 @@
-// FrontendDataService.ts
+FrontendDataService.ts
 import { DocumentTree } from "@/core/users/User";
 
 
-// Frontend data service for browser environment
-// FrontendDataService.ts - Using API routes
+Frontend data service for browser environment
+FrontendDataService.ts - Using API routes
 class FrontendDataService {
   private baseUrl = '/api';
 

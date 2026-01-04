@@ -1,12 +1,12 @@
-// AuthorizationActions.ts
-//todo better manager authorization actions here
+AuthorizationActions.ts
+todo better manager authorization actions here
 
-// Import necessary actions from other action modules
+Import necessary actions from other action modules
 import { DataActions } from '@/core/actions/DataActions';
 import { createAction } from "@reduxjs/toolkit";
-// Import other action modules as needed
+Import other action modules as needed
 
-// Define authorization actions
+Define authorization actions
 export const AuthorizationActions = {
   // Data-related authorization actions
   dataAuthorization: {

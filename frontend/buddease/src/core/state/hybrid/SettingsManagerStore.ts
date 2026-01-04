@@ -2,15 +2,15 @@
 // SettingsStore.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { ThemeEnum } from '@/core/libraries/ui/theme/Theme';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { UserManagerState } from '@/core/state/redux/slices/UserSlice';
-import { YourSettingsResponseType } from '@/core/typings/responseTypes';
+import type { UserManagerState } from '@/core/state/redux/slices/UserSlice';
+import type { YourSettingsResponseType } from '@/core/typings/responseTypes';
 import { makeAutoObservable } from "mobx";
 import { useState } from 'react';
 
@@ -341,6 +341,11 @@ const useSettingManagerStore = <
                         totalCount: '',
                     
                     },
+                    calendarEventTypes: '',
+                    todoTypes: '',
+                    taskTypes: '',
+                    snapshotStoreTypes: '',
+                
                 } as YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
             }
     

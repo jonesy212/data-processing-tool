@@ -1,4 +1,4 @@
-// getCurrentAppType.ts
+getCurrentAppType.ts
 import { AppConfig, getAppConfig } from "@/core/config/AppConfig";
 import { RootState } from "@/core/state/redux/slices/RootSlice";
 
@@ -26,7 +26,7 @@ const getCurrentAppType = (state: RootState): string => {
   }
 };
 
-// Usage example:
+Usage example:
 const state: RootState = {} as RootState
 export const currentAppType: string = getCurrentAppType(state);
 console.log("Current App Type:", currentAppType);

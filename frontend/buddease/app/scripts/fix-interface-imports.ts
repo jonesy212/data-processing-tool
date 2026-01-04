@@ -180,8 +180,13 @@ async function findAndFixInterfaceImports(interfaceFile: {file: string; interfac
     });
     
     for (const importLine of importLines) {
-      const [filePath, ...rest] = importLine.split(':');
-      const originalImport = rest.join(':').replace(/^\d+:/, '').trim();
+      // Better regex to extract file path, line number, and content
+      const match = importLine.match(/^(.*?):(\d+):(.*)$/);
+      
+      if (!match) continue;
+      
+      const [, filePath, lineNumStr, originalImport] = match;
+      const lineNum = parseInt(lineNumStr) || 1;
       
       if (!filePath || !originalImport) continue;
       
@@ -197,12 +202,13 @@ async function findAndFixInterfaceImports(interfaceFile: {file: string; interfac
       
       fixes.push({
         file: filePath,
-        original: originalImport,
-        fixed: fixedImport,
-        success: true
+        original: originalImport.trim(),
+        fixed: fixedImport.trim(),
+        success: true,
+        line: lineNum
       });
       
-      console.log(`     - ${path.basename(filePath)}: ${originalImport} → ${fixedImport}`);
+      console.log(`     - ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
     }
   }
   
@@ -989,16 +995,53 @@ async function applyFixes(fixes: FixResult[]) {
       const sortedFixes = [...fileFixes].sort((a, b) => (b.line || 0) - (a.line || 0));
       
       for (const fix of sortedFixes) {
-        const lineIndex = (fix.line || 1) - 1;
+        // Try to find the line if line number is not provided or invalid
+        let lineIndex = (fix.line || 1) - 1;
+        
+        // If line number is not provided or out of bounds, search for the import
+        if (lineIndex < 0 || lineIndex >= lines.length || !lines[lineIndex].includes(fix.original)) {
+          // Search for the import in the file
+          lineIndex = lines.findIndex(line => 
+            line.includes(fix.original) && 
+            !line.includes('import type') // Ensure we don't match already fixed imports
+          );
+          
+          if (lineIndex === -1) {
+            // Try a more flexible search - just look for the import statement pattern
+            const importMatch = fix.original.match(/import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/);
+            if (importMatch) {
+              const [, importNames, sourcePath] = importMatch;
+              const importNamesList = importNames.split(',').map(name => name.trim());
+              
+              // Search for any line containing all the import names and source path
+              lineIndex = lines.findIndex(line => {
+                if (line.includes('import type')) return false;
+                if (!line.includes(sourcePath)) return false;
+                return importNamesList.every(name => line.includes(name));
+              });
+            }
+          }
+        }
+        
         if (lineIndex >= 0 && lineIndex < lines.length) {
-          if (lines[lineIndex].includes(fix.original)) {
+          // Check if this line needs fixing (not already fixed)
+          if (lines[lineIndex].includes(fix.original) && !lines[lineIndex].includes('import type')) {
+            // Replace the original import with the fixed one
             lines[lineIndex] = lines[lineIndex].replace(fix.original, fix.fixed);
             applied++;
-            console.log(`✅ Fixed: ${path.basename(filePath)}:${fix.line}`);
+            console.log(`✅ Fixed: ${path.basename(filePath)}:${lineIndex + 1} (${fix.original} → ${fix.fixed})`);
+          } else if (lines[lineIndex].includes('import type')) {
+            // Already fixed - skip
+            console.log(`⏭️  Skipped: ${path.basename(filePath)}:${lineIndex + 1} (already using import type)`);
           } else {
-            console.warn(`⚠️  Line ${fix.line} doesn't match expected content`);
+            console.warn(`⚠️  Line ${lineIndex + 1} in ${filePath} doesn't match expected content`);
+            console.warn(`    Looking for: ${fix.original}`);
+            console.warn(`    Found: ${lines[lineIndex]}`);
             failed++;
           }
+        } else {
+          console.warn(`⚠️  Could not find import in ${filePath}: ${fix.original}`);
+          failed++;
         }
       }
       
@@ -1014,8 +1057,11 @@ async function applyFixes(fixes: FixResult[]) {
   console.log(`\n📊 Results:`);
   console.log(`✅ Applied: ${applied} fixes`);
   console.log(`❌ Failed: ${failed} fixes`);
+  
+  if (failed > 0) {
+    console.log(`\n💡 Tip: Try running 'pnpm fix:types:safe' which uses AST-based parsing instead of grep`);
+  }
 }
-
 
 async function collectFixesForTarget(target: string): Promise<FixResult[]> {
   const fullPath = path.resolve(process.cwd(), target);
@@ -1115,6 +1161,253 @@ async function promptConfirmation(question: string = 'Apply these fixes?'): Prom
   });
 }
 
+
+// Helper function to detect if an import should be type-only
+function shouldBeTypeImport(importStatement: string, importedNames: string[]): boolean {
+  // Common type-only patterns
+  const typePatterns = [
+    /DataStore$/,
+    /Entity$/,
+    /Metadata$/,
+    /Config$/,
+    /Interface$/,
+    /Type$/,
+    /Props$/,
+    /State$/,
+    /Context$/,
+    /Snapshot$/,
+    /Definition$/,
+    /Analysis$/,
+    /Transition$/
+  ];
+  
+  // Check each imported name
+  return importedNames.some(name => {
+    // Check against patterns
+    if (typePatterns.some(pattern => pattern.test(name))) {
+      return true;
+    }
+    
+    // Common type prefixes/suffixes
+    if (name.includes('DataEntity') || 
+        name.includes('Metadata') || 
+        name.includes('Config') ||
+        name.includes('Base') ||
+        name.includes('Default') ||
+        name.includes('Unified') ||
+        name.includes('Structured') ||
+        name.includes('Shared') ||
+        name.includes('Event')) {
+      return true;
+    }
+    
+    return false;
+  });
+}
+
+// Enhanced function to fix import statements
+function fixImportStatement(importStatement: string): string {
+  // Handle different import patterns
+  
+  // Pattern 1: import { X, Y } from 'path'
+  const namedImportRegex = /^import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"]/;
+  const namedMatch = importStatement.match(namedImportRegex);
+  
+  if (namedMatch) {
+    const imports = namedMatch[1].split(',').map(i => i.trim()).filter(Boolean);
+    const source = namedMatch[2];
+    
+    // Check if it should be a type import
+    if (shouldBeTypeImport(importStatement, imports)) {
+      return `import type { ${imports.join(', ')} } from '${source}'`;
+    }
+  }
+  
+  // Pattern 2: import X from 'path' (default import)
+  const defaultImportRegex = /^import\s+(\w+)\s+from\s+['"]([^'"]+)['"]/;
+  const defaultMatch = importStatement.match(defaultImportRegex);
+  
+  if (defaultMatch) {
+    const importName = defaultMatch[1];
+    const source = defaultMatch[2];
+    
+    // Check if it should be a type import (can't use import type with default in some cases)
+    // For default imports, we need to check the source filename
+    const fileName = path.basename(source, path.extname(source));
+    if (shouldBeTypeImport(importStatement, [importName, fileName])) {
+      return `import type ${importName} from '${source}'`;
+    }
+  }
+  
+  // Pattern 3: import * as X from 'path' (namespace import)
+  const namespaceImportRegex = /^import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+)['"]/;
+  const namespaceMatch = importStatement.match(namespaceImportRegex);
+  
+  if (namespaceMatch) {
+    const namespaceName = namespaceMatch[1];
+    const source = namespaceMatch[2];
+    
+    // Check if it should be a type import
+    const fileName = path.basename(source, path.extname(source));
+    if (shouldBeTypeImport(importStatement, [namespaceName, fileName])) {
+      console.warn(`⚠️  Namespace import ${namespaceName} might contain types - manual check needed`);
+    }
+  }
+  
+  return importStatement; // Return unchanged if no fix needed
+}
+
+// New function specifically for the pattern in your error
+async function fixTypeOnlyImportsFromCore() {
+  console.log('🔍 Fixing type-only imports from core modules...\n');
+  
+  // Define patterns to look for
+  const coreTypePatterns = [
+    {
+      patterns: ['BaseDataEntity', 'BaseDataRoot', 'DefaultExcludedFields', 'DefaultMeta'],
+      from: '@/core/config/BaseConfig'
+    },
+    {
+      patterns: ['UnifiedMetadata'],
+      from: '@/core/config/MetaDataOptions'
+    },
+    {
+      patterns: ['StructuredMetadata'],
+      from: '@/core/config/StructuredMetadata'
+    },
+    {
+      patterns: ['Attachment'],
+      from: '@/core/documents/attachment/Attachment'
+    },
+    {
+      patterns: ['SharedMetadata'],
+      from: '@/core/shared/SharedMetadata'
+    },
+    {
+      patterns: ['EventManager', 'InitializedState'],
+      from: '@/core/state/stores/DataStore'
+    }
+  ];
+  
+  const allFixes: FixResult[] = [];
+  
+  for (const { patterns, from } of coreTypePatterns) {
+    console.log(`🔍 Checking imports from ${from}`);
+    
+    // Build grep pattern to find these imports
+    const importPatterns = patterns.map(pattern => `\\b${pattern}\\b`).join('|');
+    const findCmd = `grep -rn "import.*{.*\\(${importPatterns}\\).*}.*from.*['\"]${from.replace('@/', '')}['\"]" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" || true`;
+    
+    try {
+      const output = execSync(findCmd, { encoding: 'utf8' });
+      const importLines = output.split('\n').filter(Boolean);
+      
+      for (const importLine of importLines) {
+        const [filePath, lineNumStr, ...rest] = importLine.split(':');
+        const lineNum = parseInt(lineNumStr) || 1;
+        const originalImport = rest.join(':').trim();
+        
+        if (!filePath || !originalImport) continue;
+        
+        // Create the fixed import
+        let fixedImport = originalImport;
+        if (originalImport.startsWith('import {')) {
+          fixedImport = originalImport.replace('import {', 'import type {');
+          
+          // Ensure we're importing from the correct path
+          if (!fixedImport.includes(from)) {
+            // Extract import names and rebuild
+            const match = originalImport.match(/^import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"]/);
+            if (match) {
+              const imports = match[1];
+              const currentSource = match[2];
+              fixedImport = `import type { ${imports} } from '${from}'`;
+              console.log(`   📍 Corrected import path: ${currentSource} → ${from}`);
+            }
+          }
+        }
+        
+        allFixes.push({
+          file: filePath,
+          original: originalImport,
+          fixed: fixedImport,
+          success: true,
+          line: lineNum
+        });
+        
+        console.log(`   ✅ ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
+      }
+    } catch (error) {
+      // Continue on grep errors
+    }
+  }
+  
+  // Also find and fix any other imports from core that look like types
+  console.log('\n🔍 Checking for other type-only imports from @/core...');
+  const coreFindCmd = `grep -rn "import.*{.*}.*from.*['\"]@/core.*['\"]" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" | head -20 || true`;
+  
+  try {
+    const output = execSync(coreFindCmd, { encoding: 'utf8' });
+    const importLines = output.split('\n').filter(Boolean);
+    
+    for (const importLine of importLines) {
+      const [filePath, lineNumStr, ...rest] = importLine.split(':');
+      const lineNum = parseInt(lineNumStr) || 1;
+      const originalImport = rest.join(':').trim();
+      
+      if (!filePath || !originalImport || !originalImport.includes('import {')) continue;
+      
+      // Extract import names to check if they're types
+      const match = originalImport.match(/^import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"]/);
+      if (!match) continue;
+      
+      const imports = match[1].split(',').map(i => i.trim()).filter(Boolean);
+      const source = match[2];
+      
+      // Check if any imported name looks like a type
+      const hasType = imports.some(name => 
+        shouldBeTypeImport(originalImport, [name]) || 
+        name.endsWith('Entity') ||
+        name.endsWith('Metadata') ||
+        name.endsWith('Config') ||
+        name.endsWith('Store')
+      );
+      
+      if (hasType) {
+        const fixedImport = originalImport.replace('import {', 'import type {');
+        
+        allFixes.push({
+          file: filePath,
+          original: originalImport,
+          fixed: fixedImport,
+          success: true,
+          line: lineNum
+        });
+        
+        console.log(`   ✅ ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
+      }
+    }
+  } catch (error) {
+    // Continue on grep errors
+  }
+  
+  if (allFixes.length > 0) {
+    console.log(`\n📊 Found ${allFixes.length} type-only imports to fix`);
+    
+    // Ask for confirmation
+    console.log('\n🚀 Apply fixes for type-only imports? (y/n)');
+    const confirmed = await promptConfirmation();
+    
+    if (confirmed) {
+      applyFixes(allFixes);
+    } else {
+      console.log('\n❌ Cancelled');
+    }
+  } else {
+    console.log('\n✅ No type-only import fixes needed!');
+  }
+}
+
 // Main execution
 async function main() {
   const args = process.argv.slice(2);
@@ -1184,6 +1477,15 @@ Examples:
   
   try {
     switch (command) {
+      case 'core-types':
+        if (dryRun) {
+          console.log('⚠️  DRY RUN: Would fix type-only imports from core modules');
+          // You could add a preview here
+        } else {
+          await fixTypeOnlyImportsFromCore();
+        }
+        break;
+        
       case 'target':
       case 'analyze': {
         const target = restArgs.find(arg => !arg.startsWith('--'));

@@ -1,7 +1,7 @@
 
-// RootSlice.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+RootSlice.ts
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PagingState } from '@/core/pages/Paging';
 import { CalendarManagerState } from '@/core/state/redux/slices//CalendarSlice';
 import { ApiManagerState } from '@/core/state/redux/slices/ApiSlice';
@@ -30,11 +30,11 @@ import { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 
-// Import your AppTask / TaskCollection types (6-param)
+Import your AppTask / TaskCollection types (6-param)
 import { UserManagerState } from "@/core/state/redux/slices//UserSlice";
 import { AuthState } from '@/core/state/redux/slices/AuthSlice';
 import { FilteredEventsState } from "@/core/state/stores/FilterStore";
-import { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/core/typings/entities/DrawingEntity';
+import type { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/core/typings/entities/DrawingEntity';
 import { AppTask, TaskCollection } from "@/core/typings/entities/TaskEntity";
 /** Task payloads */
 type NewTaskPayload = Partial<AppTask> & { title: string };

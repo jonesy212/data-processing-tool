@@ -1,4 +1,4 @@
-// SortingEndpoints.ts
+SortingEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface SortingEndpoints extends EndpointCategoryConfig {

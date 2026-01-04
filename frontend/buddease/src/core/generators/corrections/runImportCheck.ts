@@ -1,11 +1,11 @@
-// Simple import checker that avoids CSS issues
+Simple import checker that avoids CSS issues
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, relative } from 'path';
 
 console.log('🔍 Running import check...');
 
-// Simple function to check imports
+Simple function to check imports
 function checkImportsInFile(filePath: string): string[] {
   const issues: string[] = [];
   
@@ -34,7 +34,7 @@ function checkImportsInFile(filePath: string): string[] {
   return issues;
 }
 
-// Recursively scan directory
+Recursively scan directory
 function scanDirectory(dir: string, extensions: string[]): string[] {
   const files: string[] = [];
   
@@ -60,7 +60,7 @@ function scanDirectory(dir: string, extensions: string[]): string[] {
   return files;
 }
 
-// Main function
+Main function
 async function main() {
   console.log('📁 Scanning for import issues...\n');
   
@@ -141,7 +141,7 @@ async function main() {
   console.log(`\n📄 Report saved to: ${reportPath}`);
 }
 
-// Polyfill for readdirSync if needed
+Polyfill for readdirSync if needed
 
-// Run
+Run
 main().catch(console.error);

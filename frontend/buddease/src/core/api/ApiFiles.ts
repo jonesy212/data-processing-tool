@@ -1,4 +1,4 @@
-// ApiFiles.ts
+ApiFiles.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import FileData from '@/core/models/data/FileData';

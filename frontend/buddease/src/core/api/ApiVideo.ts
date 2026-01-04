@@ -1,21 +1,21 @@
-// ApiVideo.ts
+ApiVideo.ts
 import { VideoActions } from "@/core/actions/VideoActions";
 import internalApiService from '@/core/api/ApiClient';
 import { endpoints } from "@/core/api/endpointConfigurations";
-import { VideoMetadata } from "@/core/config/StructuredMetadata";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { VideoMetadata } from "@/core/config/StructuredMetadata";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 import useVideoStore from "@/core/state/stores/VideoStore";
-import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/core/typings/entities/VideoEntity';
+import type { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/core/typings/entities/VideoEntity';
 import { Video, VideoData } from "@/core/typings/videoTypes/Video";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 
 const API_BASE_URL = endpoints.videos.list;
 
-// Get the notification function
+Get the notification function
 const { notify } = useNotification();
 
 const handleApiError = (

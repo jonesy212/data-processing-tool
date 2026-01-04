@@ -1,4 +1,4 @@
-import { PhaseBackupSystem } from '@/core/models/phases/PhaseBackupSystem';
+import { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 
 export async function restoreInterfaceFixToPoint(
   projectRoot: string,

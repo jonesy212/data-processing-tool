@@ -1,5 +1,6 @@
-// UserTrainingEducationPreferencesActions.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+UserTrainingEducationPreferencesActions.ts
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface UserTrainingEducationPreferencesState {
   preferredTrainingTopics: string[];

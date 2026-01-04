@@ -1,5 +1,5 @@
-// TaggableItem.ts
-// Tag.ts
+TaggableItem.ts
+Tag.ts
 
 import { Tag } from "@/core/models/tracker/Tag";
 

@@ -1,9 +1,9 @@
-// transformStoreConfigOptions.ts
-// transformStoreConfig.ts
-import { BaseDataEntity } from '@/core/config/BaseConfig';
+transformStoreConfigOptions.ts
+transformStoreConfig.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 
 
-// Helper function to transform storeConfig from SnapshotStoreConfig<T, K, Meta> to SnapshotStoreConfig<WrappedU, WrappedU, Meta, ExcludedFields>
+Helper function to transform storeConfig from SnapshotStoreConfig<T, K, Meta> to SnapshotStoreConfig<WrappedU, WrappedU, Meta, ExcludedFields>
 function transformStoreConfig<
   T extends BaseDataEntity, 
   U extends T = T>(
@@ -17,7 +17,7 @@ function transformStoreConfig<
 
 
 
-// Helper function to transform data from T to U
+Helper function to transform data from T to U
 function transformData<
   T extends  BaseDataEntity,   
   U extends T = T
@@ -51,7 +51,7 @@ function transformData<
   return transformedData;
 }
 
-// Example transformation function for a specific field
+Example transformation function for a specific field
 function transformField(value: any): any {
   // Check if the value is a string
   if (typeof value === 'string') {
@@ -74,7 +74,7 @@ function transformField(value: any): any {
 
 
 
-// Helper function to transform the initial state if necessary
+Helper function to transform the initial state if necessary
 function transformInitialState<
   U extends BaseDataEntity,
   K extends U = U, // Use U instead of T

@@ -1,4 +1,4 @@
-// AnimationDial.tsx
+AnimationDial.tsx
 import React, { useState } from 'react';
 
 interface DialProps {

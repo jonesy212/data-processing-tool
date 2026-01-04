@@ -1,4 +1,4 @@
-// phaseActivitySlice.ts
+phaseActivitySlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PhaseActivityState {
@@ -55,7 +55,7 @@ export const {
 
 export default phaseActivitySlice.reducer;
 
-// Selectors
+Selectors
 export const selectPhaseActivities = (state: { phaseActivity: PhaseActivityState }) => 
   state.phaseActivity.activities;
 

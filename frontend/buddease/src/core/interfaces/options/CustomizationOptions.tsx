@@ -1,7 +1,7 @@
-// CustomizationOptions.tsx 
+CustomizationOptions.tsx 
 import React from 'react';
 
-// imports for layout and multimedia content customization components
+imports for layout and multimedia content customization components
 import LayoutCustomization from '@/core/components/configs/LayoutCustomization';
 import { AnimatedComponentProps } from '@/core/components/styling/AnimationsAndTansitions';
 import { useThemeCustomization } from '@/core/hooks/useThemeCustomization';

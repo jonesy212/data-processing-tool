@@ -1,5 +1,5 @@
-// DynamicDashboard.tsx
-// components/DynamicDashboard.tsx
+DynamicDashboard.tsx
+components/DynamicDashboard.tsx
 import React from "react";
 
  interface DynamicDashboardProps {

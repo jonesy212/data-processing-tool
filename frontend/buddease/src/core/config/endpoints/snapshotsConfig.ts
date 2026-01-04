@@ -1,5 +1,5 @@
 // snapshotsConfig.ts
-import { SnapshotsEndpoints } from '@/core/typings/categories/SnapshotsEndpoints';
+import type { SnapshotsEndpoints } from '@/core/typings/categories/SnapshotsEndpoints';
 
 export const snapshotsConfig: SnapshotsEndpoints = {
   list: { path: "/api/snapshots", method: "GET" },

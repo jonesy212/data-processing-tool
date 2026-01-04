@@ -1,4 +1,4 @@
-// TradingExamples.ts
+TradingExamples.ts
 import {
   fetchNewsAPI,
   fetchMarketNewsAPI,
@@ -16,7 +16,7 @@ import {
   fetchEducationalContentAPI
 } from './ApiTradingInfo';
 
-// Example usage:
+Example usage:
 const news = await fetchNewsAPI('crypto');
 const marketNews = await fetchMarketNewsAPI('stocks');
 const calendar = await fetchEconomicCalendarAPI('2024-01-01', '2024-01-31', 'US');

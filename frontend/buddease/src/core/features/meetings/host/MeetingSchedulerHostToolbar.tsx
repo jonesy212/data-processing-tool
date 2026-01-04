@@ -1,4 +1,4 @@
-// MeetingSchedulerHostToolbar.tsx
+MeetingSchedulerHostToolbar.tsx
 import React from 'react';
 
 const MeetingSchedulerHostToolbar: React.FC = () => {

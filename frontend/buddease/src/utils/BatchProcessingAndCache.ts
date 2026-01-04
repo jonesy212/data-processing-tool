@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
-import UserSettings from '@/core/config/UserSettings';
+import type UserSettings from '@/core/config/UserSettings';
 import { DataVersions } from '@/core/configs/DataVersionsConfig';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { CacheData } from '@/core/generators/GenerateCache';

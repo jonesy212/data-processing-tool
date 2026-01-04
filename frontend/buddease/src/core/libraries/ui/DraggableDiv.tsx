@@ -1,4 +1,4 @@
-// DraggableDiv.tsx
+DraggableDiv.tsx
 
 import { useDrag } from '@/core/libraries/animations/DraggableAnimation/useDrag';
 import { useMovementAnimations } from '@/core/libraries/animations/movementAnimations/MovementAnimationActions';

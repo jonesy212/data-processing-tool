@@ -1,4 +1,4 @@
-// useThemeCustomization.tsx
+useThemeCustomization.tsx
 import {
     NotificationState,
     initialNotificationState,

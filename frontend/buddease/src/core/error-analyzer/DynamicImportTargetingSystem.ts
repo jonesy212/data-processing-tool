@@ -1,6 +1,6 @@
-// DynamicImportTargetingSystem.ts
+DynamicImportTargetingSystem.ts
 import { ImportFixerService } from '../generators/corrections/ImportFixServicies';
-import { ImportExportAnalyzer, ImportExportIssue } from './ImportExportAnalyzer';
+import { ImportExportAnalyzer, ImportExportIssue } from '@/core/error-analyzer/utils/ImportExportAnalyzer'
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
@@ -104,8 +104,12 @@ export class DynamicImportTargetingSystem {
                     const fixes = await this.convertIssuesToFixes(filteredIssues, file, pattern);
                     allFixes.push(...fixes);
                 }
-            } catch (error) {
-                console.warn(`⚠️ Could not analyze ${file}:`, error.message);
+                        } catch (error) {
+                if (error instanceof Error) {
+                    console.warn(`⚠️ Could not analyze ${file}:`, error.message);
+                } else {
+                    console.warn(`⚠️ Could not analyze ${file}:`, error);
+                }
             }
         }
 
@@ -645,7 +649,7 @@ Examples:
     }
 }
 
-// CLI entry point
+CLI entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
     const cli = new DynamicImportFixerCLI();
     cli.run(process.argv.slice(2)).catch(console.error);

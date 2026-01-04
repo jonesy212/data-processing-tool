@@ -1,4 +1,4 @@
-// src/app/scripts/check-export.ts
+src/app/scripts/check-export.ts
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -60,7 +60,7 @@ export function checkFileExports(filePath: string): void {
   });
 }
 
-// CLI
+CLI
 if (require.main === module) {
   const filePath = process.argv[2];
   if (!filePath) {

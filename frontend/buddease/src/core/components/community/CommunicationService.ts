@@ -1,16 +1,16 @@
-// CommunicationService.ts
+CommunicationService.ts
 
-// Define types for different communication channels
+Define types for different communication channels
 type CommunicationChannel = 'audio' | 'video' | 'text';
 
-// Define the interface for the Communication Service
+Define the interface for the Communication Service
 interface CommunicationService {
   initiateCommunication(channel: CommunicationChannel, participants: string[]): void;
   sendMessage(channel: CommunicationChannel, message: string): void;
   startCollaborationSession(): void;
 }
 
-// Implement the Communication Service
+Implement the Communication Service
 class CommunicationServiceImpl implements CommunicationService {
   initiateCommunication(channel: CommunicationChannel, participants: string[]): void {
     // Logic to initiate communication based on the specified channel
@@ -39,5 +39,5 @@ class CommunicationServiceImpl implements CommunicationService {
   }
 }
 
-// Export the Communication Service instance
+Export the Communication Service instance
 export const communicationService: CommunicationService = new CommunicationServiceImpl();

@@ -1,4 +1,4 @@
-// TeamApi.ts
+TeamApi.ts
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import endpointConfigurations, { endpoints } from "@/core/api/endpointConfigurations";
@@ -10,10 +10,10 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
 
-// Define the API base URL
+Define the API base URL
 const API_BASE_URL = endpoints.teams;
 
-// Define API notification messages
+Define API notification messages
 interface TeamNotificationMessages {
   FETCH_TEAMS_SUCCESS: string;
   FETCH_TEAMS_ERROR: string;
@@ -196,6 +196,6 @@ class TeamApiService {
   // Additional team API methods can be added here...
 }
 
-// Export the TeamApiService instance
+Export the TeamApiService instance
 const teamApiService = new TeamApiService(useNotification);
 export default teamApiService;

@@ -1,4 +1,4 @@
-// ParameterCustomizationEndpoints.ts
+ParameterCustomizationEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ParameterCustomizationEndpoints extends EndpointCategoryConfig {

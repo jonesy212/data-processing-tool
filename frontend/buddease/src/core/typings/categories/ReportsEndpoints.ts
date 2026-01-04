@@ -1,4 +1,4 @@
-// ReportsEndpoints.ts
+ReportsEndpoints.ts
 import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ReportsEndpoints extends EndpointCategoryConfig {

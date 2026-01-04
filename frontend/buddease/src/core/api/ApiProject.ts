@@ -3,15 +3,15 @@ import internalApiService from "@/core/api/ApiClient";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { MeetingData } from "@/core/calendar/MeetingData";
-import { Meeting } from "@/core/components/communications/scheduler/Meeting";
-import { Task } from "@/core/components/models/tasks/Task";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationSettings } from "@/core/features/support/NotificationSettings";
+import type { Meeting } from "@/core/components/communications/scheduler/Meeting";
+import type { Task } from "@/core/components/models/tasks/Task";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { NotificationSettings } from "@/core/features/support/NotificationSettings";
 import FileData from "@/core/models/data/FileData";
-import { Project, ProjectData } from '@/core/models/projects/Project';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import {
+import type { Project, ProjectData } from '@/core/models/projects/Project';
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type {
     ProjectAttachment,
     ProjectEntity,
     ProjectExcludedFields,
@@ -19,7 +19,7 @@ import {
     ProjectK,
     ProjectMeta
 } from '@/core/typings/entities/ProjectEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { AxiosError } from "axios";
 import { observable } from "mobx";
 
@@ -139,27 +139,6 @@ export const ApiProject = observable({
   updateProjectAPI: async (
     projectId: string,
     updatedProjectData: Partial<Project<ProjectEntity,
-    ProjectK,
-    ProjectMeta,
-    ProjectAttachment,
-    ProjectExcludedFields,
-    ProjectIncludedFields>>
-  ): Promise<any> => {
-    try {
-      const response = await internalApiService.put(
-        `${API_BASE_URL}/${projectId}`,
-        updatedProjectData
-      );
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, "Failed to update project");
-      throw error;
-    }
-  },
-
-  updateProjectAPI: async (
-    projectId: string,
-    updatedProjectData: Partial<ProjectData<ProjectEntity,
     ProjectK,
     ProjectMeta,
     ProjectAttachment,

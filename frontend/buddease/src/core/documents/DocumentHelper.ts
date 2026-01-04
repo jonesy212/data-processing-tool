@@ -1,4 +1,4 @@
-// DocumentHelper.ts
+DocumentHelper.ts
 
 interface DocumentHelper {
   captureEvents(): void;
@@ -16,13 +16,13 @@ interface DocumentHelper {
   clear(): void;
 }
 
-//clear elements from the document
+clear elements from the document
 export function clear(element: HTMLElement): void {
   // Assuming you want to clear the content of an HTML element
   element.innerHTML = "";
 }
 
-// Example usage:
+Example usage:
 const myDivElement = document.getElementById("myDiv");
 if (myDivElement) {
   clear(myDivElement);
