@@ -14,6 +14,21 @@ import { AxiosError } from "axios";
 // Define the API base URL
 const API_BASE_URL = endpoints.parameter; // Assuming you have a parameter endpoint
 
+
+export interface ApiParameter {
+  // Basic parameter info
+  name: string; // Parameter name like 'parameterId', 'newParameterData', etc.
+  type: string; // TypeScript type like 'string', 'number', 'any', 'YourResponseType<T>'
+  
+  // Optional metadata
+  optional?: boolean;
+  defaultValue?: any;
+  
+  // From your actual API usage
+  parameterId?: string | number;
+  parameterType?: string;
+}
+
 // Define API notification messages for parameter operations
 interface ParameterNotificationMessages {
   FETCH_PARAMETER_SUCCESS: string;

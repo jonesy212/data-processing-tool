@@ -41,7 +41,7 @@ interface ProfileMeta<
 
 
 
-Helper function to encrypt data
+// Helper function to encrypt data
 const encrypt = (data: string, key: string): string => {
   const cipher = crypto.createCipher('aes-256-cbc', key);
   let encrypted = cipher.update(data, 'utf8', 'hex');
@@ -49,7 +49,7 @@ const encrypt = (data: string, key: string): string => {
   return encrypted;
 };
 
-Helper function to mask sensitive data
+// Helper function to mask sensitive data
 const maskSensitiveData = (data: string): string => {
   return data.replace(/./g, '*');
 };
@@ -81,7 +81,7 @@ interface ProfileMeta<
   updatedAt?: Date;
 }
 
-Helper function to sanitize metadata (server-side version)
+// Helper function to sanitize metadata (server-side version)
 const sanitizeMetadata = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -203,7 +203,7 @@ export const createMetadata = <
     metadataEntries: {},
     childIds: [],
     relatedData: [],
-    currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    currentMeta: {} as Meta,
     structuredMetadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     apiEndpoint: "https://default-api-endpoint.com",
@@ -232,5 +232,5 @@ export const createMetadata = <
   return mergedMeta;
 };
 
-Export for use in API routes
+// Export for use in API routes
 export default createMetadata;

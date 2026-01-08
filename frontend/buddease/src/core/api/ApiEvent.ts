@@ -1,7 +1,8 @@
-ApiEvent.ts
+// ApiEvent.ts
 
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
@@ -33,7 +34,7 @@ const eventNotificationMessages: EventNotificationMessages = {
 };
 
 
-Helper function to retrieve eventId
+// Helper function to retrieve eventId
 const fetchEventId = (events: any): string | undefined => {
   if (!events || typeof events !== 'object') {
     console.warn('No valid events object provided');

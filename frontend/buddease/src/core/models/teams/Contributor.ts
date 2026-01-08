@@ -1,8 +1,8 @@
-Contributor.ts
+// Contributor.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Member } from '@/core/models/members/Member';
-import { Project } from '@/core/models/projects/Project';
+import type { Member } from '@/core/models/members/Member';
+import type { Project } from '@/core/models/projects/Project';
 
 export interface Contribution {
   projectId: string;       // or number if projects have IDs
@@ -13,7 +13,7 @@ export interface Contribution {
   date?: string;
 }
 
-interface Contributor<
+export interface Contributor<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -28,5 +28,4 @@ interface Contributor<
   active?: boolean;
 }
 
-export type { Contributor };
 

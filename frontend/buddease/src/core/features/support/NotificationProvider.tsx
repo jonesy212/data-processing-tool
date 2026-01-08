@@ -1,4 +1,4 @@
-NotificationProvider.tsx
+// NotificationProvider.tsx
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { VideoMetadata } from '@/core/config/StructuredMetadata';

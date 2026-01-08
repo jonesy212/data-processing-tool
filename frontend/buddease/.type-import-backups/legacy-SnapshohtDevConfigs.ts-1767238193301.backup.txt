@@ -1,0 +1,5 @@
+// Original import at lines 1-4:
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder'
+// //SnapshohtDevConfigs.ts
+
+// import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";

@@ -2,8 +2,8 @@
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import type { BaseDataRoot } from '@/core/config/BaseConfig';
 import { defaultCategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
+import type { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { getCategory } from '@/core/snapshots/snapshotContainerUtils';
 import { AxiosError } from "axios";
@@ -11,13 +11,13 @@ import { useDispatch } from 'react-redux';
 
 // Core models and types
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotContainer, SnapshotContainerData } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotContainer, SnapshotContainerData } from '@/core/snapshots/SnapshotContainer';
 import SnapshotList from "@/core/snapshots/SnapshotList";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 ;
 
 // API and HTTP related
@@ -2328,7 +2328,7 @@ export async function getSnapshotConfig<
     category?: Category,
     categoryProperties?: CategoryProperties,
     callback?: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
-    dataStore?: DataStore<T, K>,
+    dataStore?: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataStoreMethods?: DataStoreMethods<T, K>,
     metadata?: UnifiedMetadata<T, K, Meta, keyof T>,
     subscriberId?: string,
@@ -3171,7 +3171,10 @@ export default snapshotApi;
 export {
     createSnapshotContainer
     // ... other exports
-    , getSnapshot,
+    ,
+
+    getSnapshot,
     getSnapshotCriteria,
     getSnapshotId
 };
+

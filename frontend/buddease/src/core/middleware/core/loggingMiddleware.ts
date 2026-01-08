@@ -1,8 +1,8 @@
 // loggingMiddleware.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import Logger from "@/core/logging/Logger";
-import { MiddlewareContext, MiddlewareFunction, MiddlewareNext } from '@/core/middleware/core/types';
+import type { MiddlewareContext, MiddlewareFunction, MiddlewareNext } from '@/core/middleware/core/types';
 
 /**
  * Logging Middleware

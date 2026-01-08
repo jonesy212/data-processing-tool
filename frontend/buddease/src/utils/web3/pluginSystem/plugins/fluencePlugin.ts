@@ -1,4 +1,4 @@
-Import AquaChat and other necessary modules based on your actual structure
+// Import AquaChat and other necessary modules based on your actual structure
 
 
 import { AquaChat } from '@/core/components/communications/chat/AquaChat';
@@ -107,12 +107,12 @@ class FluencePlugin extends YourClass implements DAppPlugin {
 
 export default FluencePlugin;
 
-Example usage in your application
+// Example usage in your application
 const fluencePlugin = new FluencePlugin("FluenceApp");
 const aquaConfig = {
   /* config */
 };
 
-Enable collaboration and chat functionality
+// Enable collaboration and chat functionality
 fluencePlugin.enableRealtimeCollaboration();
 fluencePlugin.enableChatFunctionality(aquaConfig);

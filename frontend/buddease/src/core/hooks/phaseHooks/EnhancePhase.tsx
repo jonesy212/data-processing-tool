@@ -1,6 +1,7 @@
-EnhancePhase.tsx
+// EnhancePhase.tsx
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
-import usePhaseHooks, { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "@/core/hooks/phaseHooks/PhaseHooks";
+import type { PhaseHookConfig } from "@/core/hooks/phaseHooks/PhaseHooks";
+import usePhaseHooks, { createPhaseHook, idleTimeoutDuration } from "@/core/hooks/phaseHooks/PhaseHooks";
 import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
 import { useState } from "react";
 
@@ -110,7 +111,7 @@ const myPhaseHook = createPhaseHook(
 });
 
 
-Ensure myPhaseHook is used somewhere to avoid the warning
+// Ensure myPhaseHook is used somewhere to avoid the warning
 console.log(myPhaseHook); // This line will prevent the warning
 
 const enhancedPhaseHook = enhancePhaseHook({
@@ -124,7 +125,7 @@ const enhancedPhaseHook = enhancePhaseHook({
   phaseType: ProjectPhaseTypeEnum.CreatePhase,
   customProp1: "value1",
   customProp2: 0,
-  startIdleTimeout: useIdleTimeout({}).startIdleTimeout,
+  startIdleTimeout: useIdleTimeout('').startIdleTimeout,
   
 });
 
@@ -177,7 +178,7 @@ const handleTransitionTo = (nextPhaseConfig: PhaseHookConfig) => {
     .then((cleanup) => {
       if (typeof cleanup === "function") {
         cleanup();
-      }Sna
+      }
     });
 
   setCurrentPhase(nextPhaseConfig);

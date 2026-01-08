@@ -1,4 +1,4 @@
-SnapshotActionType.ts
+// SnapshotActionType.ts
 export enum SnapshotActionType {
   CreateSnapshotAction = 'CreateSnapshotAction',
   UpdateSnapshotAction = 'UpdateSnapshotAction',

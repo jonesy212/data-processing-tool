@@ -1,0 +1,649 @@
+# BUGGY FILES REPORT
+# Generated: Tue Jan  6 19:38:49 CST 2026
+#
+
+=== debug-roadmaps.ts ===
+Path: ./debug-roadmaps.ts
+Backup: None
+Bug count: 1
+Bug lines:
+  Line 6: // return statement
+Sample buggy lines:
+  6:// Define the return type based on what generateRoadmaps returns
+Size:       68 lines
+
+=== next-env.d.ts ===
+Path: ./next-env.d.ts
+Backup: None
+Bug count: 2
+Bug lines:
+  Line 1: // variable assignment
+  Line 2: // variable assignment
+Sample buggy lines:
+  1:/// <reference types="next" />
+  2:/// <reference types="next/image-types/global" />
+Size:        6 lines
+
+=== SnapshotConfigBuilder.ts ===
+Path: ./src/core/snapshots/SnapshotConfigBuilder.ts
+Backup: SnapshotConfigBuilder.ts.backup-1767237367073
+Bug count: 1
+Bug lines:
+  Line 44: // ... from (not a sentence)
+Sample buggy lines:
+  44:// ✅ Simulated Data Source that expands from params tuple
+Size:      174 lines
+
+=== createSnapshotStoreOptions.ts ===
+Path: ./src/core/snapshots/createSnapshotStoreOptions.ts
+Backup: createSnapshotStoreOptions.ts.backup-1767237367170
+Bug count: 9
+Bug lines:
+  Line 1387: // with TypeScript keyword
+  Line 1387: // variable assignment
+  Line 1397: // arrow function
+  Line 1410: // arrow function
+  Line 1424: // with TypeScript keyword
+  Line 1424: // variable assignment
+  Line 1434: // arrow function
+  Line 1435: // arrow function
+  Line 1448: // arrow function
+Sample buggy lines:
+  1387:// const handleSingleSnapshot = <
+  1387:// const handleSingleSnapshot = <
+  1397:// ) => {
+  1410://         Array.from(snapshot.mappedSnapshotData || []).map(([key, value]) => [
+  1424:// const handleSnapshotsArray =  <
+Size:     1584 lines
+
+=== useSnapshotStore.tsx ===
+Path: ./src/core/snapshots/useSnapshotStore.tsx
+Backup: useSnapshotStore.tsx.backup-1767237367094
+Bug count: 474
+Bug lines: 474 lines (showing first 20)
+  Line 1208: // with TypeScript keyword
+  Line 1208: // variable assignment
+  Line 1210: // variable assignment
+  Line 1212: // variable assignment
+  Line 1213: // variable assignment
+  Line 1214: // variable assignment
+  Line 1220: // arrow function
+  Line 1223: // arrow function
+  Line 1224: // with TypeScript keyword
+  Line 1226: // with TypeScript keyword
+  Line 1226: // variable assignment
+  Line 1232: // with TypeScript keyword
+  Line 1247: // with TypeScript keyword
+  Line 1248: // arrow function
+  Line 1264: // with TypeScript keyword
+  Line 1264: // arrow function
+  Line 1265: // with TypeScript keyword
+  Line 1265: // arrow function
+  Line 1269: // with TypeScript keyword
+  Line 1269: // variable assignment
+  ... and 454 more
+Sample buggy lines:
+  1208:// const useSnapshotStore = <
+  1208:// const useSnapshotStore = <
+  1210://   K extends T = T,
+  1212://   AttachmentType extends Attachment = Attachment,
+  1213://   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+Size:     4575 lines
+
+=== convertSnapshotToItem.ts ===
+Path: ./src/core/snapshots/convertSnapshotToItem.ts
+Backup: convertSnapshotToItem.ts.backup-1767233994817
+Bug count: 7
+Bug lines:
+  Line 2: // ... from (not a sentence)
+  Line 3: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 9: // with TypeScript keyword
+  Line 18: // return statement
+Sample buggy lines:
+  2:// import { Data } from '@/core/models/data/Data';
+  3:// import type {  Snapshot } from '@/core/snapshots/Snapshot';
+  4:// import { SnapshotItem } from "@/core/snapshots/SnapshotList";
+  5:// import { Attachment } from '@/core/documents/attachment/Attachment';
+  6:// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/...
+Size:       31 lines
+
+=== convertSnapshotsArray.ts ===
+Path: ./src/core/snapshots/convertSnapshotsArray.ts
+Backup: convertSnapshotsArray.ts.backup-1767237368589
+Bug count: 30
+Bug lines: 30 lines (showing first 20)
+  Line 2: // ... from (not a sentence)
+  Line 3: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 10: // ... from (not a sentence)
+  Line 11: // ... from (not a sentence)
+  Line 12: // ... from (not a sentence)
+  Line 13: // ... from (not a sentence)
+  Line 16: // with TypeScript keyword
+  Line 24: // arrow function
+  Line 25: // with TypeScript keyword
+  Line 32: // return statement
+  Line 37: // with TypeScript keyword
+  Line 38: // with TypeScript keyword
+  Line 40: // with TypeScript keyword
+  Line 40: // variable assignment
+  Line 44: // with TypeScript keyword
+  Line 52: // with TypeScript keyword
+  Line 52: // variable assignment
+  ... and 10 more
+Sample buggy lines:
+  2:// import { SnapshotData } from '@/core/snapshots/SnapshotData';
+  3:// import { Attachment } from '@/core/documents/attachment/Attachment';
+  4:// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/confi...
+  8:// import { useSnapshotManager } from '@/core/hooks/useSnapshotManager';
+  9:// import { BaseData, Data } from '@/core/models/data/Data';
+Size:      148 lines
+
+=== SnapshotStoreConfig.ts ===
+Path: ./src/core/snapshots/SnapshotStoreConfig.ts
+Backup: SnapshotStoreConfig.ts.backup-1767237367105
+Bug count: 2
+Bug lines:
+  Line 1051: // with TypeScript keyword
+  Line 1051: // variable assignment
+Sample buggy lines:
+  1051:// const snapshotStoreConfigInstance: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFie...
+  1051:// const snapshotStoreConfigInstance: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFie...
+Size:     4273 lines
+
+=== createSnapshotExample.ts ===
+Path: ./src/core/snapshots/createSnapshotExample.ts
+Backup: createSnapshotExample.ts.backup-1767237368660
+Bug count: 16
+Bug lines:
+  Line 2: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 13: // with TypeScript keyword
+  Line 13: // variable assignment
+  Line 17: // arrow function
+  Line 18: // with TypeScript keyword
+  Line 18: // variable assignment
+  Line 19: // arrow function
+  Line 22: // return statement
+  Line 23: // arrow function
+  Line 30: // arrow function
+  Line 53: // arrow function
+Sample buggy lines:
+  2:// import { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
+  4:// import type {  Snapshot } from '@/core/snapshots/Snapshot';
+  6:// import { Data } from '@/core/models/data/Data';
+  7:// import { K, T } from '@/core/models/data/dataStoreMethods';
+  8:// import SnapshotStore from "./SnapshotStore";
+Size:       55 lines
+
+=== RetrieveSnapshotData.tsx ===
+Path: ./src/core/snapshots/RetrieveSnapshotData.tsx
+Backup: RetrieveSnapshotData.tsx.backup-1767237365433
+Bug count: 23
+Bug lines: 23 lines (showing first 20)
+  Line 3: // ... from (not a sentence)
+  Line 4: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 13: // with TypeScript keyword
+  Line 13: // variable assignment
+  Line 16: // with TypeScript keyword
+  Line 34: // with TypeScript keyword
+  Line 34: // variable assignment
+  Line 42: // arrow function
+  Line 44: // with TypeScript keyword
+  Line 44: // arrow function
+  Line 45: // with TypeScript keyword
+  Line 45: // variable assignment
+  Line 47: // with TypeScript keyword
+  Line 47: // variable assignment
+  Line 50: // ... from (not a sentence)
+  ... and 3 more
+Sample buggy lines:
+  3:// import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+  4:// import { RetrievedSnapshot } from '@/utils/retrieveSnapshotData';
+  5:// import { BaseData } from '@/core/models/data/Data'
+  6:// import axiosInstance from '@/core/api/csrfToken';
+  7:// import type {  Snapshot } from '@/core/snapshots/Snapshot';
+Size:      253 lines
+
+=== addToSnapshotList.tsx ===
+Path: ./src/core/snapshots/addToSnapshotList.tsx
+Backup: addToSnapshotList.tsx.backup-1767237365440
+Bug count: 23
+Bug lines: 23 lines (showing first 20)
+  Line 1: // ... from (not a sentence)
+  Line 3: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 10: // ... from (not a sentence)
+  Line 11: // ... from (not a sentence)
+  Line 12: // ... from (not a sentence)
+  Line 13: // ... from (not a sentence)
+  Line 14: // ... from (not a sentence)
+  Line 17: // with TypeScript keyword
+  Line 17: // variable assignment
+  Line 26: // arrow function
+  Line 33: // with TypeScript keyword
+  Line 33: // variable assignment
+  Line 64: // arrow function
+  Line 67: // with TypeScript keyword
+  Line 106: // with TypeScript keyword
+  ... and 3 more
+Sample buggy lines:
+  1:// import type { Attachment } from '@/core/documents/attachment/Attachment'
+  3:// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/...
+  5:// import { IHydrateResult } from "mobx-persist";
+  6:// import { useState } from "react";
+  7:// import { BaseData } from '@/core/models/data/Data';
+Size:      133 lines
+
+=== SnapshotStore.tsx ===
+Path: ./src/core/snapshots/SnapshotStore.tsx
+Backup: SnapshotStore.tsx.backup-1767237367558
+Bug count: 6
+Bug lines:
+  Line 6727: // arrow function
+  Line 6731: // arrow function
+  Line 6736: // with TypeScript keyword
+  Line 6736: // variable assignment
+  Line 6757: // with TypeScript keyword
+  Line 6757: // variable assignment
+Sample buggy lines:
+  6727:// store.onIdle(() => {
+  6731:// store.onActivity(() => {
+  6736:// const status = store.getIdleStatus();
+  6736:// const status = store.getIdleStatus();
+  6757://  const dataStoreMethods = {};
+Size:     6763 lines
+
+=== SnapshohtDevConfigs.ts ===
+Path: ./src/core/snapshots/SnapshohtDevConfigs.ts
+Backup: SnapshohtDevConfigs.ts.backup-1767237367707
+Bug count: 53
+Bug lines: 53 lines (showing first 20)
+  Line 4: // ... from (not a sentence)
+  Line 5: // ... from (not a sentence)
+  Line 6: // ... from (not a sentence)
+  Line 7: // ... from (not a sentence)
+  Line 8: // ... from (not a sentence)
+  Line 9: // ... from (not a sentence)
+  Line 10: // ... from (not a sentence)
+  Line 13: // with TypeScript keyword
+  Line 24: // arrow function
+  Line 30: // arrow function
+  Line 31: // with TypeScript keyword
+  Line 34: // variable assignment
+  Line 41: // variable assignment
+  Line 51: // return statement
+  Line 59: // arrow function
+  Line 62: // arrow function
+  Line 63: // with TypeScript keyword
+  Line 63: // variable assignment
+  Line 66: // variable assignment
+  Line 74: // variable assignment
+  ... and 33 more
+Sample buggy lines:
+  4:// import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+  5:// import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+  6:// import { BaseData, Data } from '@/core/models/data/Data';
+  7:// import { Snapshot, Snapshots } from '@/core/snapshots/Snapshot'
+  8:// import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+Size:      171 lines
+
+=== LocalStorageSnapshotStore.tsx ===
+Path: ./src/core/snapshots/LocalStorageSnapshotStore.tsx
+Backup: LocalStorageSnapshotStore.tsx.backup-1767237367082
+Bug count: 2
+Bug lines:
+  Line 614: // with TypeScript keyword
+  Line 614: // variable assignment
+Sample buggy lines:
+  614:// const snapshotStoreConfig = snapshotApi.getSnapshotStoreConfig(null, {} as SnapshotContainer<B...
+  614:// const snapshotStoreConfig = snapshotApi.getSnapshotStoreConfig(null, {} as SnapshotContainer<B...
+Size:     1757 lines
+
+=== MetaDataOptions.ts ===
+Path: ./src/core/config/MetaDataOptions.ts
+Backup: MetaDataOptions.ts.backup-1767237367721
+Bug count: 4
+Bug lines:
+  Line 757: // with TypeScript keyword
+  Line 757: // variable assignment
+  Line 1093: // with TypeScript keyword
+  Line 1093: // variable assignment
+Sample buggy lines:
+  757:// const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, T...
+  757:// const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, T...
+  1093:// const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, T...
+  1093:// const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, T...
+Size:     1126 lines
+
+=== MetaEntity.ts ===
+Path: ./src/core/typings/entities/MetaEntity.ts
+Backup: MetaEntity.ts.backup-1767237368624
+Bug count: 2
+Bug lines:
+  Line 96: // with TypeScript keyword
+  Line 96: // variable assignment
+Sample buggy lines:
+  96:// export type AppMeta = Meta<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, Me...
+  96:// export type AppMeta = Meta<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, Me...
+Size:      114 lines
+
+=== SnapshotContext.tsx ===
+Path: ./src/core/state/context/SnapshotContext.tsx
+Backup: SnapshotContext.tsx.backup-1767237367748
+Bug count: 35
+Bug lines: 35 lines (showing first 20)
+  Line 270: // with TypeScript keyword
+  Line 272: // variable assignment
+  Line 274: // variable assignment
+  Line 275: // variable assignment
+  Line 276: // variable assignment
+  Line 280: // arrow function
+  Line 283: // arrow function
+  Line 289: // return statement
+  Line 291: // arrow function
+  Line 294: // with TypeScript keyword
+  Line 294: // variable assignment
+  Line 297: // with TypeScript keyword
+  Line 512: // arrow function
+  Line 518: // with TypeScript keyword
+  Line 520: // variable assignment
+  Line 522: // variable assignment
+  Line 523: // variable assignment
+  Line 524: // variable assignment
+  Line 527: // arrow function
+  Line 530: // arrow function
+  ... and 15 more
+Sample buggy lines:
+  270:// function fetchSnapshotFromAPI<
+  272://   K extends T = T,
+  274://   AttachmentType extends Attachment = Attachment,
+  275://   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  276://   IncludedFields extends keyof T = keyof T
+Size:      799 lines
+
+=== ProjectStore.ts ===
+Path: ./src/core/state/stores/ProjectStore.ts
+Backup: ProjectStore.ts.backup-1767233995187
+Bug count: 1
+Bug lines:
+  Line 232: // with TypeScript keyword
+Sample buggy lines:
+  232:// export class NotificationStore {
+Size:      254 lines
+
+=== CalendarManagerStore.tsx ===
+Path: ./src/core/state/stores/CalendarManagerStore.tsx
+Backup: CalendarManagerStore.tsx.backup-1767237367758
+Bug count: 2
+Bug lines:
+  Line 116: // with TypeScript keyword
+  Line 116: // variable assignment
+Sample buggy lines:
+  116:// export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
+  116:// export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
+Size:     1322 lines
+
+=== DocumentSlice.tsx ===
+Path: ./src/core/state/redux/slices/DocumentSlice.tsx
+Backup: DocumentSlice.tsx.backup-1767237366021
+Bug count: 33
+Bug lines: 33 lines (showing first 20)
+  Line 1787: // with TypeScript keyword
+  Line 1788: // return statement
+  Line 1870: // arrow function
+  Line 1874: // arrow function
+  Line 1875: // return statement
+  Line 1877: // arrow function
+  Line 1878: // arrow function
+  Line 1882: // arrow function
+  Line 1883: // return statement
+  Line 1933: // arrow function
+  Line 1934: // return statement
+  Line 1961: // arrow function
+  Line 1964: // arrow function
+  Line 1965: // return statement
+  Line 1967: // arrow function
+  Line 1968: // arrow function
+  Line 1969: // arrow function
+  Line 1970: // arrow function
+  Line 1971: // return statement
+  Line 1973: // arrow function
+  ... and 13 more
+Sample buggy lines:
+  1787:// function createNewDocument(documentId: string): DocumentObject {
+  1788://   return {
+  1870://       getVersion: async () => "1.0",
+  1874://       mergeAndHashStructures: async (baseStructure, additionalStructure) => {
+  1875://         return "merged_structure_hash";
+Size:     5181 lines
+
+=== CalendarSlice.tsx ===
+Path: ./src/core/state/redux/slices/CalendarSlice.tsx
+Backup: CalendarSlice.tsx.backup-1767237367155
+Bug count: 1
+Bug lines:
+  Line 538: // return statement
+Sample buggy lines:
+  538:// Define a function to return the default value
+Size:     2708 lines
+
+=== DayOfWeek.tsx ===
+Path: ./src/core/components/calendar/DayOfWeek.tsx
+Backup: DayOfWeek.tsx.backup-1767233995240
+Bug count: 1
+Bug lines:
+  Line 56: // variable assignment
+Sample buggy lines:
+  56:// DayOfWeek.propTypes = {
+Size:       63 lines
+
+=== useSnapshotManager.ts ===
+Path: ./src/core/hooks/useSnapshotManager.ts
+Backup: useSnapshotManager.ts.backup-1767237367770
+Bug count: 14
+Bug lines:
+  Line 785: // with TypeScript keyword
+  Line 785: // arrow function
+  Line 793: // with TypeScript keyword
+  Line 793: // variable assignment
+  Line 795: // ... from (not a sentence)
+  Line 796: // with TypeScript keyword
+  Line 799: // with TypeScript keyword
+  Line 799: // arrow function
+  Line 804: // with TypeScript keyword
+  Line 804: // arrow function
+  Line 805: // return statement
+  Line 809: // return statement
+  Line 820: // with TypeScript keyword
+  Line 820: // export default
+Sample buggy lines:
+  785:// const ExampleComponent: React.FC = () => {
+  785:// const ExampleComponent: React.FC = () => {
+  793://   const snapshotManager =  useSnapshotManager()
+  793://   const snapshotManager =  useSnapshotManager()
+  795://   // Access specific properties from snapshotManager
+Size:      823 lines
+
+=== CacheExample.ts ===
+Path: ./src/core/examples/CacheExample.ts
+Backup: CacheExample.ts.backup-1767237367119
+Bug count: 1
+Bug lines:
+  Line 700: // return statement
+Sample buggy lines:
+  700:// Update readCache to return SupportedData<T, K, Meta>
+Size:      894 lines
+
+=== SnapshotActions.tsx ===
+Path: ./src/core/actions/SnapshotActions.tsx
+Backup: SnapshotActions.tsx.backup-1767237367779
+Bug count: 109
+Bug lines: 109 lines (showing first 20)
+  Line 1093: // with TypeScript keyword
+  Line 1093: // variable assignment
+  Line 1098: // arrow function
+  Line 1099: // arrow function
+  Line 1100: // arrow function
+  Line 1101: // arrow function
+  Line 1106: // with TypeScript keyword
+  Line 1145: // arrow function
+  Line 1146: // arrow function
+  Line 1147: // arrow function
+  Line 1148: // arrow function
+  Line 1181: // arrow function
+  Line 1182: // arrow function
+  Line 1184: // arrow function
+  Line 1185: // arrow function
+  Line 1186: // arrow function
+  Line 1187: // arrow function
+  Line 1188: // arrow function
+  Line 1189: // arrow function
+  Line 1190: // arrow function
+  ... and 89 more
+Sample buggy lines:
+  1093:// const subscriber = new Subscriber(
+  1093:// const subscriber = new Subscriber(
+  1098://   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Event System:', data); },
+  1099://   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Update Project State:', data); },
+  1100://   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Log Activity:', data); },
+Size:     1484 lines
+
+=== PromptSystem.tsx ===
+Path: ./src/core/prompts/PromptSystem.tsx
+Backup: PromptSystem.tsx.backup-1767237366034
+Bug count: 1
+Bug lines:
+  Line 2: // variable assignment
+Sample buggy lines:
+  2:/// <reference types="react-speech-recognition" />
+Size:       46 lines
+
+=== SnapshotApi.ts ===
+Path: ./src/core/api/SnapshotApi.ts
+Backup: SnapshotApi.ts.backup-1767237367781
+Bug count: 2
+Bug lines:
+  Line 187: // with TypeScript keyword
+  Line 187: // variable assignment
+Sample buggy lines:
+  187:// const subscriptionServiceInstance = new SubscriptionService();
+  187:// const subscriptionServiceInstance = new SubscriptionService();
+Size:     3177 lines
+
+=== dictionaryInterpretor.ts ===
+Path: ./src/core/api/dictionaryInterpretor.ts
+Backup: None
+Bug count: 1
+Bug lines:
+  Line 13: // return statement
+Sample buggy lines:
+  13:// Return Responses: Once the relevant information is retrieved, format it appropriately and retu...
+Size:       18 lines
+
+=== GenerateCache.ts ===
+Path: ./src/core/generators/GenerateCache.ts
+Backup: None
+Bug count: 2
+Bug lines:
+  Line 44: // with TypeScript keyword
+  Line 44: // variable assignment
+Sample buggy lines:
+  44:// export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeData...
+  44:// export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeData...
+Size:       91 lines
+
+=== GenerateUniqueIds.ts ===
+Path: ./src/core/generators/GenerateUniqueIds.ts
+Backup: GenerateUniqueIds.ts.backup-1767237366045
+Bug count: 1
+Bug lines:
+  Line 950: // with TypeScript keyword
+Sample buggy lines:
+  950:// const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFie...
+Size:      988 lines
+
+=== DocumentOptions.ts ===
+Path: ./src/core/documents/DocumentOptions.ts
+Backup: DocumentOptions.ts.backup-1767237365552
+Bug count: 2
+Bug lines:
+  Line 643: // with TypeScript keyword
+  Line 643: // variable assignment
+Sample buggy lines:
+  643:// export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
+  643:// export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
+Size:     1145 lines
+
+=== DocumentGeneratorMethods.ts ===
+Path: ./src/core/documents/DocumentGeneratorMethods.ts
+Backup: DocumentGeneratorMethods.ts.backup-1767237365848
+Bug count: 3
+Bug lines:
+  Line 927: // return statement
+  Line 965: // with TypeScript keyword
+  Line 965: // variable assignment
+Sample buggy lines:
+  927:// Update the return type in loadDocumentContent to handle Promise
+  965://   const allowedDiagramFormats = [
+  965://   const allowedDiagramFormats = [
+Size:      977 lines
+
+=== retrieveSnapshotData.ts ===
+Path: ./src/utils/retrieveSnapshotData.ts
+Backup: retrieveSnapshotData.ts.backup-1767237367805
+Bug count: 1
+Bug lines:
+  Line 1399: // return statement
+Sample buggy lines:
+  1399:// Define `retrievedSnapshot` to return an instance of `RetrievedSnapshot<T, K, Meta, AttachmentT...
+Size:     1518 lines
+
+=== ReadAndWriteCache.tsx ===
+Path: ./src/utils/ReadAndWriteCache.tsx
+Backup: None
+Bug count: 2
+Bug lines:
+  Line 205: // return statement
+  Line 207: // return statement
+Sample buggy lines:
+  205:// Assuming userService.fetchUser and userService.fetchUserById return promises
+  207:// Assuming userService.fetchUser and userService.fetchUserById return promises
+Size:      246 lines
+
+=== DAppAdapterConfig.ts ===
+Path: ./src/utils/web3/dAppAdapter/DAppAdapterConfig.ts
+Backup: DAppAdapterConfig.ts.backup-1767237366908
+Bug count: 6
+Bug lines:
+  Line 437: // with TypeScript keyword
+  Line 437: // variable assignment
+  Line 438: // with TypeScript keyword
+  Line 438: // variable assignment
+  Line 439: // with TypeScript keyword
+  Line 439: // variable assignment
+Sample buggy lines:
+  437:// const fluenceConfig = dappProps.configurations.fluenceConfig;
+  437:// const fluenceConfig = dappProps.configurations.fluenceConfig;
+  438:// const aquaConfig = dappProps.configurations.aquaConfig;
+  438:// const aquaConfig = dappProps.configurations.aquaConfig;
+  439:// const securityConfig = dappProps.configurations.securityConfig;
+Size:      438 lines

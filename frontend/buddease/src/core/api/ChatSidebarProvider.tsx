@@ -1,13 +1,13 @@
-ChatSidebarProvider.tsx
+// ChatSidebarProvider.tsx
 import { openChatSidebar } from '@/core/components/communications/chat/chatUtils';
 import React, { createContext, useContext, useState } from 'react';
 
-Define the type for the props of ChatSidebarProvider
+// Define the type for the props of ChatSidebarProvider
 type ChatSidebarProviderProps = {
   children: React.ReactNode;
 };
 
-Create a context for managing the chat sidebar state
+// Create a context for managing the chat sidebar state
 const ChatSidebarContext = createContext<{
   isChatSidebarOpen: boolean;
   openChatSidebar: (setIsChatSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>) => void;
@@ -16,7 +16,7 @@ const ChatSidebarContext = createContext<{
   openChatSidebar: () => {},
 });
 
-Create a provider component to manage the chat sidebar state
+// Create a provider component to manage the chat sidebar state
 export const ChatSidebarProvider = ({
   children,
 }: ChatSidebarProviderProps) => {
@@ -38,7 +38,7 @@ export const ChatSidebarProvider = ({
   );
 };
 
-Custom hook to consume the chat sidebar context
+// Custom hook to consume the chat sidebar context
 export const useChatSidebar = () => {
   const context = useContext(ChatSidebarContext);
   if (!context) {

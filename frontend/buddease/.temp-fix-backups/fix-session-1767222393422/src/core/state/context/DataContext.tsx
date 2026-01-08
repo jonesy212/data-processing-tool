@@ -16,7 +16,7 @@ interface DataContextProps<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  dataStore: DataStore<T, K> & VersionedData<T, K>;
+  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
   simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
@@ -41,7 +41,7 @@ export const DataProvider = <
   children: ReactNode;
 }) => {
   // Initialize the data store
-  const dataStore = useDataStore<T, K>() as DataStore<T, K> &
+  const dataStore = useDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>() as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
     VersionedData<T, K>;
   const simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 

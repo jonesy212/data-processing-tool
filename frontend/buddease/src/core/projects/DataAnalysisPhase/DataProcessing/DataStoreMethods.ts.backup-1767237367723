@@ -110,7 +110,7 @@ export interface DataStoreMethods <
         snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
         category?: Category;
         categoryProperties: CategoryProperties | undefined;
-        dataStoreMethods: DataStore<T, K> | null;
+        dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
         timestamp: string | number | Date | undefined;
         id: string | number | undefined;
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

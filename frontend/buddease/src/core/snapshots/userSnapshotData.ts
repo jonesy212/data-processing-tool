@@ -1,10 +1,10 @@
 // userSnapshotData.ts
-import CommonDetails from '@/core/components/models/details/CommonDetails';
+import type {CommonDetails} from '@/core/components/models/details/CommonDetails';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useUserProfile from '@/core/hooks/useUserProfile';
 import UserRoles from '@/core/models/UserRoles';
-import { User, UserData } from '@/core/users/User';
+import type { User, UserData } from '@/core/users/User';
 import MyPromise from '@/utils/MyPromise';
 
 export type UserProfile<

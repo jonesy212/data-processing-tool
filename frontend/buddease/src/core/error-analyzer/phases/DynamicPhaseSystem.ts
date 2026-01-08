@@ -1621,6 +1621,10 @@ const test: TestCompatibility = snapshotA;
     if (errorLine >= 0 && errorLine < lines.length) {
       const line = lines[errorLine];
       
+      if (line.trim().startsWith('//')) {
+        console.error(`❌ CANNOT FIX: Line ${errorLine + 1} is a comment: "${line.trim()}"`);
+        return content; // Return unchanged
+      }
       // Try to extract module name from error
       const moduleMatch = error.error.match(/module ['"]([^'"]+)['"]/);
       if (moduleMatch) {
@@ -2149,7 +2153,7 @@ export async function testParameterInterchangeability(directory: string): Promis
 
 // ========== BACKUP SYSTEM EXTENSION ==========
 
-Extend PhaseBackupSystem for entity-specific backups
+// Extend PhaseBackupSystem for entity-specific backups
 declare module '@/core/error-analyzer/phases/PhaseBackupSystem' {
   interface PhaseBackupSystem {
     backupEntity(

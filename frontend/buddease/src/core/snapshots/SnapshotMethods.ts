@@ -1,49 +1,49 @@
 // SnapshotMethods.ts
 
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { SnapshotWithData } from '@/core/components/calendar/CalendarApp';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { SnapshotWithData } from '@/core/components/calendar/CalendarApp';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { CombinedEvents, SnapshotManager } from '@/core/hooks/useSnapshotManager';
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/core/interfaces/payload/payloadTypes";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { Content } from '@/core/models/content/AddContent';
-import { BaseData, Data, DataDetails } from '@/core/models/data/Data';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { CombinedEvents, SnapshotManager } from '@/core/hooks/useSnapshotManager';
+import type { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/core/interfaces/payload/payloadTypes";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Content } from '@/core/models/content/AddContent';
+import type { BaseData, Data, DataDetails } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
-import { Tag } from '@/core/models/tracker/Tag';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import { WrappedU } from '@/core/snapshots/isCompatibleTempData';
-import {
+import type { Tag } from '@/core/models/tracker/Tag';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
+import type { WrappedU } from '@/core/snapshots/isCompatibleTempData';
+import type {
     Result,
     Snapshots, SnapshotsArray, SnapshotUnion
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotActionType } from '@/core/snapshots/SnapshotActionType';
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotContainer, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData, SnapshotHierarchyMethods } from '@/core/snapshots/SnapshotData';
-import { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
-import { SnapshotItem } from '@/core/snapshots/SnapshotList';
+import type { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotContainer, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotData, SnapshotHierarchyMethods } from '@/core/snapshots/SnapshotData';
+import type { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
+import type { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import { default as SnapshotStore } from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotContext, SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotContext, SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
-import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
-import { SnapshotEvent, SnapshotEvents } from '@/core/typings/snapshotTypes';
-import { Version } from '@/core/versions/Version';
-import { IHydrateResult } from "mobx-persist";
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { RealtimeDataItem } from "@/core/typings/realtimeTypes";
+import type { SnapshotEvent, SnapshotEvents } from '@/core/typings/snapshotTypes';
+import type { Version } from '@/core/versions/Version';
+import type { IHydrateResult } from "mobx-persist";
 
 // 1. COMPARISON METHODS
 interface SnapshotComparisonMethods<

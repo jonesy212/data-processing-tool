@@ -1,0 +1,20 @@
+# BUG SUMMARY
+# Generated: Tue Jan  6 19:43:50 CST 2026
+#
+Total files scanned: 3031
+Buggy files: 35
+Buggy lines: 873
+Total lines scanned: 480854
+Bug density: .1815%
+
+Top files by bug count:
+  useSnapshotStore.tsx: 474 bugs (./src/core/snapshots/useSnapshotStore.tsx)
+  SnapshotActions.tsx: 109 bugs (./src/core/actions/SnapshotActions.tsx)
+  SnapshohtDevConfigs.ts: 53 bugs (./src/core/snapshots/SnapshohtDevConfigs.ts)
+  SnapshotContext.tsx: 35 bugs (./src/core/state/context/SnapshotContext.tsx)
+  DocumentSlice.tsx: 33 bugs (./src/core/state/redux/slices/DocumentSlice.tsx)
+  convertSnapshotsArray.ts: 30 bugs (./src/core/snapshots/convertSnapshotsArray.ts)
+  addToSnapshotList.tsx: 23 bugs (./src/core/snapshots/addToSnapshotList.tsx)
+  RetrieveSnapshotData.tsx: 23 bugs (./src/core/snapshots/RetrieveSnapshotData.tsx)
+  createSnapshotExample.ts: 16 bugs (./src/core/snapshots/createSnapshotExample.ts)
+  useSnapshotManager.ts: 14 bugs (./src/core/hooks/useSnapshotManager.ts)

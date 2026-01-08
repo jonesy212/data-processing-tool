@@ -1,6 +1,6 @@
 // DependencyInstallationScript.ts
 
-import { ProjectConfig } from '@/core/config/ProjectConfig';
+import type { ProjectConfig } from '@/core/config/ProjectConfig';
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';

@@ -1,4 +1,4 @@
-ApiConfigComponent.tsx
+// ApiConfigComponent.tsx
 
 import { ComponentActions } from '@/core/actions/ComponentActions';
 import ApiConfig from "@/core/api/ApiConfigService";
@@ -13,7 +13,7 @@ import TaskTrackingComponent from "@/core/components/models/tracker/TaskTracking
 import ProfileSetupPhase from "@/core/components/phases/onboarding/ProfileSetupPhase";
 
 import getAppPath from "@/core/config/appStructure/appPath";
-import { UserData } from "@/core/users/User";
+import type { UserData } from "@/core/users/User";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 
 import { ButtonGenerator } from "@/core/generators/GenerateButtons";
@@ -34,31 +34,32 @@ import BackendStructure from '@/core/server/database/BackendStructure';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import ErrorBoundary from "@/core/shared/ErrorBoundary";
 
-import { userPreferences, UserPreferences } from "@/core/config/UserPreferences";
+import { userPreferences } from "@/core/config/UserPreferences";
+import type { UserPreferences } from "@/core/config/UserPreferences";
 
-import {
+import type {
     TrackerEntity,
-    TrackerK,
-    TrackerProps
+    TrackerK
 } from "@/core/typings/entities/TrackerEntity";
+import type { TrackerProps } from '@/core/models/tracker/Tracker';
 
-✅ Plugin & Callback Registry imports
+// ✅ Plugin & Callback Registry imports
 import { CallbackRegistry } from '@/core/libraries/eventSystem/callbackRegistry';
 import { PluginManager } from "@/core/plugins/PluginManager";
 
 
-===============================================
-✅ PLUGIN + CALLBACK BOOTSTRAP
-===============================================
+// ===============================================
+// ✅ PLUGIN + CALLBACK BOOTSTRAP
+// ===============================================
 const callbackRegistry = new CallbackRegistry();
 const pluginManager = new PluginManager(callbackRegistry);
 
-Load plugins ONCE
+// Load plugins ONCE
 pluginManager.loadAll();
 
-===============================================
-✅ COMPONENT
-===============================================
+// ===============================================
+// ✅ COMPONENT
+// ===============================================
 const ApiConfigComponent: React.FC = () => {
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]);

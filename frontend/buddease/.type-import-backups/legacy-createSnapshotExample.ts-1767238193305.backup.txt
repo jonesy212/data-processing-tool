@@ -1,0 +1,3 @@
+// Original import at lines 1-2:
+import type { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData'
+// import { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';

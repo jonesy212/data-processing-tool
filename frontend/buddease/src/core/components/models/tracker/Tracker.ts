@@ -1,17 +1,16 @@
-Tracker.ts
-Tracker.ts
+// Tracker.ts
 
-import { HighlightColor } from "@/core/components/styling/Palette";
+import type { HighlightColor } from "@/core/components/styling/Palette";
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { detectMetadataChanges } from "@/core/config/metadata/detectMetadataChanges";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import FileData from "@/core/models/data/FileData";
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type FileData from "@/core/models/data/FileData";
 import FolderData from "@/core/models/data/FolderData";
-import { Phase } from '@/core/models/phases/Phase';
-import { TrackerProps } from '@/core/models/tracker/Tracker';
+import type { Phase } from '@/core/models/phases/Phase';
+import type { TrackerProps } from '@/core/models/tracker/Tracker';
 import { useAuth } from "@/core/state/context/AuthContext";
-import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
+import type { Stroke } from "@/core/state/redux/slices/DrawingSlice";
 import {
     fetchUsersSuccess,
     updateBio,
@@ -19,9 +18,9 @@ import {
     updateProfilePicture,
     updateQuota,
 } from "@/core/state/redux/slices/UserSlice";
-import { Payment } from "@/core/subscriptions/SubscriptionPlan";
+import type { Payment } from "@/core/subscriptions/SubscriptionPlan";
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import path from "path";
 
 export interface SharedFormattingOptions {
@@ -33,7 +32,7 @@ export interface SharedFormattingOptions {
   fontFamily?: string;
 }
 
-Define a common interface for tracker properties
+// Define a common interface for tracker properties
 interface CommonTrackerProps<
   T extends BaseDataEntity,
   K extends T = T,

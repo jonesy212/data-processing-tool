@@ -66,6 +66,7 @@
     "debug:ts-errors": "tsx debug-typescript-errors.ts",
     "fix:snapshots-first": "pnpm tsc:analyze-snapshots && pnpm analyze:snapshots",
     "fix:with-diagnosis": "pnpm tsc:diagnose-line332 && pnpm analyze:snapshots",
+
     "tsc:analyze-snapshots": "node src/core/scripts/analyze-snapshots-tsc.mjs",
     "tsc:diagnose-line332": "node src/app/scripts/diagnose-line-specific.js",
     "tsc:fix-generics": "node src/app/scripts/auto-fix-generics.js",
@@ -99,6 +100,15 @@
     "analyze:ts-quick": "pnpm type-check 2>&1 > ts-errors-quick.json && pnpm analyze:ts-errors:cli analyze ts-errors-quick.json --quick",
     "analyze-type-exports": "tsx src/app/scripts/fix-type-exports.ts --analyze",
     "fix-type-exports": "tsx app/scripts/fix-type-exports.ts --fix",
+    
+
+    "find:comment-errors": "tsx scripts/fix-missing-comment-errors.ts --dry-run",
+    "fix:comment-errors": "tsx scripts/fix-missing-comment-errors.ts",
+    "analyze:syntax-errors": "npx tsc --noEmit --skipLibCheck 2>&1 | grep -E \"(TS1434|TS1109|TS1128)\" | head -30",
+    "pre-commit:check-comments": "bash scripts/check-comment-integrity.sh",
+
+
+
     "detect-type-mismatches": "tsx src/app/scripts/detect-type-mismatches.ts",
     "check-type-file": "tsx src/app/scripts/fix-type-exports.ts",
     "ts:strict-type": "tsc --noEmit --isolatedModules --verbatimModuleSyntax",
@@ -270,8 +280,21 @@
     "fix:types:comprehensive-dry": "tsx fix-all-type-imports.ts --dry-run",
     "fix:types:comprehensive-quick": "tsx fix-all-type-imports.ts --quick",
     "fix:types:specific": "tsx type-import-fixer-with-backup.ts",
+    "fix:types:namespace": "tsx src/scripts/fix-type-imports-with-backup.ts",
+    "fix:types:namespace:dry-run": "tsx app/scripts/fix-type-imports-with-backup.ts --dry-run",
+    "fix:types:rollback": "tsx src/scripts/fix-type-imports-with-backup.ts --rollback",
+    "fix:types:backup-manager": "tsx src/scripts/fix-type-imports-with-backup.ts --list",
+    "check:namespace-imports": "npx tsc --noEmit --isolatedModules --verbatimModuleSyntax 2>&1 | grep \"'*' is a type\" || echo '✅ No namespace import issues'",
+ 
+
+    "backup:type-imports": "bash scripts/backup-type-imports.sh backup",
+    "backup:list": "bash scripts/backup-type-imports.sh list",
+    "backup:cleanup": "bash scripts/backup-type-imports.sh cleanup",
+
+    "fix:types:summary": "tsx -e \"console.log('\\n📊 TYPE IMPORT SUMMARY:'); console.log('='.repeat(40)); require('child_process').execSync('grep -r \\\"import.*BaseDataEntity.*from\\\" src/ --include=\\\"*.ts\\\" --include=\\\"*.tsx\\\" | grep -v \\\"import type\\\" | wc -l', {encoding:'utf8'}).split('\\n').forEach(l => console.log('Files needing fix:', l.trim()));\"",
     
-    "fix:types:cleanup": "rm -rf .import-fix-backups .import-fix-rollback",
+    "fix:types:cleanup": "rm -rf .type-import-backups .type-import-rollback",
+    "fix:types:show-all": "find .type-import-backups -type f -name '*.backup' | sort -r | head -20",
     "fix:types:list-backups": "ls -la .import-fix-backups/ 2>/dev/null || echo 'No backups'",
     "fix:types:show-latest": "tail -20 .import-fix-backups/*.txt 2>/dev/null | head -50 || echo 'No backups'",
     
@@ -294,6 +317,7 @@
     "fix:types:backup": "tsx type-import-fixer-with-backup.ts",
     "rollback:latest": "bash .smart-backups/rollback/latest/rollback.sh",
     "rollback:list": "ls -la .smart-backups/rollback/",
+    
     "rollback:to": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts restore",
     "dev:with-phase": "pnpm phase:scan && pnpm dev",
     "dev:with-analysis": "pnpm generate:tree:json && pnpm dev",
@@ -374,16 +398,7 @@
     "ts:test-phase": "tsx src/test-phase.ts",
     "fix:types:clear": "tsx app/scripts/type-import-fixer-with-backup.ts",
     "fix:types:preview": "tsx app/scripts/type-import-fixer-with-backup.ts --dry-run",
-    "fix:types:rollback": "tsx type-import-fixer-with-backup.ts --rollback",
 
-
-    
-    
-
-
-
-
-    "fix:types:summary": "tsx -e \"console.log('\\n📊 TYPE IMPORT SUMMARY:'); console.log('='.repeat(40)); require('child_process').execSync('grep -r \\\"import.*BaseDataEntity.*from\\\" src/ --include=\\\"*.ts\\\" --include=\\\"*.tsx\\\" | grep -v \\\"import type\\\" | wc -l', {encoding:'utf8'}).split('\\n').forEach(l => console.log('Files needing fix:', l.trim()));\"",
     "analyze:snapshots": "PLATFORM=web pnpm generate:corrections:snapshots",
     "analyze:critical": "PLATFORM=web pnpm generate:corrections:critical",
     "analyze:quick-fixes": "PLATFORM=web pnpm generate:corrections:quick",

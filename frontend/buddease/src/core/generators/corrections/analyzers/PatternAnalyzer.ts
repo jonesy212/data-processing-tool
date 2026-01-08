@@ -1,9 +1,9 @@
-PatternAnalyzer.ts
-analyzers/PatternAnalyzer.ts
+// PatternAnalyzer.ts
+// analyzers/PatternAnalyzer.ts
 
 import { CorrectionFactory } from '@/core/config/factory/CorrectionFactory';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionMessageGenerator } from '@/core/generators/corrections/CorrectionMessageGenerator';
 import fs from 'fs';
 import path from 'path';

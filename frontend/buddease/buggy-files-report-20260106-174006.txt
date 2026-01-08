@@ -1,9 +1,9 @@
 # BUGGY FILES REPORT
-# Generated: Sat Jan  3 02:16:38 CST 2026
+# Generated: Tue Jan  6 17:40:06 CST 2026
 #
 
 === SnapshotConfigBuilder.ts ===
-Path: src/core/snapshots/SnapshotConfigBuilder.ts
+Path: ./src/core/snapshots/SnapshotConfigBuilder.ts
 Backup: SnapshotConfigBuilder.ts.backup-1767237367073
 Bug count: 1
 Bug lines:
@@ -15,20 +15,20 @@ Sample buggy lines:
 Size:      174 lines
 
 === createSnapshotStoreOptions.ts ===
-Path: src/core/snapshots/createSnapshotStoreOptions.ts
+Path: ./src/core/snapshots/createSnapshotStoreOptions.ts
 Backup: createSnapshotStoreOptions.ts.backup-1767237367170
 Bug count: 2
 Bug lines:
-  Line 1377: // with TypeScript keyword
-  Line 1414: // with TypeScript keyword
+  Line 1387: // with TypeScript keyword
+  Line 1424: // with TypeScript keyword
 Sample buggy lines:
   1:// createSnapshotStoreOptions.ts
-  1377:// const handleSingleSnapshot = <
-  1385://   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-Size:     1574 lines
+  1387:// const handleSingleSnapshot = <
+  1395://   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+Size:     1584 lines
 
 === useSnapshotStore.tsx ===
-Path: src/core/snapshots/useSnapshotStore.tsx
+Path: ./src/core/snapshots/useSnapshotStore.tsx
 Backup: useSnapshotStore.tsx.backup-1767237367094
 Bug count: 121
 Bug lines:
@@ -160,7 +160,7 @@ Sample buggy lines:
 Size:     4573 lines
 
 === convertSnapshotToItem.ts ===
-Path: src/core/snapshots/convertSnapshotToItem.ts
+Path: ./src/core/snapshots/convertSnapshotToItem.ts
 Backup: convertSnapshotToItem.ts.backup-1767233994817
 Bug count: 6
 Bug lines:
@@ -177,7 +177,7 @@ Sample buggy lines:
 Size:       31 lines
 
 === convertSnapshotsArray.ts ===
-Path: src/core/snapshots/convertSnapshotsArray.ts
+Path: ./src/core/snapshots/convertSnapshotsArray.ts
 Backup: convertSnapshotsArray.ts.backup-1767237368589
 Bug count: 18
 Bug lines:
@@ -206,7 +206,7 @@ Sample buggy lines:
 Size:      148 lines
 
 === SnapshotStoreConfig.ts ===
-Path: src/core/snapshots/SnapshotStoreConfig.ts
+Path: ./src/core/snapshots/SnapshotStoreConfig.ts
 Backup: SnapshotStoreConfig.ts.backup-1767237367105
 Bug count: 1
 Bug lines:
@@ -217,7 +217,7 @@ Sample buggy lines:
 Size:     4273 lines
 
 === createSnapshotExample.ts ===
-Path: src/core/snapshots/createSnapshotExample.ts
+Path: ./src/core/snapshots/createSnapshotExample.ts
 Backup: createSnapshotExample.ts.backup-1767237368660
 Bug count: 8
 Bug lines:
@@ -236,7 +236,7 @@ Sample buggy lines:
 Size:       55 lines
 
 === RetrieveSnapshotData.tsx ===
-Path: src/core/snapshots/RetrieveSnapshotData.tsx
+Path: ./src/core/snapshots/RetrieveSnapshotData.tsx
 Backup: RetrieveSnapshotData.tsx.backup-1767237365433
 Bug count: 16
 Bug lines:
@@ -263,7 +263,7 @@ Sample buggy lines:
 Size:      253 lines
 
 === addToSnapshotList.tsx ===
-Path: src/core/snapshots/addToSnapshotList.tsx
+Path: ./src/core/snapshots/addToSnapshotList.tsx
 Backup: addToSnapshotList.tsx.backup-1767237365440
 Bug count: 15
 Bug lines:
@@ -289,7 +289,7 @@ Sample buggy lines:
 Size:      133 lines
 
 === SnapshotStore.tsx ===
-Path: src/core/snapshots/SnapshotStore.tsx
+Path: ./src/core/snapshots/SnapshotStore.tsx
 Backup: SnapshotStore.tsx.backup-1767237367558
 Bug count: 2
 Bug lines:
@@ -302,7 +302,7 @@ Sample buggy lines:
 Size:     6763 lines
 
 === SnapshohtDevConfigs.ts ===
-Path: src/core/snapshots/SnapshohtDevConfigs.ts
+Path: ./src/core/snapshots/SnapshohtDevConfigs.ts
 Backup: SnapshohtDevConfigs.ts.backup-1767237367707
 Bug count: 14
 Bug lines:
@@ -327,7 +327,7 @@ Sample buggy lines:
 Size:      171 lines
 
 === LocalStorageSnapshotStore.tsx ===
-Path: src/core/snapshots/LocalStorageSnapshotStore.tsx
+Path: ./src/core/snapshots/LocalStorageSnapshotStore.tsx
 Backup: LocalStorageSnapshotStore.tsx.backup-1767237367082
 Bug count: 1
 Bug lines:
@@ -339,7 +339,7 @@ Sample buggy lines:
 Size:     1757 lines
 
 === MetaDataOptions.ts ===
-Path: src/core/config/MetaDataOptions.ts
+Path: ./src/core/config/MetaDataOptions.ts
 Backup: MetaDataOptions.ts.backup-1767237367721
 Bug count: 2
 Bug lines:
@@ -352,7 +352,7 @@ Sample buggy lines:
 Size:     1126 lines
 
 === MetaEntity.ts ===
-Path: src/core/typings/entities/MetaEntity.ts
+Path: ./src/core/typings/entities/MetaEntity.ts
 Backup: MetaEntity.ts.backup-1767237368624
 Bug count: 1
 Bug lines:
@@ -364,7 +364,7 @@ Sample buggy lines:
 Size:      114 lines
 
 === SnapshotContext.tsx ===
-Path: src/core/state/context/SnapshotContext.tsx
+Path: ./src/core/state/context/SnapshotContext.tsx
 Backup: SnapshotContext.tsx.backup-1767237367748
 Bug count: 7
 Bug lines:
@@ -382,7 +382,7 @@ Sample buggy lines:
 Size:      799 lines
 
 === ProjectStore.ts ===
-Path: src/core/state/stores/ProjectStore.ts
+Path: ./src/core/state/stores/ProjectStore.ts
 Backup: ProjectStore.ts.backup-1767233995187
 Bug count: 1
 Bug lines:
@@ -394,7 +394,7 @@ Sample buggy lines:
 Size:      254 lines
 
 === CalendarManagerStore.tsx ===
-Path: src/core/state/stores/CalendarManagerStore.tsx
+Path: ./src/core/state/stores/CalendarManagerStore.tsx
 Backup: CalendarManagerStore.tsx.backup-1767237367758
 Bug count: 1
 Bug lines:
@@ -406,7 +406,7 @@ Sample buggy lines:
 Size:     1322 lines
 
 === DocumentSlice.tsx ===
-Path: src/core/state/redux/slices/DocumentSlice.tsx
+Path: ./src/core/state/redux/slices/DocumentSlice.tsx
 Backup: DocumentSlice.tsx.backup-1767237366021
 Bug count: 1
 Bug lines:
@@ -418,7 +418,7 @@ Sample buggy lines:
 Size:     5181 lines
 
 === useSnapshotManager.ts ===
-Path: src/core/hooks/useSnapshotManager.ts
+Path: ./src/core/hooks/useSnapshotManager.ts
 Backup: useSnapshotManager.ts.backup-1767237367770
 Bug count: 6
 Bug lines:
@@ -435,7 +435,7 @@ Sample buggy lines:
 Size:      823 lines
 
 === SnapshotActions.tsx ===
-Path: src/core/actions/SnapshotActions.tsx
+Path: ./src/core/actions/SnapshotActions.tsx
 Backup: SnapshotActions.tsx.backup-1767237367779
 Bug count: 2
 Bug lines:
@@ -448,7 +448,7 @@ Sample buggy lines:
 Size:     1484 lines
 
 === SnapshotApi.ts ===
-Path: src/core/api/SnapshotApi.ts
+Path: ./src/core/api/SnapshotApi.ts
 Backup: SnapshotApi.ts.backup-1767237367781
 Bug count: 1
 Bug lines:
@@ -459,8 +459,20 @@ Sample buggy lines:
   23:// API and HTTP related
 Size:     3177 lines
 
+=== GenerateCache.ts ===
+Path: ./src/core/generators/GenerateCache.ts
+Backup: None
+Bug count: 1
+Bug lines:
+  Line 44: // with TypeScript keyword
+Sample buggy lines:
+  1:// GenerateCache.ts
+  44:// export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
+  46:// Updated cache data structure based on the provided tree structure
+Size:       91 lines
+
 === GenerateUniqueIds.ts ===
-Path: src/core/generators/GenerateUniqueIds.ts
+Path: ./src/core/generators/GenerateUniqueIds.ts
 Backup: GenerateUniqueIds.ts.backup-1767237366045
 Bug count: 1
 Bug lines:
@@ -472,7 +484,7 @@ Sample buggy lines:
 Size:      988 lines
 
 === DocumentOptions.ts ===
-Path: src/core/documents/DocumentOptions.ts
+Path: ./src/core/documents/DocumentOptions.ts
 Backup: DocumentOptions.ts.backup-1767237365552
 Bug count: 1
 Bug lines:
@@ -484,7 +496,7 @@ Sample buggy lines:
 Size:     1145 lines
 
 === DocumentGeneratorMethods.ts ===
-Path: src/core/documents/DocumentGeneratorMethods.ts
+Path: ./src/core/documents/DocumentGeneratorMethods.ts
 Backup: DocumentGeneratorMethods.ts.backup-1767237365848
 Bug count: 1
 Bug lines:
@@ -496,12 +508,13 @@ Sample buggy lines:
 Size:      977 lines
 
 === DAppAdapterConfig.ts ===
-Path: src/utils/web3/dAppAdapter/DAppAdapterConfig.ts
+Path: ./src/utils/web3/dAppAdapter/DAppAdapterConfig.ts
 Backup: DAppAdapterConfig.ts.backup-1767237366908
-Bug count: 2
+Bug count: 3
 Bug lines:
   Line 437: // with TypeScript keyword
   Line 438: // with TypeScript keyword
+  Line 439: // with TypeScript keyword
 Sample buggy lines:
   20:// FLUENCE_API_KEY EXPORT
   436:// ✅ Access configurations like this:

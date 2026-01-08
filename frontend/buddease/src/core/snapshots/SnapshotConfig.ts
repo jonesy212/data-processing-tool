@@ -5,44 +5,46 @@ import * as snapshotApi from "@/core/api/SnapshotApi";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import { FileCategory } from "@/core/documents/FileType";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
-import {
+import type {
     SnapshotManager
 } from "@/core/hooks/useSnapshotManager";
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import {
     fetchFileSnapshotData,
 } from "@/core/libraries/categories/determineFileCategory";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData, Data, DataDetails } from '@/core/models/data/Data';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { BaseData, Data, DataDetails } from '@/core/models/data/Data';
 import {
     StatusType,
     SubscriberTypeEnum,
     SubscriptionTypeEnum
 } from "@/core/models/data/StatusType";
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
-import { CoreSnapshot, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { InitializedData, SnapshotStoreOptions } from "@/core/snapshots/SnapshotStoreOptions";
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { CoreSnapshot, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { InitializedData, SnapshotStoreOptions } from "@/core/snapshots/SnapshotStoreOptions";
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore, InitializedState } from "@/core/state/stores/DataStore";
-import { Subscriber, SubscriberCallback } from "@/core/subscribers/Subscriber";
-import { SubscriberCallbackType, Subscription } from "@/core/subscriptions/Subscription";
-import { SubscriptionLevel, subscriptionLevels } from '@/core/subscriptions/SubscriptionLevel';
+import { Subscriber } from "@/core/subscribers/Subscriber";
+import { SubscriberCallback } from "@/core/subscribers/Subscriber";
+import type { SubscriberCallbackType, Subscription } from "@/core/subscriptions/Subscription";
+import type { SubscriptionLevel } from '@/core/subscriptions/SubscriptionLevel';
+import type { subscriptionLevels } from '@/core/subscriptions/SubscriptionLevel';
 import type { AppStructuredMetadata } from '@/core/typings/entities/AppMetadataEntity';
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
-import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
-import { SnapshotEvent } from '@/core/typings/snapshotTypes';
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { RealtimeDataItem } from "@/core/typings/realtimeTypes";
+import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { createLatestVersion } from '@/core/versions/createLatestVersion';
-import { Version } from "@/core/versions/Version";
+import type { Version } from "@/core/versions/Version";
 import { isSnapshot } from '@/utils/snapshotUtils';
 import {
     getCommunityEngagement,
@@ -52,22 +54,22 @@ import {
 import { triggerIncentives } from "@/utils/web3/applicationUtils";
 import { useParams } from "next/navigation";
 
-import { SnapshotCallback } from '@/core/components/event/EventManager';
+import type { SnapshotCallback } from '@/core/components/event/EventManager';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseDatabaseService } from '@/core/server/database/DatabaseService';
-import {
+import type {
     Snapshots,
     SnapshotUnion,
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import {
     Snapshot
 } from '@/core/snapshots/Snapshot';
-import { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";
-import { SnapshotItem } from "@/core/snapshots/SnapshotList";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
-import { SnapshotContext } from '@/core/snapshots/SnapshotSubscriberManagement';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import type { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotItem } from "@/core/snapshots/SnapshotList";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotContext } from '@/core/snapshots/SnapshotSubscriberManagement';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import { internalCache } from '@/utils/cache/InternalCache';
 import SnapshotStore from "./SnapshotStore";
 

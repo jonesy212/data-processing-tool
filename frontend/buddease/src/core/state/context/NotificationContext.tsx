@@ -1,26 +1,28 @@
 // NotificationContext.tsx
 
-import {
+import type {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/core/config/BaseConfig";
+import type { BaseDataRoot } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NOTIFICATION_TYPES } from "@/core/features/support/NotificationTypes";
-import { NotificationType } from "@/core/features/support/UnifiedNotificationTypes";
-import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { LogEntry } from "@/core/hooks/useLogManagement";
-import { NotificationData } from "@/core/hooks/useNotificationSystem";
+import type { NotificationType } from "@/core/features/support/UnifiedNotificationTypes";
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { LogEntry } from "@/core/hooks/useLogManagement";
+import type { NotificationData } from "@/core/hooks/useNotificationSystem";
 import {
     NotificationPosition
 } from "@/core/models/data/StatusType";
-import { LogData } from "@/core/models/LogData";
-import { NotificationChannels } from "@/core/notifications/NotificationChannels";
+import type { LogData } from "@/core/models/LogData";
+import type { NotificationChannels } from "@/core/notifications/NotificationChannels";
 import NotificationStore from "@/core/state/stores/NotificationStore";
-import { FileMetadata } from '@/utils/fileCategoryUtils';
-import { createContext, ReactNode, useContext } from "react";
+import type { FileMetadata } from '@/utils/fileCategoryUtils';
+import { createContext, useContext } from "react";
+import type {  ReactNode } from "react";
 
 
 // Define missing Notification type
@@ -107,7 +109,7 @@ interface CommunicationContext<
   };
 }
 
-interface NotificationDataPayload<T = unknown> {
+interface NotificationDataPayload<T = BaseDataRoot> {
   originalError?: string | Error;
   entityId?: string | number;
   action?: string;
@@ -143,11 +145,11 @@ interface NotificationDataPayload<T = unknown> {
 }
 
 
-interface NotificationOptions {
+interface NotificationOptions<T = BaseDataRoot> {
   id?: string;
   message?: string;
   dataId?: string;
-  data?: NotificationDataPayload;
+  data?: NotificationDataPayload<T>;
   error?: string;
   duration?: number;
   position?: NotificationPosition;
@@ -365,7 +367,7 @@ const useNotification = <
       additionalDocumentOptions?: DocumentOptions;
       additionalOptionsLabel?: string;
       dataTypeEnum?: string;
-      data?: NotificationDataPayload;
+      data?: NotificationDataPayload<T>;
       error?: string;
       duration?: number;
       onClose?: () => void;

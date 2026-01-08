@@ -1,15 +1,13 @@
 // DataContext.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import type { BaseData } from '@/core/config/BaseConfig';
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type {
     DataStore,
     VersionedData,
 } from "@/core/state/stores/DataStore";
 import { useDataStore } from "@/core/state/stores/DataStore";
-import { ReactNode } from "react";
-import { createContext, useContext } from "react";
+import { createContext, ReactNode, useContext } from "react";
 
 interface DataContextProps<
   T extends BaseDataEntity = BaseDataEntity,
@@ -19,7 +17,7 @@ interface DataContextProps<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  dataStore: DataStore<T, K> & VersionedData<T, K>;
+  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
   simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }

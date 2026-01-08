@@ -1,5 +1,5 @@
-middlewareManager.ts
-import { MiddlewareContext, MiddlewareFunction, MiddlewarePipeline } from '@/core/middleware/core/types';
+// middlewareManager.ts
+import type { MiddlewareContext, MiddlewareFunction, MiddlewarePipeline } from '@/core/middleware/core/types';
 import { createMiddlewarePipeline } from '@/core/middleware/pipeline/createMiddlewarePipeline';
 
 export class MiddlewareManager implements MiddlewarePipeline {

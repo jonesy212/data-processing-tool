@@ -1,6 +1,33 @@
 #!/bin/bash
 echo "🔍 Using TypeScript error patterns to identify REAL broken code"
 
+# AUTO-FIX MODE
+AUTO_FIX=false
+if [[ "$1" == "--auto-fix" ]]; then
+  AUTO_FIX=true
+  echo "⚙️  Auto-fix mode enabled (no prompts)"
+  shift
+fi
+
+# TARGET FILE
+TARGET_FILE=""
+if [[ -n "$1" ]]; then
+  TARGET_FILE="$1"
+  echo "🎯 Targeting specific file: $TARGET_FILE"
+fi
+
+# sed wrapper function
+sed_in_place() {
+  local script="$1"
+  local file="$2"
+  
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "$script" "$file"
+  else
+    sed -i "$script" "$file"
+  fi
+}
+
 # First, run TypeScript to see what errors we have
 echo "Running TypeScript check..."
 ERRORS=$(npx tsc --noEmit --skipLibCheck 2>&1 | grep -E "(error|warning)" || true)
@@ -12,52 +39,65 @@ fi
 
 echo "Found TypeScript errors. Analyzing patterns..."
 
-# Extract file names and line numbers from errors
-echo "$ERRORS" | grep -E "\.(ts|tsx)\([0-9]+," | while read -r error_line; do
-  # Extract filename and line number
+# Create temp file to store lines that need fixing
+FIX_FILE=$(mktemp)
+trap 'rm -f "$FIX_FILE"' EXIT
+
+# Find all lines that need fixing
+echo "$ERRORS" | grep -E "\.(ts|tsx)" | while read -r error_line; do
+  # Match filename(line,column) format ONLY
   if [[ "$error_line" =~ ([^\(]+)\(([0-9]+), ]]; then
     FILENAME="${BASH_REMATCH[1]}"
     LINE_NUM="${BASH_REMATCH[2]}"
+  else
+    continue
+  fi
+  
+  # Skip if we have a target file and this isn't it
+  if [[ -n "$TARGET_FILE" && "$FILENAME" != *"$TARGET_FILE"* ]]; then
+    continue
+  fi
+  
+  # Check if this file exists
+  if [ -f "$FILENAME" ]; then
+    # Get the specific line
+    LINE_CONTENT=$(sed -n "${LINE_NUM}p" "$FILENAME")
+    ERROR_TYPE=$(echo "$error_line" | grep -o "TS[0-9]\+" | head -1)
     
-    # Check if this file exists and the line starts with //
-    if [ -f "$FILENAME" ]; then
-      # Get the specific line
-      LINE_CONTENT=$(sed -n "${LINE_NUM}p" "$FILENAME")
-      
-      if [[ "$LINE_CONTENT" =~ ^//[[:space:]]+ ]]; then
-        echo "🔧 File: $FILENAME"
-        echo "   Line $LINE_NUM has error: $(echo "$error_line" | cut -d':' -f4-)"
-        echo "   Content: $LINE_CONTENT"
-        
-        # Check error type to decide if it's really broken code
-        ERROR_TYPE=$(echo "$error_line" | grep -o "TS[0-9]\+")
-        
-        # Common errors for commented-out code:
-        # TS1005: ';' expected
-        # TS1109: Expression expected  
-        # TS1128: Declaration or statement expected
-        # TS1434: Unexpected keyword or identifier
-        # TS2448: Block-scoped variable used before declaration
-        
-        if [[ "$ERROR_TYPE" =~ TS(1005|1109|1128|1434|2448) ]]; then
-          echo "   ❌ This looks like commented-out CODE (error $ERROR_TYPE)"
-          
-          # Ask if we should fix it
-          read -p "   Remove // from this line? (y/n): " -n 1 -r
-          echo
-          if [[ $REPLY =~ ^[Yy]$ ]]; then
-            # Remove the // prefix
-            FIXED_LINE="${LINE_CONTENT#// }"
-            sed -i "${LINE_NUM}s/^\/\/ //" "$FILENAME"
-            echo "   ✅ Fixed line $LINE_NUM"
-          fi
-        else
-          echo "   ℹ️  Different error type ($ERROR_TYPE) - might be legitimate"
-        fi
-      fi
+    # Check if this line needs fixing
+    if [[ "$ERROR_TYPE" =~ TS1434 ]] && [[ "$LINE_CONTENT" =~ ^[A-Za-z] ]] && [[ ! "$LINE_CONTENT" =~ ^[[:space:]]*// ]]; then
+      # Store for later fixing (filename:line)
+      echo "${FILENAME}:${LINE_NUM}" >> "$FIX_FILE"
     fi
   fi
 done
+
+# Fix lines from BOTTOM to TOP (so line numbers don't shift)
+if [[ -s "$FIX_FILE" ]]; then
+  # Sort by line number descending and remove duplicates
+  sort -t: -k2 -nr "$FIX_FILE" | uniq | while IFS=: read -r FILENAME LINE_NUM; do
+    if [[ -n "$FILENAME" && -n "$LINE_NUM" ]]; then
+      LINE_CONTENT=$(sed -n "${LINE_NUM}p" "$FILENAME")
+      echo "🔧 File: $FILENAME"
+      echo "   Line $LINE_NUM: $LINE_CONTENT"
+      echo "   ❌ Adding // to prose"
+      
+      if [[ "$AUTO_FIX" == true ]]; then
+        sed_in_place "${LINE_NUM}s/^/\/\/ /" "$FILENAME"
+        echo "   ✅ Fixed line $LINE_NUM (auto-fix)"
+      else
+        read -p "   Add // to this line? (y/n): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+          sed_in_place "${LINE_NUM}s/^/\/\/ /" "$FILENAME"
+          echo "   ✅ Fixed line $LINE_NUM"
+        fi
+      fi
+    fi
+  done
+else
+  echo "ℹ️  No lines need fixing"
+fi
 
 echo -e "\n✅ Error-based fixing complete"
 echo "Run 'npx tsc --noEmit --skipLibCheck' to check remaining errors"

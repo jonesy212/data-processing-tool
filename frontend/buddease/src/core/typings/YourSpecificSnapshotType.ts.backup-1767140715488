@@ -140,7 +140,7 @@ class YourSpecificSnapshotType<
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    dataStore: DataStore<T, K>,
+    dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataStoreMethods: DataStoreMethods<T, K>,
     metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
@@ -300,7 +300,7 @@ const convertToDataStore = <
     has: () => false,
     delete: () => false,
     get: () => null,
-    set: () => ({} as DataStore<T, K>),
+    set: () => ({} as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     getAll: () => [],
     setAll: () => { },
     removeAll: () => { },
@@ -312,7 +312,7 @@ const convertToDataStore = <
     sizeAll: 0,
     hasAll: () => false,
     deleteAll: () => false,
-    getDataStore: () => ({} as DataStore<T, K>),
+    getDataStore: () => ({} as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     setDataStore: () => { },
 
     // Data update and management methods
@@ -921,7 +921,7 @@ function convertToDataSnapshot <
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-      dataStore: DataStore<T, K>,
+      dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataStoreMethods: DataStoreMethods<T, K>,
       metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscriberId: string, // Add subscriberId here

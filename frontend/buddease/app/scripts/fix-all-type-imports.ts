@@ -17,12 +17,14 @@ function getErrorMessage(error: unknown): string {
   }
 }
 
-interface TypeImportError {
+export interface TypeImportError {
   typeName: string;
   file: string;
   line?: number;
   column?: number;
   importStatement?: string;
+  errorMessage?: string;
+  originalLine: string;
 }
 
 interface FixResult {
@@ -32,6 +34,58 @@ interface FixResult {
   success: boolean;
   line: number;
 }
+
+
+function fixNamespaceImports(errors: TypeImportError[]): FixResult[] {
+  const fixes: FixResult[] = [];
+  
+  for (const error of errors) {
+    if (error.typeName === '*' && error.importStatement) {
+      // This is a namespace import error
+      const original = error.importStatement;
+      
+      // Check if it's already a type import
+      if (original.includes('import type *')) {
+        continue; // Already correct
+      }
+      
+      // Convert to type import
+      let fixed = original;
+      
+      if (original.includes('import * as')) {
+        // Pattern: import * as Something from 'path'
+        fixed = original.replace(/^import\s+\*/, 'import type *');
+      }
+      
+      if (fixed !== original) {
+        // CRITICAL: Ensure no comment prefix
+        if (fixed.startsWith('//')) {
+          console.error(`❌ BUG DETECTED: Generated fix starts with //!`);
+          console.error(`   This means the fix generator created COMMENT instead of CODE`);
+          console.error(`   File: ${filePath}`);
+          console.error(`   Line: ${line}`);
+          console.error(`   Original: "${original.substring(0, 80)}${original.length > 80 ? '...' : ''}"`);
+          console.error(`   Generated: "${fixed.substring(0, 80)}${fixed.length > 80 ? '...' : ''}"`);
+          
+          // Skip this fix entirely - better to leave error than create broken code
+          console.error(`   SKIPPING this fix - leaving original line unchanged`);
+          return null; // Return null to skip this fix
+        }
+        
+        fixes.push({
+          file: error.file,
+          original: original,
+          fixed: fixed,
+          success: true,
+          line: error.line || 1
+        });
+      }
+    }
+  }
+  
+  return fixes;
+}
+
 
 function showTimeSavings(fixesCount: number) {
   const MANUAL_TIME_PER_FIX = 15; // seconds
@@ -76,7 +130,8 @@ function captureAllTypeErrors(): TypeImportError[] {
           typeName,
           file: path.resolve(process.cwd(), file),
           line: parseInt(lineStr),
-          column: parseInt(columnStr)
+          column: parseInt(columnStr),
+          originalLine: ''
         });
       }
     }
@@ -101,7 +156,8 @@ function captureAllTypeErrors(): TypeImportError[] {
             typeName,
             file: path.resolve(process.cwd(), file),
             line: parseInt(lineStr),
-            column: parseInt(columnStr)
+            column: parseInt(columnStr),
+            originalLine: ''
           });
         }
       }
@@ -179,6 +235,9 @@ function generateFixes(errors: TypeImportError[]): FixResult[] {
   
   const fixes: FixResult[] = [];
   const processedImports = new Set<string>();
+  
+    const namespaceFixes = fixNamespaceImports(errors);
+    fixes.push(...namespaceFixes);
   
   // Group errors by file and import statement
   const importMap = new Map<string, Map<string, TypeImportError[]>>();
@@ -415,7 +474,8 @@ function captureAllTypeErrorsQuick(): TypeImportError[] {
           typeName,
           file: filePath,
           line: parseInt(lineNumStr) || 1,
-          importStatement: rest.join(':').trim()
+          importStatement: rest.join(':').trim(),
+          originalLine: ''
         });
       });
     } catch (e) {

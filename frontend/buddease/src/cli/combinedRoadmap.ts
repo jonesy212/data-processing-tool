@@ -1,5 +1,4 @@
 // combinedRoadmap.ts
-import type { BaseDataRoot } from '@/core/config/BaseConfig';
 import type { BaseDataEntity, BaseDataRoot } from '@/core/config/BaseConfig';
 // services/combinedRoadmap.ts
 import { generateOutline } from '@/cli/roadmapOutline';

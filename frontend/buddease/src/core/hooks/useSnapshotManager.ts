@@ -553,7 +553,7 @@ const createSnapshotConfig = <
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, // Change here
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
-      dataStore: DataStore<T, K>,
+      dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataStoreMethods: DataStoreMethods<T, K>,
       // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
       metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

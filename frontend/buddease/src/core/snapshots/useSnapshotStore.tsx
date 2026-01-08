@@ -1,25 +1,26 @@
 // useSnapshotStore.tsx
 
+import { PersistenceAdapter } from '@/core/typings/persistenceTypes';
 import { ProjectLogger } from '@/core/dataIntegration/projectIntegration/ProjectLogger';
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import { useDebouncedCallback } from '@/core/hooks/useDebouncedCallback';
-import {
+import type {
     SnapshotStoreOptions
 } from "@/core/hooks/useSnapshotManager";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import {
     SubscriberTypeEnum,
     SubscriptionTypeEnum
 } from "@/core/models/data/StatusType";
-import {
+import type {
     DataStoreWithSnapshotMethods
 } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
-import { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type type { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { triggerOnSnapshot } from '@/core/snapshots/snapshotTrigger';
 import { getSubscriptionLevel } from '@/core/subscriptions/SubscriptionLevel';
 import { useCallback, useEffect, useRef, useState } from "react";
-
+import { useReduxIntegration } from '@/core/dataIntegration/reduxIntegration'
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { Subscriber } from "@/core/subscribers/Subscriber";
@@ -36,12 +37,13 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useEventSystem } from '@/core/hooks/useEventSystem';
 import { useSnapshotNotifications } from '@/core/hooks/useSnapshotNotifications';
 import { validationMiddleware } from '@/core/middleware/core/validationMiddleware';
-import { useSnapshotOperations } from '@/core/snapshots/operations/useSnapshotOperations';
-import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
+import type { useSnapshotOperations } from '@/core/snapshots/operations/useSnapshotOperations';
+import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { delegate } from "@/core/snapshots/snapshotHandlers";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { Subscription } from '@/core/subscriptions/Subscription';
+import type { Subscription } from '@/core/subscriptions/Subscription';
 import { useSnapshotSubscriptions } from '@/core/subscriptions/useSnapshotSubscriptions';
+import { ProjectManager } from '@/core/dataIntegration/projectIntegration/projectManagement'
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 
@@ -4571,3 +4573,4 @@ const specificDependencies = [
 //   };
 // };
 
+type 

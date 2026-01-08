@@ -1,19 +1,19 @@
-videoSagas.ts
-videoSaga.ts
+// videoSagas.ts
+// videoSaga.ts
 import { VideoActions } from "@/core/actions/VideoActions";
 import { videoService } from "@/core/api/ApiVideo";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { select } from "@/core/state/redux/sagas/UndoRedoSaga";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
-import { Video } from '@/core/typings/videoTypes/Video';
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { Video } from '@/core/typings/videoTypes/Video';
 import { AxiosError } from 'axios';
 import { call, put, takeLatest } from "redux-saga/effects";
 
 const { notify } = useNotification();
 
-Helper function for conference success notifications
+// // Helper function for conference success notifications
 const notifyConferenceSuccess = (conferenceId: string | null, message: string, actionType: string, extra: any = {}) => {
   notify({
     id: `conference_${actionType}_success_${conferenceId || 'new'}_${Date.now()}`,
@@ -33,7 +33,7 @@ const notifyConferenceSuccess = (conferenceId: string | null, message: string, a
   });
 };
 
-Helper function for conference error notifications
+// // Helper function for conference error notifications
 const notifyConferenceError = (error: any, message: string, conferenceId: string | null, actionType: string, extra: any = {}) => {
   notify({
     id: `conference_${actionType}_error_${conferenceId || 'unknown'}_${Date.now()}`,
@@ -75,7 +75,7 @@ const notifyVideoSuccess = (videoId: string, message: string, actionType: string
   });
 };
 
-Helper function for error notifications
+// // Helper function for error notifications
 const notifyVideoError = (error: any, message: string, videoId: string, actionType: string, extra: any = {}) => {
   notify({
     id: `video_${actionType}_error_${videoId}_${Date.now()}`,
@@ -98,7 +98,7 @@ const notifyVideoError = (error: any, message: string, videoId: string, actionTy
 };
 
 
-Helper function for message success notifications
+// // Helper function for message success notifications
 const notifyMessageSuccess = (
   messageId: string | null, 
   actionType: string, 
@@ -126,7 +126,7 @@ const notifyMessageSuccess = (
   });
 };
 
-Helper function for message error notifications
+// // Helper function for message error notifications
 const notifyMessageError = (
   error: any, 
   actionType: string, 
@@ -186,7 +186,7 @@ const notifyAnnotationSuccess = (
   });
 };
 
-Helper function for annotation error notifications
+// // Helper function for annotation error notifications
 const notifyAnnotationError = (
   error: any, 
   actionType: string, 
@@ -245,7 +245,7 @@ const notifyPlaybackSuccess = (
   });
 };
 
-Helper function for playback error notifications
+// // Helper function for playback error notifications
 const notifyPlaybackError = (
   error: any, 
   actionType: string, 
@@ -465,7 +465,7 @@ function* createConferenceSaga(action: ReturnType<typeof ConferenceActions.creat
   }
 }
 
-Join Conference Saga
+// // // Join Conference Saga
 function* joinConferenceSaga(action: ReturnType<typeof ConferenceActions.joinConference>): Generator<any, void, any> {
   try {
     const { conferenceId, joinToken, userDisplayName } = action.payload;
@@ -617,7 +617,7 @@ function* joinConferenceSaga(action: ReturnType<typeof ConferenceActions.joinCon
   }
 }
 
-End Conference Saga
+// // End Conference Saga
 function* endConferenceSaga(action: ReturnType<typeof ConferenceActions.endConference>): Generator<any, void, any> {
   try {
     const { conferenceId, endReason } = action.payload;
@@ -879,7 +879,7 @@ function* sendMessagesSaga(
   }
 }
 
-Retrieve Messages Saga
+// Retrieve Messages Saga
 function* retrieveMessagesSaga(
   action: ReturnType<typeof VideoActions.retrieveMessages>
 ): Generator<any, void, any> {
@@ -1014,7 +1014,7 @@ function* retrieveMessagesSaga(
   }
 }
 
-Add Annotations Saga
+// Add Annotations Saga
 function* addAnnotationsSaga(
   action: ReturnType<typeof VideoActions.addAnnotations>
 ): Generator<any, void, any> {
@@ -1147,7 +1147,7 @@ function* addAnnotationsSaga(
   }
 }
 
-Retrieve Annotations Saga
+// Retrieve Annotations Saga
 function* retrieveAnnotationsSaga(
   action: ReturnType<typeof VideoActions.retrieveAnnotations>
 ): Generator<any, void, any> {
@@ -1302,7 +1302,7 @@ function* retrieveAnnotationsSaga(
 }
 
 
-Control Playback Speed Saga
+// Control Playback Speed Saga
 function* controlPlaybackSpeedSaga(
   action: ReturnType<typeof VideoActions.controlPlaybackSpeed>
 ): Generator<any, void, any> {
@@ -1465,7 +1465,7 @@ function* controlPlaybackSpeedSaga(
   }
 }
 
-Control Playback Frame Saga
+// Control Playback Frame Saga
 function* controlPlaybackFrameSaga(
   action: ReturnType<typeof VideoActions.controlPlaybackFrame>
 ): Generator<any, void, any> {
@@ -1864,7 +1864,7 @@ function* startLiveSessionSaga(
   }
 }
 
-End Live Session Saga
+// End Live Session Saga
 function* endLiveSessionSaga(
   action: ReturnType<typeof VideoActions.endLiveSession>
 ): Generator<any, void, any> {
@@ -2060,7 +2060,7 @@ function* endLiveSessionSaga(
   }
 }
 
-Check Live Session Status Saga
+// Check Live Session Status Saga
 function* checkLiveSessionStatusSaga(
   action: ReturnType<typeof VideoActions.checkLiveSessionStatus>
 ): Generator<any, void, any> {
@@ -2188,7 +2188,7 @@ function* checkLiveSessionStatusSaga(
 }
 
 
-Edit Video Saga
+// Edit Video Saga
 function* editVideoSaga(
   action: ReturnType<typeof VideoActions.editVideo>
 ): Generator<any, void, any> {
@@ -2448,7 +2448,7 @@ function* editVideoSaga(
   }
 }
 
-Transcribe Video Saga
+// Transcribe Video Saga
 function* transcribeVideoSaga(
   action: ReturnType<typeof VideoActions.transcribeVideo>
 ): Generator<any, void, any> {
@@ -2702,7 +2702,7 @@ function* transcribeVideoSaga(
 }
 
 
-Create Collaboration Session Saga
+// Create Collaboration Session Saga
 function* createCollaborationSessionSaga(
   action: ReturnType<typeof VideoActions.createCollaborationSession>
 ): Generator<any, void, any> {
@@ -2990,7 +2990,7 @@ function* createCollaborationSessionSaga(
   }
 }
 
-Invite to Collaboration Session Saga
+// Invite to Collaboration Session Saga
 function* inviteToCollaborationSessionSaga(
   action: ReturnType<typeof VideoActions.inviteToCollaborationSession>
 ): Generator<any, void, any> {
@@ -3235,7 +3235,7 @@ function* inviteToCollaborationSessionSaga(
   }
 }
 
-Join Collaboration Session Saga
+// Join Collaboration Session Saga
 function* joinCollaborationSessionSaga(
   action: ReturnType<typeof VideoActions.joinCollaborationSession>
 ): Generator<any, void, any> {
@@ -3517,7 +3517,7 @@ function* joinCollaborationSessionSaga(
   }
 }
 
-Manage Videos Saga
+// Manage Videos Saga
 function* manageVideosSaga(
   action: ReturnType<typeof VideoActions.manageVideos>
 ): Generator<any, void, any> {
@@ -3838,7 +3838,7 @@ function* manageVideosSaga(
   }
 }
 
-Check Transcription Status Saga (optional helper saga)
+// Check Transcription Status Saga (optional helper saga)
 function* checkTranscriptionStatusSaga(
   action: ReturnType<typeof VideoActions.checkTranscriptionStatus>
 ): Generator<any, void, any> {
@@ -3927,7 +3927,7 @@ function* checkTranscriptionStatusSaga(
 
 
 
-Recommend Video Saga
+// Recommend Video Saga
 function* recommendVideoSaga(action: ReturnType<typeof VideoActions.recommendVideo>): Generator<any, void, any> {
   try {
     const { videoId, userId, recommendationContext } = action.payload;
@@ -3986,7 +3986,7 @@ function* recommendVideoSaga(action: ReturnType<typeof VideoActions.recommendVid
   }
 }
 
-Subscribe to Video Saga
+// Subscribe to Video Saga
 function* subscribeToVideoSaga(action: ReturnType<typeof VideoActions.subscribeToVideo>): Generator<any, void, any> {
   try {
     const { videoId, userId, subscriptionType } = action.payload;
@@ -4046,7 +4046,7 @@ function* subscribeToVideoSaga(action: ReturnType<typeof VideoActions.subscribeT
   }
 }
 
-Unsubscribe from Video Saga
+// Unsubscribe from Video Saga
 function* unsubscribeFromVideoSaga(action: ReturnType<typeof VideoActions.unsubscribeFromVideo>): Generator<any, void, any> {
   try {
     const { videoId, userId, subscriptionId } = action.payload;
@@ -4109,7 +4109,7 @@ function* unsubscribeFromVideoSaga(action: ReturnType<typeof VideoActions.unsubs
 
 
 
-Fetch All Videos Saga
+// Fetch All Videos Saga
 function* fetchAllVideosSaga(action: ReturnType<typeof VideoActions.fetchAllVideos>): Generator<any, void, any> {
   try {
     const { filters, page, limit } = action.payload || {};
@@ -4229,7 +4229,7 @@ function* fetchAllVideosSaga(action: ReturnType<typeof VideoActions.fetchAllVide
   }
 }
 
-Upload Video Saga
+// Upload Video Saga
 function* uploadVideoSaga(action: ReturnType<typeof VideoActions.uploadVideo>): Generator<any, void, any> {
   try {
     const { videoFile, metadata, onProgress } = action.payload;
@@ -4298,7 +4298,7 @@ function* uploadVideoSaga(action: ReturnType<typeof VideoActions.uploadVideo>): 
   }
 }
 
-Fetch Single Video Saga
+// Fetch Single Video Saga
 function* fetchSingleVideoSaga(action: ReturnType<typeof VideoActions.fetchSingleVideo>): Generator<any, void, any> {
   try {
     const { videoId, includeDetails } = action.payload;
@@ -4363,7 +4363,7 @@ function* fetchSingleVideoSaga(action: ReturnType<typeof VideoActions.fetchSingl
 }
 
 
-Upload Video Saga
+// Upload Video Saga
 function* uploadVideoSaga(action: ReturnType<typeof VideoActions.uploadVideo>): Generator<any, void, any> {
   try {
     const { videoFile, metadata, onProgress } = action.payload;
@@ -4432,7 +4432,7 @@ function* uploadVideoSaga(action: ReturnType<typeof VideoActions.uploadVideo>): 
   }
 }
 
-Fetch Single Video Saga
+// Fetch Single Video Saga
 function* fetchSingleVideoSaga(action: ReturnType<typeof VideoActions.fetchSingleVideo>): Generator<any, void, any> {
   try {
     const { videoId, includeDetails } = action.payload;
@@ -4571,7 +4571,7 @@ function* updateVideoDataSaga(action: ReturnType<typeof VideoActions.updateVideo
 
 
 
-Worker Saga: Fetch Video
+// Worker Saga: Fetch Video
 function* fetchVideoSaga(action: ReturnType<typeof VideoActions.fetchVideoRequest>) {
   try {
     const videoId = action.payload; // TypeScript now knows payload is a string
@@ -4587,7 +4587,7 @@ function* fetchVideoSaga(action: ReturnType<typeof VideoActions.fetchVideoReques
 }
 
 
-Worker Saga: Update Video
+// Worker Saga: Update Video
 function* updateVideoSaga(
   action: ReturnType<typeof VideoActions.updateVideo>
 ): Generator<any, void, any> {
@@ -4614,7 +4614,7 @@ function* updateVideoSaga(
 
 
 
-Worker Saga: Fetch Video Success
+// Worker Saga: Fetch Video Success
 function* fetchVideoSuccessSaga(
   action: ReturnType<typeof VideoActions.fetchVideoSuccess>
 ): Generator<any, void, any> { 
@@ -4777,7 +4777,7 @@ function* fetchVideoFailureSaga(response: any): Generator<any, void, any> {
   }
 }
 
-Worker Saga: Create Video
+// Worker Saga: Create Video
 function* createVideoSaga(action: ReturnType<typeof VideoActions.createVideo>) {
   try {
     const { title, description } = action.payload;
@@ -4803,7 +4803,7 @@ function* createVideoSaga(action: ReturnType<typeof VideoActions.createVideo>) {
   }
 }
 
-Worker Saga: Add Video
+// Worker Saga: Add Video
 function* addVideoSaga(action: ReturnType<typeof VideoActions.addVideo>) {
   try {
     const { id, video } = action.payload; // Destructure properly
@@ -4825,7 +4825,7 @@ function* addVideoSaga(action: ReturnType<typeof VideoActions.addVideo>) {
   }
 }
 
-Worker Saga: Remove Video
+// Worker Saga: Remove Video
 function* removeVideoSaga(action: ReturnType<typeof VideoActions.removeVideo>) {
   try {
     const { videoId } = action.payload; // Assuming payload has videoId property
@@ -4845,15 +4845,15 @@ function* removeVideoSaga(action: ReturnType<typeof VideoActions.removeVideo>) {
 
 
 
-Watcher Saga: Watches for the fetch and update video actions
+// Watcher Saga: Watches for the fetch and update video actions
 function* watchVideoSagas() {
-Actions related to deleting, updating metadata, and sending notifications
+// Actions related to deleting, updating metadata, and sending notifications
 yield takeLatest(VideoActions.deleteVideo.type, deleteVideoSaga);
 yield takeLatest(VideoActions.updateMetadata.type, updateMetadataSaga);
 yield takeLatest(VideoActions.sendVideoNotification.type, sendVideoNotificationSaga);
 yield takeLatest(VideoActions.updateVideoData.type, updateVideoDataSaga);
 
-Actions related to fetching, sharing, analyzing, and subscribing/unsubscribing
+// Actions related to fetching, sharing, analyzing, and subscribing/unsubscribing
 yield takeLatest(VideoActions.fetchVideoRequest.type, fetchVideoSaga);
 yield takeLatest(VideoActions.updateVideoRequest.type, updateVideoSaga);
 yield takeLatest(VideoActions.fetchVideoSuccess.type, fetchVideoSuccessSaga);
@@ -4864,7 +4864,7 @@ yield takeLatest(VideoActions.recommendVideo.type, recommendVideoSaga);
 yield takeLatest(VideoActions.subscribeToVideo.type, subscribeToVideoSaga);
 yield takeLatest(VideoActions.unsubscribeFromVideo.type, unsubscribeFromVideoSaga);
 
-Actions related to fetching all videos, uploading, fetching single video, adding, and removing
+// Actions related to fetching all videos, uploading, fetching single video, adding, and removing
 yield takeLatest(VideoActions.fetchAllVideos.type, fetchAllVideosSaga);
 yield takeLatest(VideoActions.uploadVideo.type, uploadVideoSaga);
 yield takeLatest(VideoActions.fetchSingleVideo.type, fetchSingleVideoSaga);
@@ -4872,31 +4872,31 @@ yield takeLatest(VideoActions.addVideo.type, addVideoSaga);
 yield takeLatest(VideoActions.removeVideo.type, removeVideoSaga);
 yield takeLatest(VideoActions.updateVideo.type, updateVideoSaga);
 
-Actions related to conference management
+// Actions related to conference management
 yield takeLatest(VideoActions.createConference.type, createConferenceSaga);
 yield takeLatest(VideoActions.joinConference.type, joinConferenceSaga);
 yield takeLatest(VideoActions.endConference.type, endConferenceSaga);
 
-Actions related to message handling
+// Actions related to message handling
 yield takeLatest(VideoActions.sendMessages.type, sendMessagesSaga);
 yield takeLatest(VideoActions.retrieveMessages.type, retrieveMessagesSaga);
 
-Actions related to annotations
+// Actions related to annotations
 yield takeLatest(VideoActions.addAnnotations.type, addAnnotationsSaga);
 yield takeLatest(VideoActions.retrieveAnnotations.type, retrieveAnnotationsSaga);
 
-Actions related to playback control
+// Actions related to playback control
 yield takeLatest(VideoActions.controlPlaybackSpeed.type, controlPlaybackSpeedSaga);
 yield takeLatest(VideoActions.controlPlaybackFrame.type, controlPlaybackFrameSaga);
 
-Actions related to live sessions
+// Actions related to live sessions
 yield takeLatest(VideoActions.startLiveSession.type, startLiveSessionSaga);
 yield takeLatest(VideoActions.endLiveSession.type, endLiveSessionSaga);
 yield takeLatest(VideoActions.checkLiveSessionStatus.type, checkLiveSessionStatusSaga);
  
 }
 
-Export the video sagas
+// Export the video sagas
 export function* videoSagas() {
   yield watchVideoSagas();
 }

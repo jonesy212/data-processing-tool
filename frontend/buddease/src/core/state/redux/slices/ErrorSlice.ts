@@ -1,7 +1,8 @@
-ErrorSlice.ts
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+// ErrorSlice.ts
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-Define the ErrorState interface
+// Define the ErrorState interface
 interface ErrorState {
   errorMessage: string; // Error message to display
   errorCode?: number; // Optional error code
@@ -9,7 +10,7 @@ interface ErrorState {
   // Additional properties related to error state can be added here
 }
 
-Define the initial state for the error slice
+// Define the initial state for the error slice
 const initialState: ErrorState = {
   errorMessage: "",
   errorCode: undefined,
@@ -17,7 +18,7 @@ const initialState: ErrorState = {
   // Initialize additional properties if needed
 };
 
-Create a slice for managing error state
+// Create a slice for managing error state
 const errorSlice = createSlice({
   name: "error",
   initialState,
@@ -42,7 +43,7 @@ const errorSlice = createSlice({
   },
 });
 
-Export actions and reducer from the error slice
+// Export actions and reducer from the error slice
 export const { setError, clearError } = errorSlice.actions;
 export default errorSlice.reducer;
 export type { ErrorState };

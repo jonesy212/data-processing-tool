@@ -1,24 +1,25 @@
 // YourSpecificSnapshotType.ts
 import getSnapshotId, { snapshotApi } from "@/core/api/SnapshotApi";
-import type { BaseDataRoot } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { CombinedEvents } from "@/core/hooks/useSnapshotManager";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData, Data, DataDetails } from '@/core/models/data/Data';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { CombinedEvents } from "@/core/hooks/useSnapshotManager";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { BaseData, Data, DataDetails } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
-import { SampleSnapshot } from '@/core/snapshots/SampleSnapshot';
-import { snapshot, Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotContainer, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
-import { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { SampleSnapshot } from '@/core/snapshots/SampleSnapshot';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { snapshot } from '@/core/snapshots/Snapshot';
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotContainer, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";
 import { default as SnapshotStore } from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { createSnapshotStoreOptions } from '@/core/snapshots/createSnapshotStoreOptions';
 import type { DataStore, InitializedState } from "@/core/state/stores/DataStore";
 import { Subscriber } from '@/core/subscribers/Subscriber';
@@ -26,17 +27,17 @@ import { useContext } from 'react';
 
 
 import { additionalHeaders } from '@/core/api/headers/generateAllHeaders';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { SchemaField } from '@/core/config/metadata/SchemaField';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { SnapshotContent } from '@/core/snapshots/SnapshotContent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { SchemaField } from '@/core/config/metadata/SchemaField';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { SnapshotContent } from '@/core/snapshots/SnapshotContent';
 import { convertBaseDataToK } from '@/core/snapshots/convertSnapshot';
 import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
 import { SnapshotContext } from '@/core/state/context/SnapshotContext';
-import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
-import { Subscription } from '@/core/subscriptions/Subscription';
-import { YourResponseType } from '@/core/typings/responseTypes';
-import { ExtendedVersionData } from '@/core/versions/VersionData';
+import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import type { Subscription } from '@/core/subscriptions/Subscription';
+import type { YourResponseType } from '@/core/typings/responseTypes';
+import type { ExtendedVersionData } from '@/core/versions/VersionData';
 import { generateSnapshotId, isSnapshot } from '@/utils/snapshotUtils';
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -51,12 +52,11 @@ class YourSpecificSnapshotType<
 >
   implements Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
+  meta: Meta;
   mappedData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
-  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
-  // Additional required properties from Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   dataObject: any = {};
   deleted: boolean = false;
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {} = {};
@@ -94,7 +94,7 @@ class YourSpecificSnapshotType<
   criteria: CriteriaType | undefined;
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  additionalData?: CustomSnapshotData<T>;
+  additionalData?: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dataStores?: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshotStoreConfig?: SnapshotStoreConfig<T, any, any, any, any, any> | null;
   snapshotStoreConfigSearch?: SnapshotWithCriteriaConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -102,15 +102,16 @@ class YourSpecificSnapshotType<
 
   constructor(
     id: string,
+    meta: Meta,
     mappedData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
-    meta: Meta,
+    config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>, 
     events?: CombinedEvents<T, K>) {
     this.id = id;
     this.data = data;
     this.meta = meta;
     this.config = config;
-    this.mappedData = mappedData
+    this.mappedData = mappedData ?? null;
     this.events = {
       callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         console.log("callback called");
@@ -140,8 +141,8 @@ class YourSpecificSnapshotType<
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    dataStore: DataStore<T, K>,
-    dataStoreMethods: DataStoreMethods<T, K>,
+    dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
     endpointCategory: string | number,
@@ -176,7 +177,7 @@ class YourSpecificSnapshotType<
     chatThreadName?: string,
     chatMessageId?: string,
     chatThreadId?: string,
-    dataDetails?: DataDetails<T, K>,
+    dataDetails?: DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     generatorType?: string
   ): string {
     // Placeholder implementation
@@ -300,7 +301,7 @@ const convertToDataStore = <
     has: () => false,
     delete: () => false,
     get: () => null,
-    set: () => ({} as DataStore<T, K>),
+    set: () => ({} as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     getAll: () => [],
     setAll: () => { },
     removeAll: () => { },
@@ -312,7 +313,7 @@ const convertToDataStore = <
     sizeAll: 0,
     hasAll: () => false,
     deleteAll: () => false,
-    getDataStore: () => ({} as DataStore<T, K>),
+    getDataStore: () => ({} as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     setDataStore: () => { },
 
     // Data update and management methods
@@ -921,7 +922,7 @@ function convertToDataSnapshot <
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-      dataStore: DataStore<T, K>,
+      dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataStoreMethods: DataStoreMethods<T, K>,
       metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscriberId: string, // Add subscriberId here
@@ -1935,7 +1936,21 @@ function convertMapToSnapshot<
 
     getAllSnapshotStores: () => [],
     getAllSnapshotItems: () => [],
-    getSnapshotConfig: () => ({} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    getSnapshotConfig: (
+        snapshotId: string | null,
+        snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        criteria: CriteriaType,
+        category: Category,
+        categoryProperties: CategoryProperties | undefined,
+        delegate: any,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        snapshot: (
+          id: string,
+          snapshotId: string | null,
+          snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          category: Category
+        ) => void
+    ) => ({} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     eventStore: [],
 
     getEventStore: () => [],
@@ -1970,9 +1985,7 @@ function convertMapToSnapshot<
 
     findSnapshotEvent: () => null,
     eventState: {},
-    getInitialState: (): T => {
-      return {} as T
-    },
+    
     getStoreItem: () => ({}),
 
     setStoreItem: () => { },
@@ -1980,9 +1993,7 @@ function convertMapToSnapshot<
     addStoreItem: () => { },
     updateStoreItem: () => { },
 
-    getStoreKeys: () => [],
     getStoreValues: () => [],
-    getStoreItems: () => [],
     createStoreItem: () => ({}),
 
     batchFetchStoreItems: () => [],
@@ -2002,7 +2013,6 @@ function convertMapToSnapshot<
 
     fetchStoreEventsFailure: () => { },
     getStoreEvent: () => null,
-    findStoreEvent: () => null,
     notifyAllStoreEvents: () => { },
 
     fetchStoreEventList: () => [],
@@ -2155,13 +2165,14 @@ const convertToSnapshot = <
   id: string | number | undefined,
   snapshotId: string | null,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category?: Category,  categoryProperties: CategoryProperties | undefined,
+  categoryProperties: CategoryProperties | undefined,
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscription: Subscription<T, K>,
+  category?: Category,
   snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Create a Snapshot object from the parameters
@@ -2220,10 +2231,10 @@ function isCoreSnapshot<
 
 
 export {
-    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
-    convertSnapshotStoreItemToT,
-    convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-    createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
+  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+  convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+  convertSnapshotStoreItemToT,
+  convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
+  createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
 };
 

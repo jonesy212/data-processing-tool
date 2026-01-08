@@ -1,11 +1,11 @@
-roadmapCLI.ts
-services/roadmapCLI.ts
+// roadmapCLI.ts
+// services/roadmapCLI.ts
 import { generateOutline } from '@/cli/roadmapOutline';
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { RoadmapService } from '@/core/services/roadmapService';
 import { buildStakeholderRoadmap } from '@/core/services/stakeholderRoadmap';
-import { AnalysisNode } from '@/core/typings/AnalysisNode';
-import { RoadmapAudience, RoadmapNode } from '@/core/typings/roadmap';
+import type { AnalysisNode } from '@/core/typings/AnalysisNode';
+import type { RoadmapAudience, RoadmapNode } from '@/core/typings/roadmap';
 import * as fs from 'fs';
 import * as path from 'path';
 import readline from 'readline';
@@ -15,7 +15,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-Utility for prompting the user with quit option
+// Utility for prompting the user with quit option
 function prompt(question: string): Promise<string> {
   return new Promise((resolve) => {
     rl.question(question, (answer) => {
@@ -29,7 +29,7 @@ function prompt(question: string): Promise<string> {
   });
 }
 
-Utility for printing a roadmap tree to console
+// Utility for printing a roadmap tree to console
 function printRoadmap<T extends BaseDataEntity>(
   nodes: RoadmapNode<T>[],
   level = 0
@@ -41,7 +41,7 @@ function printRoadmap<T extends BaseDataEntity>(
   }
 }
 
-Main CLI function
+// Main CLI function
 export async function runRoadmapCLI<T extends BaseDataEntity>(analysis: AnalysisNode<T>[]) {
   console.log("Welcome to the Roadmap Generator CLI!");
   console.log("You can generate outlines for one or more audiences: stakeholder, developer, community.");
@@ -240,20 +240,20 @@ export async function runRoadmapCLI<T extends BaseDataEntity>(analysis: Analysis
   }
 }
 
-# 🛠 Roadmap CLI Command Reference
+// # 🛠 Roadmap CLI Command Reference
 
-| **Output Type / Operation**        | **Command / User Action**                                   | **File Generated / Location**                          | **Notes**                                             |
-| ---------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
-| 🎯 Generate roadmap                | `node roadmapCLI.js`                                        | CLI prompts for audiences, preview, and file saving    | Starts interactive roadmap generator                  |
-| 🧾 Generate stakeholder roadmap    | Select `stakeholder` audience at prompt                     | `stakeholder-roadmap.json` (or custom path/filename)   | Optional preview before saving                        |
-| 🛠 Generate developer roadmap      | Select `developer` audience at prompt                       | `developer-roadmap.json` (or custom path/filename)     | Optional preview before saving                        |
-| 🌐 Generate community roadmap      | Select `community` audience at prompt                       | `community-roadmap.json` (or custom path/filename)     | Optional preview before saving                        |
-| 🔀 Generate multiple audiences     | Select `stakeholder,developer,community` at prompt          | Individual files per audience + optional combined file | Preview each roadmap optional                         |
-| 🔍 Preview roadmap                 | Prompt: “Preview [audience] roadmap in console? (y/n)”      | Prints roadmap structure in terminal                   | Optional before saving                                |
-| 🔗 Combined roadmap                | Prompt after generating multiple audiences → `y` to combine | `combined-roadmap.json` (or custom path/filename)      | Uses `combinedRoadmap.ts` for preview & saving       |
-| 🔍 Preview combined roadmap        | Prompt: “Preview combined roadmap in console? (y/n)”       | Prints combined roadmap structure in terminal          | Optional, included in combined roadmap process       |
-| ✨ Save to custom folder & filename | CLI prompts for folder & filename                           | Saved at specified folder with given filename          | Defaults: `./downloads` and `[audience]-roadmap.json` |
-| 🔄 Overwrite protection            | If file exists, prompt: “Overwrite? (y/n)”                  | Prevents accidental file overwrite                     | User can skip saving if declined                      |
-| ❌ Skip saving                      | Respond `n` when prompted to save                           | No file generated                                      | Works per audience                                    |
-| 🛑 Quit process                    | Type `q` at any prompt                                      | Process exits immediately                              | Safe exit, no partial files created                   |
-| 🗂 Default download folder         | `./downloads`                                               | Used when no folder is specified                       | Works for individual or combined files                |
+// | **Output Type / Operation**        | **Command / User Action**                                   | **File Generated / Location**                          | **Notes**                                             |
+// | ---------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+// | 🎯 Generate roadmap                | `node roadmapCLI.js`                                        | CLI prompts for audiences, preview, and file saving    | Starts interactive roadmap generator                  |
+// | 🧾 Generate stakeholder roadmap    | Select `stakeholder` audience at prompt                     | `stakeholder-roadmap.json` (or custom path/filename)   | Optional preview before saving                        |
+// | 🛠 Generate developer roadmap      | Select `developer` audience at prompt                       | `developer-roadmap.json` (or custom path/filename)     | Optional preview before saving                        |
+// | 🌐 Generate community roadmap      | Select `community` audience at prompt                       | `community-roadmap.json` (or custom path/filename)     | Optional preview before saving                        |
+// | 🔀 Generate multiple audiences     | Select `stakeholder,developer,community` at prompt          | Individual files per audience + optional combined file | Preview each roadmap optional                         |
+// | 🔍 Preview roadmap                 | Prompt: “Preview [audience] roadmap in console? (y/n)”      | Prints roadmap structure in terminal                   | Optional before saving                                |
+// | 🔗 Combined roadmap                | Prompt after generating multiple audiences → `y` to combine | `combined-roadmap.json` (or custom path/filename)      | Uses `combinedRoadmap.ts` for preview & saving       |
+// | 🔍 Preview combined roadmap        | Prompt: “Preview combined roadmap in console? (y/n)”       | Prints combined roadmap structure in terminal          | Optional, included in combined roadmap process       |
+// | ✨ Save to custom folder & filename | CLI prompts for folder & filename                           | Saved at specified folder with given filename          | Defaults: `./downloads` and `[audience]-roadmap.json` |
+// | 🔄 Overwrite protection            | If file exists, prompt: “Overwrite? (y/n)”                  | Prevents accidental file overwrite                     | User can skip saving if declined                      |
+// | ❌ Skip saving                      | Respond `n` when prompted to save                           | No file generated                                      | Works per audience                                    |
+// | 🛑 Quit process                    | Type `q` at any prompt                                      | Process exits immediately                              | Safe exit, no partial files created                   |
+// | 🗂 Default download folder         | `./downloads`                                               | Used when no folder is specified                       | Works for individual or combined files                |

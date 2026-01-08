@@ -696,7 +696,7 @@ const convertSnapshotStore = <
         snapshotId: string,
         snapshotData: T,
         categoryProperties: CategoryProperties | undefined,
-        dataStoreMethods: DataStore<T, K>,
+        dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         category?: Category
       ) => Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
       setSnapshotCategory: (id: string, newCategory: string | Category) => void;
@@ -712,7 +712,7 @@ const convertSnapshotStore = <
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         category?: Category,
         categoryProperties: CategoryProperties | undefined,
-        dataStoreMethods: DataStore<T, K>,
+        dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         data: T,
         dataCallback?: (
           subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -933,7 +933,7 @@ const convertSnapshotStore = <
     snapshotStoreConfig: {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     getSnapshotItems: (): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K>)[] => [],
     dataStore: {} as  InitializedDataStore<T>,
-    mapDataStore: {} as T | Map<string, DataStore<T, K>> | null | undefined,
+    mapDataStore: {} as T | Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
     initialState: {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotItems: [],
     nestedStores: [],

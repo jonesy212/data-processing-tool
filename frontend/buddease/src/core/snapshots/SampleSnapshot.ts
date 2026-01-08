@@ -1,8 +1,8 @@
 // SampleSnapshot.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import type { CombinedEvents } from "@/core/hooks/useSnapshotManager";
 import { Attachment } from '@/core/documents/attachment/Attachment';
-import { CombinedEvents } from "@/core/hooks/useSnapshotManager";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
 // Define SampleSnapshot implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

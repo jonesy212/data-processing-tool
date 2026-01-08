@@ -1,32 +1,35 @@
 // Phase.ts
-import { AppPhase, PhaseMilestone } from '@/core/typings/entities/PhaseEntity';
+import type { AppPhase, PhaseMilestone } from '@/core/typings/entities/PhaseEntity';
 import { addPhase } from "@/core/api/ApiPhases";
-import { Label } from '@/core/branding/BrandingSettings';
+import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
+import type { Label } from '@/core/branding/BrandingSettings';
 import { useMeta } from "@/core/config/useMeta";
 import { useMetadata } from '@/core/config/useMetadata';
 import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Lesson } from "@/core/documents/editing/CourseBuilder";
-import { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
-import { CommonData } from "@/core/models/CommonData";
-import { BaseData } from '@/core/models/data/Data';
-import { Member } from '@/core/models/members/Member'
-import { Dependency } from '@/core/models/realtime/IntegrationLogic';
-import { Task } from "@/core/models/tasks/Task";
-import { Progress } from "@/core/models/tracker/ProgressBar";
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { SharedProperties } from "@/core/snapshots/SnapshotEvents";
-import { ValidationResult } from '@/core/components/database/SchemaEvolutionManager';
+import type { Lesson } from "@/core/documents/editing/CourseBuilder";
+import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
+import type { CommonData } from "@/core/models/CommonData";
+import type { BaseData } from '@/core/models/data/Data';
+import type { Member } from '@/core/models/members/Member'
+import type { Dependency } from '@/core/models/realtime/IntegrationLogic';
+import type { Task } from "@/core/models/tasks/Task";
+import type { Progress } from "@/core/models/tracker/ProgressBar";
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { SharedProperties } from "@/core/snapshots/SnapshotEvents";
+import type { ValidationResult } from '@/core/components/database/SchemaEvolutionManager';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { Milestone } from '@/core/typings/milestoneTypes'
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Milestone } from '@/core/typings/milestoneTypes'
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
-import { PhaseMeta } from '@/core/typings/phaseTypes';
-import { FC } from "react";
+import type { PhaseMeta } from '@/core/typings/phaseTypes';
+import type { FC } from "react";
 import type { AppStructuredMetadata, AppUnifiedMetadata } from '@/core/typings/entities/AppMetadataEntity';
+import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 
+const area = fetchUserAreaDimensions().toString()
 const currentMetadata: AppUnifiedMetadata = useMetadata('uniqueId-generator-area')
 const currentMeta: AppStructuredMetadata = useMeta(area)
 const { versionNumber, appVersion } = getCurrentAppInfo();
