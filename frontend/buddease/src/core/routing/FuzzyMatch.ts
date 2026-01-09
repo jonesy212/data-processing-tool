@@ -6,7 +6,7 @@ import AppTreeService from "@/core/services/AppTreeService";
 import { useAuth } from '@/core/state/context/AuthContext';
 import fuzzysort from "fuzzysort";
 
-Function to perform fuzzy matching with spaCy processing
+// Function to perform fuzzy matching with spaCy processing
 export const fuzzyMatchEntities = async <
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -41,7 +41,7 @@ export const fuzzyMatchEntities = async <
   }
 };
 
-Example concrete entity type using generics
+// Example concrete entity type using generics
 type ConcreteEntity = Entity<
   BaseDataEntity,         // T
   BaseDataEntity,         // K
@@ -51,7 +51,7 @@ type ConcreteEntity = Entity<
   keyof BaseDataEntity    // IncludedFields
 >;
 
-Define entities array with the new properties added
+// Define entities array with the new properties added
 const entities: ConcreteEntity[] = [
   {
     id: 1,
@@ -91,10 +91,10 @@ const entities: ConcreteEntity[] = [
   },
 ];
 
-Query for fuzzy matching
+// Query for fuzzy matching
 const query = "Microsft Corp"; // Intentional typo for demonstration
 
-Perform fuzzy matching
+// Perform fuzzy matching
 (async () => {
   const matchedEntities = await fuzzyMatchEntities(query, entities);
   const filteredEntities = entities.filter((entity) => entity.type === "company");

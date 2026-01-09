@@ -26,7 +26,7 @@ interface SystemEvent<
 
 
 
-CustomEventType with all required generic parameters for SharedSnapshotEvent
+// CustomEventType with all required generic parameters for SharedSnapshotEvent
 interface CustomEventType<
   T extends BaseDataEntity, 
   K extends T = T,

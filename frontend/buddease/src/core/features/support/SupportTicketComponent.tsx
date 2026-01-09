@@ -7,7 +7,7 @@ import { provideCustomerSupport } from '@/core/state/slices/ApiManagerSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-Support Ticket Types
+// Support Ticket Types
 export interface SupportTicket {
   id: string;
   title: string;

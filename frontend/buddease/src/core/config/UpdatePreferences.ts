@@ -1,8 +1,8 @@
 UpdatePreferences.ts
-Assuming you're using a library like Axios for making HTTP requests
+// Assuming you're using a library like Axios for making HTTP requests
 import axiosInstance from '@/core/api/csrfToken';
 
-Example function to update preferences on the backend
+// Example function to update preferences on the backend
 async function updatePreferences(preferences: any) {
     try {
         // Make a POST request to the backend API endpoint for cache synchronization
@@ -15,6 +15,6 @@ async function updatePreferences(preferences: any) {
     }
 }
 
-Example usage
+// Example usage
 const updatedPreferences = { theme: 'dark', language: 'en' };
 updatePreferences(updatedPreferences);

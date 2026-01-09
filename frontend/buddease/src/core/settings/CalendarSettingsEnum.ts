@@ -1,5 +1,5 @@
 CalendarSettingsEnum.ts
-Define the CalendarSettingsEnum to represent various calendar settings
+// Define the CalendarSettingsEnum to represent various calendar settings
 export enum CalendarSettingsEnum {
   ShowWeekends = 'ShowWeekends',
   FirstDayOfWeek = 'FirstDayOfWeek',

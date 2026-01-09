@@ -1,12 +1,12 @@
 // Tag.tsx
 import { TagComponent } from '@/core/components/models/tracker/TagComponent';
-import { BaseConfig } from '@/core/config/BaseConfig';
+import type { BaseConfig } from '@/core/config/BaseConfig';
 import type { SpecificMetadata, StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { BaseEntityProperties, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { BaseEntityProperties, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseDataEntity } from '@/core/snapshots/ValidationRule';
 import type { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
-import {
+import type {
     TagAttachment,
     TagEntity,
     TagExcludedFields,
@@ -14,9 +14,10 @@ import {
     TagK,
     TagMeta
 } from '@/core/typings/entities/TagEntity';
-import { AllTypes } from '@/core/typings/PropTypes';
-import { VersionData } from '@/core/versions/VersionData';
+import type { AllTypes } from '@/core/typings/PropTypes';
+import type { VersionData } from '@/core/versions/VersionData';
 import React from 'react';
+
 // Define the Tag interface and TagOptions interface
 // Main Tag interface
 interface Tag<T extends BaseDataEntity> extends TagOptions<T>, SharedTimestamps, SharedStatusFlags {
@@ -44,7 +45,7 @@ interface TagOptions<T extends BaseDataEntity> extends BaseEntityProperties, Sha
   enabled: boolean;
   nulltype: AllTypes;
   tags?: string[] | TagsRecord<T>;
-  timestamp: number;
+  timestamp: number | Date;
 }
 
 
@@ -67,6 +68,10 @@ const tag1: Tag<BaseDataEntity> = {
     createdBy: "system",
     updatedAt: new Date(),
     updatedBy: "system",
+    description: '',
+    enabled: true,
+    nulltype: {} as AllTypes,
+    timestamp: new Date(),
     "1": {
       id: "1",
       name: "Important",
@@ -86,17 +91,33 @@ const tag1: Tag<BaseDataEntity> = {
 };
 
 
+
+const tagOptions1: TagOptions<TagEntity> = {
+  id: "1",
+  name: "Important",
+  color: "red",
+  description: "Important items that require attention",
+  enabled: true,
+  type: "priority",
+  tags: undefined,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  createdBy: "system",
+  timestamp: new Date(),
+  nulltype: {} as AllTypes
+};
+
 const tagOptions2: TagOptions<TagEntity> = {
   id: "2",
   name: "Less Important",
   color: "blue",
-  description: '',
+  description: "Low priority tag",
   enabled: false,
-  type: '',
+  type: "category",
   tags: undefined,
-  createdAt: undefined,
-  updatedAt: undefined,
-  createdBy: '',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  createdBy: "system",
   timestamp: new Date(),
   nulltype: {} as AllTypes
 };
@@ -106,7 +127,7 @@ const meta1: StructuredMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, Met
   sharedMetadata: {},
   sharedBaseData: {},
   taggable: {},
-  metadataEntries: [], 
+  metadataEntries: {} as MetadataEntriesType<MetaEntity, MetaK>, 
   keywords: [],
   versionData: {} as VersionData<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>,
   timestamp: new Date(),
@@ -115,7 +136,7 @@ const createTagElement = (
   tagOptions: TagOptions<TagEntity>
 ): React.ReactElement => {
   return React.createElement(
-    TagComponent<TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields>,
+    TagComponent<TagEntity, TagK, TagMeta>,
     { 
       tagOptions,
       excludedFields: [], // Provide default or actual excluded fields
@@ -125,8 +146,8 @@ const createTagElement = (
   );
 };
 
-const tag1 = createTagElement(tagOptions1);
-const tag2 = createTagElement(tagOptions2)
+const tagElement1 = createTagElement(tagOptions1);
+const tagElement2 = createTagElement(tagOptions2)
 
 // Sorting function for TagOptions
 const localeCompare = <T extends BaseDataEntity>(

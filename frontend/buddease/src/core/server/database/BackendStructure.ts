@@ -378,16 +378,16 @@ const state: Record<string, SecureField<any>> = {
   baseUrl: SecureFieldManager.createField("https://example.com", true),
 };
 
-Security Audit Instance
+// Security Audit Instance
 const audit = new SecurityAudit();
 const findings = audit.conductAudit(state);
 audit.reviewFindings(findings);
 
-Sanitizing state for a user with limited permissions
+// Sanitizing state for a user with limited permissions
 const sanitizedState = SecureFieldManager.sanitizeMetadata(state, "user", false);
 console.log("Sanitized State:", sanitizedState);
 
-Sanitizing state for an admin
+// Sanitizing state for an admin
 const sanitizedAdminState = SecureFieldManager.sanitizeMetadata(state, "admin", true);
 console.log("Sanitized Admin State:", sanitizedAdminState);
 

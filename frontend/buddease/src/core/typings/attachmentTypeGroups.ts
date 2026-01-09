@@ -11,7 +11,7 @@ type CalendarAttachment = Attachment & {
   duration?: number; // meeting duration in minutes
 };
 
-If you plan to use these enums in filters, dropdowns, or categorization, you can define groupings:
+// If you plan to use these enums in filters, dropdowns, or categorization, you can define groupings:
 export const AttachmentTypeGroups = {
   media: [
     AttachmentTypeEnum.IMAGE,

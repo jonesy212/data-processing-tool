@@ -22,7 +22,7 @@ import CommonLayout from "@/core/pages/layouts/CommonLayout";
 import AdapterContent from "@/utils/web3/dAppAdapter/AdapterContent";
 import Image from 'next/image';
 import React, { ReactNode, useRef } from "react";
-Import specific icons for each platform
+// Import specific icons for each platform
 
 const AdapterDashboard: React.FC = () => {
   // Placeholder URLs for mobile phone images
@@ -87,7 +87,7 @@ const AdapterDashboard: React.FC = () => {
       });
     },
   });
-Dynamically select the appropriate icon based on the platform
+// Dynamically select the appropriate icon based on the platform
 const PlatformIcon = async ({ selectedEmulator }: { selectedEmulator: string }) => {
   try {
     switch (selectedEmulator) {

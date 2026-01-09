@@ -6,7 +6,7 @@ import Filter from '@/core/pages/searches/Filter';
 import { SearchOptions, SortingOption } from '@/core/pages/searches/SearchOptions';
 import React from 'react';
 
-Define the type for the filter column
+// Define the type for the filter column
 type FilterType = keyof SearchOptions['additionalOptions'];
 
 interface FilterTasksRequestProps {

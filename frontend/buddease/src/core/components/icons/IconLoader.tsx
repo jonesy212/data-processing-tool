@@ -40,4 +40,4 @@ export const loadYandexIcon: IconLoader = createIconLoader(
 
 
 
-Add more functions to load other icons as needed
+// Add more functions to load other icons as needed

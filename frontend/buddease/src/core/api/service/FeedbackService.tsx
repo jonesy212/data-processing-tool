@@ -110,7 +110,7 @@ class FeedbackService {
   }
 }
 
-Example usage in your project management app
+// Example usage in your project management app
 try {
   const feedbackService = FeedbackService.getInstance();
 

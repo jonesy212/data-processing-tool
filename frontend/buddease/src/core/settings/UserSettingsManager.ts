@@ -1,5 +1,5 @@
 UserSettingsManager.ts
-Create a compatibility layer
+// Create a compatibility layer
 class UserSettingsManager implements UserSettings {
   // Domain properties
   identity: UserIdentity;

@@ -63,7 +63,7 @@ export const generatePrompts = (options: PromptOptions): string[] => {
   prompts.push(`User Query: ${userQuery}`);
 
 
-Extend features based on the type of application
+// Extend features based on the type of application
 if (userQuery === "online marketplace") {
   prompts.push("- Implement features for managing product listings, transactions, and user accounts.");
   prompts.push("- Integrate payment gateways for secure online transactions.");

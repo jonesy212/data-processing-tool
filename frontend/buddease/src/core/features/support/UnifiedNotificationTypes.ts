@@ -76,10 +76,10 @@ export const DataTypeEnums = {
 
 
 
-Create a type for the entire structure
+// Create a type for the entire structure
 export type DataTypeEnums = typeof DataTypeEnums;
 
-Helper type to extract all possible values (optional)
+// Helper type to extract all possible values (optional)
 export type AllEnumValues = {
   [K in keyof DataTypeEnums]: DataTypeEnums[K] extends object
   ? DataTypeEnums[K][keyof DataTypeEnums[K]]

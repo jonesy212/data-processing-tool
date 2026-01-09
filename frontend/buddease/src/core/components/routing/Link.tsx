@@ -45,7 +45,7 @@ const Link: React.FC<LinkProps> = ({
   );
 };
 
-HATEOAS-aware component that renders multiple links
+// HATEOAS-aware component that renders multiple links
 interface HATEOASLinksProps {
   links: HATEOASLink[];
   linkClassName?: string;

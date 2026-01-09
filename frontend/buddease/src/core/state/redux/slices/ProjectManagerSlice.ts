@@ -12,7 +12,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define and export the Notification type
+// Define and export the Notification type
 
 interface ProjectManagerState<
   T extends BaseDataEntity,

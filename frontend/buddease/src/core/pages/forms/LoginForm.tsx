@@ -19,7 +19,7 @@ interface LoginFormProps {
   onDashboardConfigReceived?: (dashboardConfig: any) => void; // New prop for dashboard config
 }
 
-Error codes mapping to user-friendly messages
+// Error codes mapping to user-friendly messages
 const ERROR_MESSAGES: Record<string, string> = {
   'MISSING_CREDENTIALS': 'Please enter both username and password',
   'USER_NOT_FOUND': 'User not found. Please check your username',

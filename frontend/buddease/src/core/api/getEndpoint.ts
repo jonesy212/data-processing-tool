@@ -1,6 +1,6 @@
 getEndpoint.ts
 
-Function to recursively traverse the endpoints object
+// Function to recursively traverse the endpoints object
 export const getEndpoint = (endpointPath: string, obj: any): string | undefined => {
     const keys = endpointPath.split('.');
     let current = obj;

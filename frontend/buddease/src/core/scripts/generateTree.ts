@@ -1,11 +1,11 @@
 // generateTree.ts
 // generateTree.ts - Complete Enhanced Version (ESM)
 
-import { FileNode } from '@/core/components/frontend/TraverseFrontendComponent';
-import { AnalysisReport } from '@/core/documents/Report';
-import ApiMethod from '@/core/generators/ApiCodeGenerator';
-import { PackageJson } from '@/core/scripts/generate-commands-doc';
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { FileNode } from '@/core/components/frontend/TraverseFrontendComponent';
+import type { AnalysisReport } from '@/core/documents/Report';
+import type { ApiMethod } from '@/core/generators/ApiCodeGenerator';
+import type { PackageJson } from '@/core/scripts/generate-commands-doc';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -386,7 +386,7 @@ export class ProjectTreeAnalyzer {
   }
 }
 
-=== ORIGINAL TREE GENERATION ===
+// === ORIGINAL TREE GENERATION ===
 async function generateProjectTree(
   dirPath: string = '.', 
   prefix: string = '', 
@@ -447,7 +447,7 @@ function generateMarkdownTree(tree: string): string {
   return `# Project Tree\n\n**Generated**: ${new Date().toISOString()}\n\n\`\`\`\n${tree}\n\`\`\``;
 }
 
---- mappers.ts config ---
+// --- mappers.ts config ---
 const mappersFile = path.resolve(__dirname, '../../server/repository/mappers.ts');
 
 async function updateMappers(relevantNames: string[]) {
@@ -486,7 +486,7 @@ async function updateMappers(relevantNames: string[]) {
   console.log('✅ mappers.ts imports updated automatically!');
 }
 
---- Hook into Analysis ---
+// --- Hook into Analysis ---
 async function generateAnalysisReportWithMappers(args: string[]) {
   const userPrompt = args[0];
   const outputIndex = args.indexOf('--output');
@@ -508,7 +508,7 @@ async function generateAnalysisReportWithMappers(args: string[]) {
   }
 }
 
-=== MAIN FUNCTION ===
+// === MAIN FUNCTION ===
 export async function main() {
   const args = process.argv.slice(2);
   const outputTypes = ['text', 'markdown', 'json'];
@@ -521,7 +521,7 @@ export async function main() {
   }
 }
 
-=== TREE OUTPUT ===
+// === TREE OUTPUT ===
 async function generateTreeOutput(args: string[]) {
   const outputType = args[0] || 'text';
   const outputIndex = args.indexOf('--output');
@@ -568,7 +568,7 @@ async function generateTreeOutput(args: string[]) {
   console.log(`✅ Project tree generated: ${filename}`);
 }
 
-=== ANALYSIS OUTPUT ===
+// === ANALYSIS OUTPUT ===
 async function generateAnalysisReport(args: string[]) {
   const userPrompt = args[0];
   const outputIndex = args.indexOf('--output');
@@ -587,7 +587,7 @@ async function generateAnalysisReport(args: string[]) {
   }
 }
 
-=== DISPLAY FUNCTIONS ===
+// === DISPLAY FUNCTIONS ===
 function displayReport(report: AnalysisReport) {
   console.log('='.repeat(80));
   console.log('📊 PROJECT ANALYSIS REPORT');
@@ -699,7 +699,13 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
 }
 
 export function generateTree(data: any): FileNode {
-  if (!data) return null;
+  if (!data) return {
+    id: 'root',
+    name: 'root',
+    path: '/',
+    type: 'directory',
+    children: []
+  };
   
   const convertToFileNode = (item: any): FileNode => {
     return {
@@ -720,33 +726,33 @@ export function generateTree(data: any): FileNode {
 export { mappersFile };
 export type { ProjectFile };
 
-=== COMMANDS SECTION ===
+// === COMMANDS SECTION ===
 
-#NOTE - TypeScript Commands (.ts file) - USING TSX
-| **Output Type**   | **Command**                                              | **File Generated**    |
-| ----------------- | -------------------------------------------------------- | --------------------- |
-| 🧱 Text (default) | `tsx src/app/scripts/generateTree.ts text`              | `project-tree.txt`    |
-| 📘 Markdown       | `tsx src/app/scripts/generateTree.ts markdown`          | `project-tree.md`     |
-| 🧮 JSON           | `tsx src/app/scripts/generateTree.ts json`              | `project-tree.json`   |
+// #NOTE - TypeScript Commands (.ts file) - USING TSX
+// | **Output Type**   | **Command**                                              | **File Generated**    |
+// | ----------------- | -------------------------------------------------------- | --------------------- |
+// | 🧱 Text (default) | `tsx src/app/scripts/generateTree.ts text`              | `project-tree.txt`    |
+// | 📘 Markdown       | `tsx src/app/scripts/generateTree.ts markdown`          | `project-tree.md`     |
+// | 🧮 JSON           | `tsx src/app/scripts/generateTree.ts json`              | `project-tree.json`   |
 // | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts text --output ./docs/my-tree.txt`  | `./docs/my-tree.txt`  |
 // | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
 // | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts json --output ./docs/my-tree.json` | `./docs/my-tree.json` |
 
 // # 🔍 ANALYSIS MODE - TypeScript
-# Basic analysis (console output only)
+// # Basic analysis (console output only)
 // tsx src/app/scripts/generateTree.ts "task management system with real-time collaboration"
 
-# Analysis with file output
+// // # Analysis with file output
 // tsx src/app/scripts/generateTree.ts "crypto trading dashboard" --output ./analysis/crypto-analysis.json
 
-# Analysis with custom path
+// # Analysis with custom path
 // tsx src/app/scripts/generateTree.ts "content management system" --output ./docs/feature-analysis.json
 
 // # 🎯 ROADMAP GENERATION - TypeScript (NEW!)
-| **Command**                                              | **Files Generated**                                       |
-| -------------------------------------------------------- | --------------------------------------------------------- |
-| `tsx src/app/scripts/generateRoadmaps.ts "project name"` | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
-| `tsx src/app/scripts/generateRoadmaps.ts "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
+// | **Command**                                              | **Files Generated**                                       |
+// | -------------------------------------------------------- | --------------------------------------------------------- |
+// | `tsx src/app/scripts/generateRoadmaps.ts "project name"` | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
+// | `tsx src/app/scripts/generateRoadmaps.ts "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
 // | `tsx src/app/scripts/generateRoadmaps.ts "task app"`     | Complete project roadmap with package recommendations     |
 
 // # 🎯 EXISTING TREE GENERATION - TypeScript!
@@ -754,40 +760,40 @@ export type { ProjectFile };
 // tsx src/app/scripts/generateTree.ts markdown --output ./docs/structure.md
 // tsx src/app/scripts/generateTree.ts json --output ./docs/tree.json
 
-# 🏗 BUILD & RUN COMMANDS (After compilation)
-| **Output Type**   | **Command**                                              | **File Generated**    |
-| ----------------- | -------------------------------------------------------- | --------------------- |
-| 🧱 Text (default) | `node dist/app/scripts/generateTree.js text`            | `project-tree.txt`    |
-| 📘 Markdown       | `node dist/app/scripts/generateTree.js markdown`        | `project-tree.md`     |
-| 🧮 JSON           | `node dist/app/scripts/generateTree.js json`            | `project-tree.json`   |
+// # 🏗 BUILD & RUN COMMANDS (After compilation)
+// | **Output Type**   | **Command**                                              | **File Generated**    |
+// | ----------------- | -------------------------------------------------------- | --------------------- |
+// | 🧱 Text (default) | `node dist/app/scripts/generateTree.js text`            | `project-tree.txt`    |
+// | 📘 Markdown       | `node dist/app/scripts/generateTree.js markdown`        | `project-tree.md`     |
+// | 🧮 JSON           | `node dist/app/scripts/generateTree.js json`            | `project-tree.json`   |
 // | ✨ Custom Path     | `node dist/app/scripts/generateTree.js text --output ./docs/my-tree.txt`  | `./docs/my-tree.txt`  |
 // | ✨ Custom Path     | `node dist/app/scripts/generateTree.js markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
 // | ✨ Custom Path     | `node dist/app/scripts/generateTree.js json --output ./docs/my-tree.json` | `./docs/my-tree.json` |
 
 // # 🔍 ANALYSIS MODE - Compiled JavaScript
-# Basic analysis (console output only)
+// # Basic analysis (console output only)
 // node dist/app/scripts/generateTree.js "task management system with real-time collaboration"
 
-# Analysis with file output
+// # Analysis with file output
 // node dist/app/scripts/generateTree.js "crypto trading dashboard" --output ./analysis/crypto-analysis.json
 
 // # 🗺️ ROADMAP GENERATION - Compiled JavaScript (NEW!)
-| **Command**                                                   | **Files Generated**                                       |
-| ------------------------------------------------------------- | --------------------------------------------------------- |
-| `node dist/app/scripts/generateRoadmaps.js "project name"`    | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
-| `node dist/app/scripts/generateRoadmaps.js "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
-| `node dist/app/scripts/generateRoadmaps.js "ecommerce app"`   | Complete roadmap with package setup guides                |
+// | **Command**                                                   | **Files Generated**                                       |
+// | ------------------------------------------------------------- | --------------------------------------------------------- |
+// | `node dist/app/scripts/generateRoadmaps.js "project name"`    | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
+// | `node dist/app/scripts/generateRoadmaps.js "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
+// | `node dist/app/scripts/generateRoadmaps.js "ecommerce app"`   | Complete roadmap with package setup guides                |
 
-# PNPM SCRIPTS (What you actually use)
-| **Script**        | **Command**                    | **Purpose**           |
-| ----------------- | ------------------------------ | --------------------- |
-| generate:tree     | `pnpm run generate:tree`       | Default tree gen      |
-| generate:tree:text| `pnpm run generate:tree:text`  | Text format           |
-| generate:tree:md  | `pnpm run generate:tree:markdown` | Markdown format     |
-| generate:tree:json| `pnpm run generate:tree:json`  | JSON format           |
-| generate:analysis | `pnpm run generate:analysis`   | Full analysis         |
+// # PNPM SCRIPTS (What you actually use)
+// | **Script**        | **Command**                    | **Purpose**           |
+// | ----------------- | ------------------------------ | --------------------- |
+// | generate:tree     | `pnpm run generate:tree`       | Default tree gen      |
+// | generate:tree:text| `pnpm run generate:tree:text`  | Text format           |
+// | generate:tree:md  | `pnpm run generate:tree:markdown` | Markdown format     |
+// | generate:tree:json| `pnpm run generate:tree:json`  | JSON format           |
+// | generate:analysis | `pnpm run generate:analysis`   | Full analysis         |
 // | generate:roadmaps | `pnpm run generate:roadmaps`   | NEW! Generate complete roadmaps with package recommendations |
-| generate:roadmaps:custom | `pnpm run generate:roadmaps -- "project name"` | Custom project roadmaps |
+// | generate:roadmaps:custom | `pnpm run generate:roadmaps -- "project name"` | Custom project roadmaps |
 
 // # NEW ROADMAP GENERATION EXAMPLES
 // # Generate complete project planning:
@@ -795,34 +801,34 @@ export type { ProjectFile };
 // pnpm run generate:roadmaps -- "social media app with video uploads"
 // pnpm run generate:roadmaps -- "ecommerce store with inventory management"
 
-# Output structure:
+// # Output structure:
 // 📁 roadmaps/ (or specified --output directory)
-├── 🧩 dev-roadmap.md          (Technical implementation plan)
-├── 📊 nontech-roadmap.md      (Product overview for stakeholders)
-├── 🎨 frontend-packages.md    (Frontend dependencies & setup guide) - NEW!
-└── ⚙️ backend-packages.md     (Backend dependencies & setup guide) - NEW!
+// ├── 🧩 dev-roadmap.md          (Technical implementation plan)
+// ├── 📊 nontech-roadmap.md      (Product overview for stakeholders)
+// ├── 🎨 frontend-packages.md    (Frontend dependencies & setup guide) - NEW!
+// └── ⚙️ backend-packages.md     (Backend dependencies & setup guide) - NEW!
   
 // #TODO – Automate Project Tree / File Changes on Git Push
 
-❌ Remaining TODO Items
-| Category | Outstanding Task | Notes |
-|----------|------------------|-------|
+// ❌ Remaining TODO Items
+// | Category | Outstanding Task | Notes |
+// |----------|------------------|-------|
 // | UX Wizard | Build interactive scenario mode | In progress (design done) |
 // | Exit UX | Add quit hook at startup | Implement code |
 // | Docs Automation | Auto update tree on Git commit | Pending |
-| File Diffing | Track renamed/moved/deleted files | Pending |
-| Storage | Create project_docs/ folder | Standardize output |
-| Git Hook | pre-push or post-commit hook | TBD implementation |
+// | File Diffing | Track renamed/moved/deleted files | Pending |
+// | Storage | Create project_docs/ folder | Standardize output |
+// | Git Hook | pre-push or post-commit hook | TBD implementation |
 // | Mode Decision | Full tree vs change log | We need config flag |
-| Format Sync | Ensure output consistency | Table + logs |
-| CI/CD | Optional pipeline automation | Later stage |
+// | Format Sync | Ensure output consistency | Table + logs |
+// | CI/CD | Optional pipeline automation | Later stage |
 
-✅ Finalize interactive CLI user flow (we just outlined)
-🛠 Implement quit handler + intro walk-through
-📁 Create /project_docs convention folder
-🔗 Add Git hook:
-  Minimal version = local pre-push script
-  Full version = CI bot commit
-🌲 Add incremental change detection
-🧪 QA test on real repo
-📦 Add docs & README section
+// ✅ Finalize interactive CLI user flow (we just outlined)
+// 🛠 Implement quit handler + intro walk-through
+// 📁 Create /project_docs convention folder
+// 🔗 Add Git hook:
+//   Minimal version = local pre-push script
+//   Full version = CI bot commit
+// 🌲 Add incremental change detection
+// 🧪 QA test on real repo
+// 📦 Add docs & README section

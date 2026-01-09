@@ -5,7 +5,7 @@ import { EditorState } from 'draft-js';
 import { useEffect, useState } from 'react';
 import draftjs from 'draft-js';
 
-Custom hook for editor state management
+// Custom hook for editor state management
 const useEditorState = (
   browserCheckStore: BrowserCheckStore,  // Inject BrowserCheckStore
   snapshotStore: SnapshotStore<any, any, any, any, any, any> // Inject SnapshotStore for snapshot management

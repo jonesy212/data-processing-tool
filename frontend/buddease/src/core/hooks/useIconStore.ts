@@ -2,7 +2,7 @@ useIconStore.ts
 import { iconStore } from '@/core/state/stores/IconStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-Optional: Add custom hook options
+// Optional: Add custom hook options
 interface UseIconStoreOptions {
   autoLoad?: boolean;
   dependencies?: any[];
@@ -10,7 +10,7 @@ interface UseIconStoreOptions {
   onError?: (error: Error) => void;
 }
 
-Export the same interface from IconStore
+// Export the same interface from IconStore
 export type { IconStore } from './IconStore';
 
 export const useIconStore = (options: UseIconStoreOptions = {}) => {
@@ -151,7 +151,7 @@ export const useIconStore = (options: UseIconStoreOptions = {}) => {
   };
 };
 
-Create a simpler hook that just returns the store
+// Create a simpler hook that just returns the store
 export const useIconStoreSimple = () => {
   const [isLoading, setIsLoading] = useState(false);
   
@@ -173,5 +173,5 @@ export const useIconStoreSimple = () => {
 Export default (simple version)
 export default useIconStore;
 
-Also export direct access
+// Also export direct access
 export { iconStore };

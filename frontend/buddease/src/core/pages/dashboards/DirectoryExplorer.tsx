@@ -45,5 +45,5 @@ class DirectoryExplorer {
     }
   }
 
-Export the DirectoryExplorer class
+// Export the DirectoryExplorer class
 export default DirectoryExplorer;

@@ -6,7 +6,7 @@ import TaskService from "@/core/services/TaskService";
 import React, { useState } from "react";
 import TaskLoop from "./TaskLoop";
 
-Default alias for Task
+// Default alias for Task
 type DefaultTask = Task<any, any, any, any>;
 
 enum TaskPhaseEnum {

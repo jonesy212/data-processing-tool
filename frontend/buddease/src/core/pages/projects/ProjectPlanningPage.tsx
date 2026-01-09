@@ -1,5 +1,5 @@
 ProjectPlanningPage.tsx
-Example usage in another component or page
+// Example usage in another component or page
 import IdeaLifecycleComponent from '@/core/pages/projects/IdeaLifecycleComponent'; // Added semicolon here
 import React from 'react';
 

@@ -178,7 +178,7 @@ const signTransaction = async (
 };
 
 
-Function to send a transaction using ethers.js
+// Function to send a transaction using ethers.js
 const sendTransaction = async (
   wallet: Wallet,
   to: string,

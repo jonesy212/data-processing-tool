@@ -345,7 +345,7 @@ export class EmergencyShutdownService {
   }
 }
 
-Hook version
+// Hook version
 export const useEmergencyShutdown = () => {
 
   const { notify } = useNotification();

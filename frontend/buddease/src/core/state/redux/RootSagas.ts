@@ -23,7 +23,7 @@ import { userSagas } from '@/core/state/redux/sagas/userSagas';
 import { videoSagas } from '@/core/state/redux/sagas/videoSagas';
 import { all, fork } from 'redux-saga/effects';
 
-Add more sagas as needed...
+// Add more sagas as needed...
 
 const { notify } = useNotification()
 

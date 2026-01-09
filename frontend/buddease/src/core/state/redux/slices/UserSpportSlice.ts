@@ -34,7 +34,7 @@ export const {
   // Add more action creators as needed
 } = userSupportFeedbackPreferencesSlice.actions;
 
-Export the reducer
+// Export the reducer
 export default userSupportFeedbackPreferencesSlice.reducer;
 
 Selectors
@@ -42,4 +42,4 @@ export const selectFeedbackEnabled = (state: RootState) =>
   state.userSupportFeedbackPreferences.feedbackEnabled;
 export const selectFeedbackFrequency = (state: RootState) =>
   state.userSupportFeedbackPreferences.feedbackFrequency;
-Add more selectors as needed
+// Add more selectors as needed

@@ -1,5 +1,5 @@
 IdeationSection.tsx
-IdeationSection component
+// IdeationSection component
 import React from 'react';
 
 const IdeationSection = () => {

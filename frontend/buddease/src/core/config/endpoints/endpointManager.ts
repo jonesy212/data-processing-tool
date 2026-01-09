@@ -2,7 +2,7 @@ endpointManager.ts
 import { EndpointConfigurations } from '@/core/config/EndpointConfig';
 import { BasicChannels } from '@/core/notifications/NotificationChannelHelper';
 
-Import ALL configs
+// Import ALL configs
 import { analyticsConfig } from '@/core/config/endpoints/analyticsConfig';
 import { apiEndpointConfig } from '@/core/config/endpoints/apiEndpointConfig';
 import { apiWebBaseConfig } from '@/core/config/endpoints/apiWebBaseConfig';
@@ -81,7 +81,7 @@ import { versionConfig } from '@/core/config/endpoints/versionConfig';
 import { videosConfig } from '@/core/config/endpoints/videosConfig';
 import { webConfig } from '@/core/config/endpoints/webConfig';
 
-Import notification channels config (new)
+// Import notification channels config (new)
 import { notificationsConfig } from '@/core/config/endpoints/notificationsConfig';
 import { NotificationChannelManager } from '@/core/notifications/NotificationChannelManager';
 

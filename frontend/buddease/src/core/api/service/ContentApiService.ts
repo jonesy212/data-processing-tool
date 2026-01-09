@@ -401,5 +401,5 @@ export class ContentApiService {
   }
 }
 
-Singleton instance
+// Singleton instance
 export const contentApiService = new ContentApiService();

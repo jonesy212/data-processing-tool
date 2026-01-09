@@ -1,5 +1,5 @@
 DataPrivacyRule.ts
-Define the DataPrivacyRule class
+// Define the DataPrivacyRule class
 class DataPrivacyRule {
   private id: string;
   private name: string;
@@ -36,7 +36,7 @@ class DataPrivacyRule {
   }
 }
 
-Example usage
+// Example usage
 const dataPrivacyRule = new DataPrivacyRule(
   "1",
   "Anonymize Personal Data",
@@ -44,12 +44,12 @@ const dataPrivacyRule = new DataPrivacyRule(
   true
 );
 
-Get data privacy rule properties
+// Get data privacy rule properties
 console.log("Rule Name:", dataPrivacyRule.getName());
 console.log("Rule Description:", dataPrivacyRule.getDescription());
 console.log("Is Rule Enabled?", dataPrivacyRule.isEnabled());
 
-Update the rule's enabled status
+// Update the rule's enabled status
 dataPrivacyRule.setEnabled(false);
 console.log("Is Rule Enabled Now?", dataPrivacyRule.isEnabled());
 

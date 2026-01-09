@@ -2,7 +2,7 @@ liveStreamActions.ts
 
 liveStreamActions.ts
 
-Define action types
+// Define action types
 export enum LiveStreamActionTypes {
     TOGGLE_ORDER_FORM_MODAL = "TOGGLE_ORDER_FORM_MODAL",
     SUBMIT_ORDER = "SUBMIT_ORDER",

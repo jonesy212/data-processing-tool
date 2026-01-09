@@ -9,10 +9,10 @@ const app = express();
 const server = createServer(app);
 const port = 3001;
 
-WebSocket server
+// WebSocket server
 const wss = new WebSocketServer({ server });
 
-Database setup
+// Database setup
 const dbConfig = {
   host: 'your-database-host',
   user: 'your-database-user',
@@ -23,7 +23,7 @@ const dbConfig = {
 
 const databasePool = new DatabasePool(dbConfig);
 
-Middleware for checking authentication
+// Middleware for checking authentication
 app.use(async (req, res, next) => {
   const accessToken = authService.getAccessToken();
 
@@ -50,7 +50,7 @@ async function fetchTextContentFromDatabase(documentId: number): Promise<string>
   }
 }
 
-REST route
+// REST route
 app.get('/document/:id', async (req: Request, res: Response) => {
   const documentId = parseInt(req.params.id, 10);
   if (isNaN(documentId)) return res.status(400).send('Invalid document ID');

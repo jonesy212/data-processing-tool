@@ -1,5 +1,5 @@
 
-ApiTradingInfo.ts - News and information trading APIs
+// ApiTradingInfo.ts - News and information trading APIs
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -8,10 +8,10 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 
 import { AxiosError } from 'axios';
 
-Define the API base URL for trading operations
+// Define the API base URL for trading operations
 const TRADING_API_BASE_URL = endpoints.trading;
 
-Define trading info notification messages
+// Define trading info notification messages
 interface TradingInfoNotificationMessages {
   FETCH_NEWS_SUCCESS: string;
   FETCH_NEWS_ERROR: string;
@@ -45,7 +45,7 @@ interface TradingInfoNotificationMessages {
   FETCH_EDUCATIONAL_CONTENT_ERROR: string;
 }
 
-Define API notification messages for trading info
+// Define API notification messages for trading info
 const tradingInfoNotificationMessages: TradingInfoNotificationMessages = {
   FETCH_NEWS_SUCCESS: 'News fetched successfully',
   FETCH_NEWS_ERROR: 'Failed to fetch news',
@@ -191,7 +191,7 @@ const handleTradingInfoApiErrorAndNotify = (
   });
 };
 
-Helper functions for trading info error handling
+// Helper functions for trading info error handling
 const getTradingInfoErrorSeverity = (statusCode?: number): string => {
   if (!statusCode) return 'medium';
   
@@ -217,7 +217,7 @@ const logTradingInfoError = (errorInfo: any): void => {
   // });
 };
 
-News and Information API Functions
+// News and Information API Functions
 
 /**
  * Fetch general news by category

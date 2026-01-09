@@ -11,7 +11,7 @@ import { generateCSRFToken } from "@/core/server/security/csrfTokenGenerator";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { ChangeEvent, useState } from "react";
 
-Don't call hooks conditionally or outside of components
+// Don't call hooks conditionally or outside of components
 const { notify } = useNotification();
 const { handleError } = useErrorHandling();
 

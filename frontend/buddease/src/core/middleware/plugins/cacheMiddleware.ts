@@ -336,7 +336,7 @@ export const createCacheMiddleware = (config: CacheMiddlewareConfig = {
   };
 };
 
-Enhanced default cache middleware that integrates with your ConfigurationService
+// Enhanced default cache middleware that integrates with your ConfigurationService
 export const cacheMiddleware: MiddlewareFunction = createCacheMiddleware({
   enabled: true,
   ttl: 300000, // 5 minutes default
@@ -345,7 +345,7 @@ export const cacheMiddleware: MiddlewareFunction = createCacheMiddleware({
   useAppConfig: true // Integrate with your app's cache configuration
 });
 
-Specialized cache middleware for different scenarios
+// Specialized cache middleware for different scenarios
 export const createPerformanceCacheMiddleware = (): MiddlewareFunction => {
   return createCacheMiddleware({
     enabled: true,

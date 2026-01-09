@@ -8,7 +8,7 @@ interface CustomContentState  {
   customProperty: string; // Add any additional properties here
 }
 
-Alternatively, you can define a wrapper class
+// Alternatively, you can define a wrapper class
 class CustomContentStateWrapper {
   contentState: ContentState;
   metadata: StructuredMetadata;

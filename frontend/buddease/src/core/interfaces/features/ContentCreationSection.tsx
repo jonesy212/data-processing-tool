@@ -1,5 +1,5 @@
 ContentCreationSection.tsx
-ContentCreationSection component
+// ContentCreationSection component
 import React from 'react';
 
 const ContentCreationSection = () => {

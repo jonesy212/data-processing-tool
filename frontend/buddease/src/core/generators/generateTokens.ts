@@ -12,7 +12,7 @@ interface GenerateTokenOptions extends TokenOptions {
     expiresIn?: string; // Optionally set token expiration
   }
   
-Update the function to accept `options` parameter
+// Update the function to accept `options` parameter
 const generateToken = (user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, scopes: Scope[], options?: GenerateTokenOptions): string => {
 const secret = process.env.JWT_SECRET || 'your-default-secret';
 const payload = {

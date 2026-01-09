@@ -4,7 +4,7 @@ import { call, put, takeEvery } from 'redux-saga/effects';
 
 export const FETCH_PROMPTS_REQUEST = 'FETCH_PROMPTS_REQUEST';
 
-Define the shape of the action payload
+// Define the shape of the action payload
 interface GeneratePromptsAction {
   type: typeof FETCH_PROMPTS_REQUEST;
   payload: {
@@ -23,7 +23,7 @@ const PROMPT_ACTION_TYPES = {
   OPERATION_FAILURE: 'OPERATION_FAILURE',
 } as const;
 
-Saga worker function to handle generating prompts
+// Saga worker function to handle generating prompts
 function* handleGeneratePrompts(action: GeneratePromptsAction) {
 
   const { documentContent, documentType, userQuery, userIdea } = action.payload;
@@ -48,12 +48,12 @@ function* handleGeneratePrompts(action: GeneratePromptsAction) {
   }
 }
 
-Saga watcher function to listen for FETCH_PROMPTS_REQUEST action
+// Saga watcher function to listen for FETCH_PROMPTS_REQUEST action
 function* watchGeneratePrompts(): Generator {
   yield takeEvery(FETCH_PROMPTS_REQUEST, handleGeneratePrompts);
 }
 
-Export the root saga function to be used in store configuration
+// Export the root saga function to be used in store configuration
 export default function* promptSagas(): Generator {
   yield watchGeneratePrompts();
   // Add more saga watchers if needed

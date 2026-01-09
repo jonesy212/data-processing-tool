@@ -7,7 +7,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { MarkdownDocument } from "@/core/documents/editing/MarkdownDocument";
 
-MarkdownDocument Implementation
+// MarkdownDocument Implementation
 class MarkdownDoc<
   T extends BaseDataEntity,
   K extends T = T,
@@ -90,7 +90,7 @@ class MarkdownDoc<
   
 export default MarkdownDoc
   
-Creating and using a MarkdownDocument
+// Creating and using a MarkdownDocument
 const markdownDoc = new MarkdownDoc('1', 'Markdown Title', '# Markdown Content', 'Author Name');
 markdownDoc.printInfo();
 markdownDoc.convertToHTML(markdownDoc.content);

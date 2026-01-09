@@ -9,7 +9,7 @@ import VerificationProcess from '@/core/components/phases/crypto/VerificationPro
 import AddContent from '@/core/models/content/AddContent'; // Import AddContent component
 import { useState } from "react";
 
-Define an enum for trading phases
+// Define an enum for trading phases
 enum TradingPhase {
   VERIFICATION = 'Verification',
   RISK_ASSESSMENT = 'Risk Assessment',

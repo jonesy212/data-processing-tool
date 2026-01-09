@@ -41,9 +41,9 @@ export interface Channel {
   }
   
 ""
-The Channel export interface represents a chat channel and includes properties like id, name, description, type, members, and messages.
-The ChannelMember export interface represents a member in a channel, with properties like userId, username, and role.
-The ChannelMessage export interface represents a message in a channel, with properties like messageId, userId, username, content, and timestamp.
-ChannelType is an enum representing the type of channel, either "public" or "private".
-ChannelRole is an enum representing the role of a channel member, either "owner," "moderator," or "member".
+// The Channel export interface represents a chat channel and includes properties like id, name, description, type, members, and messages.
+// The ChannelMember export interface represents a member in a channel, with properties like userId, username, and role.
+// The ChannelMessage export interface represents a message in a channel, with properties like messageId, userId, username, content, and timestamp.
+// ChannelType is an enum representing the type of channel, either "public" or "private".
+// ChannelRole is an enum representing the role of a channel member, either "owner," "moderator," or "member".
 ""

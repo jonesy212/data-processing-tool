@@ -6,7 +6,7 @@ import { Task } from "@/core/models/tasks/Task";
 
 
 
-Define your API-specific types
+// Define your API-specific types
 export interface ApiEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -24,7 +24,7 @@ export type ApiAttachmentType = any; // Or define proper attachment type
 export type ApiExcludedFields = never;
 export type ApiIncludedFields = keyof ApiEntity;
 
-Create type aliases for complex types
+// Create type aliases for complex types
 export type ApiStructuredMetadata = StructuredMetadata<
   ApiEntity,
   ApiK,

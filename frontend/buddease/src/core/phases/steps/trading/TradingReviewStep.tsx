@@ -10,7 +10,7 @@ interface TradingReviewStep extends StepProps {
 }
 
 
-Specific Review Step Components
+// Specific Review Step Components
 const TradingReviewStep: React.FC<TradingReviewStep> = ({ onSubmit, tradeData }) => {
   const tradingContent = (
     <div>

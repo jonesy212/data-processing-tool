@@ -46,7 +46,7 @@ export const sortDataFrame = async (
 };
 
 
-Add more methods following the same pattern
+// Add more methods following the same pattern
 export const filterDataFrame = async (
   filters: any,
   deviceDimensions?: DeviceDimensions

@@ -1,6 +1,6 @@
 VideoEditorPersona.ts
 
-Define attributes and permissions for Video Editor persona
+// Define attributes and permissions for Video Editor persona
 interface VideoEditorPersona {
     name: string;
     role: string;

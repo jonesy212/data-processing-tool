@@ -27,8 +27,8 @@ const configureSecuritySettings = async (securitySettings: SecuritySettings): Pr
   }
 };
 
-Helper function to check if the value is of type SecuritySettings
-function isSecuritySettings(value: any): value is SecuritySettings {
+// Helper function to check if the value is of type SecuritySettings
+// function isSecuritySettings(value: any): value is SecuritySettings {
   return (
     typeof value === "object" &&
     value !== null &&

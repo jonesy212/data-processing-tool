@@ -160,16 +160,16 @@ export const useAuthSlice = createSlice({
   },
 });
 
-Selector to get the authentication state
+// Selector to get the authentication state
 export const selectAuth = (state: RootState) => state.authManager;
 
-Selector to get the authentication token
+// Selector to get the authentication token
 export const selectAuthToken = createSelector(
   selectAuth,
   (auth) => auth.accessToken
 );
 
-Selector to get the user ID
+// Selector to get the user ID
 export const selectUserId = createSelector(
   selectAuth,
   (auth) => auth.userId

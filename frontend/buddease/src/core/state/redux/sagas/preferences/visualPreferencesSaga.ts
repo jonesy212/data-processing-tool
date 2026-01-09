@@ -1,5 +1,5 @@
 visualPreferencesSaga.ts
-Import necessary dependencies and constants
+// Import necessary dependencies and constants
 import { UserVisualPreferencesActions } from "@/core/config/UserPreferencesActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { ThemeService } from "@/core/libraries/theme/ThemeService";
@@ -35,7 +35,7 @@ function* handleSetColorScheme(action: PayloadAction<string>) {
   }
 }
 
-Sample Saga for handling setting theme
+// Sample Saga for handling setting theme
 function* handleSetTheme(action: PayloadAction<string>) {
   try {
     const themeColor = action.payload; // Assuming the payload contains the theme color
@@ -61,7 +61,7 @@ function* handleSetTheme(action: PayloadAction<string>) {
     });
   }
 }
-Watcher Saga: Watches for user preferences actions
+// Watcher Saga: Watches for user preferences actions
 function* watchUserPreferencesActions() {
   yield all([
     takeLatest(
@@ -80,7 +80,7 @@ function* watchUserPreferencesActions() {
   ]);
 }
 
-Root Saga
+// Root Saga
 export default function* visualPreferencesSaga() {
   yield all([
     watchUserPreferencesActions(),

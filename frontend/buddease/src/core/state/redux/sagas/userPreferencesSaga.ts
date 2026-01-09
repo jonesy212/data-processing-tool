@@ -1,5 +1,5 @@
 userPreferencesSaga.ts
-Import necessary dependencies and constants
+// Import necessary dependencies and constants
 import useApiUserPreferences from '@/core/api/preferences/ApiUserPreferences';
 import { UserPreferences } from '@/core/config/UserPreferences';
 import { UserVisualPreferencesActions } from '@/core/config/UserPreferencesActions';
@@ -45,7 +45,7 @@ function* handleSetColorScheme(action: PayloadAction<string>) {
 }
 
 
-Define a function to render components based on user preferences
+// Define a function to render components based on user preferences
 function* renderComponentsBasedOnPreferences(userPreferences: UserPreferences) {
   // Extract preferences from userPreferences object
   const { fontSize, colorScheme, fontStyles } = userPreferences;
@@ -66,7 +66,7 @@ function* renderComponentsBasedOnPreferences(userPreferences: UserPreferences) {
 
 
 
-Worker Saga: Fetch User Preferences
+// Worker Saga: Fetch User Preferences
 function* fetchUserPreferencesSaga(): Generator<any, void, any> {
   try {
     // Call the API to fetch user preferences
@@ -81,7 +81,7 @@ function* fetchUserPreferencesSaga(): Generator<any, void, any> {
 }
 
 
-Watcher Saga: Watches for user preferences actions
+// Watcher Saga: Watches for user preferences actions
 function* watchUserPreferencesActions() {
   yield all([
     takeLatest(UserVisualPreferencesActions.setTheme.type, handleSetTheme),
@@ -98,7 +98,7 @@ function* watchUserPreferencesActions() {
   ]);
 }
 
-Root Saga
+// Root Saga
 export default function* userPreferencesSagas() {
   yield all([
     watchUserPreferencesActions(),

@@ -4,7 +4,7 @@ import { SharedConfig } from '@/core/config/BaseConfig';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { useNotification } from "@/core/state/context/NotificationContext";
-Import any other necessary dependencies
+// Import any other necessary dependencies
 
 export interface Config extends SharedConfig {
   id: string;

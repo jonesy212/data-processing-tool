@@ -16,7 +16,7 @@ import type {
     DataStoreWithSnapshotMethods
 } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
-import type type { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
+// import type type { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { triggerOnSnapshot } from '@/core/snapshots/snapshotTrigger';
 import { getSubscriptionLevel } from '@/core/subscriptions/SubscriptionLevel';
 import { useCallback, useEffect, useRef, useState } from "react";

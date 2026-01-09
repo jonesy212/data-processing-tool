@@ -1,8 +1,10 @@
-ProjectLogger.ts
+// ProjectLogger.ts
 import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
 import { createErrorNotificationContent, errorLogger } from '@/core/logging/Logger';
- If you don't have this function, create a simple version
+
+//  If you don't have this function, create a simple version
+
 function createErrorNotificationContent(error: Error | any): any {
   return {
     name: error.name || 'UnknownError',
@@ -610,7 +612,7 @@ export class ProjectLogger extends Logger {
   }
 }
 
-Export enhanced logging methods
+// Export enhanced logging methods
 export const ProjectLog = {
   // Quick access methods for common project logging
   create: (projectId: string, projectName: string, createdBy: string) => 

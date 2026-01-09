@@ -3,7 +3,7 @@ import { TeamCreationPhaseActions } from "@/core/actions/phases/TeamCreationPhas
 import * as teamAPI from '@/core/api/TeamApi';
 import { all, call, takeLatest } from "redux-saga/effects";
 
-Worker saga for handling actions related to Team Creation Phase
+// Worker saga for handling actions related to Team Creation Phase
 function* handleTeamCreationPhaseActions(action: any): Generator<any, void, any> {
     try {
         const { payload } = action;
@@ -52,7 +52,7 @@ function* handleTeamCreationPhaseActions(action: any): Generator<any, void, any>
     }
 }
 
-Watcher saga to listen for actions related to Team Creation Phase
+// Watcher saga to listen for actions related to Team Creation Phase
 export function* watchTeamCreationPhase() {
     yield all([
         takeLatest(TeamCreationPhaseActions.updateTeamCreationPhase.type, handleTeamCreationPhaseActions),
@@ -63,7 +63,7 @@ export function* watchTeamCreationPhase() {
     ]);
 }
 
-Watcher saga to listen for actions related to Team Creation Phase actions
+// Watcher saga to listen for actions related to Team Creation Phase actions
 export function* watchTeamCreationPhaseActions() {
     // Implement logic to watch for specific actions related to Team Creation Phase actions
     // and call corresponding handler functions

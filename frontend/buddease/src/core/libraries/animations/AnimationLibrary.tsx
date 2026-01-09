@@ -2,7 +2,7 @@ AnimationLibrary.tsx
 import { useEffect, useState } from "react";
 
 
-Define an enum for AnimationType
+// Define an enum for AnimationType
 enum AnimationTypeEnum {
   Notification = "notification",
   String = "string",
@@ -27,12 +27,12 @@ enum AnimationTypeEnum {
   Wave = "wave", // Wave animation
 }
 
-Define the AnimationType as a union type of string literals and the AnimationType enum
+// Define the AnimationType as a union type of string literals and the AnimationType enum
 
-Define the AnimationType as a union type of string literals and the AnimationType enum values
+// Define the AnimationType as a union type of string literals and the AnimationType enum values
 type AnimationType = "pulse" | "shake"| "notification" | "string" | "documentType" | "fade" | "slide" | "zoom" | "rotate" | "bounce" | "flip" | "fadeScale";
 
-Define the available animation libraries
+// Define the available animation libraries
 type AnimationLibrary =
   | "gsap"
   | "animejs"
@@ -106,6 +106,6 @@ export default AnimationTypeEnum
 
 
 
-Example usage:
+// Example usage:
 export const animationType: AnimationType = AnimationTypeEnum.Fade;
 export type { AnimationLibrary, AnimationType };

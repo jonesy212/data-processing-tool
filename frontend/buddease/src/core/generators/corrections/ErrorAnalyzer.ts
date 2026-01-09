@@ -12,7 +12,7 @@ import { BabelConfigAnalyzer } from '@/core/generators/corrections/analyzers/rea
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import { DependencyAnalyzer } from '@/core/generators/corrections/analyzers/react-native/dependencies/DependencyAnalyzer';
 
-Config Analyzers
+// Config Analyzers
 import { AppConfigAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/AppConfigAnalyzer';
 import { AppJsonAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/AppJsonAnalyzer';
 import { MetroConfigAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/MetroConfigAnalyzer';
@@ -21,7 +21,7 @@ import { TsConfigAnalyzer } from '@/core/generators/corrections/analyzers/react-
 import { MetroLogAnalyzer } from '@/core/generators/corrections/analyzers/react-native/errors/MetroLogAnalyzer';
 import { PackageJsonAnalyzer } from '@/core/generators/corrections/analyzers/react-native/errors/PackageJsonAnalyzer';
 
-Native Analyzers
+// Native Analyzers
 import { AndroidManifestAnalyzer } from '@/core/generators/corrections/analyzers/react-native/native/AndroidManifestAnalyzer';
 import { IosPlistAnalyzer } from '@/core/generators/corrections/analyzers/react-native/native/IosPlistAnalyzer';
 

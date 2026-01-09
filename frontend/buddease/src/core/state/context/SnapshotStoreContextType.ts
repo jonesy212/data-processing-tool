@@ -1,4 +1,4 @@
-SnapshotStore Context Type
+// SnapshotStore Context Type
 import {
     BaseDataEntity,
     DefaultExcludedFields,

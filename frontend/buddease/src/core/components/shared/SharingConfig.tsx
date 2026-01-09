@@ -1,7 +1,7 @@
 SharingConfig.tsx
 import React, { useEffect, useState } from "react";
 
-Expanded SharingConfig with additional options
+// Expanded SharingConfig with additional options
 export interface SharingConfig {
   shareApiUrl: string;
   maxShares: number;
@@ -12,7 +12,7 @@ export interface SharingConfig {
   // Add more configuration options as needed
 }
 
-Example usage with expanded configuration options:
+// Example usage with expanded configuration options:
 const sharingConfig: SharingConfig = {
   shareApiUrl: 'https://example.com/share-api',
   maxShares: 5,
@@ -66,4 +66,4 @@ const SharingConfigExample: React.FC = () => {
     );
   };
   
-  todo: add to centralized logging service 
+//   todo: add to centralized logging service 

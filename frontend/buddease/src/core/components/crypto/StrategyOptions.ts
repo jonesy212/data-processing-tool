@@ -3,7 +3,7 @@ StrategyOptions.ts
 import TradingStrategy from "@/core/trading/TradingStrategy";
 
 const initialCapital: number = 10000; // Example value
-Now you can use strategyOptions in your code
+// Now you can use strategyOptions in your code
 const tradingStrategy = new TradingStrategy(
   {
     entryThreshold: 0.7,

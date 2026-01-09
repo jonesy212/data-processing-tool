@@ -10,7 +10,7 @@ import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import { PhaseDefault } from '@/core/typings/phaseTypes';
 import React from 'react';
 
-Define the TradeData interface extending the CommonData interface
+// Define the TradeData interface extending the CommonData interface
 interface TradeData<
   T extends BaseDataEntity,
   K extends T = T,
@@ -48,12 +48,12 @@ interface TradeDataProps<
 
 }
 
-Ensure TradeDataWithCommon does not cause recursion
+// Ensure TradeDataWithCommon does not cause recursion
 type TradeDataWithCommon = CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & TradeData;
 
 
 
-Define any custom rendering for trade data properties if required
+// Define any custom rendering for trade data properties if required
 const customTradeDataRender: Customizations<TradeDataWithCommon> = {
   // Example customization for rendering trade type
   tradeType: (value) => (

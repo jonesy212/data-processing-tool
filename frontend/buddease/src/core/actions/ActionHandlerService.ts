@@ -1,5 +1,5 @@
 ActionHandlerService.ts
-Define the Action Handlers
+// Define the Action Handlers
 type ActionHandler<T extends { type: string }> = (action: T) => void;
 
 class ActionHandlerService<T extends { type: string }> {

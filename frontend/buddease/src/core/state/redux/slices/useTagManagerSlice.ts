@@ -34,10 +34,10 @@ export const useTagManagerSlice = createSlice({
   },
 });
 
-Selector to get the tag manager state
+// Selector to get the tag manager state
 export const selectTagManager = (state: RootState) => state.tagManager;
 
-Selector to get all tags
+// Selector to get all tags
 export const selectTags = (state: RootState) => selectTagManager(state).tags;
 
 export const { addTag, removeTag, updateTag, createTag } = useTagManagerSlice.actions;

@@ -4,7 +4,7 @@ import { SimpleCalendarEvent } from '@/core/components/calendar/CalendarContext'
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import * as XLSX from 'xlsx';
 
-Function to format calendar data as XLSX binary string
+// Function to format calendar data as XLSX binary string
 export const formatCalendarAsXLSX = (
   events: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[],
   calendarDisplaySettings: CalendarDisplaySettings

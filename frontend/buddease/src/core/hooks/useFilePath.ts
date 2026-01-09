@@ -1,5 +1,5 @@
 useFilePath.ts
-Updated useFilePath hook
+// Updated useFilePath hook
 import getAppPath from '@/core/config/appStructure/appPath';
 import { useEffect, useState } from 'react';
 

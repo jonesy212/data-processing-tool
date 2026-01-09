@@ -153,7 +153,7 @@ const defaultVariants: Record<string, string> = {
 };
 
 
-Generic ButtonGenerator component
+// Generic ButtonGenerator component
 const ButtonGenerator = <
   T extends BaseDataEntity,
   K extends T = T,

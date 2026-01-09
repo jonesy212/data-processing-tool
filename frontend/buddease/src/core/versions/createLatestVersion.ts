@@ -5,7 +5,7 @@ import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIn
 import VersionImpl, { Version } from "@/core/versions/Version";
 import { VersionHistory } from "@/core/versions/VersionData";
 
-✅ Clean, type-safe default version generator
+// ✅ Clean, type-safe default version generator
 export function createLatestVersion<
   T extends BaseDataEntity,
   K extends T = T,

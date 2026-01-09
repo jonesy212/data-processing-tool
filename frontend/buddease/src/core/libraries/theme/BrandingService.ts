@@ -1,10 +1,10 @@
 BrandingService.ts
 import { BrandingSettings } from '@/core/branding/BrandingSettings';
 
-Import the consolidated default branding settings
+// Import the consolidated default branding settings
 import { defaultBrandingSettings } from '@/core/libraries/ui/theme/Branding';
 
-Create a function to override default values with custom values
+// Create a function to override default values with custom values
 export const createBrandingSettings = (
   customSettings: Partial<BrandingSettings> = {}
 ): BrandingSettings => {

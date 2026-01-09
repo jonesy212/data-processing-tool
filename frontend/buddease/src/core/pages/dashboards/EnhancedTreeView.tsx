@@ -182,7 +182,7 @@ const EnhancedTreeView: React.FC<EnhancedTreeViewProps> = ({
   );
 };
 
-Enhanced TreeNode component
+// Enhanced TreeNode component
 const EnhancedTreeNode: React.FC<{
   node: FileTreeNode;
   onClick: (node: FileTreeNode) => void;
@@ -271,7 +271,7 @@ const EnhancedTreeNode: React.FC<{
   );
 };
 
-File Content Viewer Component
+// File Content Viewer Component
 const FileContentViewer: React.FC<{
   file: FileTreeNode;
   content: string | null;

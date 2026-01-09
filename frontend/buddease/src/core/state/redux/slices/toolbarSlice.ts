@@ -8,7 +8,7 @@ interface Toolbar {
   options: string[]; // Array of toolbar options/settings
 }
 
-Define the initial state for the toolbar
+// Define the initial state for the toolbar
 interface ToolbarState {
   isFeatureEnabled: boolean;
   isToolbarOpen: boolean;
@@ -47,7 +47,7 @@ interface ToolbarState {
 }
 
 
-Define an enum for alignment options
+// Define an enum for alignment options
 export enum AlignmentOptions {
   LEFT = "left",
   CENTER = "center",
@@ -93,7 +93,7 @@ const initialState: ToolbarState = {
   y: 0,
 };
 
-Create the toolbar slice
+// Create the toolbar slice
 export const useToolbarManagerSlice = createSlice({
   name: "toolbar",
   initialState,
@@ -171,7 +171,7 @@ export const useToolbarManagerSlice = createSlice({
   },
 });
 
-Export actions and reducer from the slice
+// Export actions and reducer from the slice
 export const {
   closeToolbar,
   decreaseFontSize,

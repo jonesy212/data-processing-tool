@@ -1,5 +1,5 @@
 useNotificationBar.tsx
-Import the FetchUserDataPayload interface and UIActions
+// Import the FetchUserDataPayload interface and UIActions
 import { FetchUserDataPayload, UIActions } from '@/core/actions/UIActions'; // Import FetchUserDataPayload
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

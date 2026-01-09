@@ -5,10 +5,10 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { YourResponseType } from '@/core/typings/responseTypes';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-Replace with the actual API endpoints or functions
+// Replace with the actual API endpoints or functions
 const api = new Api();
 
-Worker saga for handling fetching snapshots
+// Worker saga for handling fetching snapshots
 function* handleFetchSnapshots() {
   try {
     // Replace 'fetchSnapshots' with your actual API call to fetch snapshots
@@ -19,7 +19,7 @@ function* handleFetchSnapshots() {
   }
 }
 
-Worker saga for handling updating snapshots
+// Worker saga for handling updating snapshots
 function* handleUpdateSnapshots(action: ReturnType<typeof SnapshotActions.batchUpdateSnapshotsSuccess>) {
   try {
     // Replace 'updateSnapshots' with your actual API call to update snapshots
@@ -31,7 +31,7 @@ function* handleUpdateSnapshots(action: ReturnType<typeof SnapshotActions.batchU
 }
 
 
-Worker saga for handling removing snapshots
+// Worker saga for handling removing snapshots
 function* handleRemoveSnapshots(action: ReturnType<typeof SnapshotActions.batchFetchSnapshotsSuccess>) {
   try {
     // Replace 'removeSnapshots' with your actual API call to remove snapshots
@@ -42,7 +42,7 @@ function* handleRemoveSnapshots(action: ReturnType<typeof SnapshotActions.batchF
   }
 }
 
-Watcher saga to watch for corresponding actions
+// Watcher saga to watch for corresponding actions
 export function* watchSnapshotSagas() {
   yield takeLatest(SnapshotActions.batchFetchSnapshotsRequest.type, handleFetchSnapshots);
   yield takeLatest(SnapshotActions.batchUpdateSnapshotsRequest.type, handleUpdateSnapshots);

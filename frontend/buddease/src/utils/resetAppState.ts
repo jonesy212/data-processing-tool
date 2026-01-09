@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 
 
 const dispatch = useDispatch()
-Assume this is determined elsewhere in your application
+// Assume this is determined elsewhere in your application
 const isUsingRedux = true; // Set to false if using MobX
 
 const resetAppState = async () => {
@@ -119,7 +119,7 @@ const resetAppState = async () => {
   console.log("Application state has been reset.");
 };
 
-Additional functions for specific reset actions
+// Additional functions for specific reset actions
 const resetUIComponents = () => {
   // Reset UI components logic goes here
   console.log("UI components have been reset.");

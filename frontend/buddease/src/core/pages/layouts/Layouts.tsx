@@ -14,7 +14,7 @@ interface LayoutProps {
   };
 }
 
-Mock hook - replace with your actual implementation
+// Mock hook - replace with your actual implementation
 const useDashboardConfig = () => {
   return {
     title: "Main Dashboard",

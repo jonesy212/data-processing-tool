@@ -11,7 +11,7 @@ import { useDetailsContext } from '@/core/models/data/DetailsContext';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { DetailsItem } from '@/core/state/stores/DetailsListStore';
 
-Define notification messages for details API
+// Define notification messages for details API
 interface DetailsNotificationMessages {
   FETCH_DETAILS_SUCCESS: string;
   FETCH_DETAILS_ERROR: string;
@@ -37,7 +37,7 @@ const detailsNotificationMessages: DetailsNotificationMessages = {
 
 export const apiService = new ApiService('YOUR_API_BASE_URL_HERE'); // Initialize your ApiService with the base URL
 
-Function to handle API errors and notify
+// Function to handle API errors and notify
 const handleDetailsApiErrorAndNotify = (
   error: unknown,
   errorMessageId: keyof DetailsNotificationMessages

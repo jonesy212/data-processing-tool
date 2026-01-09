@@ -29,8 +29,8 @@ export type UnifiedVersionMap<
 };
 
 
-Corrected AppStructureItem interface
-Note: it now *extends* BaseEntityProperties (previously missing `extends`)
+// Corrected AppStructureItem interface
+// Note: it now *extends* BaseEntityProperties (previously missing `extends`)
 
 interface AppStructureItem<
   T extends BaseDataEntity = BaseDataEntity,
@@ -109,7 +109,7 @@ interface AppStructurePermissions extends Permission {
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 
-Interface for file system operations - abstracted away from fs
+// Interface for file system operations - abstracted away from fs
 interface FileSystemService {
   readdir(dir: string): Promise<string[]>;
   stat(path: string): Promise<{ isDirectory: boolean }>;

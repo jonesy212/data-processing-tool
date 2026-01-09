@@ -61,7 +61,7 @@ interface Decision {
 }
 
 
-Generate collaboration options based on the provided content
+// Generate collaboration options based on the provided content
 function generateCollaborationOptions(): CollaborationOptions[] {
   const options: CollaborationOptions[] = [];
 
@@ -233,7 +233,7 @@ function generateCollaborationOptions(): CollaborationOptions[] {
   return options;
 }
 
-Usage example:
+// Usage example:
 const communicationOption: CollaborationOptions = {
   name: "Audio Calls",
   description: "Real-time voice communication",

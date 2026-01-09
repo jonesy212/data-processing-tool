@@ -3,19 +3,19 @@ MeetingNotificationSlice.tsx
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 
-Define interface for meeting notification state
+// Define interface for meeting notification state
 interface MeetingNotificationState {
   message: string;
   type: "success" | "error" | "warning" | "info" | null;
 }
 
-Define initial state for meeting notifications
+// Define initial state for meeting notifications
 const initialMeetingNotificationState: MeetingNotificationState = {
   message: "",
   type: null,
 };
 
-Create MeetingNotification slice
+// Create MeetingNotification slice
 export const meetingNotificationSlice = createSlice({
   name: "meetingNotification",
   initialState: initialMeetingNotificationState,
@@ -36,10 +36,10 @@ export const meetingNotificationSlice = createSlice({
   },
 });
 
-Export actions from MeetingNotification slice
+// Export actions from MeetingNotification slice
 export const { setMeetingNotificationMessage, clearMeetingNotification, setMeetingNotificationType } = meetingNotificationSlice.actions;
 
-Export the reducer for the MeetingNotification slice
+// Export the reducer for the MeetingNotification slice
 export const meetingNotificationReducer = meetingNotificationSlice.reducer;
 
 export type {MeetingNotificationState}

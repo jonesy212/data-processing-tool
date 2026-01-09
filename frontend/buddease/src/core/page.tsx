@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
   import("@/core/page.module.css");
 }
 
-Dynamically import YourComponent with SSR disabled
+// Dynamically import YourComponent with SSR disabled
 const YourComponent = lazy(() => import("@/core/hooks/YourComponent"));
 
 interface ComponentMethods {

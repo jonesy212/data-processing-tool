@@ -3,7 +3,7 @@ import { UserRoleEnum } from '@/core/models/UserRoles';
 import { DocumentEditingPermissions } from '@/core/permissions/Permission';
 import { DocumentPermissions } from '@/core/typings/entities/DocumentEntity';
 
-Define document editing permission levels
+// Define document editing permission levels
 export enum DocumentEditLevel {
   NONE = 'none',
   READ_ONLY = 'read_only',
@@ -13,7 +13,7 @@ export enum DocumentEditLevel {
   FULL_ACCESS = 'full_access'
 }
 
-Main function to select document editing permissions based on user role and document type
+// Main function to select document editing permissions based on user role and document type
 export const selectDocumentEditingPermissions = (
   userRole: UserRoleEnum,
   documentType?: string,
@@ -190,7 +190,7 @@ export const selectDocumentEditingPermissions = (
   }
 };
 
-Helper function to check if user can edit specific document content
+// Helper function to check if user can edit specific document content
 export const canEditDocumentContent = (
   userRole: UserRoleEnum,
   documentType: string,
@@ -200,7 +200,7 @@ export const canEditDocumentContent = (
   return permissions.canEdit;
 };
 
-Helper function to check if user can share document
+// Helper function to check if user can share document
 export const canShareDocument = (
   userRole: UserRoleEnum,
   documentType: string,
@@ -210,7 +210,7 @@ export const canShareDocument = (
   return permissions.canShare;
 };
 
-Function to convert DocumentEditingPermissions to DocumentPermissions class
+// Function to convert DocumentEditingPermissions to DocumentPermissions class
 export const convertToDocumentPermissions = (
   editingPermissions: DocumentEditingPermissions
 ): DocumentPermissions => {
@@ -220,7 +220,7 @@ export const convertToDocumentPermissions = (
   );
 };
 
-Function to check TextEditor access based on permissions
+// Function to check TextEditor access based on permissions
 export const getTextEditorAccess = (
   userRole: UserRoleEnum,
   documentType: string,
@@ -234,7 +234,7 @@ export const getTextEditorAccess = (
   };
 };
 
-Integration with your existing assignPermissions function
+// Integration with your existing assignPermissions function
 export const assignDocumentPermissions = async (
   docId: string,
   userId: string,
@@ -273,7 +273,7 @@ export const assignDocumentPermissions = async (
   }
 };
 
-Hook for React components to check document editing permissions
+// Hook for React components to check document editing permissions
 export const useDocumentEditingPermissions = (
   userRole: UserRoleEnum,
   documentType: string,

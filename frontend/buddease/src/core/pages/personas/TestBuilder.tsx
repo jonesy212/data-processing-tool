@@ -4,7 +4,7 @@ import TestPhaseManager from "@/core/models/phases/Phase";
 import { useState } from "react";
 import TestBuilder from "./TestBuilder"; // Import the TestBuilder JavaScript module
 
-Define function to create test scenarios and map out testing process
+// Define function to create test scenarios and map out testing process
 function createTestScenarios() {
   const [testScenarios, setTestScenarios] = useState<TestScenario[]>([]);
   const testScenarioBuilder = new TestScenarioBuilder();

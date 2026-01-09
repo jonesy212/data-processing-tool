@@ -13,7 +13,7 @@ import StorageService from '@/src/utils/storage/StorageService';
 
 const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
-Archive types
+// Archive types
 export interface ArchiveMetadata {
   id: string | number;
   originalId: string;
@@ -46,7 +46,7 @@ export interface ArchivedSnapshot<
   };
 }
 
-Archive configuration
+// Archive configuration
 interface ArchiveConfig {
   compressionEnabled: boolean;
   compressionType: 'gzip' | 'none';
@@ -89,7 +89,7 @@ const getVersionNumber = <
 };
 
 
-Archive service class (optional, for more complex scenarios)
+// Archive service class (optional, for more complex scenarios)
 class ArchiveService {
   private config: ArchiveConfig;
   private persistenceLayer: PersistenceLayer<BaseDataRoot>; // Or use proper generic types
@@ -582,7 +582,7 @@ class ArchiveService {
   }
 }
 
-Standalone function version
+// Standalone function version
 export const archiveSnapshot = async <
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -603,7 +603,7 @@ export const archiveSnapshot = async <
   return archiveService.archiveSnapshot(snapshot, options);
 };
 
-Utility functions (implement these in archive-utils.ts)
+// Utility functions (implement these in archive-utils.ts)
 const generateArchiveId = (): string => {
   return `arc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };

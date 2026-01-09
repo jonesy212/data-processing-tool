@@ -2,7 +2,7 @@ parseXML.ts
 parseXML
 import { parseString } from 'xml2js'; // Importing the xml2js library for XML parsing
 
-Define the function to parse XML content
+// Define the function to parse XML content
 export function parseXML(xmlContent: string): Promise<any> {
   return new Promise((resolve, reject) => {
     // Parse the XML content using xml2js
@@ -18,7 +18,7 @@ export function parseXML(xmlContent: string): Promise<any> {
   });
 }
 
-Usage example:
+// Usage example:
 const xmlContent = '<document><title>Hello XML</title><content>This is XML content</content></document>';
 parseXML(xmlContent)
   .then((parsedData) => {

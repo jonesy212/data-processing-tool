@@ -1,9 +1,9 @@
 TwoFactorSetupPhase.tsx
-TwoFactorSetupPhase component
+// TwoFactorSetupPhase component
 import axiosInstance from '@/core/api/csrfToken';
 import React from 'react';
 
-TwoFactorSetupPhase component
+// TwoFactorSetupPhase component
 const TwoFactorSetupPhase: React.FC<{ onSetupComplete: () => void }> = ({
   onSetupComplete,
 }) => {

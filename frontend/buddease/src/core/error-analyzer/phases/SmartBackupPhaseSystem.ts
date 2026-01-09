@@ -754,7 +754,7 @@ ${backupPoint.fullyFixedFiles.map(f => `- ${path.relative(process.cwd(), f)}`).j
   }
 }
 
-========== CLI INTERFACE ==========
+// ========== CLI INTERFACE ==========
 
 export async function runSmartBackupSystem(args: string[]): Promise<void> {
   console.log('🧠 Smart Backup Phase System');
@@ -849,7 +849,7 @@ Examples:
   }
 }
 
-Auto-run if called directly
+// Auto-run if called directly
 if (require.main === module) {
   runSmartBackupSystem(process.argv.slice(2)).catch(console.error);
 }

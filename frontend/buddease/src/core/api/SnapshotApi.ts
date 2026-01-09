@@ -95,7 +95,6 @@ import {
     createMockSnapshot,
     getSnapshot,
     getSnapshots,
-    removeSnapshot,
     takeSnapshot,
     updateSnapshot,
     validateSnapshot

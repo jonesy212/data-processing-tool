@@ -7,7 +7,7 @@ import mammoth from "mammoth";
 import path from "path";
 
 
-Function to load and parse a Docx file
+// Function to load and parse a Docx file
 const loadDocx = async (
   filePath: string
 ): Promise<{ parsedData: ParsedData<object>[] }> => {
@@ -34,14 +34,14 @@ const loadDocx = async (
   };
 };
 
-Function to get the appropriate file path for the application version
+// Function to get the appropriate file path for the application version
 const getAppVersionedPath = (versionNumber: string, appVersion: string): string => {
   // Get the root path of the application
   const appRootPath = getAppPath(versionNumber, appVersion);
   return appRootPath;
 };
 
-Function to load Docx data based on application version
+// Function to load Docx data based on application version
 const loadDocxByVersion = async (
   versionNumber: string,
   appVersion: string,
@@ -72,7 +72,7 @@ async function parseDocx<T extends object>(
   return { docxData, parsedData } as DocData<T>;
 }
 
-Function to parse Docx files and update DocxData with parsed data
+// Function to parse Docx files and update DocxData with parsed data
 function parseDocxData<T extends object>(
   docxData: YourDocxType[],
   parsedData: ParsedData<T>[]
@@ -101,7 +101,7 @@ function parseDocxData<T extends object>(
   });
 }
 
-Function to extract content from a Docx file
+// Function to extract content from a Docx file
 function extractDocxData(docx: YourDocxType): any {
   // Implement logic to extract relevant data from the Docx file
   // This could involve using a Docx parsing library or other techniques
@@ -121,12 +121,12 @@ function extractDocxData(docx: YourDocxType): any {
 
 
 
-Example usage:
+// Example usage:
 const versionNumber = '1.0';
 const appVersion = 'latest';
 const filePath = 'example.docx';
 
-Load Docx data based on the application version
+// Load Docx data based on the application version
 const docxData = loadDocxByVersion(versionNumber, appVersion, filePath);
 console.log('Docx Data:', docxData);
 

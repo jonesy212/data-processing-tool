@@ -45,7 +45,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   }, []) as T;
 }
 
-Enhanced version with flush and cancel
+// Enhanced version with flush and cancel
 export function useEnhancedDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
@@ -98,7 +98,7 @@ export function useEnhancedDebouncedCallback<T extends (...args: any[]) => any>(
   };
 }
 
-Alternative: Simpler version with immediate initialization
+// Alternative: Simpler version with immediate initialization
 export function useDebouncedCallbackSimple<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,

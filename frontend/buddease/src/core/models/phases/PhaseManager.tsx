@@ -1002,13 +1002,13 @@ const PhaseManager: React.FC<PhaseManagerProps> = ({ phases, projectId }) => {
 };
 
 
-Specific phase components
+// Specific phase components
 export const IdeaLifecyclePhase: React.FC = () => {
   // Implement the Idea Lifecycle phase component
   return <div>Idea Lifecycle Phase</div>;
 };
 
-Define an array of phases with proper type parameters
+// Define an array of phases with proper type parameters
 const genericLifecyclePhases: Phase<
   PhaseT,
   PhaseK,

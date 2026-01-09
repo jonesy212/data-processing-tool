@@ -46,7 +46,7 @@ interface Correction {
     documentationLink?: string;
 }
 
-Add new interface for complex fixes
+// Add new interface for complex fixes
 export interface ComplexFix {
     type: 'import' | 'refactor' | 'move' | 'rename';
     data: any;
@@ -1166,7 +1166,7 @@ Review snapshot implementation and data flow`;
     }
 }
 
-CLI execution
+// CLI execution
 if (process.argv[1] && process.argv[1].includes('CorrectionGenerator.ts')) {
     const args = process.argv.slice(2);
     const generator = new CorrectionGenerator();

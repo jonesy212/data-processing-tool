@@ -21,7 +21,7 @@ enum DataAnalysisSubPhase {
 }
 
 interface DataAnalysisPhaseProps extends PhaseProps{
-add props as necess specific to data anaylsis phase
+// add props as necess specific to data anaylsis phase
 }
 
 const dataAnalysisReducer = (

@@ -1,5 +1,5 @@
 waitForLoad.ts
-Generalized waitForLoad function
+// Generalized waitForLoad function
 export function waitForLoad<T>(
   checkCondition: () => boolean | T, 
   timeout = 10000, 
@@ -37,17 +37,17 @@ export function waitForLoad<T>(
   });
 }
 
-Usage 1: Wait for page load
+// Usage 1: Wait for page load
 waitForLoad(() => document.readyState === 'complete', 10000, 100)
   .then(() => console.log('Page fully loaded'))
   .catch((error) => console.error(error));
 
-Usage 2: Wait for a specific element to exist
+// Usage 2: Wait for a specific element to exist
 waitForLoad(() => document.querySelector('#my-element'), 10000, 100)
   .then((element) => console.log('Element loaded:', element))
   .catch((error) => console.error(error));
 
-Usage 3: Wait for API response
+// Usage 3: Wait for API response
 const fetchData = async () => fetch('https://jsonplaceholder.typicode.com/todos/1').then(res => res.json());
 
 waitForLoad(async () => {

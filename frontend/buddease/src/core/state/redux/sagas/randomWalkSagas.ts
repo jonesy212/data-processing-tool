@@ -4,7 +4,7 @@ import { RandomWalkActions } from "@/core/hooks/userInterface/RandomWalkActions"
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { all, call, put, takeLatest } from "redux-saga/effects";
 
-Simulate an asynchronous API call for random walks
+// Simulate an asynchronous API call for random walks
 const simulateRandomWalksAPI = (): Promise<number[]> => {
   return new Promise<number[]>((resolve, reject) => {
     // Simulating success after a delay
@@ -19,7 +19,7 @@ const simulateRandomWalksAPI = (): Promise<number[]> => {
   });
 };
 
-Saga for handling single random walk requests
+// Saga for handling single random walk requests
 function* handleRandomWalkRequest(action: ReturnType<typeof RandomWalkActions.fetchRandomWalkRequest>) {
   const { addNotification } = useNotification();
 
@@ -42,7 +42,7 @@ function* handleRandomWalkRequest(action: ReturnType<typeof RandomWalkActions.fe
   }
 }
 
-Saga for handling batch random walk requests
+// Saga for handling batch random walk requests
 function* handleBatchRandomWalkRequest(action: ReturnType<typeof RandomWalkActions.batchFetchRandomWalksRequest>) {
   const { addNotification } = useNotification();
 
@@ -62,14 +62,14 @@ function* handleBatchRandomWalkRequest(action: ReturnType<typeof RandomWalkActio
   }
 }
 
-Watcher saga to listen for random walk-related actions
+// Watcher saga to listen for random walk-related actions
 function* watchRandomWalkActions() {
   yield takeLatest(RandomWalkActions.fetchRandomWalkRequest.type, handleRandomWalkRequest);
   yield takeLatest(RandomWalkActions.batchFetchRandomWalksRequest.type, handleBatchRandomWalkRequest);
   // Add more watchers for other random walk actions if needed
 }
 
-Root saga combining all random walk sagas
+// Root saga combining all random walk sagas
 export function* randomWalkSagas() {
   yield all([
     watchRandomWalkActions(),

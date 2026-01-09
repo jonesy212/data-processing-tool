@@ -33,6 +33,47 @@ export interface FixHistoryEntry {
     notes?: string;
 }
 
+
+
+
+// Then update checkProgressConditions to use the correct method:
+    function checkProgressConditions(
+        transition: WorkflowTransition, 
+        context: TransitionEvaluationContext
+        ): { allowed: boolean; reason: string; blockTransition: boolean } {
+        const tracker = context.progressContext?.tracker;
+        if (!tracker) {
+            return { allowed: true, reason: '', blockTransition: false };
+        }
+        
+        // Use the method that accepts the full context
+        const progress = tracker.getCurrentProgress(context); // ✅ Pass the full context, not just the ID
+        
+        const requiredProgress = transition.progressTracking?.requiredProgress || 0;
+        
+        if (progress.percentage < requiredProgress) {
+            return {
+            allowed: false,
+            reason: `Requires ${requiredProgress}% completion (currently ${progress.percentage}%)`,
+            blockTransition: true
+            };
+        }
+        
+        // Check other progress conditions
+        const conditions = transition.progressTracking?.conditions || [];
+        for (const condition of conditions) {
+            if (!condition.check(progress, context)) {
+            return {
+                allowed: false,
+                reason: condition.message || 'Progress condition not met',
+                blockTransition: condition.blockTransition || false
+            };
+            }
+        }
+        
+        return { allowed: true, reason: '', blockTransition: false };
+    }
+
 export class ProgressTracker {
     private historyFile: string;
     private metricsFile: string;
@@ -1054,109 +1095,52 @@ export class ProgressTracker {
         }
     }
 
-// Option 1: Update getCurrentProgress to accept either a string or context
-getCurrentProgress(contextOrWorkflowId: string | TransitionEvaluationContext): Progress {
-    // Extract workflow ID from either format
-    let workflowId: string;
-    
-    if (typeof contextOrWorkflowId === 'string') {
-        // If it's already a string (workflowId)
-        workflowId = contextOrWorkflowId;
-    } else {
-        // If it's a TransitionEvaluationContext
-        workflowId = contextOrWorkflowId.workflowInstance.id;
-    }
-    
-    return this.getProgressForUI({
-        workflowId: workflowId,
-        transitionId: typeof contextOrWorkflowId === 'object' 
-            ? (contextOrWorkflowId as TransitionEvaluationContext).transition?.id 
-            : undefined
-    });
-}
-
-// Option 2: Or update the ProgressTracker class to have both methods:
-export class ProgressTracker {
-    // ... existing properties and methods
-    
-    // For when you have the full context
-    getCurrentProgress(context: TransitionEvaluationContext): Progress {
-        return this.getProgressForUI({
-            workflowId: context.workflowInstance.id,
-            transitionId: context.transition?.id
-        });
-    }
-    
-    // For when you just have the workflow ID
-    getCurrentProgressByWorkflowId(workflowId: string): Progress {
-        return this.getProgressForUI({
-            workflowId: workflowId
-        });
-    }
-}
-
-    // Then update checkProgressConditions to use the correct method:
-    function checkProgressConditions(
-    transition: WorkflowTransition, 
-    context: TransitionEvaluationContext
-    ): { allowed: boolean; reason: string; blockTransition: boolean } {
-    const tracker = context.progressContext?.tracker;
-    if (!tracker) {
-        return { allowed: true, reason: '', blockTransition: false };
-    }
-    
-    // Use the method that accepts the full context
-    const progress = tracker.getCurrentProgress(context); // ✅ Pass the full context, not just the ID
-    
-    const requiredProgress = transition.progressTracking?.requiredProgress || 0;
-    
-    if (progress.percentage < requiredProgress) {
-        return {
-        allowed: false,
-        reason: `Requires ${requiredProgress}% completion (currently ${progress.percentage}%)`,
-        blockTransition: true
-        };
-    }
-    
-    // Check other progress conditions
-    const conditions = transition.progressTracking?.conditions || [];
-    for (const condition of conditions) {
-        if (!condition.check(progress, context)) {
-        return {
-            allowed: false,
-            reason: condition.message || 'Progress condition not met',
-            blockTransition: condition.blockTransition || false
-        };
+    // Option 1: Update getCurrentProgress to accept either a string or context
+    getCurrentProgress(contextOrWorkflowId: string | TransitionEvaluationContext): Progress {
+        // Extract workflow ID from either format
+        let workflowId: string;
+        
+        if (typeof contextOrWorkflowId === 'string') {
+            // If it's already a string (workflowId)
+            workflowId = contextOrWorkflowId;
+        } else {
+            // If it's a TransitionEvaluationContext
+            workflowId = contextOrWorkflowId.workflowInstance.id;
         }
+        
+        return this.getProgressForUI({
+            workflowId: workflowId,
+            transitionId: typeof contextOrWorkflowId === 'object' 
+                ? (contextOrWorkflowId as TransitionEvaluationContext).transition?.id 
+                : undefined
+        });
     }
-    
-    return { allowed: true, reason: '', blockTransition: false };
-    }
+
 
     private updateMetricsAfterFix(entry: FixHistoryEntry): void {
-    // FIX: Use getCurrentProgressMetrics() instead of getCurrentProgress()
-    const currentMetrics = this.getCurrentProgressMetrics();
+        // FIX: Use getCurrentProgressMetrics() instead of getCurrentProgress()
+        const currentMetrics = this.getCurrentProgressMetrics();
 
-    if (entry.success) {
-        currentMetrics.fixedErrors++;
-        currentMetrics.remainingErrors = Math.max(0, currentMetrics.remainingErrors - 1);
-    }
+        if (entry.success) {
+            currentMetrics.fixedErrors++;
+            currentMetrics.remainingErrors = Math.max(0, currentMetrics.remainingErrors - 1);
+        }
 
-    // Recalculate fix rate
-    const recentFixes = this.history.filter(h => {
-        const fixTime = new Date(h.timestamp);
-        const hoursAgo = (Date.now() - fixTime.getTime()) / (1000 * 60 * 60);
-        return hoursAgo <= 24;
-    });
+        // Recalculate fix rate
+        const recentFixes = this.history.filter(h => {
+            const fixTime = new Date(h.timestamp);
+            const hoursAgo = (Date.now() - fixTime.getTime()) / (1000 * 60 * 60);
+            return hoursAgo <= 24;
+        });
 
-    currentMetrics.fixRate = recentFixes.length / 24;
+        currentMetrics.fixRate = recentFixes.length / 24;
 
-    // Update metrics
-    this.metrics[this.metrics.length - 1] = currentMetrics;
-    this.saveMetrics();
-    
-    // Also update the Progress object
-    this.updateProgressFromCurrentState();
+        // Update metrics
+        this.metrics[this.metrics.length - 1] = currentMetrics;
+        this.saveMetrics();
+        
+        // Also update the Progress object
+        this.updateProgressFromCurrentState();
     }
 
     private calculateCompletionEstimate(metrics: ProgressMetrics): string {

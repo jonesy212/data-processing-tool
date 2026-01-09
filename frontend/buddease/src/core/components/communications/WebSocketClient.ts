@@ -9,5 +9,5 @@ ws.onmessage = (event) => {
   }
 };
 
-Example usage
-WebSocketClient.ts can be included in your main application file or module.
+// Example usage
+// WebSocketClient.ts can be included in your main application file or module.

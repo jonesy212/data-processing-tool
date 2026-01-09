@@ -5,7 +5,7 @@ import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { Version } from '@/core/versions/Version';
 import { VersionData } from '@/core/versions/VersionData';
 
-Simplified roadmap item
+// Simplified roadmap item
 export interface RoadmapItem {
   id: string;
   title: string;
@@ -31,7 +31,7 @@ export interface RoadmapNode<T extends BaseDataEntity = BaseDataEntity> {
 }
 
 
-Define audience types
+// Define audience types
 export type RoadmapAudience =   
     | 'stakeholder'
   | 'developer'

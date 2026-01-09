@@ -30,7 +30,7 @@ export interface SharedFormattingOptions {
   fontFamily?: string;
 }
 
-Define a common interface for tracker properties
+// Define a common interface for tracker properties
 interface CommonTrackerProps<  
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,

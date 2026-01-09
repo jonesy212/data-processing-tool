@@ -11,7 +11,7 @@ type CacheReadOptions<T extends BaseDataEntity = BaseDataRoot> = {
   currentEvent: EventAttendance | null;
 };
 
-Define the structure of the response data
+// Define the structure of the response data
 interface CacheResponse<
   T extends BaseDataEntity,
   K extends T = T,

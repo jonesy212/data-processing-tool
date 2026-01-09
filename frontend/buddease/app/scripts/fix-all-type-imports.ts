@@ -35,7 +35,6 @@ interface FixResult {
   line: number;
 }
 
-
 function fixNamespaceImports(errors: TypeImportError[]): FixResult[] {
   const fixes: FixResult[] = [];
   
@@ -62,14 +61,14 @@ function fixNamespaceImports(errors: TypeImportError[]): FixResult[] {
         if (fixed.startsWith('//')) {
           console.error(`❌ BUG DETECTED: Generated fix starts with //!`);
           console.error(`   This means the fix generator created COMMENT instead of CODE`);
-          console.error(`   File: ${filePath}`);
-          console.error(`   Line: ${line}`);
+          console.error(`   File: ${error.file}`);
+          console.error(`   Line: ${error.line || 1}`);
           console.error(`   Original: "${original.substring(0, 80)}${original.length > 80 ? '...' : ''}"`);
           console.error(`   Generated: "${fixed.substring(0, 80)}${fixed.length > 80 ? '...' : ''}"`);
           
-          // Skip this fix entirely - better to leave error than create broken code
+          // Skip this fix entirely - better to leave error than created broken code
           console.error(`   SKIPPING this fix - leaving original line unchanged`);
-          return null; // Return null to skip this fix
+          continue; // Skip this error, don't return null
         }
         
         fixes.push({
@@ -85,6 +84,7 @@ function fixNamespaceImports(errors: TypeImportError[]): FixResult[] {
   
   return fixes;
 }
+
 
 
 function showTimeSavings(fixesCount: number) {

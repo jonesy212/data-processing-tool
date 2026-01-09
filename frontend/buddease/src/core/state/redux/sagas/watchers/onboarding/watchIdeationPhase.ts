@@ -3,7 +3,7 @@ import { IdeationPhaseActions } from "@/core/actions/phases/IdeationPhaseActions
 import { addPhase, fetchPhases, removePhase, updatePhase } from "@/core/api/ApiPhases";
 import { all, call, put, takeLatest } from "redux-saga/effects";
 
-Worker saga for handling actions related to Ideation Phase
+// Worker saga for handling actions related to Ideation Phase
 function* handleIdeationPhaseActions(action: any): Generator<any, void, any> {
   try {
     const { payload } = action;
@@ -39,7 +39,7 @@ function* handleIdeationPhaseActions(action: any): Generator<any, void, any> {
   }
 }
 
-Watcher saga to listen for actions related to Ideation Phase
+// Watcher saga to listen for actions related to Ideation Phase
 export function* watchIdeationPhase() {
   yield all([
     takeLatest(IdeationPhaseActions.updateIdeationPhase.type, handleIdeationPhaseActions),

@@ -3,7 +3,7 @@ TagCreationComponent.ts
 import { createTag } from '@/core/components/models/tracker/TagComponent';
 import { TagOptions } from '@/core/models/tracker/Tag';
 import { useDispatch } from 'react-redux';
-Example usage in a component or action creator
+// Example usage in a component or action creator
 const TagCreationComponent = () => {
   const dispatch = useDispatch();
 

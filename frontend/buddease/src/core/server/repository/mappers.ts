@@ -7,21 +7,22 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-ES module equivalent of __dirname
+// ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-AUTO-IMPORTS START
-(auto-generated, do not edit)
-AUTO-IMPORTS END
+// AUTO-IMPORTS START
+// (auto-generated, do not edit)
+// AUTO-IMPORTS END
 
-----------------------------
-Import mapping interface
+// ----------------------------
+// Import mapping interface
+
 interface ImportMap {
   [alias: string]: string; // e.g., 'CacheData' -> '@/core/models/CacheData'
 }
 
-Initial import map
+// Initial import map
 let importMap: ImportMap = {
   CacheData: '@/core/models/CacheData',
   Attachment: '@/core/documents/attachment/Attachment',
@@ -119,7 +120,7 @@ export function mapForSync<T extends CacheData>(data: T, fields: (keyof T)[]): P
   return syncObj;
 }
 
-----------------------------
+// ----------------------------
 Auto-update import map logic
 function updateImportMap(baseDir: string = path.resolve(__dirname, '../../..')): ImportMap {
   const updatedMap: ImportMap = {};
@@ -161,7 +162,7 @@ function findFileRecursively(dir: string, fileName: string): string | null {
   return null;
 }
 
-User-specific database functions (keep these if you need them)
+// User-specific database functions (keep these if you need them)
 export function toDatabaseUser(user: UserCacheData) {
   return {
     _id: user.id,
@@ -179,6 +180,6 @@ export function fromDatabaseUser(dbObj: any): UserCacheData {
   };
 }
 
-Run update on startup
+// Run update on startup
 updateImportMap();
 console.log('✅ Import map updated:', importMap);

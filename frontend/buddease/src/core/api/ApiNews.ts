@@ -1,8 +1,9 @@
-ApiNews.ts
+// ApiNews.ts
 import { handleApiErrorAndNotify } from '@/core/api/ApiData';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
+import type { AxiosResponse } from 'axios';
 
 const  newsApiBaseURL = endpoints; // Ensure you have this defined in your ApiEndpoints
 
@@ -26,7 +27,7 @@ interface NewsNotificationMessages {
   };
 
 
-Generic handleNewsApiErrorAndNotify that works with any notification messagesconst handleNewsApiErrorAndNotify = (
+// Generic handleNewsApiErrorAndNotify that works with any notification messagesconst handleNewsApiErrorAndNotify = (
 const handleNewsApiErrorAndNotify = (
   error: AxiosError<unknown>,
   defaultMessage: string,
@@ -42,7 +43,7 @@ const handleNewsApiErrorAndNotify = (
 
 
 
-Fetch News Articles
+// Fetch News Articles
 export const fetchNewsArticles = async (): Promise<any[]> => {
   try {
     const response: AxiosResponse<any[]> = await axiosInstance.get(`${newsApiBaseURL}/articles`);
@@ -57,7 +58,7 @@ export const fetchNewsArticles = async (): Promise<any[]> => {
   }
 };
 
-Fetch Single News Article by ID
+// Fetch Single News Article by ID
 export const fetchNewsArticleById = async (articleId: number): Promise<any> => {
   try {
     const response: AxiosResponse<any> = await axiosInstance.get(`${newsApiBaseURL}/articles/${articleId}`);
@@ -72,7 +73,7 @@ export const fetchNewsArticleById = async (articleId: number): Promise<any> => {
   }
 };
 
-Post a New Article
+// Post a New Article
 export const postNewArticle = async (newArticle: any): Promise<void> => {
   try {
     await axiosInstance.post(`${newsApiBaseURL}/articles`, newArticle);
@@ -86,7 +87,7 @@ export const postNewArticle = async (newArticle: any): Promise<void> => {
   }
 };
 
-Update an Existing Article
+// Update an Existing Article
 export const updateArticle = async (articleId: number, updatedArticle: any): Promise<void> => {
   try {
     await axiosInstance.put(`${newsApiBaseURL}/articles/${articleId}`, updatedArticle);
@@ -100,7 +101,7 @@ export const updateArticle = async (articleId: number, updatedArticle: any): Pro
   }
 };
 
-Delete an Article
+// Delete an Article
 export const deleteArticle = async (articleId: number): Promise<void> => {
   try {
     await axiosInstance.delete(`${newsApiBaseURL}/articles/${articleId}`);

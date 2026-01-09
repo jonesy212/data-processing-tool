@@ -4,7 +4,7 @@ BaseTypes.ts - Central type definitions that work with your entity system
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Core base type that all entities extend from
+// Core base type that all entities extend from
 export interface BaseSnapshotType {
   id: string | number;
   timestamp?: Date | string | number;
@@ -15,7 +15,7 @@ export interface BaseSnapshotType {
   metadata?: Record<string, any>;
 }
 
-Simplified generic parameter structure for common use cases
+// Simplified generic parameter structure for common use cases
 export interface BaseTypeParams<T extends BaseDataEntity = BaseDataRoot> {
   T: T;
   K: T;
@@ -25,7 +25,7 @@ export interface BaseTypeParams<T extends BaseDataEntity = BaseDataRoot> {
   IncludedFields: keyof T;
 }
 
-Factory for creating consistent type parameters
+// Factory for creating consistent type parameters
 export const createBaseTypeParams = <T extends BaseDataEntity>(): BaseTypeParams<T> => ({
   T: {} as T,
   K: {} as T,
@@ -35,7 +35,7 @@ export const createBaseTypeParams = <T extends BaseDataEntity>(): BaseTypeParams
   IncludedFields: {} as keyof T,
 });
 
-Utility to extract entity types from your existing structure
+// Utility to extract entity types from your existing structure
 export type ExtractEntityTypes<T extends BaseDataEntity> = {
   entity: T;
   keyType: T;
@@ -45,7 +45,7 @@ export type ExtractEntityTypes<T extends BaseDataEntity> = {
   includedFields: keyof T;
 };
 
-Common type combinations for your entities
+// Common type combinations for your entities
 export type EntityTypeCombinations = {
   task: ExtractEntityTypes<import('@/core/typings/entities/TaskEntity').TaskEntity>;
   project: ExtractEntityTypes<import('@/core/typings/entities/ProjectEntity').ProjectEntity>;
@@ -55,5 +55,5 @@ export type EntityTypeCombinations = {
   app: ExtractEntityTypes<import('@/core/typings/entities/AppEntity').AppEntity>;
 };
 
-Helper to get specific entity types
+// Helper to get specific entity types
 export type GetEntityTypes<K extends keyof EntityTypeCombinations> = EntityTypeCombinations[K];

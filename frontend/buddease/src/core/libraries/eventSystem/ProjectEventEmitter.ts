@@ -41,17 +41,17 @@ class ProjectEventEmitter {
 }
 const projectEventEmitter = new ProjectEventEmitter();
 
-Usage example:
+// Usage example:
 const projectId = "exampleProjectId";
 
 const eventName = "taskAdded";
 const eventData = { taskId: "123", taskName: "Example Task" };
 
-Emit project event
+// Emit project event
 projectEventEmitter.emitProjectEvent({ projectId, eventName, eventData });
-Initialize ProjectEventEmitter instance
+// Initialize ProjectEventEmitter instance
 
-Function to trigger theme change event
+// Function to trigger theme change event
 const triggerThemeChangeEvent = (
   projectId: string,
   brandingSettings: BrandingSettings
@@ -64,7 +64,7 @@ const triggerThemeChangeEvent = (
   });
 };
 
-Trigger theme change event with brandingSettings for the specific project
+// Trigger theme change event with brandingSettings for the specific project
 triggerThemeChangeEvent(projectId, brandingSettings);
 
 export default ProjectEventEmitter;

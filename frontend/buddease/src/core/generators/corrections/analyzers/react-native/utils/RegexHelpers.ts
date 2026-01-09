@@ -289,7 +289,7 @@ export class RegexHelpers {
 Default export for backward compatibility
 export default RegexHelpers;
 
-Utility function exports for common use cases
+// Utility function exports for common use cases
 export const testPattern = RegexHelpers.test.bind(RegexHelpers);
 export const matchPattern = RegexHelpers.match.bind(RegexHelpers);
 export const countPattern = RegexHelpers.count.bind(RegexHelpers);

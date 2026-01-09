@@ -2,7 +2,7 @@ Ideas.ts
 
 import { AllStatus } from "@/core/state/stores/DetailsListStore";
 
-Define the shape of UserIdea data
+// Define the shape of UserIdea data
 interface UserIdea {
     id: number;
     title: string;

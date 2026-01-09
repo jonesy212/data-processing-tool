@@ -38,7 +38,7 @@ interface MonthInfo {
   index: number;
   description: string;
 }
-Define a function to get month information based on the calendar
+// Define a function to get month information based on the calendar
 function getMonthInfo(calendar: Month | HebrewMonth): MonthInfo {
   switch (calendar) {
     case Month.January:
@@ -247,7 +247,7 @@ function getMonthInfo(calendar: Month | HebrewMonth): MonthInfo {
 }
 
 
-Example usage
+// Example usage
 const gregorianJanuary = Month.January;
 const hijriMuharram = HebrewMonth.Nissan;
 

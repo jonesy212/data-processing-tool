@@ -84,4 +84,4 @@ const DataFrameAPI = {
 };
 
 export default DataFrameAPI;
-Add more functions as needed for your specific use cases
+// Add more functions as needed for your specific use cases

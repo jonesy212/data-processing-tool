@@ -47,14 +47,14 @@ export const getDatabaseConfig = (dbType: DatabaseType = DatabaseType.POSTGRES):
   }
 };
 
-Convenience functions
+// Convenience functions
 export const getPostgresConfig = (): EnhancedDatabaseConfig => 
   getDatabaseConfig(DatabaseType.POSTGRES);
 
 export const getMysqlConfig = (): EnhancedDatabaseConfig => 
   getDatabaseConfig(DatabaseType.MYSQL);
 
-For frontend components that need to know about database config
+// For frontend components that need to know about database config
 export const useDatabaseConfig = () => {
   return getDatabaseConfig();
 };

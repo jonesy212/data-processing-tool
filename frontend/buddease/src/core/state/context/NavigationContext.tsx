@@ -19,7 +19,7 @@ export type NavigationView =
   | "docs"
   | string;
 
-Define the context type
+// Define the context type
 interface NavigationContextState {
   currentPath: string;
   currentView: NavigationView | undefined;
@@ -47,7 +47,7 @@ interface NavigationContextState {
   sendEvent: (event: NavEvent) => void;
 }
 
-Alias for consistency (you had both NavigationContextState and NavigationContextValue)
+// Alias for consistency (you had both NavigationContextState and NavigationContextValue)
 type NavigationContextValue = NavigationContextState;
 
 const NavigationContext = createContext<NavigationContextState | undefined>(undefined);

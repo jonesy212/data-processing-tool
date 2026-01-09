@@ -2,7 +2,7 @@ ProjectManagerEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define the actual ProjectManagerEntity interface
+// Define the actual ProjectManagerEntity interface
 interface ProjectManagerEntity extends BaseDataEntity, BaseEntity {
   // Core project fields (no longer duplicating shared fields)
   name: string;
@@ -27,7 +27,7 @@ interface ProjectManagerEntity extends BaseDataEntity, BaseEntity {
   milestones?: string[];
 }
 
-Project Manager specific type parameters
+// Project Manager specific type parameters
 type ProjectManagerK = ProjectManagerEntity;
 type ProjectManagerMeta = DefaultMeta<ProjectManagerEntity, ProjectManagerK> & {
   client?: string;
@@ -40,7 +40,7 @@ type ProjectManagerAttachment = Attachment;
 type ProjectManagerExcludedFields = DefaultExcludedFields<ProjectManagerEntity> | "budget" | "actualCost" | "teamMembers";
 type ProjectManagerIncludedFields = keyof ProjectManagerEntity;
 
-Project Manager parameters container
+// Project Manager parameters container
 type ProjectManagerBaseParams = {
   T: ProjectManagerEntity;
   K: ProjectManagerK;

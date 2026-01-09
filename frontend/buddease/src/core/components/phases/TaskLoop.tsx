@@ -2,7 +2,7 @@ TaskLoop.tsx
 import { Task } from '@/core/models/tasks/Task';
 import React from 'react';
 
-Default alias for Task with all generics filled in
+// Default alias for Task with all generics filled in
 type DefaultTask = Task<any, any, any, any>;
 
 interface TaskLoopProps {

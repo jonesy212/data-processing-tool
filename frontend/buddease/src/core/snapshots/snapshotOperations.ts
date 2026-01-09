@@ -943,12 +943,6 @@ const publishSnapshot = async <
   return { snapshot };
 };
 
-const removeSnapshot = (
-  snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
-): void => {
-  snapshot.deleted(); // or whatever method removes it from its store
-};
-
 
 type UpdateSnapshotOptions<
   T extends BaseDataEntity,
@@ -1111,7 +1105,7 @@ const configureSnapshot = <
 
 export {
     clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
-    getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
+    getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots,
     takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };

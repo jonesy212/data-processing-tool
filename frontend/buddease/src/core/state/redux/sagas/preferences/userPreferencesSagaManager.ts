@@ -7,9 +7,9 @@ import brandingPreferencesSaga from '@/core/state/redux/sagas/preferences/brandi
 import { communicationPreferencesSaga } from '@/core/state/redux/sagas/preferences/communicationPreferencesSaga';
 import visualPreferencesSaga from '@/core/state/redux/sagas/preferences/visualPreferencesSaga';
 import userPreferencesSagas from '@/core/state/redux/sagas/userPreferencesSaga';
-Import other preference saga files...
+// Import other preference saga files...
 
-Worker Saga: Fetch User Preferences
+// Worker Saga: Fetch User Preferences
 export function* fetchUserPreferencesSaga(): Generator<any, void, any> {
     try {
         // Call the API to fetch user preferences

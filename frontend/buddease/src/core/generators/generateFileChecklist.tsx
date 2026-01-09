@@ -58,11 +58,11 @@ function generateFileChecklist(featureStructure: FeatureStructure): string {
 }
 
 
-Instantiate the FeatureStore
+// Instantiate the FeatureStore
 const featureStore = new FeatureStore();
 
 
-Usage example:
+// Usage example:
 const featureStructure: FeatureStructure = {
   componentName: "ExampleComponent",
   category: "UserInterface",

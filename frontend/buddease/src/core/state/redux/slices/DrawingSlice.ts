@@ -586,7 +586,7 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
 
   
 
-Create drawing slice
+// Create drawing slice
 const dispatch = useDispatch();
 export const useDrawingManagerSlice = createSlice({
   name: "drawing",

@@ -1,15 +1,15 @@
 FeatureContext.tsx
 import FeatureStore from "@/core/state/stores/FeatureStore";
 import { ReactNode, createContext, useContext } from "react";
-Define the interface for the feature context value
+// Define the interface for the feature context value
 interface FeatureContextValue {
   featureStore: FeatureStore;
 }
 
-Define the context for features
+// Define the context for features
 const FeatureContext = createContext<FeatureContextValue | null>(null);
 
-Custom hook to use the feature context
+// Custom hook to use the feature context
 export const useFeatureContext = () => {
   const context = useContext(FeatureContext);
   if (!context) {
@@ -18,7 +18,7 @@ export const useFeatureContext = () => {
   return context;
 };
 
-Feature provider component
+// Feature provider component
 interface FeatureProviderProps {
   children: ReactNode;
 }

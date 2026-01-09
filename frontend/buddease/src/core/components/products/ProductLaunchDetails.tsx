@@ -3,7 +3,7 @@ import CommonDetails from "@/core/models/CommonData";
 import Project from "@/core/models/projects/Project";
 import React from "react";
 
-Define the type for product launch data
+// Define the type for product launch data
 export interface ProductLaunchData {
   productId: Project["id"];
   productName: string;
@@ -14,7 +14,7 @@ export interface ProductLaunchData {
   // Add more properties as needed
 }
 
-Example usage:
+// Example usage:
 const productLaunchData: ProductLaunchData = {
   productId: "prod123",
   productName: "Exciting Product",

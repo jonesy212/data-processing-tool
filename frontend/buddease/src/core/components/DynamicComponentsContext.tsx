@@ -6,7 +6,7 @@ interface DynamicConfigActionType {
   
 }
 
-Define a specific type or interface for dynamicConfig
+// Define a specific type or interface for dynamicConfig
 interface DynamicConfigType {
   prop1: string;
   prop2: string;

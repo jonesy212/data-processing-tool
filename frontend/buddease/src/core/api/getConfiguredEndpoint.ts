@@ -3,8 +3,7 @@
 import { apiConfig, getApiEndpoint, getApiEndpointUrl } from '@/core/api/endpointConfigurations';
 import type { EndpointConfigurations } from '@/core/config/EndpointConfig';
 import { buildUrl } from '@/utils/urlBuilder';
-
-
+import { getValidatedEndpoint } from '@/core/api/endpointConfigurations'
 
 export const getConfiguredEndpoint = <T extends keyof EndpointConfigurations>(
   category: T,
@@ -88,7 +87,7 @@ export const getEndpointForRequest = <T extends keyof EndpointConfigurations>(
   };
 };
 
-Option 1: Using existing helper functions (composite approach)
+// Option 1: Using existing helper functions (composite approach)
 export const getCompositeEndpointInfo = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
@@ -134,7 +133,7 @@ export const getCompositeEndpointInfo = <T extends keyof EndpointConfigurations>
   };
 };
 
-Option 2: Direct/low-level access (bypasses some abstractions)
+// Option 2: Direct/low-level access (bypasses some abstractions)
 export const getDirectEndpointInfo = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
@@ -164,7 +163,7 @@ export const getDirectEndpointInfo = <T extends keyof EndpointConfigurations>(
   };
 };
 
-Helper to safely extract method
+// Helper to safely extract method
 const extractMethod = (endpoint: any): string => {
   if (!endpoint) return 'GET';
   
@@ -184,7 +183,7 @@ const extractMethod = (endpoint: any): string => {
   return 'GET';
 };
 
-Option 2: Direct ApiConfig usage
+// Option 2: Direct ApiConfig usage
 export const getEndpointDirect = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
@@ -193,7 +192,7 @@ export const getEndpointDirect = <T extends keyof EndpointConfigurations>(
   return apiConfig.getEndpointInfo(category, endpointKey, ...params);
 };
 
-Option 3: For URL only
+// Option 3: For URL only
 export const getEndpointUrl = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],

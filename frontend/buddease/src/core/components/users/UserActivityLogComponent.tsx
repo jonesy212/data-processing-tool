@@ -1,5 +1,5 @@
 UserActivityLogComponent.tsx
-Import necessary libraries
+// Import necessary libraries
 import { useEffect, useState } from "react";
 
 const UserActivityLogComponent = () => {

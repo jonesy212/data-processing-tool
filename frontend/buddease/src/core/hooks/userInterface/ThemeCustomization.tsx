@@ -27,7 +27,7 @@ const handlePrimaryColorChange = (color: string) => {
   }));
 };
 
-Function to handle secondary color change
+// Function to handle secondary color change
 const handleSecondaryColorChange = (color: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -35,7 +35,7 @@ const handleSecondaryColorChange = (color: string) => {
   }));
 };
 
-Function to handle theme configuration change
+// Function to handle theme configuration change
 const handleThemeConfigChange = (config: ThemeConfig) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -43,7 +43,7 @@ const handleThemeConfigChange = (config: ThemeConfig) => {
   }));
 };
 
-Function to handle font size change
+// Function to handle font size change
 const handleFontSizeChange = (size: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -51,7 +51,7 @@ const handleFontSizeChange = (size: string) => {
   }));
 };
 
-Function to handle font family change
+// Function to handle font family change
 const handleFontFamilyChange = (family: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -122,7 +122,7 @@ const handleFontFamilyChange = (family: string) => {
       headerColor: color,
     }));
   };
-Function to handle footer color change
+// Function to handle footer color change
 const handleFooterColorChange = (color: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -130,7 +130,7 @@ const handleFooterColorChange = (color: string) => {
   }));
 };
 
-Function to handle body color change
+// Function to handle body color change
 const handleBodyColorChange = (color: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -138,7 +138,7 @@ const handleBodyColorChange = (color: string) => {
   }));
 };
 
-Function to handle border color change
+// Function to handle border color change
 const handleBorderColorChange = (color: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -146,7 +146,7 @@ const handleBorderColorChange = (color: string) => {
   }));
 };
 
-Function to handle border width change
+// Function to handle border width change
 const handleBorderWidthChange = (width: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -154,7 +154,7 @@ const handleBorderWidthChange = (width: string) => {
   }));
 };
 
-Function to handle border style change
+// Function to handle border style change
 const handleBorderStyleChange = (style: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -162,7 +162,7 @@ const handleBorderStyleChange = (style: string) => {
   }));
 };
 
-Function to handle padding change
+// Function to handle padding change
 const handlePaddingChange = (padding: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -170,7 +170,7 @@ const handlePaddingChange = (padding: string) => {
   }));
 };
 
-Function to handle margin change
+// Function to handle margin change
 const handleMarginChange = (margin: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -178,7 +178,7 @@ const handleMarginChange = (margin: string) => {
   }));
 };
 
-Function to handle brand icon change
+// Function to handle brand icon change
 const handleBrandIconChange = (icon: string) => {
   setThemeState((prevState) => ({
     ...prevState,
@@ -186,7 +186,7 @@ const handleBrandIconChange = (icon: string) => {
   }));
 };
 
-Function to handle brand name change
+// Function to handle brand name change
 const handleBrandNameChange = (name: string) => {
   setThemeState((prevState) => ({
     ...prevState,

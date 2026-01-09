@@ -1,7 +1,7 @@
 BlogOverview.tsx
 
 import React from 'react';
-Import CSS for styling
+// Import CSS for styling
 if (typeof window !== 'undefined') {
   import('@/core/pages/blog/BlogOverview');
 }

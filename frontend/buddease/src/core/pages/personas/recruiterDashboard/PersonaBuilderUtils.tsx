@@ -82,7 +82,7 @@ export const PersonaBuilderUtils = () => {
   };
 
 
-Define your update callback function
+// Define your update callback function
 const updateCallback = (
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<Snapshot<Data, Data>>

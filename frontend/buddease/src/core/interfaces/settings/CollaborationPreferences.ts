@@ -12,7 +12,7 @@ interface CollaborationPreferences {
     // Add other collaboration preferences as needed
 }
   
-Example usage
+// Example usage
 const collaborationPreferences: CollaborationPreferences = {
   teamBuilding: {
     id: "1",

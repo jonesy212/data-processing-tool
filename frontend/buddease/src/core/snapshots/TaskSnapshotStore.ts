@@ -5,7 +5,7 @@ import { Task } from "@/core/models/tasks/Task";
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import SnapshotStore, { Snapshot } from "@/core/snapshots/Snapshot";
 
- Define the TaskSnapshotStore interface that extends SnapshotStore
+//  Define the TaskSnapshotStore interface that extends SnapshotStore
 interface TaskSnapshotStore<Data> extends SnapshotStore<Data> {
     // Add methods or properties specific to Task snapshots
     getTasks: () => Task[];

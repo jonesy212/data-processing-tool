@@ -72,7 +72,7 @@ export class PostgresDatabaseService extends BaseDatabaseService {
   }
 }
 
-Utility function for one-off operations
+// Utility function for one-off operations
 export async function createPostgresDatabase(config: DatabaseConfig): Promise<void> {
   const service = new PostgresDatabaseService(config);
   await service.createDatabase(config);

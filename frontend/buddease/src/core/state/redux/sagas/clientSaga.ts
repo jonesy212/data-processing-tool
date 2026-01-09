@@ -6,7 +6,7 @@ import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages"
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
 const clientConfig = {} as ClientConfig
-Worker Saga: Fetch Client Details
+// Worker Saga: Fetch Client Details
 function* fetchClientDetailsSaga(action: any): Generator<Effect, void, any> {
   try {
     const clientId = action.payload;
@@ -22,7 +22,7 @@ function* fetchClientDetailsSaga(action: any): Generator<Effect, void, any> {
   }
 }
 
-Worker Saga: Update Client Details
+// Worker Saga: Update Client Details
 function* updateClientDetailsSaga(action: any): Generator<Effect, void, any> {
   try {
     const { clientId, clientData } = action.payload;
@@ -38,16 +38,16 @@ function* updateClientDetailsSaga(action: any): Generator<Effect, void, any> {
   }
 }
 
-Watcher Saga: Watches for the fetch and update client details actions
+// Watcher Saga: Watches for the fetch and update client details actions
 function* watchClientSagas(): Generator<Effect, void, any> {
   yield takeLatest(ClientActions.fetchClientDetailsRequest.type, fetchClientDetailsSaga);
   yield takeLatest(ClientActions.updateClientDetailsRequest.type, updateClientDetailsSaga);
 }
 
-Export the client saga
+// Export the client saga
 export function* clientSagas() {
   yield watchClientSagas();
 }
 
-todo update to use errorMessage
+// todo update to use errorMessage
 const errorMessage = clientConfig.notificationMessages.updateClientDetailsError;

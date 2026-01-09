@@ -71,8 +71,8 @@ const isValidMargin = (margin: string): boolean => {
   return /^\d+(\.\d+)?(px|em|rem|%)?$/.test(margin); // Check for valid format (e.g., 10px, 1.5em)
 };
 
-Define other validators for brandIcon, brandName, borderWidth, borderRadius, etc.
-Ensure each validator matches the validation criteria for its respective property
+// Define other validators for brandIcon, brandName, borderWidth, borderRadius, etc.
+// Ensure each validator matches the validation criteria for its respective property
 
 class ThemeValidator {
   static validateTheme(theme: Partial<Theme>): string[] {

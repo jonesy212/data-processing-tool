@@ -313,22 +313,22 @@ static async hashStructure<T>(structure: T[]): Promise<string> {
   }
 }
 
-Example usage:
+// Example usage:
 const input = "exampleInput";
 
-Basic usage
+// Basic usage
 const hash = HashGenerator.generateHash(input);
 console.log("Hash:", hash);
 
-Secure cryptographic hash
+// Secure cryptographic hash
 const cryptographicHash = HashGenerator.generateCryptographicHash(input, "wallet");
 console.log("Cryptographic Hash:", cryptographicHash);
 
-Password hashing (most secure)
+// Password hashing (most secure)
 const passwordHash = await HashGenerator.generatePBKDF2Hash("myPassword123");
 console.log("Password Hash:", passwordHash);
 
-Structure hashing
+// Structure hashing
 const structure = [{ id: 1, name: "test" }, { id: 2, name: "test2" }];
 const structureHash = HashGenerator.hashStructure(structure);
 console.log("Structure Hash:", structureHash);

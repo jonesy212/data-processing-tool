@@ -11,5 +11,5 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({ type: 'log', message: 'Backend log message' }));
 });
 
-Your existing logging code
+// Your existing logging code
 Logger.log('Info', 'Log message', 'uniqueID');

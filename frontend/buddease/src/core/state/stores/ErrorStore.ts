@@ -2,7 +2,7 @@ ErrorStore.ts
 import { clearError, setError } from '@/core/state/redux/slices/ErrorSlice';
 import { makeAutoObservable } from "mobx";
 
-Create an ErrorStore to manage error state
+// Create an ErrorStore to manage error state
 const errorStore = () => {
   // Initialize the error state with default values
   let error: ErrorState = {
@@ -31,5 +31,5 @@ const errorStore = () => {
   };
 };
 
-Export the error store
+// Export the error store
 export { errorStore };

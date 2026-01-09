@@ -1,8 +1,8 @@
 idleTimeoutConstants.ts
-Define the EXTENDED__DURATION
+// Define the EXTENDED__DURATION
 export const EXTENDED__DURATION = 60000; // 1 minute in milliseconds
 
-Define the extended notification messages
+// Define the extended notification messages
 const EXTENDED__NOTIFICATION_MESSAGES = {
   IdleTimeout: {
     SESSION_EXPIRING: 'Your session is about to expire. Please interact to continue.',

@@ -649,7 +649,7 @@ Examples:
     }
 }
 
-CLI entry point
+// CLI entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
     const cli = new DynamicImportFixerCLI();
     cli.run(process.argv.slice(2)).catch(console.error);

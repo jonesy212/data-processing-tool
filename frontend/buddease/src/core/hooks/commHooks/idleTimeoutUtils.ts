@@ -21,13 +21,13 @@ const showModalOrNotification: ShowModalOrNotificationFunction = (title, message
   });
 };
 
-Placeholder function for clearing user data
+// Placeholder function for clearing user data
 const clearUserData: ClearUserDataFunction = () => {
   // Replace this with your actual logic for clearing user data
   console.log("Clearing User Data");
 };
 
-Function to fetch the last user interaction time from the backend
+// Function to fetch the last user interaction time from the backend
 const fetchLastUserInteractionTime = async (): Promise<number | null> => {
   try {
     const response = await axios.get("/api/getLastUserInteractionTime");

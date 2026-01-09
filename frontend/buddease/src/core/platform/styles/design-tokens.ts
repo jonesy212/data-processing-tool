@@ -1,7 +1,7 @@
 design-tokens.ts
 import { Theme } from '@/core/libraries/ui/theme/Theme';
 
-Design tokens that users can customize
+// Design tokens that users can customize
 export interface DesignTokens {
   colors: {
     primary: string;
@@ -63,7 +63,7 @@ export interface DesignTokens {
   };
 }
 
-Convert your existing Theme to DesignTokens
+// Convert your existing Theme to DesignTokens
 export const themeToDesignTokens = (theme: Theme): DesignTokens => ({
   colors: {
     primary: theme.primaryColor,

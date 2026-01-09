@@ -5,7 +5,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CommonData } from '@/core/models/CommonData';
 import { VisualizationData } from '@/core/users/User';
 
-Define the actual ProductEntity interface
+// Define the actual ProductEntity interface
 interface ProductEntity extends BaseDataEntity, BaseEntity {
   // ✅ Product-specific required fields
   productId: string;
@@ -77,7 +77,7 @@ type ProductAttachment = Attachment;
 type ProductExcludedFields = DefaultExcludedFields<ProductEntity> | "costPrice" | "reviews" | "ratings";
 type ProductIncludedFields = keyof ProductEntity;
 
-Product parameters container
+// Product parameters container
 type ProductBaseParams = {
   T: ProductEntity;
   K: ProductK;

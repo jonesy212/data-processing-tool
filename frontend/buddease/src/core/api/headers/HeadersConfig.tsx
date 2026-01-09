@@ -5,10 +5,10 @@ export interface HeadersConfig {
     [key: string]: string;
 }
 
-Check what csrfToken actually is and extract the token value
+// Check what csrfToken actually is and extract the token value
 let csrfTokenValue = '';
 
-If csrfToken is an Axios instance with interceptors, you might need to get the token differently
+// If csrfToken is an Axios instance with interceptors, you might need to get the token differently
 if (typeof csrfToken === 'string') {
   csrfTokenValue = csrfToken;
 } else if (csrfToken && (csrfToken as any).defaults && (csrfToken as any).defaults.headers) {

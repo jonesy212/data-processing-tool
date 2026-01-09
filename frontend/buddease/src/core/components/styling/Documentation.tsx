@@ -8,7 +8,7 @@ interface DocumentedComponentProps {
   description: string;
 }
 
-Dynamic Documented Component
+// Dynamic Documented Component
 const DynamicDocumentedComponent: React.FC<DocumentedComponentProps> = ({ name, description }) => {
   return (
     <div>
@@ -18,7 +18,7 @@ const DynamicDocumentedComponent: React.FC<DocumentedComponentProps> = ({ name, 
   );
 };
 
-Static Documented Component
+// Static Documented Component
 const StaticDocumentedComponent: React.FC<DocumentedComponentProps> = ({ name, description }) => {
   return (
     <div>

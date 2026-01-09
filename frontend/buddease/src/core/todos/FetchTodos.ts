@@ -3,7 +3,7 @@ import { TodoActions } from "@/core/actions/TodoActions";
 import { Todo } from "@/core/todos/Todo";
 
 
-Fetch todos function (replace this with your actual asynchronous fetch logic)
+// Fetch todos function (replace this with your actual asynchronous fetch logic)
 const fetchTodos = async (): Promise<Todo[]> => {
     // Simulating an API call
     const response = await fetch("https://api.example.com/todos");

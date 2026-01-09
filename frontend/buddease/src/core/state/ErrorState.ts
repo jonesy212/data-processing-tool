@@ -6,7 +6,7 @@ interface ErrorState {
   // Additional properties related to error state can be added here
 }
 
-Example usage:
+// Example usage:
 const errorState: ErrorState = {
   errorMessage: "An error occurred while processing your request.",
   errorCode: 500,

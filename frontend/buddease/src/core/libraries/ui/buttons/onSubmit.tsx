@@ -7,7 +7,7 @@ interface ButtonProps {
 }
 
 
-Example of a button component using ButtonProps
+// Example of a button component using ButtonProps
 const SubmitButton: React.FC<ButtonProps> = ({ onClick }) => {
   return <button onClick={onClick}>Submit</button>;
 };

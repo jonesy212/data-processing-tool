@@ -34,5 +34,5 @@ export const notificationsConfig = {
   }
 };
 
-Then register in your endpointManager.ts
+// Then register in your endpointManager.ts
 

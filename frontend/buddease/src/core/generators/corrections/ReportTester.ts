@@ -57,5 +57,5 @@ export class ReportTester {
   }
 }
 
-Quick usage example
+// Quick usage example
 ReportTester.testWithRealComponent('src/app/components/UserProfile.tsx');

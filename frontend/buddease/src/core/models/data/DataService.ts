@@ -262,7 +262,7 @@ class DataService<
   }
 }
 
-Create entity-specific instances using the generic parameters
+// Create entity-specific instances using the generic parameters
 import {
     NoteAttachment,
     NoteEntity,

@@ -641,7 +641,7 @@ export const {
   leverageCommunicationAPIs,
 } = useApiManagerSlice.actions;
 
-Extend the method to mark tasks as complete
+// Extend the method to mark tasks as complete
 function convertToWritableMetadata<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -735,7 +735,7 @@ export const markTaskAsComplete = (taskId: string, title: string) => async (disp
     ]
   }));
 }
-Extend the method to mark todos as complete
+// Extend the method to mark todos as complete
 export const markTodoAsComplete = (todoId: string, title: string) => async (dispatch: any) => {
   dispatch(addTask({
     id: todoId,
@@ -791,11 +791,11 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
 };
 
 
-Export selector for accessing the API configurations from the state
+// Export selector for accessing the API configurations from the state
 export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
   state.apiManager.apiConfigs;
 
-Export reducer for the API manager slice
+// Export reducer for the API manager slice
 export default useApiManagerSlice.reducer;
 
 export type { ApiManagerState };

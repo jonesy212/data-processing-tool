@@ -5,14 +5,14 @@ import ListGenerator from "@/core/generators/ListGenerator";
 import { Comment } from "@/core/models/comments/Comments";
 import { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React, { useState } from "react";
-Define different types of posts
+// Define different types of posts
 
 
 interface ChatPost extends Post {
   // Additional properties specific to ChatPost
 }
 
-Define different types of comments
+// Define different types of comments
 interface BlogComment extends Comment {
   // Additional properties specific to BlogComment
 }

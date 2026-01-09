@@ -3,7 +3,7 @@ import DummyCard from "@/core/cards/DummyCard";
 import useSearchPagination from "@/core/hooks/commHooks/useSearchPagination";
 import { useSearch } from "@/core/state/context/SearchContext";
 import { useState } from "react";
-Define a TreeNode component for individual nodes
+// Define a TreeNode component for individual nodes
 const TreeNode = ({
   node,
   onClick,
@@ -34,7 +34,7 @@ const TreeNode = ({
 };
 
 
-Define the main TreeView component
+// Define the main TreeView component
 const TreeView = ({
   data,
   onClick,

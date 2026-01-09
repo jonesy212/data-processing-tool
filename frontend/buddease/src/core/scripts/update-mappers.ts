@@ -4,11 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-ES module equivalent of __dirname
+// ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-Fix the mappersFile path for ES modules
+// Fix the mappersFile path for ES modules
 const mappersFile = path.resolve(__dirname, '../server/repository/mappers.ts');
 
 interface RelevantFile {

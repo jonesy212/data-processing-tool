@@ -111,7 +111,7 @@ export const createAnalyticsMiddleware = (config: AnalyticsConfig = {
   };
 };
 
-Default analytics middleware with console logging
+// Default analytics middleware with console logging
 export const analyticsMiddleware: MiddlewareFunction = createAnalyticsMiddleware({
   enabled: true,
   trackPerformance: true,

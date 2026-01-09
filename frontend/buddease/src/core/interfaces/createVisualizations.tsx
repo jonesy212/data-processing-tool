@@ -7,7 +7,7 @@ import { VisualizationType } from "./chat/CommonInterfaces";
 
 
 
-Function to create line chart visualization
+// Function to create line chart visualization
 export const createLineChart = (data: VisualizationData): JSX.Element => {
   const chartData: ChartData<"line"> = {
     datasets: data.data.datasets, // Access the datasets property from data.data
@@ -34,7 +34,7 @@ export const createLineChart = (data: VisualizationData): JSX.Element => {
   return <Bar data={chartData} options={{ maintainAspectRatio: false, responsive: true }} />;
 };
 
-Function to create table visualization
+// Function to create table visualization
 export const createTable = (data: any[]): JSX.Element => {
   // Implement logic to generate table from data
   return (
@@ -44,7 +44,7 @@ export const createTable = (data: any[]): JSX.Element => {
   );
 };
 
-Function to create visualization based on visualization type
+// Function to create visualization based on visualization type
 export const createVisualization = (type: VisualizationType, data: VisualizationData | any[]): JSX.Element | null => {
   switch (type) {
     case "line":

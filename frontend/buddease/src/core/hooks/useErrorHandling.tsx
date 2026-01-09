@@ -8,8 +8,8 @@ import ErrorHandler from '@/core/shared/ErrorHandler';
 import { AppEntity } from "@/core/typings/entities/AppEntity";
 import { YourResponseType } from '@/core/typings/responseTypes';
 import { useState } from 'react';
-Most practical solution
-Create a factory function that returns configured hooks
+// Most practical solution
+// Create a factory function that returns configured hooks
 const createErrorHandlingHook = <T extends BaseDataEntity>() => {
   return () => {
     const [error, setError] = useState<string | null>(null);

@@ -17,7 +17,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 
 
-Create theme-specific error handler
+// Create theme-specific error handler
 const handleThemeApiErrorAndNotify = (
   error: any,
   defaultMessage: string,
@@ -33,7 +33,7 @@ const handleThemeApiErrorAndNotify = (
 
 
 
-Then use it in your sagas
+// Then use it in your sagas
 ThemeSettingsSagas.ts
 import { showThemeErrorNotification, showThemeSuccessNotification } from '@/core/state/redux/sagas/ThemeNotificationHelpers';
 
@@ -101,7 +101,7 @@ function* setFooterColor(action: PayloadAction<Theme>) {
   }
 }
 
-Saga function for validating theme settings
+// Saga function for validating theme settings
 function* validateThemeSettings(action: PayloadAction<Partial<Theme>>) {
   try {
     // Validate theme settings
@@ -129,7 +129,7 @@ function* validateThemeSettings(action: PayloadAction<Partial<Theme>>) {
   }
 }
  
-Watcher saga for theme validation
+// Watcher saga for theme validation
 function* watchThemeValidationActions() {
   yield takeLatest(
     ValidationActionTypes.VALIDATE_THEME_SETTINGS,

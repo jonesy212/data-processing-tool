@@ -1,9 +1,9 @@
 generateComponentExample.ts
 import { CacheManager } from '@/core/libraries/cache/client/CacheManager';
-Example 1: Simple component
+// Example 1: Simple component
 generateComponent('MyButton');
 
-Example 2: Category-based component
+// Example 2: Category-based component
 generateComponent(
   'DataChart',
   'DataVisualization',
@@ -12,7 +12,7 @@ generateComponent(
   'DataVisualization'
 );
 
-Example 3: With custom directory and prompting
+// Example 3: With custom directory and prompting
 generateComponent(
   'CustomForm',
   undefined,
@@ -24,12 +24,12 @@ generateComponent(
 );
 
 
-In your components
+// In your components
 
-Write to cache (client-side by default, optionally to server)
+// Write to cache (client-side by default, optionally to server)
 await CacheManager.write('userPreferences', userPrefs, { persistToServer: true });
 
-Read from cache (tries client first, then server)
+// Read from cache (tries client first, then server)
 const cachedData = await CacheManager.read('userPreferences');
 
 Force synchronization

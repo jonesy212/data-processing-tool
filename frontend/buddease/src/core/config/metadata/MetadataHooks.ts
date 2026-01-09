@@ -33,7 +33,7 @@ import { UserData } from "@/core/users/User";
 import { VersionData, VersionHistory } from "@/core/versions/VersionData";
 import { useState } from 'react';
 
-Client-side metadata state interfaces
+// Client-side metadata state interfaces
 interface MetaState<
   T extends BaseDataEntity,
   K extends T = T,
@@ -89,7 +89,7 @@ const events = createEventManager<EventEntity,
   EventIncludedFields
 >();
 
-Client-side React hooks for metadata
+// Client-side React hooks for metadata
 export const useMeta = <
   T extends BaseDataEntity, 
   K extends T = T, 

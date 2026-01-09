@@ -3,7 +3,7 @@ SecurityMeasureLogger.ts
 
 import { SecurityMeasure, SecurityMeasureType } from "@/core/typings/securityMeasureTypes";
 
-Extend the SecurityMeasureLogger interface to include logLevel
+// Extend the SecurityMeasureLogger interface to include logLevel
 export interface SecurityMeasureLogger extends SecurityMeasure {
     type: SecurityMeasureType.Logger;
     logFilePath: string;

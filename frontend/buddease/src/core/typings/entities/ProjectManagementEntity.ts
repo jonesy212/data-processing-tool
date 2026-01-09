@@ -3,7 +3,7 @@ ProjectManagementEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define the actual ProjectManagementEntity interface
+// Define the actual ProjectManagementEntity interface
 interface ProjectManagementEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -23,7 +23,7 @@ interface ProjectManagementEntity extends BaseDataEntity {
   createdBy: string;
 }
 
-Project Management specific type parameters
+// Project Management specific type parameters
 type ProjectManagementK = ProjectManagementEntity;
 type ProjectManagementMeta = DefaultMeta<ProjectManagementEntity, ProjectManagementK> & {
   projectId?: string;
@@ -36,7 +36,7 @@ type ProjectManagementAttachment = Attachment;
 type ProjectManagementExcludedFields = DefaultExcludedFields<ProjectManagementEntity> | "assignedTo" | "dependencies";
 type ProjectManagementIncludedFields = keyof ProjectManagementEntity;
 
-Project Management parameters container
+// Project Management parameters container
 type ProjectManagementBaseParams = {
   T: ProjectManagementEntity;
   K: ProjectManagementK;
@@ -49,7 +49,7 @@ type ProjectManagementBaseParams = {
 
 
 
-Core type aliases
+// Core type aliases
 type ProjectManagementTask = Task<
   ProjectManagementBaseParams['T'],
   ProjectManagementBaseParams['K'],

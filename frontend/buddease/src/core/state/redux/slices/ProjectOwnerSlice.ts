@@ -123,7 +123,7 @@ export const generateReportAsync = createAsyncThunk(
   }
 );
 
-Create an asynchronous thunk action creator named exportData
+// Create an asynchronous thunk action creator named exportData
 export const exportData = createAsyncThunk(
   // Specify the action type string
   "projectOwner/exportData",
@@ -1011,7 +1011,7 @@ export const useProjectOwnerSlice = createSlice({
   }
 });
 
-Export action creators
+// Export action creators
 export const {
   updateProject,
   addTeamMember,
@@ -1050,7 +1050,7 @@ export const {
 Selectors
 export const selectProjectOwner = (state: RootState) => state.projectOwner;
 
-Export the reducer
+// Export the reducer
 export default useProjectOwnerSlice.reducer;
 export type { ProjectOwnerState };
 

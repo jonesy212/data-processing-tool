@@ -45,7 +45,7 @@ type CourseAttachment = Attachment;
 type CourseExcludedFields = DefaultExcludedFields<CourseEntity> | "price" | "instructorId";
 type CourseIncludedFields = keyof CourseEntity;
 
-Course base params
+// Course base params
 type CourseBaseParams = {
   T: CourseEntity;
   K: CourseK;

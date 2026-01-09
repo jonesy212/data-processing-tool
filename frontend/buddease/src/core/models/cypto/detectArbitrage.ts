@@ -28,7 +28,7 @@ export const detectArbitrage = <T extends CryptoData>(
 };
 
 
-Function to set a threshold for identifying potential arbitrage opportunities
+// Function to set a threshold for identifying potential arbitrage opportunities
 const setThreshold = <T extends CryptoData>(
   parsedData: ParsedData<T>[],
   threshold: number

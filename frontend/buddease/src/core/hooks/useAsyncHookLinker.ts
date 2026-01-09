@@ -33,7 +33,7 @@ export interface AsyncHook<T> extends PhaseHookConfig {
 
 
 
-Library's AsyncHook type
+// Library's AsyncHook type
 export interface LibraryAsyncHook {
   isActive?: boolean;
   enable: () => void;
@@ -52,10 +52,10 @@ export interface LibraryAsyncHook {
 }
 
 
-Update your AsyncHook interface to match the library's expectations
+// Update your AsyncHook interface to match the library's expectations
 type AdaptedAsyncHook = LibraryAsyncHook;
 
-Now use the AdaptedAsyncHook in your useAsyncHookLinker hook
+// Now use the AdaptedAsyncHook in your useAsyncHookLinker hook
 export interface AsyncHookLinkerConfig {
   hooks: AdaptedAsyncHook[];
 }

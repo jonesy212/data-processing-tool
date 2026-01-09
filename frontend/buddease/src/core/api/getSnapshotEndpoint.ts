@@ -1,9 +1,9 @@
 // getSnapshotEndpoint.ts
 import { endpointConfigurations } from "@/core/api/endpointConfigurations";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { EndpointConfig } from "@/core/config/EndpointConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { EndpointConfig } from "@/core/config/EndpointConfig";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 
 type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" |  "Project" |
     "Note" |

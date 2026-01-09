@@ -19,4 +19,4 @@ export type { default as CollaborationResponseDetails } from '@/core/collaborati
 export type { default as CollaborationInviteDetails } from '@/core/collaborations/CollaborationInvite';
 export type { default as CollaborationInviteResponseDetails } from '@/core/collaborations/CollaborationInviteResponse';
 export type { default as CollaborationInviteRequestDetails } from '@/core/collaborations/CollaborationInviteRequest';
-Export other detail configurations as needed
+// Export other detail configurations as needed

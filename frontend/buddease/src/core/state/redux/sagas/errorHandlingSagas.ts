@@ -2,13 +2,13 @@ errorHandlingSagas.ts
 import { ErrorHandlingActions } from '@/core/api/ErrorHandlingActions';
 import { put, takeEvery } from 'redux-saga/effects';
 
-Function to display a notification message
+// Function to display a notification message
 function notify(message: any) {
   // Implement your notification logic here
   console.log(message); // Placeholder for actual notification implementation
 }
 
-Example usage of the notify function
+// Example usage of the notify function
 notify("This is a notification message."); // Display a notification with the specified message
 
 
@@ -36,7 +36,7 @@ function* handleNotificationError(action: any) {
   }
 }
 
-Define additional error handling sagas as needed
+// Define additional error handling sagas as needed
 function* handleOtherError(action: any) {
   try {
     const { error } = action.payload;
@@ -49,7 +49,7 @@ function* handleOtherError(action: any) {
   }
 }
 
-Function to clear error
+// Function to clear error
 function* clearError() {
   try {
     yield put(ErrorHandlingActions.clearError());
@@ -58,7 +58,7 @@ function* clearError() {
   }
 }
 
-Watcher Saga: Watches for error actions
+// Watcher Saga: Watches for error actions
 export function* watchErrorActions() {
   // yield takeEvery(VideoActions.fetchVideoFailure.type, handleVideoError);
   yield takeEvery(ErrorHandlingActions.handleNotificationError.type, handleNotificationError); // Using the action creator from ErrorHandlingActions

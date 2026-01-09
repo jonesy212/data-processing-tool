@@ -1,6 +1,6 @@
 NotificationTypes.ts
 
-Base types - System & Technical
+// Base types - System & Technical
 export const BaseNotificationTypes = {
   ERROR: 'Error',
   WARNING: 'Warning',
@@ -99,7 +99,7 @@ export const PaymentNotificationTypes = {
   COUPON_CODE: 'CouponCode',
 } as const;
 
-App Development & Features
+// App Development & Features
 export const AppNotificationTypes = {
   APP_VERSION: 'AppVersion',
   APP_STRUCTURE_ID: 'AppStructureID',
@@ -335,7 +335,7 @@ export const PhaseNotificationTypes = {
 
 } as const;
 
-Add this to your notification types
+// Add this to your notification types
 export const ApiNotificationTypes = {
   // API Status notifications
   API_SUCCESS: 'APISuccess',
@@ -402,7 +402,7 @@ export const ApiNotificationTypes = {
   API_SCHEMA_CHANGED: 'APISchemaChanged',
 } as const;
 
-Combine all types
+// Combine all types
 export const NOTIFICATION_TYPES = {
   ...BaseNotificationTypes,
   ...AuthNotificationTypes,

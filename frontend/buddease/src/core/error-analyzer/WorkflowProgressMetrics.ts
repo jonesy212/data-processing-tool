@@ -257,7 +257,7 @@ async function executePhaseTransition(
     return await executeCurrentPhaseTransition(transition, context, phaseManager, backupSystem);
 }
 
-Execute transition using PhaseManager
+// Execute transition using PhaseManager
 async function executePhaseManagerTransition(
     transition: WorkflowTransition,
     context: TransitionEvaluationContext,

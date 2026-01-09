@@ -57,7 +57,7 @@ const MarketplacePage: React.FC<{ shoppingCenterConfig: ShoppingCenterConfig }> 
   );
 };
 
-Style for premium draggable divs
+// Style for premium draggable divs
 const premiumDivStyle: React.CSSProperties = {
   border: '1px solid #ccc',
   borderRadius: '5px',

@@ -36,7 +36,7 @@ export const userSupportFeedbackPreferencesSlice = createSlice({
   },
 });
 
-Export action creators
+// Export action creators
 export const {
   toggleReceiveFeedbackEmails,
   toggleReceiveSurveyNotifications,
@@ -44,7 +44,7 @@ export const {
   setReceiveSurveyNotifications,
 } = userSupportFeedbackPreferencesSlice.actions;
 
-Selectors to access user support feedback preferences state
+// Selectors to access user support feedback preferences state
 export const selectUserSupportFeedbackPreferences = (state: RootState) =>
   state.userManager.userSupportFeedbackPreferences;
 

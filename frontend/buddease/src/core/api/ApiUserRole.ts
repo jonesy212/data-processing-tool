@@ -6,7 +6,7 @@ import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificatio
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { AxiosError } from 'axios';
 
-Define notification messages for user roles API
+// Define notification messages for user roles API
 interface UserRoleNotificationMessages {
   FETCH_USER_ROLES_SUCCESS: string;
   FETCH_USER_ROLES_ERROR: string;
@@ -34,7 +34,7 @@ const userRoleNotificationMessages: UserRoleNotificationMessages = {
   GET_USER_ROLE_ERROR: 'Failed to fetch user role',
 };
 
-Function to handle API errors and notify
+// Function to handle API errors and notify
 const handleUserRoleApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessageId: keyof UserRoleNotificationMessages,
@@ -113,7 +113,7 @@ const handleUserRoleApiErrorAndNotify = (
   throw error;
 };
 
-Helper function to get endpoint for single user role
+// Helper function to get endpoint for single user role
 const getUserRoleEndpoint = (roleId: number): string => {
   // Access endpoints directly without dotProp
   if (endpoints.userRoles?.single) {
@@ -277,7 +277,7 @@ export const deleteUserRole = async (roleId: number): Promise<void> => {
   }
 };
 
-Additional user role API functions with consistent notification pattern
+// Additional user role API functions with consistent notification pattern
 
 export const getUserRoleById = async (roleId: number): Promise<any> => {
   try {
@@ -322,7 +322,7 @@ export const getUserRoleById = async (roleId: number): Promise<any> => {
   return null;
 };
 
-Add other user role-related actions as needed
+// Add other user role-related actions as needed
 
-Export the error handler if needed elsewhere
+// Export the error handler if needed elsewhere
 export { handleUserRoleApiErrorAndNotify };

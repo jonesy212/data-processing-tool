@@ -98,7 +98,7 @@ interface ConfigurationOptions<
   // other configuration options
 }
 
-Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
+// Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
 export const DATA_PATH = getConfigsData()
 
 const notify = useNotification()
@@ -525,12 +525,12 @@ return this.cachedConfig;
   return this.apiConfig;
 }
 
-Add a method to get the current API config
+// Add a method to get the current API config
 getCurrentApiConfig(): ApiConfig {
   return this.apiConfig;
 }
 
-Method to retrieve the API version header
+// Method to retrieve the API version header
 getApiVersionHeader(): string {
   return 'application/vnd.yourapp.v1+json';
 }
@@ -543,7 +543,7 @@ getConfigurationOptions(): ConfigurationOptions {
   return {} as ConfigurationOptions;
 }
 
-Fixed duplicate method with correct name
+// Fixed duplicate method with correct name
 subscribeToApiConfigChanges(callback: (config: ApiConfig) => void): void {
   this.apiConfigSubscribers.push(callback);
 }
@@ -561,7 +561,7 @@ unsubscribeFromApiConfigChanges(callback: (config: ApiConfig) => void): void {
   );
 }
 
-Example method that updates the API config and triggers changes
+// Example method that updates the API config and triggers changes
 updateApiConfig(updatedConfig: Partial<ApiConfig>): void {
   this.apiConfig = { ...this.apiConfig, ...updatedConfig };
   this.triggerApiConfigChange();
@@ -707,7 +707,7 @@ updateApiConfig(updatedConfig: Partial<ApiConfig>): void {
 }
 
 
-Create an instance of the configuration service
+// Create an instance of the configuration service
 const configServiceInstance = ConfigurationService.getInstance();
 
 export { configServiceInstance };

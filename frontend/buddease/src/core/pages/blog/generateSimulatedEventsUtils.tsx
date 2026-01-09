@@ -1,10 +1,10 @@
 generateSimulatedEventsUtils.tsx
-Assuming the calendar system is managed locally within the application state
+// Assuming the calendar system is managed locally within the application state
 
 import { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import { setCalendarEvents } from "@/core/pages/blog/CalendarUtils";
 
-Function to inject simulated events into the calendar system
+// Function to inject simulated events into the calendar system
 const injectSimulatedEvents =  (events:CalendarEvent) => {
     // Update the calendar state with the simulated events
     // This could involve updating a Redux store, context state, or component state

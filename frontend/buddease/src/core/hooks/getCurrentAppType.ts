@@ -26,7 +26,7 @@ const getCurrentAppType = (state: RootState): string => {
   }
 };
 
-Usage example:
+// Usage example:
 const state: RootState = {} as RootState
 export const currentAppType: string = getCurrentAppType(state);
 console.log("Current App Type:", currentAppType);

@@ -1,5 +1,5 @@
 PlanningSection.tsx
-PlanningSection component
+// PlanningSection component
 import React from 'react';
 
 const PlanningSection = () => {

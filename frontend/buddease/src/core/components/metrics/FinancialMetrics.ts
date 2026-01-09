@@ -1,5 +1,5 @@
 FinancialMetrics.ts
-Define structure for FinancialMetrics
+// Define structure for FinancialMetrics
 interface FinancialMetrics {
     revenue: number;
     expenses: number;

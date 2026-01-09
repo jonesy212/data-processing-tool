@@ -1,7 +1,7 @@
 SubPhase.ts (add to your existing Phase.ts or create a new file)
 import { FC } from "react";
 
-Base SubPhase interface
+// Base SubPhase interface
 export interface SubPhase<
   T extends BaseDataEntity,
   K extends T = T,
@@ -22,7 +22,7 @@ export interface SubPhase<
   blockers?: string[]; // IDs of blocking subphases
 }
 
-SubPhase Implementation
+// SubPhase Implementation
 export class SubPhaseImpl<
   T extends BaseDataEntity,
   K extends T = T,
@@ -170,7 +170,7 @@ export class SubPhaseImpl<
   }
 }
 
-Factory function to create subphases
+// Factory function to create subphases
 export const createSubPhase = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -184,7 +184,7 @@ export const createSubPhase = <
   return new SubPhaseImpl(options);
 };
 
-SubPhase Manager for handling multiple subphases
+// SubPhase Manager for handling multiple subphases
 export class SubPhaseManager<
   T extends BaseDataEntity,
   K extends T = T,

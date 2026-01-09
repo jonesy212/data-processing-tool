@@ -1,6 +1,6 @@
 Permission.ts
 
-Base interface WITHOUT index signature
+// Base interface WITHOUT index signature
 interface BasePermissions {
   userId: string;
   permissions: UserPermissions;
@@ -32,7 +32,7 @@ interface PrivacyCompliance {
 }
 
 
-Define individual category permissions
+// Define individual category permissions
 interface DataPermissions extends BasePermissions {
   // Additional data-specific permissions
   canExport?: boolean;
@@ -175,7 +175,7 @@ interface DocumentEditingPermissions extends BasePermissions {
 
 
 
-Combine all permissions into a single interface
+// Combine all permissions into a single interface
 interface UserPermissions {
   data?: DataPermissions;
   board?: BoardPermissions;

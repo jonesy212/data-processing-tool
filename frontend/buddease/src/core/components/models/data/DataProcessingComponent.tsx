@@ -12,7 +12,7 @@ interface DataProcessingResult {
   // Define the structure of the result if needed
 }
 
-Inside the component, invoke onDataProcessed with both datasetPath and result
+// Inside the component, invoke onDataProcessed with both datasetPath and result
 const DataProcessingComponent: React.FC<DataProcessingProps> = ({
   datasetPath,
   onDataProcessed,

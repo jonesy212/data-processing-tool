@@ -37,7 +37,7 @@ type NotificationCategory = "general" | "urgent" | "important";
 type ButtonType = "submit" | "reset" | "button" | undefined;
 type VisibilityType = "public" | "private" | "restricted" | "shared" | boolean;
 
-Union type of all types enums
+// Union type of all types enums
 type AllTypes =
   | DataType
   | MessageType
@@ -108,7 +108,7 @@ interface ChatCardProps extends BaseProps {
   chatType?: ChatType;
 }
 
-Utilizing Specific Types in Use Cases:
+// Utilizing Specific Types in Use Cases:
 const chatCardProps: ChatCardProps = {
   id: "123",
   sender: "User123",

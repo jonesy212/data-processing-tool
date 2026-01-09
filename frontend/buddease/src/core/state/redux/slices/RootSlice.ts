@@ -30,7 +30,7 @@ import { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 
-Import your AppTask / TaskCollection types (6-param)
+// Import your AppTask / TaskCollection types (6-param)
 import { UserManagerState } from "@/core/state/redux/slices//UserSlice";
 import { AuthState } from '@/core/state/redux/slices/AuthSlice';
 import { FilteredEventsState } from "@/core/state/stores/FilterStore";

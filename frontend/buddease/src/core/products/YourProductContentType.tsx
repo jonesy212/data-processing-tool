@@ -3,7 +3,7 @@ import FeedbackService from "@/core/api/service/FeedbackService";
 import { Project } from "@/core/models/projects/Project";
 import { TeamMember } from "@/core/models/teams/TeamMembers";
 
-YourProductContentType definition
+// YourProductContentType definition
 interface YourProductContentType {
     projectId: Project['id'];
     projectName: Project['name'];

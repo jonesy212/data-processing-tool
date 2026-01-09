@@ -4,7 +4,7 @@ import ResizablePanels from '@/core/hooks/userInterface/ResizablePanels';
 import useResizablePanels from '@/core/hooks/userInterface/useResizablePanels';
 import React, { lazy, Suspense, useMemo, useState } from 'react';
 
-Lazy load dashboard components
+// Lazy load dashboard components
 const DashboardManager = lazy(() => import('./DashboardManager'));
 const DynamicDashboard = lazy(() => import('@/core/pages/dashboards/DashboardLoader'));
 

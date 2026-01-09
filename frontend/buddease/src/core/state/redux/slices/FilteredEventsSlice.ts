@@ -1,10 +1,10 @@
-FilteredEventsSlice.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
-import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
-import { Member } from '@/core/models/members/Member';
-import { Tag } from '@/core/models/tracker/Tag';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+// FilteredEventsSlice.ts
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
+import type { HighlightEvent } from '@/core/highlighting/screenFunctionality/HighlightEvent';
+import type { Member } from '@/core/models/members/Member';
+import type { Tag } from '@/core/models/tracker/Tag';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 
@@ -338,16 +338,16 @@ export const {
 } = useFilteredEventsSlice.actions;
 
 
-✅ Your main slice reducer export
+// ✅ Your main slice reducer export
 export default useFilteredEventsSlice.reducer;
 
-✅ Explicit type export
+// ✅ Explicit type export
 export type { FilteredEventsState };
 
-✅ Selector: gets the entire filteredEvents slice
-export const selectFilteredEvents = (state: RootState): FilteredEventsState => state.filteredEvents;
+// ✅ Selector: gets the entire filteredEvents slice
+const selectFilteredEvents = (state: RootState): FilteredEventsState => state.filteredEvents;
 
-✅ Optional: get only the event IDs
+// ✅ Optional: get only the event IDs
 export const selectFilteredEventIds = createSelector(
   (state: RootState) => state.filteredEvents.filteredEvents,
   (filteredEvents) => filteredEvents.map(event => event.id)

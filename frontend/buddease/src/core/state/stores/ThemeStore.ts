@@ -319,7 +319,7 @@ const useThemeStore = (): ThemeStore => {
 
 export { useThemeStore };
 
-Example usage:
+// Example usage:
 const currentTheme: Theme = {
   primaryColor: "#007bff",
   secondaryColor: "#6c757d",
@@ -341,14 +341,14 @@ const currentTheme: Theme = {
   themeColor: "",
 };
 
-Example newTheme with customized properties
+// Example newTheme with customized properties
 const newTheme: Partial<Theme> = {
   headerColor: "#ff0000", // Example new header color
   footerColor: "#00ff00", // Example new footer color
   // Add more customized properties as needed
 };
 
-Customize the theme properties based on user input
+// Customize the theme properties based on user input
 const customizedTheme = useThemeStore().customizeThemeProperties(
   currentTheme,
   newTheme

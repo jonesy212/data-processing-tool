@@ -70,10 +70,10 @@ class AuthService {
 
 
 
-Create a singleton instance of the AuthService
+// Create a singleton instance of the AuthService
 const authService = new AuthService(databaseConfig);
  
-Example usage of saveAuthenticationProviders
+// Example usage of saveAuthenticationProviders
 const authenticationProviders: AuthenticationProvider[] = ['Google', 'Facebook', 'Twitter', 'LinkedIn', 'GitHub'];
 authService.saveAuthenticationProviders(authenticationProviders)
   .then(() => {
@@ -83,7 +83,7 @@ authService.saveAuthenticationProviders(authenticationProviders)
     console.error('Error saving authentication providers:', error);
   });
 
-Example usage of getAuthenticationProviders
+// Example usage of getAuthenticationProviders
 authService.getAuthenticationProviders()
   .then((providers) => {
     console.log('Retrieved authentication providers:', providers);

@@ -10,7 +10,7 @@ import { Command } from 'commander';
 
 const program = new Command();
 
-Add at the top with other imports
+// Add at the top with other imports
 
 async function checkAndFixImports(): Promise<boolean> {
   console.log('🔍 Pre-checking for import/export issues...\n');
@@ -76,7 +76,7 @@ async function checkAndFixImports(): Promise<boolean> {
   }
 }
 
-Add this helper function if not already present
+// Add this helper function if not already present
 function getAreaFilter(area: string): string {
   switch (area) {
     case 'frontend': return 'src/app';
@@ -86,7 +86,7 @@ function getAreaFilter(area: string): string {
   }
 }
 
-Then replace your existing phase command with this single version:
+// Then replace your existing phase command with this single version:
 program
   .command('phase <name>')
   .description('Run a specific phase with import error pre-check')
@@ -192,7 +192,7 @@ program
   .description('TypeScript Error Resolution Phases by Area')
   .version('1.0.0');
 
-NEW: Error Analyzer command using your ErrorAnalyzer class
+// NEW: Error Analyzer command using your ErrorAnalyzer class
 program
   .command('analyze')
   .description('Run comprehensive error analysis with ErrorAnalyzer')
@@ -302,7 +302,7 @@ program
     }
   });
 
-NEW: Quick fix command for "cannot find name" errors
+// NEW: Quick fix command for "cannot find name" errors
 program
   .command('fix-names')
   .description('Fix "cannot find name" errors specifically')
@@ -367,7 +367,7 @@ program
     }
   });
 
-NEW: Configuration validation command
+// NEW: Configuration validation command
 program
   .command('validate-config')
   .description('Validate all configuration files')
@@ -406,7 +406,7 @@ program
     }
   });
 
-Enhanced diagnose command (existing but updated)
+// Enhanced diagnose command (existing but updated)
 program
   .command('diagnose')
   .description('Run Initial Diagnosis')
@@ -477,7 +477,7 @@ program
       process.exit(1);
     }
   });
-Replace your existing phase command with this enhanced version
+// Replace your existing phase command with this enhanced version
 program
   .command('phase <name>')
   .description('Run a specific phase with import error pre-check')
@@ -546,7 +546,7 @@ program
     }
   });
 
-Enhanced area commands with ErrorAnalyzer
+// Enhanced area commands with ErrorAnalyzer
 program
   .command('frontend')
   .description('Run all phases on frontend code')
@@ -707,7 +707,7 @@ program
     }
   });
 
-Existing cache management (unchanged)
+// Existing cache management (unchanged)
 program
   .command('cache')
   .description('Manage phase cache')
@@ -723,7 +723,7 @@ program
     }
   });
 
-NEW: Help command for ErrorAnalyzer
+// NEW: Help command for ErrorAnalyzer
 program
   .command('help-analyzer')
   .description('Show ErrorAnalyzer help and capabilities')
@@ -759,7 +759,7 @@ program
     console.log('  ts-phases mobile           - Mobile-specific analysis');
   });
 
-Add alias for backward compatibility
+// Add alias for backward compatibility
 program.alias('ea'); // ErrorAnalyzer alias
 
 program.parse(process.argv);

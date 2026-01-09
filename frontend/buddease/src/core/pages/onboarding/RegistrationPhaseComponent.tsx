@@ -188,7 +188,7 @@ const handleSubmit = async () => {
   );
 };
 
-Step Components
+// Step Components
 interface StepProps {
   formData: any;
   onInputChange: (field: string, value: any) => void;

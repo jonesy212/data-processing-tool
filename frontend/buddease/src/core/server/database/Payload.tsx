@@ -1,18 +1,17 @@
-Payload.tsx
-Payload.ts
-
-import { SnapshotActions } from "@/core/actions/SnapshotActions";
-import { SubscriptionPayload } from "@/core/actions/SubscriptionActions";
+// Payload.tsx
+ 
+import type { SnapshotActions } from "@/core/actions/SnapshotActions";
+import type { SubscriptionPayload } from "@/core/actions/SubscriptionActions";
 import addSnapshot from "@/core/api/SnapshotApi";
 import * as subscriptionApi from "@/core/api/subscriberApi";
 import useSubscription from "@/core/hooks/useSubscription";
 import { SnapshotLogger } from "@/core/logging/Logger";
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { AppState } from "@/core/state/redux/slices/AppSlice";
-import { AppEntity } from "@/core/typings/entities/AppEntity";
-import { SnapshotEntity, SnapshotK } from "@/core/typings/entities/SnapshotEntity";
+import type { AppEntity } from "@/core/typings/entities/AppEntity";
+import type { SnapshotEntity, SnapshotK } from "@/core/typings/entities/SnapshotEntity";
 import { SubscriptionEntityTemplate } from "@/core/typings/entities/SubscriptionEntity";
-import { addToSnapshotList } from "@/utils/snapshotUtils";
+import type { addToSnapshotList } from "@/utils/snapshotUtils";
 import { LiveEvent } from "@refinedev/core";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -83,9 +82,9 @@ const { subscribe, unsubscribe } = useSubscription({
   enabled: true, // Enable subscription
 });
 
-------------------------------
-6️⃣ Example SubscriptionPayload using the template
-------------------------------
+// ------------------------------
+// 6️⃣ Example SubscriptionPayload using the template
+// ------------------------------
 const payload: SubscriptionPayload<
   SubscriptionEntityTemplate["T"]
   > = {

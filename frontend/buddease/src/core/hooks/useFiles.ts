@@ -1,7 +1,7 @@
 useFiles.ts
 import { useState } from "react";
 
-Define the useFiles hook
+// Define the useFiles hook
 const useFiles = () => {
   // State to store uploaded files
   const [uploadedFiles, setUploadedFiles] = useState<FileList | null>(null);

@@ -224,7 +224,7 @@ const AnimatedDashboard: React.FC<ClickableListItem> = ({
     </SwingCard>
   );
 };
-Use phase hooks
+// Use phase hooks
 const notificationBarHook = notificationBarPhaseHook;
 const darkModeToggleHook = darkModeTogglePhaseHook;
 

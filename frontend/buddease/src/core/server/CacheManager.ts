@@ -7,7 +7,7 @@ import path from 'path';
 
 const CACHE_DIR = path.join(process.cwd(), '.cache');
 
-Ensure cache directory exists
+// Ensure cache directory exists
 const ensureCacheDir = async () => {
   try {
     await fs.access(CACHE_DIR);

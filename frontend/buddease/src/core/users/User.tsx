@@ -1,15 +1,15 @@
 // User.tsx
-import type type { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
-import type type { RealtimeUpdates } from "@/core/components/community/ActivityFeedComponent";
+// import type type { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
+// import type type { RealtimeUpdates } from "@/core/components/community/ActivityFeedComponent";
 import { CommonDetails } from '@/core/components/models/details/CommonDetails';
-import type type { Team } from "@/core/components/teams/Team";
+// import type type { Team } from "@/core/components/teams/Team";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { fetchUserAreaDimensions } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
 import { useMetadata } from "@/core/config/useMetadata";
-import type type { UserPreferences } from "@/core/config/UserPreferences";
-import type type { UserSettings } from "@/core/config/UserSettings";
+// import type type { UserPreferences } from "@/core/config/UserPreferences";
+// import type type { UserSettings } from "@/core/config/UserSettings";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CryptoDocumentManager } from "@/core/documents/cryptoDocumentManager";
 import type { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';

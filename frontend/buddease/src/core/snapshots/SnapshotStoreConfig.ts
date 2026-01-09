@@ -10,7 +10,7 @@ import type { ModifiedDate } from "@/core/documents/DocType";
 import { FileCategory } from "@/core/documents/FileType";
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import type type { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+// import type type { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import type { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/core/interfaces/payload/payloadTypes";
 import { determineCategory } from "@/core/libraries/categories/determineCategory";
 import determineFileCategory, { fetchFileSnapshotData } from "@/core/libraries/categories/determineFileCategory";

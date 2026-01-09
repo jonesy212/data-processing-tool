@@ -133,9 +133,9 @@ export const {
   removeData,
 } = useDataManagerSlice.actions;
 
-Export selector for accessing the data from the state
+// Export selector for accessing the data from the state
 export const selectData = (state: { data: DataSliceState }) => state.data.data;
 
-Export reducer for the data entity slice
+// Export reducer for the data entity slice
 export default useDataManagerSlice.reducer;
 export type { DataSliceState };

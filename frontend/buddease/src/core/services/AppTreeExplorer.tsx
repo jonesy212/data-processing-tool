@@ -376,7 +376,7 @@ const AppTreeExplorer: React.FC = () => {
   );
 };
 
-Analysis View Component
+// Analysis View Component
 const AnalysisView: React.FC<{ report: any }> = ({ report }) => {
   return (
     <div className="analysis-view">
@@ -410,7 +410,7 @@ const AnalysisView: React.FC<{ report: any }> = ({ report }) => {
   );
 };
 
-Search Results Panel Component
+// Search Results Panel Component
 const SearchResultsPanel: React.FC<{ results: any }> = ({ results }) => {
   return (
     <div className="search-results-panel">

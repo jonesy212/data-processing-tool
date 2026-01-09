@@ -3,7 +3,7 @@ import { setChatSidebarOpen } from '@/core/state/redux/slices/SidebarSlice';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux'; // Import useDispatch to dispatch actions
 
-Define a functional component that renders the chat sidebar
+// Define a functional component that renders the chat sidebar
 const ChatSidebar = () => {
   return (
     <div className="chat-sidebar">
@@ -12,7 +12,7 @@ const ChatSidebar = () => {
   );
 };
 
-Functional component to render a button that opens the chat sidebar
+// Functional component to render a button that opens the chat sidebar
 const ChatButton = () => {
   const dispatch = useDispatch();
 
@@ -29,7 +29,7 @@ const ChatButton = () => {
   );
 };
 
-Functional component to render the chat feature (button + sidebar)
+// Functional component to render the chat feature (button + sidebar)
 const ChatFeature = () => {
   const [chatSidebarOpen, setChatSidebarOpenLocally] = useState(false); // State to track the open/close state of the chat sidebar
 

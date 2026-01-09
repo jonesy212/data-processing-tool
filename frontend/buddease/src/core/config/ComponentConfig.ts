@@ -1,4 +1,4 @@
-For individual component instances (new)
+// For individual component instances (new)
 import { ComponentsConfig } from '@/core/config/ComponentsConfig';
 export type ComponentType = keyof ComponentsConfig;
 

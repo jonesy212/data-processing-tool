@@ -1,5 +1,5 @@
 drawingLibraryMock.ts
-Create a mock implementation for the drawing library
+// Create a mock implementation for the drawing library
 const drawingLibraryMock = {
   DrawingError: class DrawingError extends Error {
     constructor(errorType: string, details: string) {

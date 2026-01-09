@@ -71,13 +71,13 @@ export const {
   
 } = trackerManagerSlice.actions;
 
-Export selector for accessing the trackers from the state
+// Export selector for accessing the trackers from the state
 export const selectTrackers = (state: { trackers: TrackerManagerState }) =>
   state.trackers.trackers;
 
-Export selector for accessing the milestones from the state
+// Export selector for accessing the milestones from the state
 export const selectMilestones = (state: { trackers: TrackerManagerState }) =>
   state.trackers.milestones;
 
-Export reducer for the tracker entity slice
+// Export reducer for the tracker entity slice
 export default trackerManagerSlice.reducer;

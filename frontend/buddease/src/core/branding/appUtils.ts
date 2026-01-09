@@ -1,7 +1,7 @@
 appUtils.ts
 import { AppTree } from "@/core/generators/generateAppTree";
 
-Helper function to retrieve a file from the tree structure
+// Helper function to retrieve a file from the tree structure
 const getFileFromTree = (appTree: AppTree, fileName: string): string | null => {
     // Check if components is an object
     if (typeof appTree.components === 'object' && appTree.components !== null) {
@@ -22,7 +22,7 @@ const getFileFromTree = (appTree: AppTree, fileName: string): string | null => {
 };
 
   
-Helper function to retrieve a folder from the tree structure
+// Helper function to retrieve a folder from the tree structure
 const getFolderFromTree = (appTree: AppTree, folderName: string): { [key: string]: string } | null => {
     // Logic to traverse the tree structure and retrieve the folder
     // Example: appTree['components']
@@ -43,13 +43,13 @@ const getFolderFromTree = (appTree: AppTree, folderName: string): { [key: string
     return null; // Return null if folder not found or not an object
 };
   
-Helper function to retrieve a component name
+// Helper function to retrieve a component name
 const getComponentName = (componentName: string): string => {
   // Logic to retrieve the component name
   return componentName; // Return the component name
 };
 
-Helper function to retrieve properties
+// Helper function to retrieve properties
 const getProperties = (properties: { [key: string]: string }): { [key: string]: string } => {
   // Logic to retrieve properties
   return properties; // Return the properties
@@ -57,7 +57,7 @@ const getProperties = (properties: { [key: string]: string }): { [key: string]: 
 
 
 
-Usage example
+// Usage example
 const appTree: AppTree = { components: { 'example_file.ts': 'example file content' } };
 const file = getFileFromTree(appTree, 'example_file.ts');
 const folder = getFolderFromTree(appTree, 'components');

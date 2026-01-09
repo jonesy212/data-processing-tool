@@ -35,7 +35,7 @@ interface AppVersionConfig {
   isDevBuild?: boolean;
 }
 
-Extend AppVersion to include AppVersionConfig properties
+// Extend AppVersion to include AppVersionConfig properties
 interface AppVersion extends Versionable, AppVersionConfig {
   // Methods
   updateAppName: (name: string) => void;
@@ -45,7 +45,7 @@ interface AppVersion extends Versionable, AppVersionConfig {
   getReleaseInfo: () => { releaseDate: string; releaseNotes: string[] };
 }
 
-removed Versionabe from implements
+// removed Versionabe from implements
 class AppVersionImpl<
   T extends BaseDataEntity,      // Primary data entity type
   K extends T = T,               // Extended entity type (defaults to T)
@@ -484,7 +484,7 @@ export { AppVersionImpl as AppVersion };
 
 
 
-Define the appVersion object with the correct structure
+// Define the appVersion object with the correct structure
 const appVersion: AppVersion = new AppVersionImpl({
   id: 1,
   appName: "MyApp",
@@ -569,19 +569,19 @@ const { versionNumber } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
 
-Define selector functions to extract appVersion and databaseVersion from the state
+// Define selector functions to extract appVersion and databaseVersion from the state
 export const selectAppVersion = (state: RootState) =>
   state.versionManager.appVersion;
 export const selectDatabaseVersion = (state: RootState) =>
   state.versionManager.databaseVersion;
 
-Update the appName
+// Update the appName
 appVersion.updateAppName("NewApp");
 
-Get the current appName
+// Get the current appName
 const currentAppName = appVersion.getAppName();
 
-Update the appName
+// Update the appName
 appVersion.updateAppName("NewApp");
 const updatedAppName = appVersion.getAppName();
 

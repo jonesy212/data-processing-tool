@@ -1,7 +1,7 @@
 CustomFetchEvent.ts
 import { Promise } from "es6-promise";
 
-Logic for FetchEvent interface
+// Logic for FetchEvent interface
 interface ExtendableEvent extends Event {
   waitUntil?(fn: Promise<any>): void;
   data?: any;
@@ -83,13 +83,13 @@ class CustomFetchEvent extends Event implements FetchEvent {
   }
 }
 
-Example usage:
+// Example usage:
 const fetchRequest = new Request("/api/data");
 const fetchEvent = new CustomFetchEvent("customFetchEventType", {
   request: fetchRequest,
 });
 
-Add an event listener for fetch events
+// Add an event listener for fetch events
 self.addEventListener("fetch", (event) => {
   const customEvent = fetchEvent;
   CustomFetchEvent.handleFetchEvent(customEvent);

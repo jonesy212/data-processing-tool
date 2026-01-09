@@ -1,7 +1,7 @@
 DatabasePool.ts
 import { Pool, QueryResult } from 'pg';
 
-Define the Pool class
+// Define the Pool class
 export class DatabasePool {
   private pool: Pool;
   private static config: any;

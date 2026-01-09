@@ -42,7 +42,7 @@ const PersonaCard: React.FC<PersonaCardProps> = ({
   );
 };
 
-Card Generator Component
+// Card Generator Component
 const CardGenerator: React.FC<{
   cardType: string;
   persona: string;

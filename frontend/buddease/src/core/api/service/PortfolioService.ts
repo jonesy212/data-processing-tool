@@ -717,15 +717,15 @@ class PortfolioService {
   }
 }
 
-Export singleton instance
+// Export singleton instance
 export const portfolioService = PortfolioService.getInstance();
 
-Export individual functions for convenience
+// Export individual functions for convenience
 export { PortfolioService };
 
-Create singleton instance
+// Create singleton instance
 const portfolioServiceInstance = PortfolioService.getInstance();
 
-Export bound instance methods as named functions
+// Export bound instance methods as named functions
 export const updateUserPortfolio = portfolioServiceInstance.updateUserPortfolio.bind(portfolioServiceInstance);
 export const logTradeActivity = portfolioServiceInstance.logTradeActivity.bind(portfolioServiceInstance);

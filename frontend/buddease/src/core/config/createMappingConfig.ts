@@ -96,7 +96,7 @@ const createMappingConfig = <
   }
 });
 
-Updated mapping function with configuration
+// Updated mapping function with configuration
 const mapParsedDataToCommonData = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,
   K extends T = T,

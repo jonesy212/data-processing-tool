@@ -14,7 +14,7 @@ export enum SecurityMeasureType {
   Custom = 'custom'
 }
 
-Define the base properties that ALL security measures should have
+// Define the base properties that ALL security measures should have
 export interface SecurityMeasureBase {
   // Core identification
   id: string;
@@ -36,7 +36,7 @@ export interface SecurityMeasureBase {
   owner?: string;
 }
 
-Header Security Measure
+// Header Security Measure
 export interface SecurityMeasureHeader extends SecurityMeasureBase {
   type: SecurityMeasureType.Header;
   value: string;
@@ -48,7 +48,7 @@ export interface SecurityMeasureHeader extends SecurityMeasureBase {
   };
 }
 
-Logger Security Measure
+// Logger Security Measure
 export interface SecurityMeasureLogger extends SecurityMeasureBase {
   type: SecurityMeasureType.Logger;
   logFilePath: string;
@@ -59,7 +59,7 @@ export interface SecurityMeasureLogger extends SecurityMeasureBase {
   sensitiveDataRedaction: boolean;
 }
 
-Encryption Security Measure
+// Encryption Security Measure
 export interface SecurityMeasureEncryption extends SecurityMeasureBase {
   type: SecurityMeasureType.Encryption;
   algorithm: 'AES-256' | 'RSA-2048' | 'RSA-4096' | 'ECDSA' | 'ChaCha20' | 'custom';
@@ -72,7 +72,7 @@ export interface SecurityMeasureEncryption extends SecurityMeasureBase {
   integrityCheck: boolean;
 }
 
-Validation Security Measure
+// Validation Security Measure
 export interface SecurityMeasureValidation extends SecurityMeasureBase {
   type: SecurityMeasureType.Validation;
   validationType: 'schema' | 'format' | 'business-rules' | 'signature';
@@ -84,7 +84,7 @@ export interface SecurityMeasureValidation extends SecurityMeasureBase {
   severity: 'warning' | 'error' | 'reject';
 }
 
-Access Control Security Measure
+// Access Control Security Measure
 export interface SecurityMeasureAccessControl extends SecurityMeasureBase {
   type: SecurityMeasureType.AccessControl;
   accessType: 'role-based' | 'attribute-based' | 'policy-based';
@@ -97,7 +97,7 @@ export interface SecurityMeasureAccessControl extends SecurityMeasureBase {
   defaultAction: 'allow' | 'deny';
 }
 
-Audit Security Measure
+// Audit Security Measure
 export interface SecurityMeasureAudit extends SecurityMeasureBase {
   type: SecurityMeasureType.Audit;
   auditEvents: string[];
@@ -114,7 +114,7 @@ export interface SecurityMeasureAudit extends SecurityMeasureBase {
   };
 }
 
-Compliance Security Measure
+// Compliance Security Measure
 export interface SecurityMeasureCompliance extends SecurityMeasureBase {
   type: SecurityMeasureType.Compliance;
   standards: Array<'GDPR' | 'HIPAA' | 'PCI-DSS' | 'SOC2' | 'ISO27001'>;
@@ -131,14 +131,14 @@ export interface SecurityMeasureCompliance extends SecurityMeasureBase {
   };
 }
 
-Custom Security Measure
+// Custom Security Measure
 export interface SecurityMeasureCustom extends SecurityMeasureBase {
   type: SecurityMeasureType.Custom;
   customType: string;
   configuration: Record<string, any>;
 }
 
-Security Measure Union Type
+// Security Measure Union Type
 export type SecurityMeasureUnion =
   | SecurityMeasureHeader
   | SecurityMeasureLogger
@@ -149,7 +149,7 @@ export type SecurityMeasureUnion =
   | SecurityMeasureCompliance
   | SecurityMeasureCustom;
 
-Additional types needed for the SnapshotSecurity interface
+// Additional types needed for the SnapshotSecurity interface
 export interface SecurityScanResult {
   timestamp: Date;
   status: SecurityStatus;
@@ -194,7 +194,7 @@ export interface SecurityReport {
   recommendations: string[];
 }
 
-Example of creating security measures
+// Example of creating security measures
 const securityMeasures: SecurityMeasureUnion[] = [
   {
     id: 'header-xss-protection',

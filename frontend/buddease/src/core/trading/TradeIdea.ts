@@ -10,7 +10,7 @@ enum FeedbackTradePhaseEnum {
   REVIEW = 'review'
 }
 
-Trade Idea Interface
+// Trade Idea Interface
 interface TradeIdea {
   id?: string;
   title: string;

@@ -1,9 +1,9 @@
 KuCoinAPI.ts
 
-Import necessary modules
+// Import necessary modules
 import axios, { AxiosInstance } from 'axios';
 
-Define KuCoinAPI class
+// Define KuCoinAPI class
 class KuCoinAPI {
   private apiUrl: string;
   private httpClient: AxiosInstance;
@@ -30,5 +30,5 @@ class KuCoinAPI {
   // Add more methods as needed to interact with different endpoints of the KuCoin API
 }
 
-Export the KuCoinAPI class
+// Export the KuCoinAPI class
 export default KuCoinAPI;

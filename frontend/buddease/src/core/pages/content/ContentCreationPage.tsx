@@ -9,7 +9,7 @@ interface ContentCreateionPageProps {
 }
 
 
-Enhanced version with content-specific lifecycle
+// Enhanced version with content-specific lifecycle
 const ContentCreationPage: React.FC<ContentCreationPageProps> = ({
   onComplete
 }) => {

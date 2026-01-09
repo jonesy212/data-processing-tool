@@ -225,7 +225,7 @@ function* handleEnableRealTimeCollaboration(action: PayloadAction) {
     }
   }
   
-Other preference sagas for communication preferences...
+// Other preference sagas for communication preferences...
 export function* communicationPreferencesSaga() {
   yield all([
     // Actions for setting theme and project phases

@@ -10,7 +10,7 @@ interface FrontendConfig {
   frontendSpecificProperty: string;
 }
 
-Example usage:
+// Example usage:
 export const frontendConfig: FrontendConfig = {
   appName: process.env.FRONTEND_APP_NAME || "YourFrontendAppName", // Use process.env or default value
   appVersion: process.env.FRONTEND_APP_VERSION || "1.0.0", // Use process.env or default value
@@ -53,5 +53,5 @@ export const frontendConfig: FrontendConfig = {
   frontendSpecificProperty: process.env.FRONTEND_SPECIFIC_PROPERTY || "YourFrontendSpecificValue", // Use process.env or default value
 };
 
-Use frontendDocumentConfig as needed in your frontend application
+// Use frontendDocumentConfig as needed in your frontend application
 export type { FrontendConfig };

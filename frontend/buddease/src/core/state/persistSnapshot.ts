@@ -136,7 +136,7 @@ export async function persistSnapshotDB<
   }
 }
 
-Helper functions for better error handling
+// Helper functions for better error handling
 const determineDatabaseErrorType = (error: unknown): string => {
   const errorStr = String(error).toLowerCase();
   

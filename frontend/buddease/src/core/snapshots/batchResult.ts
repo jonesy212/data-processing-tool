@@ -1,5 +1,5 @@
 batchResult.ts
-Now you can call processBatch with proper parameters
+// Now you can call processBatch with proper parameters
 const batchResult = await this.processBatch(
   [
     {

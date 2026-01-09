@@ -1,10 +1,10 @@
-SnapshotStorageOptionsEntity.ts
+// SnapshotStorageOptionsEntity.t/s
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
-Define specific entity type for snapshot storage
-interface SnapshotStorageEntity extends BaseDataEntity {
+// Define specific entity type for snapshot storage
+ interface SnapshotStorageEntity extends BaseDataEntity {
   baseURL?: string;
   enabled?: boolean;
   maxRetries?: number;
@@ -23,7 +23,7 @@ type SnapshotStorageAttachment = Attachment;
 type SnapshotStorageExcludedFields = DefaultExcludedFields<SnapshotStorageEntity>;
 type SnapshotStorageIncludedFields = keyof SnapshotStorageEntity;
 
-Base parameters
+// Base parameters
 type SnapshotStorageBaseParams = {
   T: SnapshotStorageEntity;
   K: SnapshotStorageK;

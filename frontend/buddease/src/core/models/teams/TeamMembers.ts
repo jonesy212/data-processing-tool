@@ -8,7 +8,7 @@ import { Persona } from "@/core/pages/personas/Persona";
 import { BasePermissions, MemberPermission, Permission } from '@/core/permissions/Permission';
 import type { MemberAttachment, MemberData, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/core/typings/entities/MemberEntity';
 
-Team member settings
+// Team member settings
 interface TeamMemberSettings {
   notificationPreferences?: {
     teamAnnouncements?: boolean;
@@ -80,7 +80,7 @@ interface TeamPermission extends Permission {
 }
 
 
-Team Member Permissions (combines both)
+// Team Member Permissions (combines both)
 interface TeamMemberPermissions extends BasePermissions {
   basePermissions: Permission[];
   memberPermissions: MemberPermission[];

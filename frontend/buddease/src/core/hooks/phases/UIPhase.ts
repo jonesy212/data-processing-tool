@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { FileAttachment } from '@/core/documents/attachment/Attachment';
 
-Default alias for generic NotificationData
+// Default alias for generic NotificationData
 export type DefaultNotificationData = NotificationData<
   BaseDataEntity,      // T
   BaseDataEntity,      // K
@@ -79,7 +79,7 @@ const isLoggedIn = () => true;
 
 export const notificationBarPhaseHook = createNotificationBarPhaseHook();
 
-Custom hook to fetch and display notifications
+// Custom hook to fetch and display notifications
 const fetchAndDisplayNotifications = async (
   addNotification: Function,
   clearNotifications: Function

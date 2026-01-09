@@ -1,6 +1,6 @@
 Phases.tsx
 Phases.ts
-Import the calendar phase
+// Import the calendar phase
 import { calendarPhase } from "@/core/components/calendar/CalendarPhase";
 import { Lesson } from "@/core/documents/editing/CourseBuilder";
 import { createPhaseHook } from "@/core/hooks/phaseHooks/PhaseHooks";
@@ -128,11 +128,11 @@ export const additionalPhase2: Phase = {
 };
 
 
-Create an array of phases
+// Create an array of phases
 const allPhases: Phase[] = [calendarPhase, additionalPhase1, additionalPhase2];
 
 
-Create async hooks for all phases
+// Create async hooks for all phases
 const asyncHooks: AsyncHook[] = allPhases.map(
   (phase: Phase, index: number) => ({
     name: `${phase.name} Async Hook`,

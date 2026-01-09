@@ -847,7 +847,7 @@ class DatabaseClient {
 }
 
 
-Then update your route to ensure table exists before operations:
+// Then update your route to ensure table exists before operations:
 export async function POST(request: NextRequest) {
   try {
     const { snapshotData, config, snapshotId, operationType } = await request.json();

@@ -373,7 +373,7 @@ export class TypeScriptDiagnosticPhase {
   }
 }
 
-Factory function for easy use
+// Factory function for easy use
 export async function runInitialDiagnosis(projectRoot?: string): Promise<DiagnosticResult> {
   const phase = new TypeScriptDiagnosticPhase(projectRoot);
   const result = await phase.execute();

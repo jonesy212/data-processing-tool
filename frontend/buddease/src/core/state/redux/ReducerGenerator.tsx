@@ -14,7 +14,7 @@ export interface EntityAction<
   id: string;
 }
 
-Updated type guard
+// Updated type guard
 function isEntityAction<
   T extends BaseDataEntity = BaseDataRoot
 >(
@@ -30,7 +30,7 @@ interface EntityReducerOptions<
   updateFunction: (entity: T, payload: any) => void;
 }
 
-UPDATED: createEntityReducer with proper generics
+// UPDATED: createEntityReducer with proper generics
 export const createEntityReducer = <
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -56,7 +56,7 @@ export const createEntityReducer = <
   }
 };
 
-Example usage with proper typing:
+// Example usage with proper typing:
 export const setCollaboratorsReducer = createEntityReducer({
   type: "setCollaborators",
   updateFunction: (entity: { collaborators: CollaboratorEntity[] }, payload) => {

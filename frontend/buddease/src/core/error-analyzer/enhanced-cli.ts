@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-Add type definitions
+// Add type definitions
 
 class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
   private relationshipAnalyzer: FileRelationshipAnalyzer;
@@ -487,7 +487,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
   }
 }
 
-CLI Interface
+// CLI Interface
 async function main() {
   const system = new EnhancedTypeScriptErrorFixSystem();
   const args = process.argv.slice(2);
@@ -600,7 +600,7 @@ Examples:
   }
 }
 
-Helper function to parse raw tsc output into JSON format
+// Helper function to parse raw tsc output into JSON format
 function parseRawTypeScriptOutput(output: string): any[] {
   const errors: any[] = [];
   const lines = output.split('\n');
@@ -629,7 +629,7 @@ function parseRawTypeScriptOutput(output: string): any[] {
   return errors;
 }
 
-ES Module way to check if this is the main module
+// ES Module way to check if this is the main module
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }

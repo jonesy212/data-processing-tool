@@ -4,7 +4,7 @@ import { IconDefinition, faCircle, faCoffee, faStar } from '@fortawesome/free-so
 import { FontAwesomeIcon as FAIcon } from '@fortawesome/react-fontawesome';
 import React from "react";
 
-Add more icons as needed
+// Add more icons as needed
 library.add(faCoffee, faStar, faCircle);
 
 export const getFAIcon = (icon: IconName) => {

@@ -1,26 +1,29 @@
 // Logger.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { getConfiguredEndpoint, getEndpointUrl } from '@/core/api/getConfiguredEndpoint';
-import { Task } from "@/core/components/models/tasks/Task";
+import type { Task } from "@/core/components/models/tasks/Task";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { EndpointConfig, EndpointConfigurations } from '@/core/config/EndpointConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { EndpointConfig, EndpointConfigurations } from '@/core/config/EndpointConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { getFromLocalStorage, saveToLocalStorage } from '@/core/hooks/useLocalStorage';
-import { NotificationDataPayload, useNotification } from '@/core/state/context/NotificationContext';
-import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/core/typings/entities/TeamEntity';
+import type { NotificationDataPayload } from '@/core/state/context/NotificationContext';
+import { useNotification } from '@/core/state/context/NotificationContext';
+import type { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/core/typings/entities/TeamEntity';
 import { buildUrl } from '@/utils/urlBuilder';
 
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 
-import { team, Team } from "@/core/components/teams/Team";
+import { team } from "@/core/components/teams/Team";
+import type { Team } from "@/core/components/teams/Team";
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
-import { DataDetails } from '@/core/models/data/Data';
+import type { DataDetails } from '@/core/models/data/Data';
 import { useTeamManagerStore } from "@/core/state/stores/TeamStore";
 
-import { DefaultCalendarEvent } from '@/core/actions/CalendarEventActions';
-import { Theme } from '@/core/libraries/ui/theme/Theme';
+import type { DefaultCalendarEvent } from '@/core/actions/CalendarEventActions';
+import type { Theme } from '@/core/libraries/ui/theme/Theme';
 import { encryptData } from "@/core/server/security/encryptedData";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 

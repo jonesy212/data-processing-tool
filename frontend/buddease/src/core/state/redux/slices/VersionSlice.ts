@@ -3,7 +3,7 @@ useVersionManagerSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-Define the initial state for the version information
+// Define the initial state for the version information
 interface VersionState {
   appVersion: string;
     databaseVersion: string;
@@ -17,7 +17,7 @@ const initialState: VersionState = {
   version: ''
 };
 
-Create a slice for managing version information
+// Create a slice for managing version information
 export const useVersionManagerSlice = createSlice({
   name: 'version',
   initialState,
@@ -35,11 +35,11 @@ export const useVersionManagerSlice = createSlice({
   },
 });
 
-Export actions for updating app version and database version
+// Export actions for updating app version and database version
 export const {
     updateAppVersion,
     updateDatabaseVersion } = useVersionManagerSlice.actions;
 
-Export reducer for the version slice
+// Export reducer for the version slice
 export default useVersionManagerSlice.reducer;
 export type { VersionState };

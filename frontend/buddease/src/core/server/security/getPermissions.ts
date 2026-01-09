@@ -2,7 +2,7 @@ getPermissions.ts
 
 import { UserRoleEnum } from '@/core/models/UserRoles';
 
-Defining permissions for each role
+// Defining permissions for each role
 interface RolePermissions {
     canViewCryptoDashboard: boolean;
     canTradeCrypto: boolean;
@@ -121,7 +121,7 @@ export type { RolePermissions };
 
 
 
-Example function that checks if a user can view the crypto dashboard
+// Example function that checks if a user can view the crypto dashboard
 const canUserViewCryptoDashboard = (role: UserRoleEnum): boolean => {
     const permissions = getPermissions(role);
     return permissions.canViewCryptoDashboard;

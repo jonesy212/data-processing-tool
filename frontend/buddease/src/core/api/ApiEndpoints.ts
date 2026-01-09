@@ -10,7 +10,7 @@ type NestedEndpoints = {
   [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
 };
 
-Interface representing endpoints with categories
+// Interface representing endpoints with categories
 interface Endpoints {
   [category: string]: NestedEndpoints;
 }

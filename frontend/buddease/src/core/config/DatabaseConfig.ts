@@ -14,7 +14,7 @@ export interface DatabaseConfig extends PoolConfig {
   idleTimeoutMillis?: number;
 }
 
-Helper function to convert DatabaseConfig to PoolConfig
+// Helper function to convert DatabaseConfig to PoolConfig
 export const toPoolConfig = (config: DatabaseConfig): PoolConfig => ({
   host: config.host,
   port: config.port,
@@ -27,7 +27,7 @@ export const toPoolConfig = (config: DatabaseConfig): PoolConfig => ({
   idleTimeoutMillis: config.idleTimeoutMillis
 });
 
-Primary config getter - uses environment variables
+// Primary config getter - uses environment variables
 export const getDatabaseConfig = (): DatabaseConfig => ({
   url: process.env.DB_URL!,
   host: process.env.DB_HOST! || 'localhost',
@@ -45,7 +45,7 @@ export const getDatabaseConfig = (): DatabaseConfig => ({
   } : false
 });
 
-Alternative config getter - uses configData file
+// Alternative config getter - uses configData file
 export const getPoolConfig = (): PoolConfig => ({
   host: configData.database.host,
   port: configData.database.port,
@@ -58,7 +58,7 @@ export const getPoolConfig = (): PoolConfig => ({
   ssl: configData.database.ssl || (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false)
 });
 
-Default configuration for fallback
+// Default configuration for fallback
 export const defaultDatabaseConfig: DatabaseConfig = {
   url: 'postgresql://localhost:5432/your_database',
   host: 'localhost',
@@ -73,7 +73,7 @@ export const defaultDatabaseConfig: DatabaseConfig = {
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 };
 
-Database types for different environments
+// Database types for different environments
 export enum DatabaseEnvironment {
   DEVELOPMENT = 'development',
   TESTING = 'testing',
@@ -109,7 +109,7 @@ export const getEnvironmentConfig = (env: DatabaseEnvironment = DatabaseEnvironm
   }
 };
 
-Validate configuration
+// Validate configuration
 export const validateDatabaseConfig = (config: DatabaseConfig): { valid: boolean; errors: string[] } => {
   const errors: string[] = [];
   

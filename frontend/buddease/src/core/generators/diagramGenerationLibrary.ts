@@ -2,7 +2,7 @@ diagramGenerationLibrary.ts
 
 import { diagramGenerator } from "@/core/generators/diagramGenerator";
 
-Define the function to generate a diagram
+// Define the function to generate a diagram
 function generateDiagram(rows: number = 3, cols: number = 3, content: string[] = ['A', 'B', 'C', 'D', 'E', 'F']): string {
     try {
         // Generate the diagram using the 'diagramGenerator' library or any other method

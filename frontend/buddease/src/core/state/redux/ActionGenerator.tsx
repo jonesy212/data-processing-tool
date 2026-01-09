@@ -54,7 +54,7 @@ const createEntityActions = <EntityData extends { id: string }>() => {
   } as EntityActions<EntityData>;
 };
 
-Example usage:
+// Example usage:
 
 type EntityData = {
   id: string;

@@ -1,11 +1,11 @@
 machineLearning.ts
 machineLearningModel.ts
 
-Import necessary libraries
+// Import necessary libraries
 import { MarketData } from "@/core/trading/TradingStrategy";
 import * as tf from "@tensorflow/tfjs";
 
-Define the machine learning model class
+// Define the machine learning model class
 class MachineLearningModel {
   model: tf.LayersModel;
 

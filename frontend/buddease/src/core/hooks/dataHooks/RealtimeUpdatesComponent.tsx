@@ -6,7 +6,7 @@ import { UserData } from '@/core/users/User';
 import { subscribeToRealtimeUpdates } from '@/utils/web3/dAppAdapter/functionality/RealtimeUpdates';
 
 
-Define the type for participant data
+// Define the type for participant data
 const RealtimeUpdatesComponent = () => {
   const { state: authState } = useAuth();
   const id = authState.user?.id;

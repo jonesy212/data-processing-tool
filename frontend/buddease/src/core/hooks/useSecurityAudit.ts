@@ -4,7 +4,7 @@ import { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useSecureUserId as fetchSecureUserId } from '@/core/hooks/useSecureUserId';
 
-Type guard for sensitive fields
+// Type guard for sensitive fields
 const isSensitiveField = (field: any): field is { isSensitive: boolean; value?: any } => {
     return field && typeof field === "object" && "isSensitive" in field;
 };

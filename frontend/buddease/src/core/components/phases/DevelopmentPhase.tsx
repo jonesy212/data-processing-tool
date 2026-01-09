@@ -4,7 +4,7 @@ import RegistrationPhaseComponent from "@/core/pages/onboarding/RegistrationPhas
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";
 import React from "react";
 
-Union type of all possible phase values from DevelopmentPhaseEnum and OnboardingPhase
+// Union type of all possible phase values from DevelopmentPhaseEnum and OnboardingPhase
 export type PhaseUnion = DevelopmentPhaseEnum | OnboardingPhase;
 
 export interface DevelopmentPhase {
@@ -16,7 +16,7 @@ export interface DevelopmentPhase {
 
 
 
-Implement the registration phase
+// Implement the registration phase
 const RegistrationPhase: React.FC<{
   onSuccess: any,
   onSubmit: any
@@ -44,4 +44,4 @@ export const DesignPhase: DevelopmentPhase = {
   },
 };
 
-Define other phases similarly...
+// Define other phases similarly...

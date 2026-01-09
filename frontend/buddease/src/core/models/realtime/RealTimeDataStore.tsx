@@ -3,7 +3,7 @@ import { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/core/typings/enti
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 
 
-Use these defaults for the generic
+// Use these defaults for the generic
 type AppRealtimeData = RealtimeData<
   AppEntity,       // T
   AppK,            // K

@@ -15,7 +15,7 @@ import type { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields
 import { User } from "@/core/users/User";
 import React, { createContext, useContext } from "react";
 
-Keep AuthMethods as the source of truth for all auth methods
+// Keep AuthMethods as the source of truth for all auth methods
 
 interface AuthMethods<
   T extends BaseDataEntity,
@@ -41,7 +41,7 @@ interface AuthMethods<
   ) => void;
 }
 
-Create a separate interface for AuthContext value that extends AuthMethods
+// Create a separate interface for AuthContext value that extends AuthMethods
 interface AuthContextProps<
   T extends BaseDataEntity,
   K extends T = T,

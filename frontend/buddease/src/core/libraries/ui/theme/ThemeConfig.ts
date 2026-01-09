@@ -3,13 +3,13 @@ import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
 import { AliasToken } from "antd/es/theme/internal";
 
 
-Define the MappingAlgorithm type
+// Define the MappingAlgorithm type
 type MappingAlgorithm = {
   name: string;
   description: string;
   // Add any other properties specific to MappingAlgorithm
 };
-Add the Options type
+// Add the Options type
 interface Options {
   label?: string;
   tag?: string;
@@ -38,7 +38,7 @@ type ComponentsConfig = {
   // Add more components as needed
 };
 
-Update the ThemeConfig interface
+// Update the ThemeConfig interface
 interface ThemeConfig {
   available: ThemeEnum[];
   autoDetect: boolean;
@@ -106,7 +106,7 @@ const themeSettings: ThemeConfig = {
 
 
 
-Or for multiple algorithms with Options
+// Or for multiple algorithms with Options
 const themeSettingsWithOptions: ThemeConfig = {
   // Other theme settings...
   infoColor: "",

@@ -1,9 +1,9 @@
-ArticleEntity.ts
-ArticleEntity.ts
+// ArticleEntity.ts
+
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Specific entity for articles
+// Specific entity for articles
 interface ArticleEntity extends BaseDataEntity {
   id: string;
   title: string;

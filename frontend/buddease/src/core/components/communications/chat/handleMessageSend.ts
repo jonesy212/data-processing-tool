@@ -1,5 +1,5 @@
 handleMessageSend.ts
-Import any necessary dependencies or services for sending messages (e.g., WebSocket, API service)
+// Import any necessary dependencies or services for sending messages (e.g., WebSocket, API service)
 
 const handleMessageSend = (message: string, setMessage: React.Dispatch<React.SetStateAction<string | null>>) => {
   // Simulate sending the message (replace this with your actual logic)

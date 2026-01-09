@@ -1,9 +1,9 @@
 BinanceAPI.ts
 
-Import necessary modules
+// Import necessary modules
 import axios, { AxiosInstance } from 'axios';
 
-Define BinanceAPI class
+// Define BinanceAPI class
 class BinanceAPI {
   private apiUrl: string;
   private httpClient: AxiosInstance;
@@ -30,5 +30,5 @@ class BinanceAPI {
   // Add more methods as needed to interact with different endpoints of the Binance API
 }
 
-Export the BinanceAPI class
+// Export the BinanceAPI class
 export default BinanceAPI;

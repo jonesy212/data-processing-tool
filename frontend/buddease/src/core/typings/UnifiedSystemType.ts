@@ -62,7 +62,7 @@ export type UnifiedSystemType = {
     meetingStatusType?: MeetingStatus;
   };
   
-Example usage
+// Example usage
 const unifiedSystem: UnifiedSystemType = {
   calendarEvents: [],
   todos: [],

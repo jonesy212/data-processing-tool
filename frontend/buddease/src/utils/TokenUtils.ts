@@ -3,7 +3,7 @@ TokenUtils.ts
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { useNotification } from '@/core/state/context/NotificationContext';
 
-Utility function to check if a user has a certain amount of tokens
+// Utility function to check if a user has a certain amount of tokens
 export const hasEnoughTokens = (
   userTokens: number,
   requiredTokens: number
@@ -23,7 +23,7 @@ export const hasEnoughTokens = (
   return hasEnough;
 };
 
-Utility function to stake tokens and earn rewards
+// Utility function to stake tokens and earn rewards
 export const stakeTokens = (
   userTokens: number,
   stakedTokens: number
@@ -46,7 +46,7 @@ export const stakeTokens = (
   return newStakedTokens;
 };
 
-Utility function to check if the token supply has reached its cap
+// Utility function to check if the token supply has reached its cap
 export const isTokenSupplyCapped = (
   currentSupply: number,
   maxSupply: number
@@ -66,7 +66,7 @@ export const isTokenSupplyCapped = (
   return isCapped;
 };
 
-Utility function to transfer tokens between users
+// Utility function to transfer tokens between users
 export const transferTokens = (
   senderTokens: number,
   receiverTokens: number,
@@ -91,4 +91,4 @@ export const transferTokens = (
   return [newSenderTokens, newReceiverTokens];
 };
 
-Add more utility functions based on your specific token-related requirements
+// Add more utility functions based on your specific token-related requirements

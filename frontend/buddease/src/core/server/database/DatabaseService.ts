@@ -1,7 +1,7 @@
-ClientDatabaseService.ts
-SERVER-SIDE ONLY - This goes in /server/ directory
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
-import { ClientDatabaseService, DatabaseQuery } from '@/core/config/DatabaseTypes';
+// ClientDatabaseService.ts
+// SERVER-SIDE ONLY - This goes in /server/ directory
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { ClientDatabaseService, DatabaseQuery } from '@/core/config/DatabaseTypes';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { getAuthToken } from '@/core/server/auth/getAuthToken';
 import performDatabaseOperation from '@/core/server/database/DatabaseOperations';
@@ -437,10 +437,10 @@ export abstract class BaseDatabaseService implements ClientDatabaseService {
 
 
 
-Call getAuthToken without passing any arguments
+// Call getAuthToken without passing any arguments
 const YOUR_AUTH_TOKEN = getAuthToken();
 
-todo make dynamic and use
+// todo make dynamic and use
 const initializeDatabase = async (): Promise<boolean> => {
   const databaseConfig: DatabaseConfig = {
     url: process.env.DB_URL!,
@@ -470,7 +470,7 @@ const initializeDatabase = async (): Promise<boolean> => {
   }
 };
 
-Usage
+// Usage
 initializeDatabase().then(success => {
   if (success) {
     // Proceed with application startup

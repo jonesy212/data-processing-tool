@@ -33,5 +33,5 @@ function generateAllHeaders(
 }
 export { generateAllHeaders };
 
-Example usage when calling getSnapshot
+// Example usage when calling getSnapshot
 export const additionalHeaders: Record<string, string> = generateAllHeaders({ additionalHeaders: { 'Custom-Header': 'value' } }, authToken);

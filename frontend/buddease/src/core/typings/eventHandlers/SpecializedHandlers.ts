@@ -1,11 +1,11 @@
-app/utils/eventHandlers/SpecializedHandlers.ts
+// app/utils/eventHandlers/SpecializedHandlers.ts
 import { KeyboardEventListener, MouseEventListener, ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
 
 
 import React from 'react';
 
-Type imports
-Only implement what you need
+// Type imports
+// Only implement what you need
 export class MouseOnlyHandler implements MouseEventListener {
   handleMouseClick = (event: ReactiveEventHandler) => {
     console.log("Mouse click handled");

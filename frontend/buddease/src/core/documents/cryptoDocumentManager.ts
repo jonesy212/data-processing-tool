@@ -5,7 +5,7 @@ import { CryptoDocument } from "@/core/documents/cryptoDocument";
 import { encryptStringClient } from "@/core/security/clientEncrypt";
 import { DocumentTree } from "@/core/users/User";
 
-Utility to check if we’re running in a browser
+// Utility to check if we’re running in a browser
 const isBrowser = typeof window !== "undefined";
 
 export class CryptoDocumentManager {

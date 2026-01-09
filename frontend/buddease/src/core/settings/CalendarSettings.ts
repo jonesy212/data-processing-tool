@@ -1,7 +1,7 @@
 CalendarSettings.ts
 import { EventNotificationsSettings } from '@/core/notifications/NotificationChannels';
 import { ReminderSettings } from '@/core/settings/Reminder';
-Define the CalendarSettingsEnum to represent various calendar settings
+// Define the CalendarSettingsEnum to represent various calendar settings
 export enum CalendarSettingsEnum {
   ShowWeekends = 'ShowWeekends',
   FirstDayOfWeek = 'FirstDayOfWeek',
@@ -39,7 +39,7 @@ interface CalendarSettings {
 
 
 
-Example usage
+// Example usage
 const userCalendarSettings: CalendarSettings = {
   showWeekends: true,
   firstDayOfWeek: 'Monday',

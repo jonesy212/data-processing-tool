@@ -9,7 +9,7 @@ import {
     MigrationDefinition
 } from './SchemaEvolutionManager';
 
-Add Database-specific migration types
+// Add Database-specific migration types
 export interface DatabaseMigrationDefinition<
   T extends BaseDataEntity,
   K extends T = T,
@@ -32,7 +32,7 @@ export interface DatabaseMigrationDefinition<
   conflictResolution: 'overwrite' | 'skip' | 'merge' | 'error';
 }
 
-Enhanced Migration Context with database operations
+// Enhanced Migration Context with database operations
 export interface DatabaseMigrationContext<
   T extends BaseDataEntity,
   K extends T = T,

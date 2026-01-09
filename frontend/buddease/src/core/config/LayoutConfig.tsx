@@ -7,7 +7,7 @@ import DesignDashboard from "@/core/pages/dashboards/DesignDashboard";
 import BackendStructure from "@/core/server/database/BackendStructure";
 import { User } from "@/core/users/User";
 import FrontendStructure from "./appStructure/FrontendStructure";
-Define your layout configuration
+// Define your layout configuration
 export const layoutConfig = async () => {
   // Document Generation
   const docxOptions: DocxGeneratorOptions = {
@@ -57,7 +57,7 @@ export const layoutConfig = async () => {
   };
 };
 
-Example usage
+// Example usage
 const runLayoutConfig = async () => {
   const configResult = await layoutConfig();
   console.log(configResult);

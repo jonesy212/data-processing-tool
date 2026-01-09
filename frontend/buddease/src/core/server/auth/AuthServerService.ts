@@ -473,7 +473,7 @@ export const databaseConfig: DatabaseConfig = {
   authToken: process.env.AUTH_TOKEN,
 };
 
-Factory functions
+// Factory functions
 export const createAuthService = (dbType: DatabaseType = DatabaseType.POSTGRES) => 
   new AuthServerService(databaseConfig, dbType);
 

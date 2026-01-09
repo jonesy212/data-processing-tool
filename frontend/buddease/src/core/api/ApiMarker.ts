@@ -54,7 +54,7 @@ function* deleteMarkerSaga(action: ReturnType<typeof MarkerActions.deleteMarker>
 }
 
 
-Other sagas related to marker actions can be updated similarly
+// Other sagas related to marker actions can be updated similarly
 
 export function* watchMarkerSagas() {
   yield takeLatest(MarkerActions.fetchMarkersRequest.type, fetchMarkersSaga);

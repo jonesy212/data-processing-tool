@@ -5,7 +5,7 @@ import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta }
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { User } from '@/core/users/User';
 
-Define the interface for FileData
+// Define the interface for FileData
 interface FileData<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,

@@ -1,4 +1,5 @@
-JwtPayload.ts
+// JwtPayload.ts
+
 import { Scope } from '@/core/state/stores/Scopes';
 import * as jwt from 'jsonwebtoken';
 

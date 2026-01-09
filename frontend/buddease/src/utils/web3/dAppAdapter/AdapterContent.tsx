@@ -242,7 +242,7 @@ const AdapterContent: React.FC<AdapterContentProps> = ({
   );
 };
 
-todo update and use the right icon here
+// todo update and use the right icon here
 const ExampleIcon: React.FC = () => <span>🌐</span>; // Replace with your actual icon
 
 export default AdapterContent;

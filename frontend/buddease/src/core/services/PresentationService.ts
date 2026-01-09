@@ -1,9 +1,9 @@
 PresentationService.ts
-Import necessary dependencies and interfaces
+// Import necessary dependencies and interfaces
 
 import { Presentation, Slide } from "@/core/documents/editing/Presentation";
 
-Define a service to handle presentation-related operations
+// Define a service to handle presentation-related operations
 class PresentationService {
   // Method to create a new presentation
   createPresentation(title: string, slides: Slide[]): Presentation {
@@ -42,10 +42,10 @@ class PresentationService {
   }
 }
 
-Function to generate a unique ID (example implementation)
+// Function to generate a unique ID (example implementation)
 function generateUniqueId(): string {
   return Math.random().toString(36).substr(2, 9);
 }
 
-Export an instance of the PresentationService
+// Export an instance of the PresentationService
 export const presentationService = new PresentationService();

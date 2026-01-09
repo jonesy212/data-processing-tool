@@ -46,7 +46,7 @@ const BugTrackingDashboard = () => {
 
 
 
-Function to handle sort changes
+// Function to handle sort changes
 const handleSortChange = (newSortOptions) => {
   // Implement robust sort logic here
 

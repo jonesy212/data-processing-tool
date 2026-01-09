@@ -1,7 +1,7 @@
 InviteFriends.tsx
 import { useState } from 'react';
 
-Invite Friends Component
+// Invite Friends Component
 const InviteFriends = () => {
   // State to track friends' email or phone numbers
   const [friendEmail, setFriendEmail] = useState('');

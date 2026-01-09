@@ -8,10 +8,10 @@ import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import BlogPostComponent, { BlogPost } from "@/core/pages/blog/BlogPost";
 import { RootState } from "@/core/state/redux/slices/RootSlice";
 
-Define a typed version of useSelector using the root state type
+// Define a typed version of useSelector using the root state type
 const useSelectorTyped = (selector: (state: RootState) => any) => useSelector(selector);
 
-Define a function to create dynamic hooks with RootState
+// Define a function to create dynamic hooks with RootState
 const createDynamicHookWithRootState = (hookParams: DynamicHookParams<RootState>): AsyncHook<RootState> => createDynamicHook(hookParams);
 
 const BlogPage: React.FC = () => {
@@ -46,6 +46,6 @@ const BlogPage: React.FC = () => {
 };
 
 
-Combine the component and the function into a single export statement
+// Combine the component and the function into a single export statement
 export { createDynamicHookWithRootState, BlogPage as default };
 

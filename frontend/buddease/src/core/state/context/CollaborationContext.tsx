@@ -2,19 +2,19 @@ CollaborationContext.tsx
 import React from'react';
 import { createContext, useContext, useState } from 'react';
 
-Define the collaboration context
+// Define the collaboration context
 interface CollaborationContextType {
   collaborationState: any; // Define the type according to your collaboration state
   setCollaborationState: React.Dispatch<React.SetStateAction<any>>;
 }
 
-Create the collaboration context
+// Create the collaboration context
 const CollaborationContext = createContext<CollaborationContextType>({
   collaborationState: null,
   setCollaborationState: () => {},
 });
 
-Define the collaboration provider
+// Define the collaboration provider
 export const CollaborationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -29,7 +29,7 @@ export const CollaborationProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-Define the useCollaboration hook to access the collaboration context
+// Define the useCollaboration hook to access the collaboration context
 export const useCollaboration = () => {
   const context = useContext(CollaborationContext);
   if (!context) {

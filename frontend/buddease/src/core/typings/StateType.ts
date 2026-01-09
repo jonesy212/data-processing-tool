@@ -8,7 +8,7 @@ import { SettingsState } from "@/core/state/redux/slices/SettingsSlice";
 import { TaskState } from "@/core/state/redux/slices/TaskSlice";
 import { UserManagerState } from '@/core/state/redux/slices/UserSlice';
 import { User } from "@/core/users/User";
-Define the StateType interface
+// Define the StateType interface
 interface StateType {
     projects: Project[];
     users: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -25,5 +25,5 @@ interface StateType {
   }
   
 
-Export the StateType interface
+// Export the StateType interface
 export type { StateType };

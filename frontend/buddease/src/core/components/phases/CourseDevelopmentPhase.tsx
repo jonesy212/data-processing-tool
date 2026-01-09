@@ -9,7 +9,7 @@ import CourseLearningPhase from '@/core/pages/course/CourseLearningPhase';
 import CoursePlanningPhase from '@/core/pages/course/CoursePlanningPhase';
 import CourseSetupPhase from '@/core/pages/course/CourseSetupPhase';
 
-Define course development phases
+// Define course development phases
 export enum CourseDevelopmentPhase {
   PLANNING,
   SETUP,

@@ -120,15 +120,15 @@ export default LiveStream;
 
 
 
-convert actions:
-Define action types
+// convert actions:
+// Define action types
 enum LiveStreamActionTypes {
   TOGGLE_ORDER_FORM_MODAL = "TOGGLE_ORDER_FORM_MODAL",
   SUBMIT_ORDER = "SUBMIT_ORDER",
   // Add more action types as needed
 }
 
-Define action interfaces
+// Define action interfaces
 interface ToggleOrderFormModalAction {
   type: LiveStreamActionTypes.TOGGLE_ORDER_FORM_MODAL;
 }
@@ -138,10 +138,10 @@ interface SubmitOrderAction {
   formData: any; // Define the type of form data
 }
 
-Define a union type for all actions
+// Define a union type for all actions
 type LiveStreamAction = ToggleOrderFormModalAction | SubmitOrderAction;
 
-Define action creators
+// Define action creators
 const toggleOrderFormModal = (): ToggleOrderFormModalAction => ({
   type: LiveStreamActionTypes.TOGGLE_ORDER_FORM_MODAL,
 });

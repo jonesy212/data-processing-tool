@@ -5,7 +5,7 @@ import { addToHistory, redo, undo } from "@/core/state/redux/slices/UndoRedoSlic
 import { PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 
-Import the Message type from your application
+// Import the Message type from your application
 import { UndoRedoActions } from "@/core/actions/UndoRedoActions";
 import userService from "@/core/api/ApiUser";
 import { Message } from "@/core/generators/GenerateChatInterfaces";
@@ -17,7 +17,7 @@ import { RootState } from "@/core/state/redux/slices/RootSlice";
 import { Partial } from "react-spring";
 
 
-Define the HistoryItem interface
+// Define the HistoryItem interface
 interface HistoryItem {
   id: string; // Unique identifier for the history item
   timestamp: number; // Timestamp indicating when the history item was created
@@ -33,7 +33,7 @@ export interface BranchingHistoryPayload {
 
 
 
-Action Types
+// Action Types
 const REDO_REQUEST = 'REDO_REQUEST';
 const REDO_SUCCESS = 'REDO_SUCCESS';
 const REDO_FAILURE = 'REDO_FAILURE';
@@ -42,7 +42,7 @@ const LIMIT_HISTORY_SIZE_SUCCESS = 'LIMIT_HISTORY_SIZE_SUCCESS';
 const LIMIT_HISTORY_SIZE_FAILURE = 'LIMIT_HISTORY_SIZE_FAILURE';
 
 
-Action Creators
+// Action Creators
 export const redoRequest = () => ({ type: REDO_REQUEST });
 export const redoSuccess = () => ({ type: REDO_SUCCESS });
 export const redoFailure = (error: any) => ({ type: REDO_FAILURE, payload: error });
@@ -109,7 +109,7 @@ async function handleUndoRedo(action: PayloadAction<any>): Promise<void> {
 }
 
 
-Handle the undo action
+// Handle the undo action
 function* handleUndo(_action: PayloadAction<void>): Generator {
   try {
     yield put(UndoRedoActions.undo());
@@ -119,7 +119,7 @@ function* handleUndo(_action: PayloadAction<void>): Generator {
 }
 
 
-Handle the clear history action
+// Handle the clear history action
 export function* handleClearHistory() {
   try {
     // Dispatch an action to initiate the clear history operation
@@ -138,7 +138,7 @@ export function* handleClearHistory() {
 
 
 
-Worker Saga: Handle the merge histories action
+// Worker Saga: Handle the merge histories action
 export function* handleMergeHistories(action: PayloadAction<{ targetHistory: HistoryItem[]; sourceHistory: HistoryItem[] }>): Generator {
   try {
     // Extract targetHistory and sourceHistory from the payload
@@ -157,7 +157,7 @@ export function* handleMergeHistories(action: PayloadAction<{ targetHistory: His
 }
 
 
-Worker Saga: Performs the clear history operation
+// Worker Saga: Performs the clear history operation
 export function* performClearHistoryOperation(): Generator {
   try {
     yield put(UndoRedoActions.clearHistoryRequest());
@@ -171,7 +171,7 @@ export function* performClearHistoryOperation(): Generator {
 
   // Handle the redo action
 
-Reducer function for handling the redo action
+// Reducer function for handling the redo action
 export function* handleRedo(action: any): Generator {
   try {
     // Implement the logic to perform redo operation here
@@ -186,8 +186,8 @@ export function* handleRedo(action: any): Generator {
 
 
   // Worker Saga: Performs the redo operation
-If the action parameter is not needed, remove it
-Worker Saga: Performs the redo operation
+// If the action parameter is not needed, remove it
+// Worker Saga: Performs the redo operation
 export function* performRedo() {
   try {
     // Implement the logic to perform the redo operation here
@@ -209,7 +209,7 @@ export function* performRedo() {
 
 
 
-Worker Saga: Performs the redo operation
+// Worker Saga: Performs the redo operation
 export function* performRedoOperation(): Generator {
   try {
     // Implement the logic to perform the redo operation here
@@ -221,7 +221,7 @@ export function* performRedoOperation(): Generator {
 }
 
 
-Worker Saga: Handle the limit history size action
+// Worker Saga: Handle the limit history size action
 export function* handleLimitHistorySize(action: PayloadAction<number>): Generator {
   try {
     const { payload: maxSize } = action;
@@ -235,7 +235,7 @@ export function* handleLimitHistorySize(action: PayloadAction<number>): Generato
 
 
 
-Worker Saga: Handle the save history to local action
+// Worker Saga: Handle the save history to local action
 export function* handleSaveHistoryToLocal(action: PayloadAction<HistoryItem[]>): Generator {
   try {
     const { payload: history } = action;
@@ -264,7 +264,7 @@ export function* handleSaveHistoryToLocal(action: PayloadAction<HistoryItem[]>):
   
 
 
-Update the handleBranchingHistory function
+// Update the handleBranchingHistory function
 export function* handleBranchingHistory(
   action: PayloadAction<BranchingHistoryPayload>
 ): Generator<any, void, HistoryItem[]> {
@@ -308,7 +308,7 @@ export function* handleBranchingHistory(
   }
 }
 
-Handle the disable undo redo action
+// Handle the disable undo redo action
 export function* handleDisableUndoRedo(action: PayloadAction<boolean>): Generator {
   try {
     const disableUndoRedo: boolean = action.payload;

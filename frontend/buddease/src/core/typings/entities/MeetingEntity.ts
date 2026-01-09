@@ -2,7 +2,7 @@ MeetingEntity.ts
 import type { BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define the actual MeetingEntity interface
+// Define the actual MeetingEntity interface
 interface MeetingEntity extends BaseEntity {
   
   title: string;
@@ -40,7 +40,7 @@ type MeetingAttachment = Attachment;
 type MeetingExcludedFields = DefaultExcludedFields<MeetingEntity> | "participants" | "organizer" | "recordingUrl";
 type MeetingIncludedFields = keyof MeetingEntity;
 
-Meeting parameters container
+// Meeting parameters container
 type MeetingBaseParams = {
   T: MeetingEntity;
   K: MeetingK;

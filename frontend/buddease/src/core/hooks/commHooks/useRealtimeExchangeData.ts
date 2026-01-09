@@ -59,7 +59,7 @@ const useRealtimeExchangeData = <
   return { fetchExchangeData };
 };export default useRealtimeExchangeData;
 
-Example function to fetch exchange data for a specific exchange
+// Example function to fetch exchange data for a specific exchange
 const fetchDataForExchange = async (exchange: ExchangeEnum): Promise<any[]> => {
   // Replace with actual fetch logic based on the ExchangeEnum
   // Example:

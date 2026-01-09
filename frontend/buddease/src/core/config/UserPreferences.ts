@@ -153,7 +153,7 @@ interface UserPreferences<
   otherPreferences?: any; // Placeholder for any other preferences
 }
 
-todo update to modue names
+// todo update to modue names
 export type ModuleType =
   "profileManagement"
   | "taskTracking"
@@ -249,7 +249,7 @@ const userPreferences: UserPreferences = {
 
 
 
-Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
+// Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
 const getUserPreferences = async <
   T extends BaseDataEntity,
   K extends T = T,
@@ -555,7 +555,7 @@ const getUserPreferences = async <
 };
 
 
-Example usage:
+// Example usage:
 getUserPreferences()
   .then((userPreferences) => {
     console.log("User preferences:", userPreferences);
@@ -571,10 +571,10 @@ export type { CryptoPreferences, UserPreferences };
 
 
   
-#Review
+// #Review
 
-Sample usage
-Tracking file changes
+// Sample usage
+// Tracking file changes
 const file: FileData<FileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields> = {
   name: "sample.txt",
   size: 1024,

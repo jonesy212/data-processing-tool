@@ -54,7 +54,7 @@ export type FileAttachment = Attachment;
 export type FileExcludedFields = 'content' | 'encryptionKey' | 'previousVersions';
 export type FileIncludedFields = keyof AppFileEntity;
 
-Create specific type aliases
+// Create specific type aliases
 export type MainAppFile = AppFile
 export type AppFileCommonData = CommonData<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
 

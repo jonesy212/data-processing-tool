@@ -10,7 +10,7 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 import React, { useState } from 'react';
 
 
-Define course development phases
+// Define course development phases
 export enum CourseDevelopmentPhase {
   PLANNING,
   SETUP,

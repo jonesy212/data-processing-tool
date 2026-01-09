@@ -49,7 +49,7 @@ class DocumentPermissions {
 }
 
 export default DocumentPermissions
-Example usage:
+// Example usage:
 const docPermissions = new DocumentPermissions(true, false);
 console.log(docPermissions.getReadAccess()); // Output: true
 console.log(docPermissions.getWriteAccess()); // Output: false

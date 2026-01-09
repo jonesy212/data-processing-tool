@@ -3,7 +3,7 @@ CollaborationActions.ts
 import { Collaborator } from "@/core/collaborators/Collaborator";
 import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
 import { createAction } from '@reduxjs/toolkit';
-Collaboration actions
+// Collaboration actions
 export const CollaborationActions = {
 
   fetchCollaboration: createAction<{id: string}>('collaboration/fetchCollaboration'),

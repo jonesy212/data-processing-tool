@@ -206,7 +206,7 @@ const fetchDataFrameSuccess = (dataFrame: any) => ({
   payload: dataFrame,
 });
 
-Similar functions for update and delete operations
+// Similar functions for update and delete operations
 function* handleUpdateDataFrame(action: any): Generator<Effect, void, any> {
   try {
     const { payload } = action;

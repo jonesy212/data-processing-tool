@@ -13,7 +13,7 @@ import { CryptoPortfolio, ProjectActivity } from '@/core/components/crypto/Crypt
 import axios, { AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
 
-Use the data-processing endpoint from apiEndpoints.ts
+// Use the data-processing endpoint from apiEndpoints.ts
 const API_BASE_URL = endpoints.dataProcessing;
 
 interface DataProcessing {
@@ -63,7 +63,7 @@ type YourDataType = UserData<MyDataType> & {
 const AppDataActions = DataActions();
 
 
-Ensure correct types are used in the data processing
+// Ensure correct types are used in the data processing
 const dataProcessingService = observable({
   loadDataAndProcess: async (data: DataProcessing): Promise<DataProcessingResult> => {
     try {

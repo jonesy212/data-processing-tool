@@ -20,7 +20,7 @@ import { K, T } from "@/core/models/data/dataStoreMethods";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import * as snapshotApi from '@/core/api/SnapshotApi';
- Example of asynchronous function using async/await
+//  Example of asynchronous function using async/await
 const updateSubscribersAndSnapshots = async (
     snapshotId: string,
     subscribers: Subscriber<BaseData, K>[],

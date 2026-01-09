@@ -1,11 +1,13 @@
-pagingSlice.tsx
-import { PagingState } from "@/core/pages/Paging";
-import { PromptPageProps } from "@/core/prompts/PromptPage";
-import { ApiManagerState } from "@/core/state/redux/slices/ApiSlice";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+// pagingSlice.tsx
+import type { PagingState } from "@/core/pages/Paging";
+import type { PromptPageProps } from "@/core/prompts/PromptPage";
+import type { ApiManagerState } from "@/core/state/redux/slices/ApiSlice";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 
 const initialState: PagingState = {
-  currentPage: {} as WritableDraft<PromptPageProps>,
+  currentPage: {} as PromptPageProps,
   pageSize: 10,
   totalItems: 0,
 };
@@ -14,7 +16,7 @@ export const usePagingManagerSlice = createSlice({
   name: 'paging',
   initialState,
   reducers: {
-    setCurrentPage: (state, action: PayloadAction<WritableDraft<PromptPageProps>>) => {
+    setCurrentPage: (state, action: PayloadAction<PromptPageProps>) => {
       state.currentPage = action.payload;
     },
     setPageSize: (state, action: PayloadAction<number>) => {
@@ -41,15 +43,14 @@ export default usePagingManagerSlice.reducer;
 export type { PagingState };
 
 
-example usage
+// example usage
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentPage, setPageSize } from '@/core/state/redux/slices/pagingSlice';
-import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
 
- Example usage in a component
+//  Example usage in a component
 const dispatch = useDispatch();
 const { currentPage, pageSize, totalItems } = useSelector((state: RootState) => state.paging);
 
- Dispatch actions to update paging state
+//  Dispatch actions to update paging state
 dispatch(setCurrentPage(1));
 dispatch(setPageSize(20));

@@ -1,6 +1,6 @@
 storageTypes.ts
 storageTypes.ts
-Centralized storage/search metadata (all fields you listed)
+// Centralized storage/search metadata (all fields you listed)
 export interface StorageMetadata {
   // DB layer
   _attachments?: Record<string, any>;
@@ -37,7 +37,7 @@ export interface StorageMetadata {
   _storageExtras?: Record<string, any>;
 }
 
-PersistedDocument: generic composition of domain + storage metadata
+// PersistedDocument: generic composition of domain + storage metadata
 export type PersistedDocument<TDomain> = TDomain & StorageMetadata & {
   // explicit DB id field (optional if domain has its own id)
   _id?: string | number;

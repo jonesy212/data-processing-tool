@@ -2,7 +2,7 @@ ChatRoomEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define the actual ChatRoomEntity interface
+// Define the actual ChatRoomEntity interface
 interface ChatRoomEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -40,7 +40,7 @@ type ChatRoomAttachment = Attachment;
 type ChatRoomExcludedFields = DefaultExcludedFields<ChatRoomEntity> | "participants" | "adminIds" | "pinnedMessages";
 type ChatRoomIncludedFields = keyof ChatRoomEntity;
 
-ChatRoom parameters container
+// ChatRoom parameters container
 type ChatRoomBaseParams = {
   T: ChatRoomEntity;
   K: ChatRoomK;

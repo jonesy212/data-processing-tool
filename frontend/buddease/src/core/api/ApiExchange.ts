@@ -14,7 +14,7 @@ import {
     handleApiErrorAndNotify,
 } from "./ApiData";
 
-Define your notification messages interface
+// Define your notification messages interface
 
 
 interface DataNotificationMessages {
@@ -22,7 +22,7 @@ interface DataNotificationMessages {
   // Add more notification IDs as needed
 }
 
-Function to fetch exchange data
+// Function to fetch exchange data
 export const fetchExchangeData = async <
   T extends BaseDataEntity = AppEntity,
   K extends T = T,

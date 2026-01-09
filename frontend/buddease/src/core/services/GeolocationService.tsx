@@ -1,5 +1,5 @@
 GeolocationService.tsx
-Define the GeolocationService class
+// Define the GeolocationService class
 class GeolocationService {
     watchId: any;
     // Method to get the user's current geolocation

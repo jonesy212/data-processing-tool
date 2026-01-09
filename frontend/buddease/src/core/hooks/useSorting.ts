@@ -6,7 +6,7 @@ import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { SortCriteria } from '@/core/settings/SortCriteria';
 import { useState } from 'react';
 
-Generic sorting hook
+// Generic sorting hook
 const useSorting = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -220,7 +220,7 @@ const useSorting = <
   };
 };
 
-Non-generic version for easier use (if you don't need the generics)
+// Non-generic version for easier use (if you don't need the generics)
 export const useSimpleSorting = () => {
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>(SortCriteria.Date);
 

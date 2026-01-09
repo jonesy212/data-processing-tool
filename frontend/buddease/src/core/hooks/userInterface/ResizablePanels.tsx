@@ -6,7 +6,7 @@ import { ResizableBox, ResizeCallbackData } from "react-resizable";
 if (typeof window !== 'undefined') {
   import('@/core/components/form/FormElementStyles');
 }
-Define the props interface for the ResizablePanels component
+// Define the props interface for the ResizablePanels component
 interface ResizablePanelsProps {
   sizes: (() => number[]) | number[]; // Updated type definition
   onResize: (newSizes: number[]) => void;
@@ -19,7 +19,7 @@ interface ResizablePanelsProps {
   
 }
 
-Define the ResizablePanels component
+// Define the ResizablePanels component
 const ResizablePanels: React.FC<ResizablePanelsProps> = ({
   sizes,
   onResize,

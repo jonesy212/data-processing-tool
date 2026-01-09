@@ -71,7 +71,7 @@ export type {
 
 
 
-Example usage:
+// Example usage:
 const sender1: StudentSender = {
     id: "123",
     username: "student123",

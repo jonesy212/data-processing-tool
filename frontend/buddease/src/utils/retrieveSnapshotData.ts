@@ -1,41 +1,42 @@
-import { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
+import type { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
 import internalApiService from '@/core/api/ApiClient';
 import axiosInstance from '@/core/api/csrfToken';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { environmentAwareEndpointManager } from '@/core/config/endpoints/EnvironmentAwareEndpointManager';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CombinedEvents, SnapshotManager } from '@/core/hooks/useSnapshotManager';
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { CombinedEvents, SnapshotManager } from '@/core/hooks/useSnapshotManager';
+import type { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { BaseData } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
 import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
-import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
+import type { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { Snapshots, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshots, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
+import type { Data } from '@/core/models/data/Data';
 import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { SnapshotEvent } from '@/core/typings/snapshotTypes';
-import { VideoData } from '@/core/typings/videoTypes/Video';
+import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
+import type { VideoData } from '@/core/typings/videoTypes/Video';
 import { convertSnapshotToMap } from '@/core/typings/YourSpecificSnapshotType';
-import { Version } from '@/core/versions/Version';
+import type { Version } from '@/core/versions/Version';
 
 
 // Define the API endpoint for retrieving snapshot data
@@ -53,7 +54,7 @@ interface SnapshotDataResponse<
   extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number;
   timestamp: Date
-  videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  videoData: VideoData<T, K>
   category: string
   // Other properties...
 }
@@ -256,8 +257,12 @@ const convertSnapshotStore = <
 
   const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory, core, security, storage, isExpired} = storeProps
   const snapshotData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
-    initialState, storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory,
-    core, security, storage, isExpired,  data, snapshotStore, timestamp
+    initialState, storeId, name, version,
+    schema, options, category, config,
+    operation, expirationDate, payload,
+    callback, storeProps, endpointCategory,
+    core, security, storage, isExpired,
+    data, snapshotStore, timestamp
   });
   // Create the Snapshot object from retrievedSnapshot
   const snapshot = {
@@ -511,7 +516,7 @@ const convertSnapshotStore = <
     key: retrievedSnapshot.id,
     state: [snapshot],
     store: null,
-    stores: (storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => [], // Return an array or null
+    stores: [], 
     findIndex: () => -1,
     splice: () => [],
     id: retrievedSnapshot.id,
@@ -530,6 +535,7 @@ const convertSnapshotStore = <
     permissions: [],
     settings: {},
     metadata: {
+      area: 'snapshot-area',
       metadataEntries: {}
     },
     references: [],

@@ -1241,10 +1241,10 @@ export class SnapshotValidators {
     }
 }
 
-Singleton instance for easy import
+// Singleton instance for easy import
 export const snapshotValidators = new SnapshotValidators();
 
-Example custom rules
+// Example custom rules
 export const defaultCustomRules: SnapshotValidationRule[] = [
     {
         name: 'no-empty-data',

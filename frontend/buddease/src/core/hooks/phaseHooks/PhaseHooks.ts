@@ -426,7 +426,7 @@ const phaseNames = [
   // Add more phase names as needed
 ];
 
-Define additional phases based on your project
+// Define additional phases based on your project
 const additionalPhaseNames = [
   "Ideation Phase",
   "Team Creation Phase",
@@ -450,7 +450,7 @@ const additionalPhaseHooks: {
   > 
 } = {};
 
-First block of code
+// First block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {
   additionalPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] =
     createPhaseHook(idleTimeoutDuration, {
@@ -499,7 +499,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
 });
 
 
-Second block of code
+// Second block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {
   additionalPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] =
     createPhaseHook(idleTimeoutDuration, {
@@ -564,7 +564,7 @@ const allPhaseHooks = {
 };
 
 
-Helper function to properly type allPhaseHooks
+// Helper function to properly type allPhaseHooks
 function createTypedPhaseHooks<
   T extends BaseDataEntity = PhaseT,
   K extends T = PhaseK,
@@ -576,7 +576,7 @@ function createTypedPhaseHooks<
   return {};
 }
 
-Example of how to define allPhaseHooks with proper typing
+// Example of how to define allPhaseHooks with proper typing
 const allPhaseHooks = createTypedPhaseHooks();
 
 
@@ -599,7 +599,7 @@ export const {
   // Add more phase hooks as needed
 } = phaseHooks;
 
-Additional utility functions for web3 and decentralized storage initialization
+// Additional utility functions for web3 and decentralized storage initialization
 function initializeWeb3() {
   // Replace with your web3 initialization logic
   console.log("Web3 initialized");
@@ -664,7 +664,7 @@ async function initializeDecentralizedStorage(): Promise<{
   return { dappAdapter: extendedDApp };
 }
 
-Additional utility functions for collaboration preferences initialization
+// Additional utility functions for collaboration preferences initialization
 async function initializeCollaborationPreferences() {
   // Replace with your collaboration preferences initialization logic
   console.log("Collaboration preferences initialized");
@@ -736,14 +736,14 @@ function applyCollaborationPreferences(
   // Implement the logic to apply preferences, e.g., update UI, enable/disable features, etc.
 }
 
-Example: Update UI elements with collaboration preferences
+// Example: Update UI elements with collaboration preferences
 function updateUIWithPreferences(preferences: CollaborationPreferences) {
   console.log("Updating UI with collaboration preferences");
   // Implement logic to update UI elements based on preferences
   // For example, change theme, set language, adjust font size, etc.
 }
 
-Example: Enable/disable features based on collaboration preferences
+// Example: Enable/disable features based on collaboration preferences
 function enableFeaturesBasedOnPreferences(
   preferences: CollaborationPreferences
 ) {
@@ -773,7 +773,7 @@ async function teamBuilding(storageClient: any) {
     teamChatHistory,
   };
 }
-Utility function to fetch data from storage
+// Utility function to fetch data from storage
 async function fetchDataFromStorage(
   storageClient: any,
   keys: string[]
@@ -792,7 +792,7 @@ async function fetchDataFromStorage(
   return Object.assign({}, ...fetchedData);
 }
 
-Generic function for phase data fetching
+// Generic function for phase data fetching
 async function fetchPhaseData(storageClient: any, keys: string[]) {
   return async function* () {
     console.log(`Fetching data for phase from decentralized storage`);
@@ -807,7 +807,7 @@ async function fetchPhaseData(storageClient: any, keys: string[]) {
 }
 
 
-Example: Initialize all phases in the app
+// Example: Initialize all phases in the app
 export async function initializeAllPhases<
   T extends BaseDataEntity = PhaseT,
   K extends T = PhaseK,
@@ -898,7 +898,7 @@ export async function initializeAllPhases<
   };
 }
 
-Alternative: If you're getting allPhaseHooks from elsewhere, create a typed version
+// Alternative: If you're getting allPhaseHooks from elsewhere, create a typed version
 function getTypedAllPhaseHooks<
   T extends BaseDataEntity = PhaseT,
   K extends T = PhaseK,

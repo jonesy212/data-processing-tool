@@ -62,7 +62,7 @@ const useDynamicPromptHook = createDynamicPromptHook({
 } as DynamicPromptConfig & DynamicHookParams);
 
 
-New code with useEffect integration
+// New code with useEffect integration
 const useDynamicPromptHookWithEffect = () => {
   useEffect(() => {
     // Invoke the dynamic prompt hook when the component mounts

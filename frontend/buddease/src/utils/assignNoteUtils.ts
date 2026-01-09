@@ -26,5 +26,5 @@ const assignNoteUtils: AssignNoteUtils = async (noteId, teamId) => {
   }
 };
 
-Export the assignNoteUtils function
+// Export the assignNoteUtils function
 export { assignNoteUtils };

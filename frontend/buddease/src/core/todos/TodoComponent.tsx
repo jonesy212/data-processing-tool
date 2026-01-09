@@ -376,7 +376,7 @@ const TodoComponent: React.FC<TodoComponentProps> = observer(({
 
 export default TodoComponent;
 
-Optional: Create a simpler version for specific use cases
+// Optional: Create a simpler version for specific use cases
 export const SimpleTodoComponent: React.FC = observer(() => {
   const todoStore = useTodoManagerStore();
   const shouldNavigate = todoStore.todoList.length === 0;
@@ -389,7 +389,7 @@ export const SimpleTodoComponent: React.FC = observer(() => {
   );
 });
 
-Optional: Todo dashboard component
+// Optional: Todo dashboard component
 export const TodoDashboard: React.FC = () => {
   return (
     <div style={{ padding: 24 }}>

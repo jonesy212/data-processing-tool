@@ -5,7 +5,7 @@ import { MeetingNotificationState } from "@/core/state/redux/slices/MeetingNotif
 import { User } from "@/core/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-Define interface for meeting-related state
+// Define interface for meeting-related state
 interface MeetingState {
   meetings: Meeting[];
   selectedMeeting: Meeting | null;
@@ -18,7 +18,7 @@ interface MeetingState {
   // Define other meeting-related state properties here
 }
 
-Define initial state for meetings
+// Define initial state for meetings
 const initialMeetingState: MeetingState = {
   meetings: [],
   selectedMeeting: null,
@@ -31,7 +31,7 @@ const initialMeetingState: MeetingState = {
   // Initialize other meeting-related state properties here
 };
 
-Create Meeting slice
+// Create Meeting slice
 export const meetingSlice = createSlice({
   name: "meeting",
   initialState: initialMeetingState,

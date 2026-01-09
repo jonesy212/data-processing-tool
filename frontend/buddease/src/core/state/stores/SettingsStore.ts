@@ -593,10 +593,10 @@ export class SettingsStore {
   }
 }
 
--------------------
-RootStores Integration
--------------------
-at the bottom of the file, **after** the channels literal
+// -------------------
+// RootStores Integration
+// -------------------
+// at the bottom of the file, **after** the channels literal
 const channels: NotificationChannels = {
   email: { enabled: true },
   push: { enabled: true },

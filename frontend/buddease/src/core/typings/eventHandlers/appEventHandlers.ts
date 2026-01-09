@@ -79,7 +79,7 @@ export const handleSorting = (
 
 
 
-Define handleHighlighting as a function that accepts a MouseEvent parameter
+// Define handleHighlighting as a function that accepts a MouseEvent parameter
 const handleHighlighting = (
 event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
 ) => {
@@ -139,7 +139,7 @@ const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
 
 
 
-Handle specific actions based on the type of app
+// Handle specific actions based on the type of app
 const handleAppSpecificActions = (selectedText: string | null) => {
   if (selectedText) {
     switch (currentAppType) {
@@ -263,7 +263,7 @@ const closeConnections = (
 	}
 };
 
-Then call cleanupState with the subscription argument
+// Then call cleanupState with the subscription argument
 cleanupState(subscription);
 
 
@@ -290,6 +290,6 @@ const clearResources = (
 
 
 
-Example usage:
-Pass settings data when calling handleSettingsPanel
+// Example usage:
+// Pass settings data when calling handleSettingsPanel
 handleSettingsPanel(event, { isOpen: true });

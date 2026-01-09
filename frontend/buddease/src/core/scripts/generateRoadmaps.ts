@@ -345,7 +345,7 @@ function generateNonTechRoadmap(prompt: string, projectStructure: ProjectStructu
   return lines.join('\n');
 }
 
-Example CLI usage
+// Example CLI usage
 if (process.argv[1]?.endsWith('generateRoadmaps.ts')) {
   const args: string[] = process.argv.slice(2);
   const prompt: string = args[0] || 'Project roadmap';
@@ -355,8 +355,8 @@ if (process.argv[1]?.endsWith('generateRoadmaps.ts')) {
   generateRoadmaps(prompt, outputDir).catch(console.error);
 }
 
-3️⃣ CLI entry point
-This ensures the file can be executed from the terminal
+// 3️⃣ CLI entry point
+// This ensures the file can be executed from the terminal
 if (process.argv[1]?.includes('generateRoadmaps')) {
   const args: string[] = process.argv.slice(2);
   const prompt: string = args[0] || 'Project roadmap';

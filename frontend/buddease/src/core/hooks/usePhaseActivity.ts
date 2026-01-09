@@ -37,7 +37,7 @@ export const usePhaseActivity = () => {
   };
 };
 
-Standalone function for use outside components
+// Standalone function for use outside components
 export const getLastActivityTimeForPhase = (phaseName: string): number => {
   return phaseActivityStore.getLastActivityTime(phaseName);
 };

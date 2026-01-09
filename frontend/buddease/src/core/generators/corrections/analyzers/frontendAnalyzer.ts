@@ -14,7 +14,7 @@ export interface ImportInfo {
   isNamespace: boolean;
 }
 
-Import the ReactWebAnalyzer or integrate its logic
+// Import the ReactWebAnalyzer or integrate its logic
 export interface FrontendAnalysis {
   filePath: string;
   fileType: string;

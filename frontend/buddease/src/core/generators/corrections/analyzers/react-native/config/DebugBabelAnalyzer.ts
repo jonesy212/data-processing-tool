@@ -4,7 +4,7 @@ import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 
 
-Create a temporary debug analyzer
+// Create a temporary debug analyzer
 export class DebugBabelAnalyzer extends ConfigFileAnalyzer {
   protected getConfigPaths(): string[] {
     return [

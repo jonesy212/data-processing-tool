@@ -2,15 +2,16 @@
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { BaseEventCallbacks, EventManagement, ExtractContextArgs, RecordManagement, SharedProperties, SnapshotEventBase } from '@/core/snapshots/SnapshotEvents';
-import { SnapshotContext, SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
+import type { BaseEventCallbacks, EventManagement, ExtractContextArgs, RecordManagement, SharedProperties, SnapshotEventBase } from '@/core/snapshots/SnapshotEvents';
+import type { SnapshotContext, SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
 import type { BaseDataEntity } from "@/core/snapshots/ValidationRule";
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { EventData } from '@/utils/ethereumUtils';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { EventData } from '@/utils/ethereumUtils';
 ;
 
 // Simplified generic structure to match your function signature

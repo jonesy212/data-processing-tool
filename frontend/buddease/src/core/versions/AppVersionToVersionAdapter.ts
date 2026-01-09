@@ -6,7 +6,7 @@ import AppVersionImpl from "@/core/versions/AppVersion";
 import { Version } from "@/core/versions/Version";
 import { VersionData, VersionHistory } from '@/core/versions/VersionData';
 
-Create an adapter that bridges AppVersionImpl to Version interface
+// Create an adapter that bridges AppVersionImpl to Version interface
 class AppVersionToVersionAdapter<
   T extends BaseDataEntity,
   K extends T = T,

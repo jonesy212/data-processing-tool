@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-Optional: GET endpoint to fetch current progress
+// Optional: GET endpoint to fetch current progress
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

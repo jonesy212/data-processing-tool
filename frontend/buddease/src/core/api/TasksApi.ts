@@ -14,7 +14,7 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 import { historyManagerStore } from '@/core/state/stores/HistoryStore';
 import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
 
-Define the API base URL
+// Define the API base URL
 const API_BASE_URL = endpoints.tasks.list;
 
 interface TaskNotificationMessages {
@@ -48,7 +48,7 @@ interface TaskNotificationMessages {
   // Add more keys as needed
 }
 
-Define API notification messages for tasks
+// Define API notification messages for tasks
 const taskAPINotificationMessages: TaskNotificationMessages = {
   FETCH_TASKS_SUCCESS: 'Tasks fetched successfully.',
   FETCH_TASKS_ERROR: 'Failed to fetch tasks.',
@@ -81,7 +81,7 @@ const taskAPINotificationMessages: TaskNotificationMessages = {
 
 type TaskAPINotificationKeys = keyof typeof taskAPINotificationMessages
 
-Function to handle API errors and notify for tasks
+// Function to handle API errors and notify for tasks
 const handleTaskApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
@@ -360,7 +360,7 @@ const assignTaskToTeamAPI = async (taskId: number, teamId: number): Promise<void
 };
 
 
-Assuming getTaskHistoryFromDatabase is a function to fetch task history from the database
+// Assuming getTaskHistoryFromDatabase is a function to fetch task history from the database
 const getTaskHistoryFromDatabaseAPI = async (taskId: string) => {
   try {
     // Call your API endpoint to fetch task history based on taskId

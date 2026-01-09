@@ -1,7 +1,7 @@
 ChatRoomContext.tsx
 import React, { createContext, useContext, useState } from 'react';
 
-Define the context
+// Define the context
 interface ChatRoomContextProps {
   roomId: string;
   setRoomId: React.Dispatch<React.SetStateAction<string>>;
@@ -9,7 +9,7 @@ interface ChatRoomContextProps {
 
 export const ChatRoomContext = createContext<ChatRoomContextProps | undefined>(undefined);
 
-Create a provider component
+// Create a provider component
 export const ChatRoomProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -22,7 +22,7 @@ export const ChatRoomProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-Custom hook to consume the context value
+// Custom hook to consume the context value
 export const useChatRoom = () => {
   const context = useContext(ChatRoomContext);
   if (!context) {

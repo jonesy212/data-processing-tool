@@ -17,7 +17,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createDraft } from "immer";
 
 
-Define the generateCaptions function
+// Define the generateCaptions function
 const generateCaptions = (video: any): string[] => {
   // Logic to generate captions for the video
   // Replace this with your actual implementation
@@ -904,11 +904,11 @@ export const {
   adaptiveBitrateStreaming,
   VRbasedVideoConferencing,
 } = useVideoManagerSlice.actions;
-Export selector for accessing the API configurations from the state
+// Export selector for accessing the API configurations from the state
 export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
   state.apiManager.apiConfigs;
 
-Export reducer for the API manager slice
+// Export reducer for the API manager slice
 
 export default useVideoManagerSlice.reducer;
 export type { VideoState };

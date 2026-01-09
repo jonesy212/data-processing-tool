@@ -1,6 +1,6 @@
 convertSnapshotMethods.ts
 
- Sample function to convert snapshotMethods
+//  Sample function to convert snapshotMethods
 function convertSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
   snapshotMethods: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -48,8 +48,8 @@ export { convertSnapshotMethods }
 
 
 
- Usage Example
- Here's how you might use this function in your application:
+//  Usage Example
+//  Here's how you might use this function in your application:
 const snapshotMethods: SnapshotStoreMethods<Data, string>[] | undefined = /* Your methods here */;
 const snapshot: Snapshot<Data, string> = /* Your snapshot */;
 const snapshotId = "someId";

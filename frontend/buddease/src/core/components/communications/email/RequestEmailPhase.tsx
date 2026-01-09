@@ -3,7 +3,7 @@ RequestEmailPhase.tsx
 import React from 'react';
 
 
-Define the enum for email confirmation phases
+// Define the enum for email confirmation phases
 enum RequestEmailPhaseEnum {
   ENTER_EMAIL = 'Enter Email',
   SUBMIT_EMAIL = 'Submit Email',

@@ -90,5 +90,5 @@ export class PhaseActivityStore {
   }
 }
 
-Export singleton instance
+// Export singleton instance
 export const phaseActivityStore = new PhaseActivityStore();

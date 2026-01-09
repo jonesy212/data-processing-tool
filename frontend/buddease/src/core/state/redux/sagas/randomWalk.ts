@@ -6,10 +6,10 @@ import { RandomWalkActions } from "@/core/hooks/userInterface/RandomWalkActions"
 import { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
-Replace 'yourApiEndpoint' with the actual API endpoint
+// Replace 'yourApiEndpoint' with the actual API endpoint
 const API_BASE_URL = endpoints.randomWalk.data;
 
-Replace 'yourApiEndpoint' with the actual API endpoint
+// Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchRandomWalkAPI = () => axiosInstance.get(API_BASE_URL);
 
 function* fetchRandomWalkSaga(): Generator<Effect, void, any> {
@@ -70,7 +70,7 @@ function* removeRandomWalkSaga(
   }
 }
 
-Add other sagas as needed (add, batch fetch, etc.)
+// Add other sagas as needed (add, batch fetch, etc.)
 
 export function* watchRandomWalkSagas() {
   yield takeLatest(RandomWalkActions.fetchRandomWalkRequest.type, fetchRandomWalkSaga);

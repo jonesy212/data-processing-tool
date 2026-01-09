@@ -114,7 +114,7 @@ class UserManagement {
       throw error;
     }
   };
-Assign role to user
+// Assign role to user
 assignUserRole = async (userId: User['id'], role: string) => {
   try {
     // Retrieve the user object based on the userId

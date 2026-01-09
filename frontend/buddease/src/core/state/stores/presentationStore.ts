@@ -12,7 +12,7 @@ import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 
-Define the necessary types and interfaces
+// Define the necessary types and interfaces
 type PresentationStoreSubset = Partial<Pick<
   AssignBaseStore<any, any, any, any, any, any> | AssignTaskStore<any, any, any, any, any, any>,
   | "assignedItems"
@@ -81,18 +81,18 @@ function getPropertyIfExists<T extends object, K extends keyof T>(
   return obj[prop];
 }
 
-Use this hook to access methods and properties from AssignBaseStore specific to presentations
+// Use this hook to access methods and properties from AssignBaseStore specific to presentations
 const presentationSubset = {
   ...useAssignTeamMemberStore(),
   ...userManagerStore(),
 } as PresentationStoreSubset;
 
-Use type narrowing to access assignUser property
+// Use type narrowing to access assignUser property
 if ("assignUser" in presentationSubset) {
   presentationSubset.assignUser;
 }
 
-Define the interface for the presentation store
+// Define the interface for the presentation store
 export interface PresentationStore<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -139,7 +139,7 @@ export interface PresentationStore<
   assignedBoardCustomFields: Record<string, string[]>;
 }
 
-Define the presentation store function
+// Define the presentation store function
 const presentationStore = (): PresentationStore<any, any, any, any, any, any> => {
   const [presentations, setPresentations] = useState<
     WritableDraft<Record<string, Presentation[]>>

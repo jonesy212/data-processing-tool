@@ -37,7 +37,7 @@ const sanitizeHTML = (html: string): string => {
 
 
 
-Function to sanitize initial data
+// Function to sanitize initial data
 export const sanitizeInitialData = (data: any): any => {
   // Implement sanitization logic for initial data
   // Here we can use DOMPurify to sanitize any HTML content in the initial data
@@ -49,7 +49,7 @@ export const sanitizeInitialData = (data: any): any => {
   return data;
 };
 
-Function to sanitize callback functions
+// Function to sanitize callback functions
 export const sanitizeCallback = (callback: any): any => {
   // Implement sanitization logic for callback functions
   // Here we assume the callback function is already safe to execute and does not contain any malicious code
@@ -57,7 +57,7 @@ export const sanitizeCallback = (callback: any): any => {
   return callback;
 };
 
-Example usage:
+// Example usage:
 try {
   const userInput = 'User input <script>alert("XSS attack")</script>';
   const sanitizedInput = validateAndSanitizeInput(userInput);

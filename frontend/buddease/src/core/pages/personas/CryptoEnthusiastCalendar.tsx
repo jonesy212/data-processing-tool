@@ -55,7 +55,7 @@ const CryptoEnthusiastCalendar: React.FC<CryptoEnthusiastCalendarProps> = (
   const [cryptoEvents, setCryptoEvents] = useState(eventService.getAllEvents());
 
   // Function to add a new crypto event
-Function to add a new crypto event
+// Function to add a new crypto event
 const addCryptoEvent = (
   id: string,
   title: string,

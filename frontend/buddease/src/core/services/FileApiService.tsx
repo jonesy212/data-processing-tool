@@ -348,8 +348,8 @@ class FileApiService {
 
 
 
-Define the function to determine the file type
-async getFileType(file: string): Promise<FileType> {
+// Define the function to determine the file type
+// async getFileType(file: string): Promise<FileType> {
   try {
     // Call the API to get the file type
     const response: AxiosResponse<{ fileType?: FileType }> = await internalApiService.get(`/api/files/${file}/type`);

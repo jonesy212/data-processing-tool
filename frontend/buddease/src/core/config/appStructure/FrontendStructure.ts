@@ -24,7 +24,7 @@ import * as path from "path";
 
 
 
-Define UserConfigData with type arguments
+// Define UserConfigData with type arguments
 type UserConfigDataWithArgs = UserConfigData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 
 const loadedUser: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = await fetchUser();
@@ -433,7 +433,7 @@ export default class FrontendStructure<
   }
 }
 
-Instantiate FrontendStructure
+// Instantiate FrontendStructure
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
@@ -444,7 +444,7 @@ const dir = path.join(
   "frontend"
 )
 
-Define frontend object inside an async function
+// Define frontend object inside an async function
 async function initializeFrontend() {
   return {
     ...frontendStructure,

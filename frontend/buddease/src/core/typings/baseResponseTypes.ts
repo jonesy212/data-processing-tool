@@ -9,7 +9,7 @@ import { Message } from "@/core/generators/GenerateChatInterfaces";
 import type { BaseDataEntity } from "@/core/snapshots/ValidationRule";
 import { ApiPagination } from '@/core/typings/apiTypes';
 
-Base response structure that all API responses should extend
+// Base response structure that all API responses should extend
 export interface BaseResponseType<
   T extends BaseDataEntity,
   K extends T = T,
@@ -82,7 +82,7 @@ export interface BaseResponseType<
   customMetadata?: Record<string, any>;
 }
 
-Helper functions for BaseResponseType
+// Helper functions for BaseResponseType
 export const createSuccessResponse = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -167,7 +167,7 @@ export const createPaginatedResponse = <
   };
 };
 
-Validation functions
+// Validation functions
 export const isValidResponse = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -214,12 +214,12 @@ export const hasData = <
   return response.data !== null && response.data !== undefined;
 };
 
-Utility functions
+// Utility functions
 const generateRequestId = (): string => {
   return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
-Response transformer for consistent formatting
+// Response transformer for consistent formatting
 export const transformToBaseResponse = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -249,7 +249,7 @@ export const transformToBaseResponse = <
   };
 };
 
-Type guards for specific response types
+// Type guards for specific response types
 export const isSingleItemResponse = <
   T extends BaseDataEntity,
   K extends T = T,

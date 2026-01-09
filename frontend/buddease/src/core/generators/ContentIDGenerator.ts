@@ -56,7 +56,7 @@ export class ContentIDGenerator<
   }
 }
 
-Example usage:
+// Example usage:
 const contentItem: DetailsItem<Data<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields>> = {
   _id: uuidV4(),
   id: ContentIDGenerator.generateContentID("Sample Content", "This is a sample content item.", new Date(), NotificationTypeEnum.CONTENT_ITEM),

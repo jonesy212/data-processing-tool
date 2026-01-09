@@ -3,7 +3,7 @@ import { Transaction } from "@/core/payment/Transaction";
 import { CustomTransaction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
 import { AccessList } from "ethers";
 
-Factory for CustomTransaction (extends Transaction)
+// Factory for CustomTransaction (extends Transaction)
 export function createCustomTransaction(
   data: Partial<CustomTransaction & Transaction> = {}
 ): Transaction & CustomTransaction {
@@ -68,13 +68,13 @@ export function createCustomTransaction(
   };
 }
 
-Fix your CustomTransaction interface to use proper types
-In SmartContractInteraction.ts or in an override:
+// Fix your CustomTransaction interface to use proper types
+// In SmartContractInteraction.ts or in an override:
 export type FixedCustomTransaction = Omit<CustomTransaction, 'accessList'> & {
   accessList?: AccessList;
 };
 
-Then use it in your factory:
+// Then use it in your factory:
 export function createCustomTransactionFixed(
   data: Partial<FixedCustomTransaction & Transaction> = {}
 ): Transaction & FixedCustomTransaction {

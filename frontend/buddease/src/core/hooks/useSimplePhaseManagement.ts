@@ -2,7 +2,7 @@ useSimplePhaseManagement.ts
 import { PhaseLite } from '@/core/models/phases/Phase';
 import { useState } from 'react';
 
-Simplified version for UI components that don't need full generic complexity
+// Simplified version for UI components that don't need full generic complexity
 export function useSimplePhaseManagement(
   phases: PhaseLite[],
   initialPhaseIndex: number = 0

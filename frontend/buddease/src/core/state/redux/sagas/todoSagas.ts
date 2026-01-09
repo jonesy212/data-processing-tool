@@ -6,7 +6,7 @@ import { TodoActions } from "@/core/actions/TodoActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Todo } from "@/core/todos/Todo";
 
-Replace 'yourApiEndpoint' with the actual API endpoint
+// Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTodosAPI = () => axios.get("/api/todos");
 
 function* addTodoSaga(
@@ -174,7 +174,7 @@ function* batchAssignTodosSaga(
     );
   }
 }
-Implementation for fetchTodosRequestSaga
+// Implementation for fetchTodosRequestSaga
 function* fetchTodosRequestSaga(): Generator<Effect, void, any> {
   try {
     yield put(TodoActions.fetchTodosRequest());
@@ -187,7 +187,7 @@ function* fetchTodosRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-Implementation for completeAllTodosRequestSaga
+// Implementation for completeAllTodosRequestSaga
 function* completeAllTodosRequestSaga(): Generator<Effect, void, any> {
   try {
     // Assuming there is an endpoint to mark all todos as complete
@@ -199,7 +199,7 @@ function* completeAllTodosRequestSaga(): Generator<Effect, void, any> {
   }
 }
 
-Implementation for fetchTodosSuccessSaga
+// Implementation for fetchTodosSuccessSaga
 function* fetchTodosSuccessSaga(
   action: ReturnType<typeof TodoActions.fetchTodosSuccess>
 ): Generator<Effect, void, any> {

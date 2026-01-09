@@ -1,15 +1,15 @@
-app/generators/corrections/ImportErrorSummary.ts
+// app/generators/corrections/ImportErrorSummary.ts
 import { CircularDependencyDetector } from '@/core/generators/corrections/CircularDependencyDetector';
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 import { v4 as uuidv4 } from 'uuid';
 
-------------------------------------------------------------------
-Safe-guards: never let the scanner die on a missing import
-------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Safe-guards: never let the scanner die on a missing import
+// ------------------------------------------------------------------
 process.on('uncaughtException', (err: any) => {
   if (err.code === 'ERR_MODULE_NOT_FOUND' || err.code === 'ERR_UNKNOWN_FILE_EXTENSION') {
     console.warn(`⚠️  Skipped missing import: ${err.message.split(' imported from')[0]}`);
@@ -22,7 +22,7 @@ process.on('uncaughtException', (err: any) => {
 process.on('unhandledRejection', (reason: any) => {
   console.warn(`⚠️  Unhandled rejection swallowed: ${reason}`);
 });
-------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 
 const execAsync = promisify(exec);
@@ -81,9 +81,9 @@ export interface ImportFixStrategy {
 
 
 
-------------------------------------------------------------------
-Safe-guards: never let the scanner die on missing imports
-------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Safe-guards: never let the scanner die on missing imports
+// ------------------------------------------------------------------
 const originalProcessListeners = {
   uncaughtException: process.listeners('uncaughtException'),
   unhandledRejection: process.listeners('unhandledRejection')
@@ -2233,7 +2233,7 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
 
 
 
-CLI Interface
+// CLI Interface
 async function main() {
   console.log('🎯 Import Fixer (Production-grade ESM)\n');
   
@@ -2292,7 +2292,7 @@ async function main() {
   }
 }
 
-CSS and asset file handler for ESM
+// CSS and asset file handler for ESM
 const originalConsoleWarn = console.warn;
 console.warn = (...args) => {
   // Suppress CSS loader warnings
@@ -2308,7 +2308,7 @@ console.warn = (...args) => {
   originalConsoleWarn(...args);
 };
 
-Intercept module loading errors
+// Intercept module loading errors
 process.on('uncaughtException', (err: any) => {
   // Handle CSS and asset file errors specifically
   if (err.code === 'ERR_UNKNOWN_FILE_EXTENSION' || 
@@ -2323,7 +2323,7 @@ process.on('uncaughtException', (err: any) => {
   process.exit(1);
 });
 
-Update the execution check at the bottom:
+// Update the execution check at the bottom:
 if (require.main === module || process.argv[1]?.includes('ImportErrorSummary.ts')) {
   main().catch(error => {
     console.error('❌ Fatal error:', error);
@@ -2331,10 +2331,10 @@ if (require.main === module || process.argv[1]?.includes('ImportErrorSummary.ts'
   });
 }
 
-✅ ESM module detection
+// ✅ ESM module detection
 const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 
-Alternative simpler check (works with both ESM and tsx):
+// Alternative simpler check (works with both ESM and tsx):
 const isDirectExecution = process.argv[1] && 
   process.argv[1].includes('ImportErrorSummary.ts');
 

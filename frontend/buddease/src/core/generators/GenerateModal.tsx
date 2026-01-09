@@ -1,7 +1,7 @@
 GenerateModal.tsx
 import React, { useState } from "react";
 
-Define different modal components (you can have more)
+// Define different modal components (you can have more)
 interface ChatSettingsModalProps {
   // Add specific props for ChatSettingsModal
 }

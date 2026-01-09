@@ -10,10 +10,10 @@ type CustomError = {
   // Add other properties if needed
 };
 
-Extend Error for better type checking
+// Extend Error for better type checking
 type GenericError<T = unknown> = Error & T;
 
-Simulate an asynchronous API call for communication
+// Simulate an asynchronous API call for communication
 const simulateCommunicationAPI = (id: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     // Simulating success after a delay
@@ -28,7 +28,7 @@ const simulateCommunicationAPI = (id: string): Promise<void> => {
   });
 };
 
-Saga for handling single communication requests
+// Saga for handling single communication requests
 function* handleCommunicationRequest(
   action: ReturnType<typeof CommunicationActions.startCommunicationRequest>
 ) {
@@ -62,7 +62,7 @@ function* handleCommunicationRequest(
   }
 }
 
-Saga for handling batch communication requests
+// Saga for handling batch communication requests
 function* handleBatchCommunicationRequest(
   action: ReturnType<typeof CommunicationActions.batchStartCommunication>
 ) {
@@ -84,7 +84,7 @@ function* handleBatchCommunicationRequest(
   }
 }
 
-Watcher saga to listen for communication-related actions
+// Watcher saga to listen for communication-related actions
 function* watchCommunicationActions() {
   yield takeLatest(
     CommunicationActions.startCommunicationRequest.type,
@@ -97,7 +97,7 @@ function* watchCommunicationActions() {
   // Add more watchers for other communication actions if needed
 }
 
-Root saga combining all communication sagas
+// Root saga combining all communication sagas
 export function* communicationSagas() {
   yield all([
     watchCommunicationActions(),

@@ -1,0 +1,8 @@
+{
+  "sessionId": "comment-fix-20260109-045821",
+  "timestamp": "2026-01-09T04:59:54-06:00",
+  "backupType": "comment-fix",
+  "filesBackedUp": ,
+  "command": "smart-fix-comments.sh src/core/snapshots/useSnapshotVersioningSystem.ts src/core/snapshots/convertSnapshotMethods.ts src/core/typings/userTypes.ts src/core/typings/phaseTypes.ts src/core/typings/entities/NoteEntity.ts src/core/typings/entities/EntityConversionRules.ts src/core/versions/createLatestVersion.ts src/core/libraries/ui/UILibrary.tsx src/core/server/database/payloads/projectSubscriptionPayload.ts src/core/server/database/Payload.tsx src/core/server/repository/mappers.ts src/core/server/documents.ts src/core/state/stores/SettingsStore.ts src/core/state/stores/PaginationStore.ts src/core/state/redux/slices/FilteredEventsSlice.ts src/core/state/redux/slices/pagingSlice.tsx src/core/state/redux/sagas/todoSagas.ts src/core/state/redux/sagas/taskSagas.ts src/core/components/crypto/ClientSanitization.ts src/core/components/crypto/PlatformIntegration.ts src/core/scripts/generateRoadmaps.ts src/core/scripts/analyzeDuplicates.ts src/core/scripts/check-export.ts src/core/api/ApiNews.ts src/core/api/apiEndpointOutput.ts src/core/error-analyzer/fix-strategy.ts src/core/pages/searches/CriteriaType.ts src/cli/roadmapOutline.ts",
+  "note": "Backup created before applying comment fixes"
+}

@@ -1,5 +1,5 @@
 convertNFT.ts
-Assuming there's a function to handle the conversion and addition to NFT area
+// Assuming there's a function to handle the conversion and addition to NFT area
 const convertToNFT = (document: Document): NFT => {
     // Logic to convert document to NFT
   };

@@ -32,7 +32,7 @@ interface Transaction extends BaseTransaction {
   notes?: string;
 }
 
-Additional type for `TransactionData` to unify both types
+// Additional type for `TransactionData` to unify both types
 type TransactionData = Transaction & CustomTransactionProps;
 
 class TransactionProcessor implements Transaction {

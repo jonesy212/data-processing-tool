@@ -6,7 +6,7 @@ interface BaseNotificationSettings {
   notificationType: NotificationType; // From our modular system
 }
 
-Channels should be separate
+// Channels should be separate
 interface NotificationChannelsSettings {
   email: boolean;
   push: boolean;

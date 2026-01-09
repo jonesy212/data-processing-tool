@@ -15,7 +15,7 @@ class SnapshotImplementation<T> {
   }
 }
 
- Example usage
+//  Example usage
 const snapshotType = (snapshot: Snapshot<Data, Data>) => {
   const newSnapshot = snapshot;
   newSnapshot.id = snapshot.id || generateSnapshotId;

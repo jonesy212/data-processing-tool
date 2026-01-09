@@ -113,7 +113,7 @@ const PremiumFeatures: React.FC = () => {
   );
 };
 
-Style for draggable divs
+// Style for draggable divs
 const draggableDivStyle: React.CSSProperties = {
   border: "2px dashed #aaa",
   padding: "10px",

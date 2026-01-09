@@ -1,9 +1,9 @@
-PhaseBackupSystem.ts
+// PhaseBackupSystem.ts
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import pako from "pako";
-import type { BaseDataEntity, BaseDataRoot } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseDataRoot, DefaultMeta, Attachment, DefaultExcludedFields } from '@/core/config/BaseConfig';
 import type { Milestone } from '@/core/typings/milestoneTypes';
 import type { Phase } from "@/core/models/phases/Phase";
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions'
@@ -20,7 +20,7 @@ export interface CoreBackupMetadata {
   sourceFile?: string
 }
 
-Extended backup metadata (optional)
+// Extended backup metadata (optional)
 export interface ExtendedBackupMetadata<T extends BaseDataEntity = BaseDataRoot> 
   extends Partial<UnifiedMetadata<T, any, any, any, any, any>> {
   // Add backup-specific fields
@@ -30,7 +30,7 @@ export interface ExtendedBackupMetadata<T extends BaseDataEntity = BaseDataRoot>
   dependencies?: string[];
 }
 
-Complete backup metadata
+// Complete backup metadata
 export type BackupMetadata<T = any> = CoreBackupMetadata & ExtendedBackupMetadata<T>;
 
 export interface BackupRecord<T = any> {
@@ -209,8 +209,15 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     return record;
   }
 
-  async backupMultiplePhases<T extends BaseDataEntity>(
-    phases: Phase<T>[],
+  async backupMultiplePhases<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     operation: BackupRecord['operation'],
     restorePointName: string,
     description?: string
@@ -954,7 +961,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     console.log(`📥 Importing backups from ${source}`);
     
     try {
-      const imported = this.importBackupsFromSource(source);
+      const imported = await this.importBackupsFromSource(source);
       console.log(`✅ Successfully imported ${imported} backups from ${source}`);
       
       return { success: true, imported };
@@ -977,16 +984,18 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
       const decompressed = pako.inflate(binData, { to: 'string' });
       return JSON.parse(decompressed);
       
-    } catch (error) {
+    } catch (error: unknown) {
       // Fallback to Node.js zlib if pako fails
       try {
         return await this.decompressWithZlib(compressedData);
-      } catch (zlibError) {
-        throw new Error(`Decompression failed: ${error.message}, ${zlibError.message}`);
+      } catch (zlibError: unknown) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        const zlibErrorMsg = zlibError instanceof Error ? zlibError.message : String(zlibError);
+        throw new Error(`Decompression failed: ${errorMsg}, ${zlibErrorMsg}`);
       }
     }
   }
-
+  
   private async decompressWithZlib(compressedData: string): Promise<any> {
     const { promisify } = require('util');
     const zlib = require('zlib');

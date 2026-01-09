@@ -77,7 +77,7 @@ interface UserJourneyManagerProps<
   phaseName: PhaseOptions;
 }
 
-Define the mapping of phases to components
+// Define the mapping of phases to components
 const phaseComponents: Record<string, React.FC<any>> = {
   // Onboarding Phases
   [OnboardingPhase.EMAIL_CONFIRMATION]: EmailConfirmationPage,

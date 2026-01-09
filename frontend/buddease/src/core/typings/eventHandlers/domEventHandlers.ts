@@ -402,7 +402,7 @@ export const createFocusHandler = (options: {
 };
 
 
-Touch End Event Handler
+// Touch End Event Handler
 const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
   // Logic for touch end event
   console.log("Touch ended");
@@ -415,7 +415,7 @@ const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
 };
 
 
-Touch Cancel Event Handler
+// Touch Cancel Event Handler
 const handleTouchCancel = (event: React.TouchEvent<HTMLDivElement>) => {
   // Logic for touch cancel event
   console.log("Touch canceled");
@@ -519,7 +519,7 @@ const handleDragOver = createEventHandler("dragover", (event) => {
   console.log("Drag over handled");
 });
 
-Clipboard events
+// Clipboard events
 const handleCopyPaste = (event: React.ClipboardEvent<HTMLDivElement> | ClipboardEvent) => { 
   // Logic for handling copy/paste events
   console.log("Text copied/pasted:", event);
@@ -596,7 +596,7 @@ const processCopiedText = async (
 };
 
 
-UI events
+// UI events
 
 const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
   // Logic for handling scrolling
@@ -610,7 +610,7 @@ const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
   UIActions.updateScrollingState(scrollTop);
 };
 
-Export individual handlers
+// Export individual handlers
 export {
     handleBlur, handleCopyPaste, handleDragEnd,
     handleDragEnter,

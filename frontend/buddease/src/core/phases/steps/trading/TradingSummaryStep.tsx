@@ -11,7 +11,7 @@ interface TradingSummaryStep extends StepProps {
   tradeDetails: TradeDetai;
 }
 
-Specific Summary Step Components
+// Specific Summary Step Components
 const TradingSummaryStep: React.FC<TradingSummaryStep> = ({
   onSubmit, tradeData }) => {
   return (

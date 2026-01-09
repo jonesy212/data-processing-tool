@@ -75,7 +75,7 @@ const handleRegistrationSuccess = (userData: UserData) => {
   }
 };
 
-Optional helper function
+// Optional helper function
 const resendVerificationEmail = (email: string) => {
   console.log(`Resending verification email to: ${email}`);
   // Implement actual resend logic here

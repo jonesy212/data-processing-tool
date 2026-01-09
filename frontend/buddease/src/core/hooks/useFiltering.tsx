@@ -20,7 +20,7 @@ import { Dispatch, useCallback, useState } from "react";
 
 const { notify } = useNotification();
 
-Reusable filtering logic
+// Reusable filtering logic
 function useFiltering(options: SearchOptions) {
   const [filters, setFilters] = useState<
     SearchOptions["additionalOptions"]["filters"]

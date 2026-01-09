@@ -85,5 +85,5 @@ export class UnifiedFrontendAnalyzer {
   }
 }
 
-Export singleton instance
+// Export singleton instance
 export const unifiedAnalyzer = new UnifiedFrontendAnalyzer();

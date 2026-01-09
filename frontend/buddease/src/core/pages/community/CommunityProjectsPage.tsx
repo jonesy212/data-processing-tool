@@ -11,7 +11,7 @@ interface CommunityProjectsPageProps {
     community: CommunityData;
 }
 
-Utility function to transform teams into DetailsItem<Data> array
+// Utility function to transform teams into DetailsItem<Data> array
 const transformTeamsToDetailsItems = (teams: Team[]): DetailsItem<Team>[] => {
   return teams.map(team => ({
     id: team.id,

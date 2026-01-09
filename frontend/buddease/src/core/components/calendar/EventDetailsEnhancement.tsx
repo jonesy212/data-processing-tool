@@ -1,5 +1,5 @@
 EventDetailsEnhancement.tsx
-Assuming EventDetails is already defined as interface EventDetails
+// Assuming EventDetails is already defined as interface EventDetails
 
 import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps, EventDetails } from "@/core/components/calendar/CalendarEventViewingDetails";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
@@ -12,12 +12,12 @@ interface EventDetailsEnhancement extends EventDetails {
   // Add more properties as needed
 }
 
-Define the action payload type
+// Define the action payload type
 type PayloadAction<T> = {
   payload: T;
 };
 
-Define the action handler
+// Define the action handler
 const improveEventDetails = (
   state: CalendarManagerState,
   action: PayloadAction<EventDetails[]>

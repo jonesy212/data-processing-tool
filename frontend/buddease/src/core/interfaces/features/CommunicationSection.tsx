@@ -1,5 +1,5 @@
 CommunicationSection.tsx
-CommunicationSection component
+// CommunicationSection component
 import React from 'react';
 
 const CommunicationSection = () => {

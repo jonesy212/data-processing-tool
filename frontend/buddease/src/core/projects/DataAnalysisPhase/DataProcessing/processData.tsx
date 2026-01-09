@@ -12,5 +12,5 @@ async function processData() {
   }
 }
 
-Call the function
+// Call the function
 processData();

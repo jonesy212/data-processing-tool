@@ -3,7 +3,7 @@ Encryption.ts
 import { decryptedData } from "@/core/server/security/decryptedData";
 import { encryptData } from "@/core/server/security/encryptedData";
 
-Define the Encryption interface for representing encryption data
+// Define the Encryption interface for representing encryption data
 interface Encryption {
   algorithm: string; // Algorithm used for encryption (e.g., AES-256-CBC)
   key: string; // Encryption key
@@ -11,7 +11,7 @@ interface Encryption {
 }
 
 
-Function to perform encryption
+// Function to perform encryption
 const performEncryption = (data: string, encryptionParams: Encryption): string => {
   // Extract encryption key from encryptionParams
   const { key } = encryptionParams;
@@ -23,7 +23,7 @@ const performEncryption = (data: string, encryptionParams: Encryption): string =
   return encryptedData;
 };
 
-Function to perform decryption
+// Function to perform decryption
 const performDecryption = async (
   encryptedData: string,
   encryptionParams: Encryption

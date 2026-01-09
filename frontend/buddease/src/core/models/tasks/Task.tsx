@@ -89,7 +89,7 @@ export interface Task<
     thisArg?: any
   ) => boolean;
 }
-Assuming TaskDetails has a structure similar to Task interface
+// Assuming TaskDetails has a structure similar to Task interface
 interface TaskDetails {
   taskId: string;
   details: TaskEntity; // Complete task data structure

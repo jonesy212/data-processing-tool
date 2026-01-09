@@ -12,7 +12,7 @@ import CoursePlanningPhase from "./CoursePlanningPhase";
 import CourseSetupPhase from "./CourseSetupPhase";
 
 const { notify } = useNotification();
-Define course development phases
+// Define course development phases
 export enum CourseDevelopmentPhase {
   PLANNING,
   SETUP,

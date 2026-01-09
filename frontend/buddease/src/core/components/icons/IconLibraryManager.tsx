@@ -20,7 +20,7 @@ export const createDynamicIconLoader = (iconName: string, library: IconLibrary):
 };
 
 
-Example Usage
+// Example Usage
 For Web
 export const loadWebIcon1: IconLoader = createDynamicIconLoader('web-icon1', 'font-awesome');
 

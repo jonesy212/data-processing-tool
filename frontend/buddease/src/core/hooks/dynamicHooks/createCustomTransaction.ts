@@ -1,7 +1,7 @@
 createCustomTransaction.ts
 import { createCustomTransaction } from "@/core/config/factory/TransactionFactory";
 
-Example usage
+// Example usage
 const transactionData = {
     id: "tx1",
     amount: 100,

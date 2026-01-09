@@ -195,7 +195,7 @@ export class PlanningSubPhase<
   }
 }
 
-Factory function for creating PlanningSubPhase with proper types
+// Factory function for creating PlanningSubPhase with proper types
 export function createPlanningSubPhase<
   T extends BaseDataEntity,
   K extends T = T,

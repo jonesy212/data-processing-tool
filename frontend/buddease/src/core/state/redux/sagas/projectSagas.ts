@@ -1,18 +1,18 @@
 projectSagas.ts
-Import necessary dependencies and actions
+// Import necessary dependencies and actions
 import { ProjectActions } from "@/core/actions/ProjectActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Project } from '@/core/models/projects/Project';
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
 
-Replace 'yourApiEndpoint' with the actual API endpoint
+// Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchProjectsAPI = () => axios.get('/api/projects');
 
-Define saga functions similar to TaskSagas
-Example saga functions:
+// Define saga functions similar to TaskSagas
+// Example saga functions:
 
-Fetch projects saga
+// Fetch projects saga
 function* fetchProjectsSaga(): Generator {
   try {
     yield put(ProjectActions.fetchProjectsRequest(payload));
@@ -27,9 +27,9 @@ function* fetchProjectsSaga(): Generator {
   }
 }
 
-Add other saga functions as needed
+// Add other saga functions as needed
 
-Watcher saga to listen for actions and call corresponding sagas
+// Watcher saga to listen for actions and call corresponding sagas
 export function* watchProjectSagas() {
   // Fetch projects and tasks
   yield takeLatest(ProjectActions.fetchProjectsRequest.type, fetchProjectsSaga);
@@ -68,7 +68,7 @@ export function* watchProjectSagas() {
 }
 
 
-Root saga to combine and export all project sagas
+// Root saga to combine and export all project sagas
 export function* projectSagas() {
   yield watchProjectSagas();
   // Add other watcher sagas here if needed...

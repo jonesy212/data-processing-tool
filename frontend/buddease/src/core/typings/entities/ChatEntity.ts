@@ -2,7 +2,7 @@ ChatEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define the actual ChatEntity interface
+// Define the actual ChatEntity interface
 interface ChatEntity extends BaseDataEntity {
   id: string;
   title: string;
@@ -33,7 +33,7 @@ type ChatAttachment = Attachment;
 type ChatExcludedFields = DefaultExcludedFields<ChatEntity> | "participants" | "messages";
 type ChatIncludedFields = keyof ChatEntity;
 
-Chat parameters container
+// Chat parameters container
 type ChatBaseParams = {
   T: ChatEntity;
   K: ChatK;

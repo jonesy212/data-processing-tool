@@ -15,7 +15,7 @@ import { observable, runInAction } from "mobx";
 
 const API_BASE_URL = endpoints.videos.list;
 
-Get the notification function
+// Get the notification function
 const { notify } = useNotification();
 
 const handleApiError = (

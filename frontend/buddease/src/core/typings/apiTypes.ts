@@ -1,10 +1,11 @@
-apiTypes.ts
+// apiTypes.ts
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
-import { ProjectData, ProjectPriority, ProjectStatus } from '@/core/typings/projectTypes';
+import type { ProjectData } from '@/core/typings/projectTypes';
+import { ProjectPriority, ProjectStatus } from '@/core/typings/projectTypes';
 
--------------------- API Core Types --------------------
+// -------------------- API Core Types --------------------
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
@@ -50,7 +51,7 @@ export interface ApiRequest<T = any> {
   };
 }
 
--------------------- Project API Types --------------------
+// -------------------- Project API Types --------------------
 export interface CreateProjectRequest<
   T extends BaseDataEntity,
   K extends T = T,
@@ -122,7 +123,7 @@ export interface ProjectListResponse<
   };
 }
 
--------------------- Snapshot Integration API Types --------------------
+// -------------------- Snapshot Integration API Types --------------------
 export interface ConvertSnapshotToProjectRequest {
   snapshotId: string;
   projectTemplate?: string;
@@ -163,7 +164,7 @@ export interface BatchConvertResponse {
   };
 }
 
--------------------- Project Operation API Types --------------------
+// -------------------- Project Operation API Types --------------------
 export interface ProjectOperationResponse {
   operationId: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
@@ -183,7 +184,7 @@ export interface BulkProjectOperationRequest {
   };
 }
 
--------------------- Analytics API Types --------------------
+// -------------------- Analytics API Types --------------------
 export interface ProjectAnalyticsRequest {
   projectIds?: string[];
   dateRange: {
@@ -232,7 +233,7 @@ export interface AnalyticsRecommendation {
   actions: string[];
 }
 
--------------------- Export/Import API Types --------------------
+// -------------------- Export/Import API Types --------------------
 export interface ProjectExportRequest {
   projectIds: string[];
   format: 'json' | 'csv' | 'pdf' | 'excel';
@@ -273,7 +274,7 @@ export interface ProjectTemplateRequest {
   };
 }
 
--------------------- Real-time API Types --------------------
+// -------------------- Real-time API Types --------------------
 export interface RealTimeUpdate<T = any> {
   type: 'create' | 'update' | 'delete' | 'sync';
   entity: string;
@@ -302,7 +303,7 @@ export interface WebSocketMessage<T = any> {
   requestId?: string;
 }
 
--------------------- Error Response Types --------------------
+// -------------------- Error Response Types --------------------
 export interface ValidationError {
   field: string;
   message: string;
@@ -327,7 +328,7 @@ export interface SystemError {
   stackTrace?: string;
 }
 
--------------------- Authentication & Authorization Types --------------------
+// -------------------- Authentication & Authorization Types --------------------
 export interface ApiAuthHeaders {
   authorization: string;
   'x-api-key'?: string;
@@ -355,7 +356,7 @@ export interface AuthResponse {
   expiresAt?: Date;
 }
 
--------------------- File Upload API Types --------------------
+// -------------------- File Upload API Types --------------------
 export interface FileUploadRequest {
   file: File;
   projectId?: string;
@@ -377,7 +378,7 @@ export interface FileUploadResponse {
   metadata: any;
 }
 
--------------------- Search API Types --------------------
+// -------------------- Search API Types --------------------
 export interface ProjectSearchRequest {
   query: string;
   filters?: ProjectQueryParams;
@@ -398,7 +399,7 @@ export interface SearchResult<T = any> {
   matchedFields: string[];
 }
 
--------------------- Batch Operation Types --------------------
+// -------------------- Batch Operation Types --------------------
 export interface BatchOperation<T = any> {
   operation: string;
   items: T[];
@@ -429,7 +430,7 @@ export interface BatchOperationResult<T = any> {
   };
 }
 
--------------------- Type Guards --------------------
+// -------------------- Type Guards --------------------
 export function isApiResponse<T>(response: any): response is ApiResponse<T> {
   return (
     response &&
@@ -459,7 +460,7 @@ export function isRealTimeUpdate<T>(update: any): update is RealTimeUpdate<T> {
   );
 }
 
--------------------- Utility Types --------------------
+// -------------------- Utility Types --------------------
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 
 export type ApiEndpoint = {
@@ -479,7 +480,7 @@ export type ApiConfig = {
   enableCaching: boolean;
 };
 
--------------------- Default API Types --------------------
+// -------------------- Default API Types --------------------
 export type DefaultApiResponse = ApiResponse<any>;
 export type DefaultProjectApiRequest = CreateProjectRequest<
   BaseDataEntity,

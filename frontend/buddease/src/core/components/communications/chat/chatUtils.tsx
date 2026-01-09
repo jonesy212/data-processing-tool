@@ -40,7 +40,7 @@ interface SpeechToTextEngine {
   // Other properties and methods
 }
 
-Function to send a chat message
+// Function to send a chat message
 export const sendChatMessage = async (roomId: string, message: string) => {
   try {
     // Replace this with the actual API call or WebSocket logic to send a chat message
@@ -62,7 +62,7 @@ export const sendChatMessage = async (roomId: string, message: string) => {
   }
 };
 
-Function to create a rich text editor
+// Function to create a rich text editor
 export const createRichTextEditor = () => {
   // Replace this with the actual library or component instantiation for a rich text editor
   console.log("Rich text editor created");
@@ -72,7 +72,7 @@ export const createRichTextEditor = () => {
   return richTextEditor;
 };
 
-Function to send a chat notification
+// Function to send a chat notification
 export const sendChatNotification = (
   message: string,
   sendNotification: NotificationContextProps["sendNotification"]
@@ -83,7 +83,7 @@ export const sendChatNotification = (
   return sendNotification("Notification sent: " as NotificationType);
 };
 
-Function to get the unread message count
+// Function to get the unread message count
 export const getUnreadMessageCount = async (roomId: string) => {
   try {
     // Replace this with the actual API call to get the unread message count
@@ -104,7 +104,7 @@ export const getUnreadMessageCount = async (roomId: string) => {
   }
 };
 
-Function to open the emoji picker
+// Function to open the emoji picker
 export const openEmojiPicker = () => {
   // Replace this with the actual library or component to open an emoji picker
   console.log("Emoji picker opened");
@@ -124,7 +124,7 @@ export const openEmojiPicker = () => {
   };
 };
 
-Function to open the chat sidebar
+// Function to open the chat sidebar
 export const openChatSidebar = (
   setIsChatSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -132,7 +132,7 @@ export const openChatSidebar = (
   console.log("Chat sidebar opened");
 };
 
-Function to initialize speech-to-text using the Web Speech API
+// Function to initialize speech-to-text using the Web Speech API
 export const initializeSpeechToText = () => {
   // Check if the browser supports speech recognition
   if ("webkitSpeechRecognition" in window) {
@@ -170,7 +170,7 @@ export const initializeSpeechToText = () => {
   }
 };
 
-Function to leave the chat room
+// Function to leave the chat room
 export const leaveChatRoom = async (roomId: string) => {
   try {
     // Replace this with the actual API call or WebSocket logic to leave the chat room
@@ -191,7 +191,7 @@ export const leaveChatRoom = async (roomId: string) => {
   }
 };
 
-Function to open the file upload modal
+// Function to open the file upload modal
 export const openFileUploadModal = (
   handleFileUpload: (files: FileList | null) => void
 ) => {
@@ -218,7 +218,7 @@ export const openFileUploadModal = (
 
 
 
-Function to open the chat settings modal
+// Function to open the chat settings modal
 export const openChatSettingsModal = async (): Promise<ChatSettingsModal> => {
   // Code to open the modal and get user preferences
   const userPreferences: unknown = await getUserPreferences(); // Assuming getUserPreferences is an asynchronous function

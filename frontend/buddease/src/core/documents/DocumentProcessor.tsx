@@ -57,20 +57,20 @@ const DocumentProcessor = () => {
   );
 };
 
-Dummy implementation of determineDocumentType
+// Dummy implementation of determineDocumentType
 const determineDocumentType = ({ content, filePathOrUrl, format }) => {
   // Your implementation here
   return `Type based on content: ${content}, filePathOrUrl: ${filePathOrUrl}, format: ${format}`;
 };
 
-Dummy function to simulate getting associated file path
+// Dummy function to simulate getting associated file path
 const getAssociatedFilePath = (name) => {
   // Implement logic to get associated file path based on name
   // Return the path if found, otherwise return null or undefined
   return `/path/to/documents/${name}.pdf`;
 };
 
-Dummy function to simulate getting determined category
+// Dummy function to simulate getting determined category
 const getDeterminedCategory = (documentContent) => {
   // Implement logic to determine category based on document content
   return "defaultCategory";

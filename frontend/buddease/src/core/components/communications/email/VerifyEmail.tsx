@@ -1,5 +1,5 @@
 VerifyEmail.tsx
-users must verify their email during login or when updating their email,
+// users must verify their email during login or when updating their email,
 import React, { useState } from 'react';
 
 const VerifyEmail: React.FC = () => {

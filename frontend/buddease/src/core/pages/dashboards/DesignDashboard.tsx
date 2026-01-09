@@ -21,7 +21,7 @@ import { UserData } from "@/core/users/User";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 
-Dynamically import components with proper typing
+// Dynamically import components with proper typing
 const RouteGuard = dynamic(
   () => import("@/core/components/routing/RouteGuard")
     .then((mod) => mod.default || mod),

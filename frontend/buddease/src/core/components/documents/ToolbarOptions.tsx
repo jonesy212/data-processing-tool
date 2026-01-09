@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import ToolbarItem from "./ToolbarItem";
 
 
-Define a new type for the toolbar options
+// Define a new type for the toolbar options
 type ToolbarOptions = {
   [key in keyof typeof toolbarOptions]: string[];
 } & { calendar: boolean | string[] };

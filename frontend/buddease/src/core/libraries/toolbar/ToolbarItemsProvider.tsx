@@ -1,14 +1,14 @@
 ToolbarItemsProvider.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-Define the type for toolbar items
+// Define the type for toolbar items
 interface ToolbarItem {
   id: string;
   label: string;
   // Add more properties as needed
 }
 
-Define the type for the context value
+// Define the type for the context value
 interface ToolbarItemsContextValue {
   toolbarItems: ToolbarItem[];
   addToolbarItemToContext: (item: ToolbarItem) => void;
@@ -16,7 +16,7 @@ interface ToolbarItemsContextValue {
   updateToolbarItemInContext: (updatedItem: ToolbarItem) => void;
 }
 
-Create a context to manage toolbar items
+// Create a context to manage toolbar items
 const ToolbarItemsContext = createContext<ToolbarItemsContextValue>({
   toolbarItems: [],
   addToolbarItemToContext: () => {},
@@ -24,10 +24,10 @@ const ToolbarItemsContext = createContext<ToolbarItemsContextValue>({
   updateToolbarItemInContext: () => {},
 });
 
-Custom hook to access the toolbar items context
+// Custom hook to access the toolbar items context
 export const useToolbarItems = () => useContext(ToolbarItemsContext);
 
-Component to provide and manage toolbar items
+// Component to provide and manage toolbar items
 export const ToolbarItemsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [toolbarItems, setToolbarItems] = useState<ToolbarItem[]>([]);
 

@@ -52,7 +52,7 @@ const audienceConfig: Record<RoadmapAudience, {
   }
 };
 
-Generate roadmaps for all audiences
+// Generate roadmaps for all audiences
 for (const [audience, config] of Object.entries(audienceConfig)) {
   const { jsonPath, mdPath } = roadmapMapper.buildAndWriteRoadmap(
     analysis, 

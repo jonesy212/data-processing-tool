@@ -12,7 +12,7 @@ import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import fs from 'fs';
 import path from 'path';
 
-Define shared base config types that both frontend and backend can use
+// Define shared base config types that both frontend and backend can use
 export interface BaseServerConfig {
   [key: string]: unknown;
 }
@@ -24,7 +24,7 @@ export interface ServerConfigData {
 }
 
 
-Add this function to your file or import it
+// Add this function to your file or import it
 export function createUserConfigs(): UserConfigs {
   return {
     // User preferences and settings
@@ -303,5 +303,5 @@ public getCachedConfig(): ServerConfigData | null {
 
 }
 
-Create singleton instance
+// Create singleton instance
 export const serverConfigService = new ServerConfigurationService();

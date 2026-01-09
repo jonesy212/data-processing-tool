@@ -1,5 +1,5 @@
 StatusType.ts
-Define the type for the status property
+// Define the type for the status property
 
 export type CustomNotificationType =
   | "custom_notification_type_1"
@@ -22,7 +22,7 @@ export type MessageNotificationStatusType =
 
 type SecurityStatus = 'active' | 'success' | 'failure' | 'warning' | 'pending' | 'pass';
 
-Define an enum for sorting types
+// Define an enum for sorting types
 enum SortingType {
   ASCENDING = "ASCENDING",
   DESCENDING = "DESCENDING",
@@ -47,7 +47,7 @@ enum StatusType {
   Overdue = 'Overdue'
 }
 
-Define the DocumentSize enum
+// Define the DocumentSize enum
 enum DocumentSize {
   A4 = "A4",
   Letter = "Letter",
@@ -56,7 +56,7 @@ enum DocumentSize {
   // Add more sizes as needed
 }
 
-Define the Orientation enum
+// Define the Orientation enum
 enum Orientation {
   Portrait = "Portrait",
   Landscape = "Landscape",
@@ -76,14 +76,14 @@ enum Layout {
   Default = "Default",
 }
 
-Define the ChatType enum
+// Define the ChatType enum
 enum ChatType {
   Public = "public",
   Private = "private",
   Group = "group",
 }
 
-Define specific enums for different types of status
+// Define specific enums for different types of status
 enum TaskStatus {
   Pending = StatusType.Pending,
   InProgress = StatusType.InProgress,
@@ -106,7 +106,7 @@ enum MeetingStatus {
   Rescheduled = StatusType.Rescheduled
 }
  
-General status for scheduling
+// General status for scheduling
 enum TodoStatus {
   Pending = StatusType.Pending,
   InProgress = StatusType.InProgress,
@@ -134,7 +134,7 @@ enum ComponentStatus {
   Tentative = StatusType.Tentative,
 }
 
-Define the CalendarStatus enum
+// Define the CalendarStatus enum
 enum CalendarStatus {
   LOADING = "loading",
   READY = "ready",
@@ -169,7 +169,7 @@ enum NotificationStatus {
 }
 
 
-Assuming PriorityTypeEnum and StatusType enums are defined elsewhere
+// Assuming PriorityTypeEnum and StatusType enums are defined elsewhere
 
 
 enum ProductStatus {
@@ -245,7 +245,7 @@ export enum CommunicationMediaType {
   Text = "text",
 }
 
-Define the IncludeType enum
+// Define the IncludeType enum
 enum IncludeType {
   Embed = "Embed",
   // Add other include options if needed

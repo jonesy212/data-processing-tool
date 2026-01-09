@@ -159,7 +159,7 @@ export type {
     UserEngagementCriteria
 };
 
-Example usage
+// Example usage
 const criteria: ProjectManagementComprehensiveCriteria = {
   communicationType: CommunicationTypeEnum.VIDEO,
   currentPhase: ProjectPhaseTypeEnum.Development,

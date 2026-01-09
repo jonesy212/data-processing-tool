@@ -21,7 +21,7 @@ class AccessHistory {
 export default AccessHistory
 
 
-Converter function
+// Converter function
 function convertAccessRecordToHistory(record: AccessRecord): AccessHistory {
   return new AccessHistory((record.userId), new Date(record.timestamp), record.action);
 }
@@ -37,7 +37,7 @@ function convertAccessHistoryToRecord(history: AccessHistory): AccessRecord {
 
 export { convertAccessHistoryToRecord, convertAccessRecordToHistory };
 
-Example usage:
+// Example usage:
 const accessRecord1 = new AccessHistory('1234', new Date(), "Login");
 const accessRecord2 = new AccessHistory('5678', new Date(), "Logout");
 

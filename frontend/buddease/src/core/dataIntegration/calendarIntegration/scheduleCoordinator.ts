@@ -518,7 +518,7 @@ export class ScheduleCoordinator<
   }
 }
 
-Default coordinator instance
+// Default coordinator instance
 export const defaultScheduleCoordinator = new ScheduleCoordinator(
   defaultCalendarEventManager
 );

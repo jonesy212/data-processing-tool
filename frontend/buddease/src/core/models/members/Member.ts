@@ -39,7 +39,7 @@ export interface Member<
 
 const DEFAULT_REFRESH_UI = () => { };
 
-Option 1: Using the exact MemberEntity generic parameters
+// Option 1: Using the exact MemberEntity generic parameters
 const memberData: MemberData<
 	MemberEntity,
 	MemberK,

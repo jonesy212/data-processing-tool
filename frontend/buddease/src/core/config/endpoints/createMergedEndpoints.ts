@@ -3,7 +3,7 @@ createMergedEndpoints.ts
 import { EndpointConfigurations } from '@/core/config/EndpointConfig';
 import mergeConfigurations from '@/utils/mergeConfigurations';
 import { generateEndpointUrl } from '@/utils/urlGenerator';
-Import ALL your configs (you already have these in endpointConfigurations.ts)
+// Import ALL your configs (you already have these in endpointConfigurations.ts)
 import {
     analyticsConfig,
     apiEndpointConfig,
@@ -85,8 +85,8 @@ import {
     webConfig,
 } from '@/core/api/endpointConfigurations';
 
-Define which configs to use for dynamic mapping
-Create dynamicConfigMap directly from endpointConfigurations
+// Define which configs to use for dynamic mapping
+// Create dynamicConfigMap directly from endpointConfigurations
 const dynamicConfigMap = {
   apiWebBase: apiWebBaseConfig,
   apiConfig: apiEndpointConfig,
@@ -252,7 +252,7 @@ export const createMergedEndpoints = (): EndpointConfigurations => ({
 });
 
 
-Helper function for complex categories (keep your existing manual mappings)
+// Helper function for complex categories (keep your existing manual mappings)
 const getManualComplexMapping = (category: string, endpointConfigurations: EndpointConfigurations) => {
   switch (category) {
     case 'client':

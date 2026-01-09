@@ -220,7 +220,7 @@ const MultimediaContentCustomization: React.FC<
   );
 };
 
-Todo: Replace with your actual icon
+// Todo: Replace with your actual icon
 const ExampleIcon: React.FC = () => <span>🌐</span>;
 
 export default MultimediaContentCustomization;

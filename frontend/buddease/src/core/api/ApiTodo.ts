@@ -12,10 +12,10 @@ import { useNotification } from "@/core/state/context/NotificationContext";
 import { Todo } from '@/core/todos/Todo';
 import { AxiosError } from 'axios';
 
-Define the API base URL for todos
+// Define the API base URL for todos
 const API_BASE_URL = endpoints.todos.list
 
-Define interface for todo notification messages
+// Define interface for todo notification messages
 interface TodoNotificationMessages {
   FETCH_TODOS_SUCCESS: string;
   FETCH_TODOS_ERROR: string;
@@ -31,7 +31,7 @@ interface TodoNotificationMessages {
   // Add more keys as needed
 }
 
-Define API notification messages for todos
+// Define API notification messages for todos
 const todoApiNotificationMessages: TodoNotificationMessages = {
   FETCH_TODOS_SUCCESS: 'Todos fetched successfully.',
   FETCH_TODOS_ERROR: 'Failed to fetch todos.',
@@ -47,7 +47,7 @@ const todoApiNotificationMessages: TodoNotificationMessages = {
   // Add more properties as needed
 };
 
-Function to handle API errors and notify for todos
+// Function to handle API errors and notify for todos
 const handleTodoApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessageId: keyof TodoNotificationMessages,
@@ -178,7 +178,7 @@ export const toggleTodo = async (
     }
   };
 
-Add todo
+// Add todo
 export const addTodo = async <
   T extends BaseDataEntity,
   K extends T = T,
@@ -198,7 +198,7 @@ export const addTodo = async <
     throw error;
   }
 };
-Remove todo
+// Remove todo
 export const removeTodo = async (todoId: number): Promise<void> => {
   try {
     const removeTodoEndpoint = `${API_BASE_URL}.remove.${todoId}`;
@@ -214,7 +214,7 @@ export const removeTodo = async (todoId: number): Promise<void> => {
 };
 
 
-Update todo
+// Update todo
 export const updateTodo = async <
   T extends BaseDataEntity,
   K extends T = T,
@@ -263,7 +263,7 @@ export const updateTodo = async <
   }
 };
 
-Check todo completion
+// Check todo completion
 export const checkTodoCompletion = async (todoId: string): Promise<void> => { 
   try {
     // Include todoId in the endpoint URL
@@ -277,7 +277,7 @@ export const checkTodoCompletion = async (todoId: string): Promise<void> => {
   }
 };
 
-Complete all todos
+// Complete all todos
 export const completeAllTodos = async (): Promise<void> => {
   try {
     const completeAllTodosEndpoint = `${API_BASE_URL}.completeAll`;
@@ -292,7 +292,7 @@ export const completeAllTodos = async (): Promise<void> => {
   }
 };
 
-Assign todo to team
+// Assign todo to team
 export const assignTodoToTeam = async (todoId: number, teamId: number): Promise<void> => {
   try {
     const assignTodoToTeamEndpoint = `${API_BASE_URL}.assign.${todoId}.${teamId}`;

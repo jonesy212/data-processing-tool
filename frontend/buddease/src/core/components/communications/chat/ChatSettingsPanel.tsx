@@ -6,7 +6,7 @@ import { useAuth } from '@/core/state/context/AuthContext';
 import { UserData } from '@/core/users/User';
 import { subscribeToRealtimeUpdates } from '@/utils/web3/dAppAdapter/functionality/RealtimeUpdates';
 
-Define the ChatSettingsPanel component
+// Define the ChatSettingsPanel component
 const ChatSettingsPanel: React.FC = () => {
   // State to track whether the panel is open or closed
   const [isOpen, setIsOpen] = useState(false);
@@ -237,7 +237,7 @@ const ChatSettingsPanel: React.FC = () => {
   );
 };
 
-Helper function to update user settings (you would implement this based on your API)
+// Helper function to update user settings (you would implement this based on your API)
 const updateUserSettings = async (userId: string, settings: Partial<ChatSettings>) => {
   // Make API call to update user settings
   try {

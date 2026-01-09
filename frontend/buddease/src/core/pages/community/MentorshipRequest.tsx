@@ -23,7 +23,7 @@ interface MentorshipRequest {
   }
 
 
-Assuming MentorshipRequest interface exists somewhere
+// Assuming MentorshipRequest interface exists somewhere
 interface MentorshipRequest {
   menteeId: string;
   mentorId: string;

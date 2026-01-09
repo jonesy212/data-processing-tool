@@ -35,7 +35,7 @@ export const processAutoGPTOutputWithSpaCy = async (userIdea: string, appTree: a
     }
 };
 
-REAL LOGIC for prompt enhancement
+// REAL LOGIC for prompt enhancement
 const enhancePromptWithEntities = (prompt: string, spaCyOutput: any, appTree: any[], userContext: any): string => {
     const { entities = [], keywords = [], sentences = [] } = spaCyOutput;
     
@@ -66,7 +66,7 @@ const enhancePromptWithEntities = (prompt: string, spaCyOutput: any, appTree: an
     return enhancedPrompt;
 };
 
-REAL IMPLEMENTATIONS:
+// REAL IMPLEMENTATIONS:
 
 const createEntityMap = (entities: any[]): Map<string, string[]> => {
     const entityMap = new Map<string, string[]>();

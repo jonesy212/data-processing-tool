@@ -15,7 +15,7 @@ export const handleThemeApiErrorAndNotify = (
   );
 };
 
-Success notification helper
+// Success notification helper
 export const showThemeSuccessNotification = (message: string) => {
   const { notify } = handleThemeApiErrorAndNotify(
     null,
@@ -29,7 +29,7 @@ export const showThemeSuccessNotification = (message: string) => {
   });
 };
 
-Error notification helper  
+// Error notification helper  
 export const showThemeErrorNotification = (error: any, defaultMessage: string) => {
   const { notify } = handleThemeApiErrorAndNotify(
     error,

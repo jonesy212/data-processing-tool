@@ -33,7 +33,7 @@ export interface HypothesisTestResult {
   effectSize?: number;
 }
 
-Main hypothesis test function - this replaces performStatisticalTest
+// Main hypothesis test function - this replaces performStatisticalTest
 export async function runHypothesisTest(
   datasetId: string, 
   testType: string, 
@@ -205,7 +205,7 @@ async function performChiSquareTest(
   }
 }
 
-ANOVA Test Implementation
+// ANOVA Test Implementation
 async function performAnovaTest(
   datasetId: string, 
   params: AnovaParams
@@ -291,7 +291,7 @@ async function performAnovaTest(
   }
 }
 
-Helper function to fetch dataset data
+// Helper function to fetch dataset data
 async function fetchDatasetData(datasetId: string): Promise<any[]> {
   try {
     // This would typically query your database
@@ -310,7 +310,7 @@ async function fetchDatasetData(datasetId: string): Promise<any[]> {
   }
 }
 
-Simplified p-value calculations (in real implementation, use proper statistical libraries)
+// Simplified p-value calculations (in real implementation, use proper statistical libraries)
 function calculatePValueFromT(t: number, df: number, alternative: string): number {
   // Simplified approximation - use proper t-distribution in production
   const absT = Math.abs(t);
@@ -331,7 +331,7 @@ function calculatePValueFromF(f: number, df1: number, df2: number): number {
   return Math.pow(1 + (f * df1) / df2, -(df1 + df2) / 2);
 }
 
-Standard normal cumulative distribution function (approximation)
+// Standard normal cumulative distribution function (approximation)
 function normalCDF(x: number): number {
   const t = 1 / (1 + 0.2316419 * Math.abs(x));
   const d = 0.3989423 * Math.exp(-x * x / 2);
@@ -344,5 +344,5 @@ function normalCDF(x: number): number {
   return probability;
 }
 
-Export individual test functions if needed elsewhere
+// Export individual test functions if needed elsewhere
 export { performAnovaTest, performChiSquareTest, performTTest };

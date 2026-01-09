@@ -6,12 +6,12 @@ import { Tag } from "@/core/models/tracker/Tag";
 import { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React, { useState } from "react";
 
-Check if the tag is an instance of Tag
+// Check if the tag is an instance of Tag
 function isTagObject(tag: string | Tag<any>): tag is Tag<any> {
   return (tag as Tag<any>).id !== undefined;
 }
 
-Define the type for the data property
+// Define the type for the data property
 export interface ContentData {
   stroke?: string;
   strokeWidth?: number;
@@ -21,7 +21,7 @@ export interface ContentData {
   x?: number;
   y?: number;
 }
-Define the type for the content item
+// Define the type for the content item
 interface ContentItem {
   then?(arg0: (newContent: any) => void): unknown;
   _id?: string;
@@ -40,7 +40,7 @@ interface ContentItem {
   // Add more properties as needed
 }
 
-Define the props interface for the ContentItem component
+// Define the props interface for the ContentItem component
 interface ContentItemProps<
   T extends BaseDataEntity,
   K extends T = T,

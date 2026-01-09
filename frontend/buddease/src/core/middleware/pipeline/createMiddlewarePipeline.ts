@@ -22,7 +22,7 @@ export const createMiddlewarePipeline = (
   );
 };
 
-Alternative implementation (left-to-right composition)
+// Alternative implementation (left-to-right composition)
 export const createMiddlewarePipelineLR = (
   middlewares: MiddlewareFunction[]
 ): MiddlewareFunction => {

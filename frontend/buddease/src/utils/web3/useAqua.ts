@@ -3,7 +3,7 @@ import LoadAquaState from '@/core/dashboards/LoadAquaState';
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { AquaState } from '@/core/state/AquaState'; // Assuming this type exists
 
-Create the dynamic hook for Aqua functionality
+// Create the dynamic hook for Aqua functionality
 const useAqua = createDynamicHook({
   // Condition to determine if Aqua should activate
   condition: async (idleTimeoutDuration: number) => {
@@ -215,7 +215,7 @@ const useAqua = createDynamicHook({
   idleTimeoutId: null,
 });
 
-Helper functions
+// Helper functions
 async function checkAquaFeatureFlag(): Promise<boolean> {
   // Check feature flag from config, environment, or API
   try {
@@ -262,7 +262,7 @@ async function checkSystemResources(): Promise<boolean> {
   }
 }
 
-React hook wrapper for better integration
+// React hook wrapper for better integration
 export const useAquaWithReact = () => {
   const aquaHook = useAqua;
   

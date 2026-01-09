@@ -5,7 +5,7 @@ import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
 import React, { SetStateAction } from "react";
 
-Define the Theme interface
+// Define the Theme interface
 enum ThemeEnum {
   LIGHT = "light",
   DARK = "dark",
@@ -54,10 +54,10 @@ interface Theme {
 }
 
 
-Define the ThemeContext
+// Define the ThemeContext
 const ThemeContext = React.createContext<Theme | null>(null);
 
-Define the ThemeProvider component
+// Define the ThemeProvider component
 export const ThemeProvider: React.FC<{ theme: Theme; children: any }> = ({
   theme,
   children,

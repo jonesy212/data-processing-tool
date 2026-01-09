@@ -10,7 +10,7 @@ import {
     DocumentVersion
 } from '@/core/typings/documents/DocumentTypes';
 
-Mock creation functions 
+// Mock creation functions 
 const createDefaultDocument = (overrides: Partial<AppDocument>): AppDocument => ({
   id: 'doc-1',
   title: '',
@@ -45,7 +45,7 @@ const createDocumentVersion = (
   previousVersionId: null
 });
 
-Using the App types
+// Using the App types
 const currentDocument: AppDocument = createDefaultDocument({
   title: "Project Proposal",
   content: "# Project Proposal\n\nThis is the content...",
@@ -54,7 +54,7 @@ const currentDocument: AppDocument = createDefaultDocument({
   isPublished: true
 });
 
-Document context in React
+// Document context in React
 const DocumentContext = React.createContext<DocumentContextType>({
   currentDocument: null,
   isLoading: false,
@@ -64,14 +64,14 @@ const DocumentContext = React.createContext<DocumentContextType>({
   shareDocument: async () => {}
 });
 
-Document versioning
+// Document versioning
 const documentVersion: DocumentVersion = createDocumentVersion(
   currentDocument,
   "user-123",
   ["Added introduction", "Updated timeline"]
 );
 
-Document filtering
+// Document filtering
 const filterOptions: DocumentFilterOptions = {
   fileType: "markdown",
   author: "user-123",
@@ -83,7 +83,7 @@ const filterOptions: DocumentFilterOptions = {
   sortOrder: "desc"
 };
 
-Document permissions
+// Document permissions
 const userPermissions: DocumentPermissions = {
   canView: true,
   canEdit: true,
@@ -95,7 +95,7 @@ const userPermissions: DocumentPermissions = {
   canDuplicate: true
 };
 
-Example component using the context
+// Example component using the context
 export const DocumentExamplesComponent: React.FC = () => {
   const documentContext = React.useContext(DocumentContext);
 
@@ -133,7 +133,7 @@ export const DocumentExamplesComponent: React.FC = () => {
   );
 };
 
-Export the context for use in other components
+// Export the context for use in other components
 export { DocumentContext };
 
 Default export

@@ -88,7 +88,7 @@ export interface PhaseOptions<
   subPhases: string[];
 }
 
-Define a function to generate a phase object
+// Define a function to generate a phase object
 const generatePhase = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -161,7 +161,7 @@ const generatePhase = <
 
 
 
-Common Functions
+// Common Functions
 const generateGenericPhase = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -269,7 +269,7 @@ const ideaLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAtt
 ];
 
 
-Define Unique Phases
+// Define Unique Phases
 const appPlanningLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   generateGenericPhase("App Planning", ["Idea Validation", "Feature Planning", "Timeline Setup"]),
   generateGenericPhase("Development", ["Coding", "Testing", "Debugging", "Deployment"]),
@@ -298,7 +298,7 @@ const projectLifecycleManagementPhases: PhaseOptions<PhaseEntity, PhaseK, PhaseM
   generateGenericPhase("Project Review and Documentation", ["Lessons Learned", "Documentation", "Report Generation"]),
 ];
 
-Final Array of All Phases
+// Final Array of All Phases
 const allLifecyclePhases = [
   ...ideaLifecyclePhases,
   ...appPlanningLifecyclePhases,
@@ -314,4 +314,4 @@ export {
     ideaLifecyclePhases,
     projectLifecycleManagementPhases
 };
-Rest of the code remains unchanged
+// Rest of the code remains unchanged

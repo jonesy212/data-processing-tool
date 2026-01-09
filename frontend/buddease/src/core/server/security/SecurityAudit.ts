@@ -91,14 +91,14 @@ export default SecurityAudit;
 
 
 
-Usage Example
-Here's how you can create and audit a state using both SecureFieldManager and SecurityAudit.
+// Usage Example
+// Here's how you can create and audit a state using both SecureFieldManager and SecurityAudit.
 
 typescript
-Copy code
+// Copy code
 
 
-Example state with sensitive fields
+// Example state with sensitive fields
 const state = {
   id: SecureFieldManager.createField("12345", false),
   apiKey: SecureFieldManager.createField("secret-api-key", true, false),
@@ -107,13 +107,13 @@ const state = {
   baseUrl: SecureFieldManager.createField("https://example.com", true),
 };
 
-Security Audit Instance
+// Security Audit Instance
 const audit = new SecurityAudit();
 const findings = audit.conductAudit(state);
 audit.reviewFindings(findings);
 
-Sanitizing state for a user with limited permissions
+// Sanitizing state for a user with limited permissions
 
-Sanitizing state for a user with limited permissions
+// Sanitizing state for a user with limited permissions
 const sanitizedState = SecureFieldManager.sanitizeMetadata(state, "user", false);
 console.log("Sanitized State:", sanitizedState);

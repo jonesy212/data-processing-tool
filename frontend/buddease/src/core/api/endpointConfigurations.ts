@@ -84,7 +84,7 @@ import { videosConfig } from '@/core/config/endpoints/videosConfig';
 import { createMergedEndpoints } from '@/utils/endpointMerger';
 import { buildUrl } from '@/utils/urlBuilder';
 
-Main endpoint configurations
+// Main endpoint configurations
 export const endpointConfigurations: EndpointConfigurations = {
   analytics: analyticsConfig,
   apiConfig: apiEndpointConfig,
@@ -167,7 +167,7 @@ export const endpointConfigurations: EndpointConfigurations = {
   web: webConfig,
 };
 
-Export individual configurations for selective imports
+// Export individual configurations for selective imports
 export {
     analyticsConfig,
     apiEndpointConfig,
@@ -246,16 +246,16 @@ export {
     webConfig
 };
 
-Merge endpoints and keep strong typing
+// Merge endpoints and keep strong typing
 export const endpoints = createMergedEndpoints(endpointConfigurations);
 
-Create API config instance with typed endpoints
+// Create API config instance with typed endpoints
 export const apiConfig = new ApiConfig(
   endpointConfigurations, 
   endpoints
 );
 
-Factory function for custom ApiConfig instances
+// Factory function for custom ApiConfig instances
 export const createApiConfig = (
   configurations: EndpointConfigurations,
   endpoints: EndpointConfigurations
@@ -300,7 +300,7 @@ export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
   };
 };
 
-Also update getApiEndpointUrl to use the same helper
+// Also update getApiEndpointUrl to use the same helper
 export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
@@ -310,5 +310,5 @@ export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
   return buildUrl(endpoint, params);
 };
 
-Export default API instance
+// Export default API instance
 export default apiConfig;

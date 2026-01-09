@@ -2,7 +2,7 @@ FilterEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-Define the actual FilterEntity interface
+// Define the actual FilterEntity interface
 interface FilterEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -27,7 +27,7 @@ type FilterAttachment = Attachment;
 type FilterExcludedFields = DefaultExcludedFields<FilterEntity> | "criteria" | "createdBy";
 type FilterIncludedFields = keyof FilterEntity;
 
-Filter parameters container
+// Filter parameters container
 type FilterBaseParams = {
   T: FilterEntity;
   K: FilterK;

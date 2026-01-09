@@ -3,7 +3,7 @@ import { BrandingSettings } from "@/core/branding/BrandingSettings";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import { validateHexColor } from "@/core/libraries/ui/theme/ThemeConfig";
 
-Consolidated default branding settings - only one instance
+// Consolidated default branding settings - only one instance
 export const defaultBrandingSettings: BrandingSettings = {
   // ===== LOGO SETTINGS =====
   logoUrl: "https://example.com/logo.png",
@@ -64,7 +64,7 @@ export const defaultBrandingSettings: BrandingSettings = {
   }
 };
 
-Define your theme based on branding settings
+// Define your theme based on branding settings
 export const createThemeFromBranding = (branding?: Partial<BrandingSettings>): Theme => {
   const mergedBranding = branding ? { ...defaultBrandingSettings, ...branding } : defaultBrandingSettings;
   
@@ -93,5 +93,5 @@ export const createThemeFromBranding = (branding?: Partial<BrandingSettings>): T
   };
 };
 
-Default theme instance
+// Default theme instance
 export const defaultTheme: Theme = createThemeFromBranding();

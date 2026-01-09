@@ -4,7 +4,7 @@ import * as userApi from '@/core/api/UsersApi';
 import { saveDocument } from "@/core/documents/editing/DocumentBuilder";
 import { Permission } from '@/core/permissions/Permission';
 
-Example of admin function to assign permissions
+// Example of admin function to assign permissions
 const assignPermissions = async (docId: string, userId: string, permissions: Permission[]) => {
   try {
     // Fetch user and document asynchronously

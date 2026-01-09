@@ -27,7 +27,7 @@ const onEditorStateChangeHandler = (callback: (state: EditorState) => void) => {
   };
 };
 
-Define toolbar options with the editor state change handler
+// Define toolbar options with the editor state change handler
 export const toolbarOptions = {
   communication: ["Chat", "Call", "Video"],
   documents: [

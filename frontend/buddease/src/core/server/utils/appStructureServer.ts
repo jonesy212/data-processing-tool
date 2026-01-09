@@ -2,7 +2,7 @@ appStructureServer.ts
 import { FileSystemService } from '@/core/config/appStructure/AppStructure';
 import * as fs from 'fs/promises';
 
-Server-specific file system implementation
+// Server-specific file system implementation
 export const nodeFileSystem: FileSystemService = {
   readdir: fs.readdir,
   stat: async (filePath) => {

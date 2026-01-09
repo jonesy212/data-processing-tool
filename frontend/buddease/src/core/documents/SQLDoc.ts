@@ -5,7 +5,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SQLDocument } from "@/core/documents/editing/SQLDocument";
 import { Task } from "@/core/models/tasks/Task";
 
-SQLDocument Implementation
+// SQLDocument Implementation
 class SQLDoc<
   T extends BaseDataEntity,
   K extends T = T,
@@ -73,7 +73,7 @@ class SQLDoc<
 
 export default SQLDoc;
 
-Creating and using an SQLDocument
+// Creating and using an SQLDocument
 const sqlDoc = new SQLDoc("SELECT * FROM users", "Author Name");
 sqlDoc.printInfo();
 sqlDoc.execute();

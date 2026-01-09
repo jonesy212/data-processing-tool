@@ -3,9 +3,9 @@ import { NotificationChannels, RetryPolicy } from '@/core/notifications/Notifica
 import { CustomAction } from '@/core/settings/CustomAction';
 import { EscalationAction } from "@/core/settings/EscalationAction";
 import { ReminderCondition } from '@/core/settings/ReminderConditionEngine';
-Core reminder definition
+// Core reminder definition
 
-Option B: With dedicated ReminderType if you need more complexity
+// Option B: With dedicated ReminderType if you need more complexity
 interface ReminderType {
   id: string;
   category: 'reminder' | 'alert' | 'follow-up' | 'notification' | 'action';
@@ -91,7 +91,7 @@ interface ReminderSettings {
 }
 
 
-Trigger types
+// Trigger types
 type ReminderTrigger = 
   | { type: 'absolute'; dateTime: Date }
   | { type: 'relative'; minutesBefore: number }
@@ -100,7 +100,7 @@ type ReminderTrigger =
   | { type: 'snooze'; originalReminderId: string; snoozeUntil: Date }
   | { type: 'time_before_event'; minutesBefore: number };
   
-Notification methods
+// Notification methods
 type ReminderMethod = 
   | 'email'
   | 'push'
@@ -118,7 +118,7 @@ interface EventReminder extends Reminder {
   conditions: ReminderCondition[];
 }
 
-Smart reminder features
+// Smart reminder features
 interface SmartReminderSettings {
   enableTravelTime: boolean;
   travelBufferMinutes: number;
@@ -129,7 +129,7 @@ interface SmartReminderSettings {
 }
 
 
-Email notifications
+// Email notifications
 interface EmailSettings {
   subjectTemplate?: string;
   bodyTemplate?: string;
@@ -144,7 +144,7 @@ interface EmailSettings {
   categories?: ('system' | 'security' | 'marketing' | 'updates' | 'reminders')[];
 }
 
-Push notifications (desktop/mobile)
+// Push notifications (desktop/mobile)
 interface PushNotificationSettings {
   title?: string;
   badgeCount?: number;
@@ -161,7 +161,7 @@ interface PushNotificationSettings {
   categories?: ('alerts' | 'messages' | 'reminders' | 'tasks')[];
 }
 
-SMS notifications
+// SMS notifications
 interface SmsSettings {
   enabled: boolean;
   phoneNumber?: string;
@@ -183,7 +183,7 @@ interface InAppSettings {
   retentionDays?: number; // How long to keep notifications
 }
 
-Webhook notifications (for integrations and automation)
+// Webhook notifications (for integrations and automation)
 interface WebhookSettings {
   enabled: boolean;
   url: string;
@@ -212,7 +212,7 @@ export interface EscalationCondition {
   description?: string;
 }
 
-Escalation rules for important events
+// Escalation rules for important events
 interface EscalationRule {
   id: string;
   name: string;
@@ -221,7 +221,7 @@ interface EscalationRule {
   maxEscalationLevel: number;
 }
 
-Business rules
+// Business rules
 interface BusinessHours {
   timeZone: string;
   workingDays: number[]; // 0-6 (Sunday-Saturday)

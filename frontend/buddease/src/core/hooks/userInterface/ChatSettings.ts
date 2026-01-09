@@ -1,5 +1,5 @@
 ChatSettings.ts
-Define a type for chat settings
+// Define a type for chat settings
 
 interface ChatSettings {
   realTimeChatEnabled: boolean;

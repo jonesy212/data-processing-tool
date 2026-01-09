@@ -1,5 +1,5 @@
 stepTypes.ts
-StepTypes.ts - Optimized hybrid solution for your project management + crypto app
+// StepTypes.ts - Optimized hybrid solution for your project management + crypto app
 ============================================================================
 CORE TYPES - Define your app's specific domains
 ============================================================================

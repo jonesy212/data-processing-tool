@@ -81,7 +81,7 @@ export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
   },
 } as DynamicPromptPhaseHookConfig & DynamicHookParams<void>);
 
-Optional: Success notification for phase completion
+// Optional: Success notification for phase completion
 const useTeamBuildingPhaseWithSuccess = createDynamicPromptPhaseHook({
   condition: async () => {
     const isTeamBuildingPhase = true;
@@ -139,13 +139,13 @@ const useTeamBuildingPhaseWithSuccess = createDynamicPromptPhaseHook({
   },
 });
 
-Helper function (optional)
+// Helper function (optional)
 export const executeTeamBuildingLogic = async (): Promise<any> => {
   // Your team building logic here
   return { success: true };
 };
 
-Error logging function (optional)
+// Error logging function (optional)
 export const logPhaseError = (errorInfo: any): void => {
   console.log('[Phase Error Logged]:', errorInfo);
   // Could send to monitoring service like Sentry
@@ -158,7 +158,7 @@ export const logPhaseError = (errorInfo: any): void => {
 
 
 
-Brainstorming Phase Hook
+// Brainstorming Phase Hook
 export const useBrainstormingPhase = createDynamicPromptPhaseHook({
   condition: () => {
     // Add condition logic based on your requirements for the Brainstorming Phase
@@ -197,7 +197,7 @@ export const useBrainstormingPhase = createDynamicPromptPhaseHook({
 
 
 
-Project Management Phase Hook
+// Project Management Phase Hook
 export const useProjectManagementPhase = createDynamicPromptPhaseHook({
   condition: () => {
     // Add condition logic based on your requirements for the Project Management Phase
@@ -237,7 +237,7 @@ export const useProjectManagementPhase = createDynamicPromptPhaseHook({
 
 
 
-Meetings Phase Hook
+// Meetings Phase Hook
 export const useMeetingsPhase = createDynamicPromptPhaseHook({
   condition: () => {
     // Add condition logic based on your requirements for the Meetings Phase
@@ -275,7 +275,7 @@ export const useMeetingsPhase = createDynamicPromptPhaseHook({
 
 
 
-Collaboration Phase Hook
+// Collaboration Phase Hook
 export const useCollaborationPhase = createDynamicPromptPhaseHook({
   condition: () => {
     // Add condition logic based on your requirements for the Collaboration Phase

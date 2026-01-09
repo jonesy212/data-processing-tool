@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
   );
 };
 
-Content components for each persona
+// Content components for each persona
 const RecruiterDashboardContent: React.FC = () => {
   return (
     <div>

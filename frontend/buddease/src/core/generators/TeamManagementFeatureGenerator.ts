@@ -2,7 +2,7 @@ TeamManagementFeatureGenerator.ts
 import { generateApiCode } from '@/core/generators/ApiCodeGenerator';
 import ApiCodeOptions from '@/core/generators/ApiCodeOptions';
 
-Function to generate team management feature code
+// Function to generate team management feature code
 const generateTeamManagementFeature = (featureName: string, apiBaseUrl: string) => {
   // Create an instance of ApiCodeOptions
   const apiCodeOptions: ApiCodeOptions = {
@@ -58,5 +58,5 @@ const generateTeamManagementFeature = (featureName: string, apiBaseUrl: string) 
   console.log(apiCode);
 };
 
-Example usage
+// Example usage
 generateTeamManagementFeature("TeamManagement", "https://api.example.com/teams");

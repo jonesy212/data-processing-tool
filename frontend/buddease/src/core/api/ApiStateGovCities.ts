@@ -78,7 +78,7 @@ export const createStateGovCity = async (newCity: DetailsItem<Data>) => {
   }
 };
 
-Function to remove a state government city
+// Function to remove a state government city
 export const removeStateGovCity = async (cityId: number): Promise<void> => {
   try {
     const endpoint = `${API_BASE_URL}/${cityId}`;
@@ -136,7 +136,7 @@ export const removeStateGovCity = async (cityId: number): Promise<void> => {
   }
 };
 
-Function to update a state government city
+// Function to update a state government city
 export const updateStateGovCity = async (
   cityId: number,
   newData: any
@@ -201,7 +201,7 @@ export const updateStateGovCity = async (
   }
 };
 
-Function to add a state government city
+// Function to add a state government city
 export const addStateGovCity = async (newCity: Omit<DetailsItem<Data>, 'id'>) => {
   try {
     const response = await axiosInstance.post(`${API_BASE_URL}`, newCity);
@@ -288,7 +288,7 @@ export const addStateGovCity = async (newCity: Omit<DetailsItem<Data>, 'id'>) =>
   }
 };
 
-Optional: Create a reusable error handler for city operations
+// Optional: Create a reusable error handler for city operations
 const handleCityApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
@@ -314,4 +314,4 @@ const handleCityApiErrorAndNotify = (
   });
 };
   
-Add other state government city-related actions as needed
+// Add other state government city-related actions as needed

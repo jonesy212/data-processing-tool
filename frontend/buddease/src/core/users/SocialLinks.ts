@@ -1,6 +1,6 @@
 SocialLinks.ts
 SocialLinks.tsx
-Define the social links interface
+// Define the social links interface
 interface SocialLinks {
   website?: string | null;
   twitter?: string | null;

@@ -30,7 +30,7 @@ import { UIState } from '@/core/state/stores/UISlice';
 import { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
 import { makeAutoObservable } from 'mobx';
 
-Define the initial state
+// Define the initial state
 const initialState: AppState = {
   progress: 0,
   user: {} as UserProfile,
@@ -71,7 +71,7 @@ const initialState: AppState = {
   versionManager: {} as VersionState
 };
 
-Create a MobX store for the app state
+// Create a MobX store for the app state
 class AppStore {
   // Define observable state properties
   progress: number;
@@ -93,7 +93,7 @@ class AppStore {
   // Add other actions to update state as needed
 }
 
-Create an instance of the AppStore with the initial state
+// Create an instance of the AppStore with the initial state
 const appStore = new AppStore(initialState);
 
 export default appStore;

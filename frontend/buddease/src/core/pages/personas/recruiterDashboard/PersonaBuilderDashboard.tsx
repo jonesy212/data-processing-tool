@@ -17,7 +17,7 @@ import DataPreview from "@/core/users/DataPreview";
 import PersonaPanel from "./PersonaPanel";
 
 
-Define initial personas
+// Define initial personas
 const initialUserPersonas = [
   "Music Persona",
   "Film Persona",
@@ -42,7 +42,7 @@ const initialSocialPersonas = [
   "Blogger", 
 ];
 
-Define additional personas
+// Define additional personas
 const additionalUserPersonas = [
   "Fashion Enthusiast",
   "Gamer Persona",
@@ -53,14 +53,14 @@ const additionalBusinessPersonas = ["Data Analyst", "Content Creator"];
 
 const additionalSocialPersonas = ["Blogger", "Content Creator"];
 
-Merge initial and additional personas
+// Merge initial and additional personas
 const userPersonas = [...initialUserPersonas, ...additionalUserPersonas];
 const businessPersonas = [...initialBusinessPersonas, ...additionalBusinessPersonas];
 const socialPersonas = [...initialSocialPersonas, ...additionalSocialPersonas];
 
-Now userPersonas, businessPersonas, and socialPersonas are properly integrated with the additional personas included.
+// Now userPersonas, businessPersonas, and socialPersonas are properly integrated with the additional personas included.
 
-Define personality traits based on MBTI dichotomies
+// Define personality traits based on MBTI dichotomies
 const personalityTraits = {
   extraversion: ["Introverted", "Extraverted"],
   sensing: ["Intuitive", "Observant"],
@@ -69,7 +69,7 @@ const personalityTraits = {
 };
 
 
-Define personaData using PersonaTypeEnum enum keys
+// Define personaData using PersonaTypeEnum enum keys
 const personaData: PersonaData = {
   [PersonaTypeEnum.Music]: getPersonaData(
     "Passionate about music and knowledgeable in various genres.",
@@ -157,7 +157,7 @@ const personaData: PersonaData = {
 Export personaData
 export { personaData };
 
-Function to generate persona data
+// Function to generate persona data
 function getPersonaData(...characteristics: string[]): string[] {
   return characteristics;
 }

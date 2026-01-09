@@ -95,5 +95,5 @@ class ShortCutKeys extends AsyncEventHandler {
   };
 }
 
-Export singleton instance
+// Export singleton instance
 export default ShortCutKeys.getInstance();

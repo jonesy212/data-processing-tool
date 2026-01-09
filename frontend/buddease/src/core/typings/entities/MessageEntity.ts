@@ -4,7 +4,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 
-Define the actual MessageEntity interface
+// Define the actual MessageEntity interface
 interface MessageEntity extends BaseDataEntity {
   id: string;
   content: string;
@@ -39,7 +39,7 @@ type MessageAttachment = Attachment;
 type MessageExcludedFields = DefaultExcludedFields<MessageEntity> | "metadata" | "encryptionKey";
 type MessageIncludedFields = keyof MessageEntity;
 
-Message parameters container
+// Message parameters container
 type MessageBaseParams = {
   T: MessageEntity;
   K: MessageK;

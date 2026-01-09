@@ -4,7 +4,7 @@ app/layout/RootLayoutContent.tsx
 
 import React, { RefObject } from "react";
 
-Define the props interface
+// Define the props interface
 export interface RootLayoutContentProps {
   children: React.ReactNode;
   isMinimized: boolean;

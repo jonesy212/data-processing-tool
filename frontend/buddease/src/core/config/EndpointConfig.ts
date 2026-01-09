@@ -96,13 +96,13 @@ export type EndpointFunction = (...args: any[]) => EndpointConfig;
 
 export type EndpointDefinition = EndpointConfig | EndpointFunction;
 
-Remove the duplicate EndpointCategory interface and use this:
+// Remove the duplicate EndpointCategory interface and use this:
 export interface EndpointCategoryConfig {
   [key: string]: EndpointDefinition | EndpointCategoryConfig;
 }
 
 
-Then define your specific category types separately
+// Then define your specific category types separately
 export type EndpointCategory = keyof EndpointConfigurations;
 export type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];
 

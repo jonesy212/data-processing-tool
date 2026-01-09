@@ -4,7 +4,7 @@ import { endpoints } from '@/core/api/endpointConfigurations';
 import ApiService from "@/core/api/service/ApiService";
 import { AxiosResponse } from "axios";
 
-Define the type or interface for the request data
+// Define the type or interface for the request data
 interface RequestData {
   // Define properties for the request data
   param1: string;
@@ -19,7 +19,7 @@ export interface ParameterCustomizationData {
   // Define properties for parameter customization data
 }
 
-Create an instance of the request data
+// Create an instance of the request data
 const requestData: RequestData = {
   param1: "value1",
   param2: 123,

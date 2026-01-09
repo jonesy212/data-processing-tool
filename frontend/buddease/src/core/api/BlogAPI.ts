@@ -16,7 +16,7 @@ const API_BASE_URL = endpoints.apiConfig
 
 const notificationContext = useNotification();
 
-Example values for the Message object
+// Example values for the Message object
 const generateUniqueID = UniqueIDGenerator.generateMessageID()
 const createMessage = (type: string, content: string): Partial<Message> => ({
   id: generateUniqueID,

@@ -477,7 +477,7 @@ export class MultiPlatformDirectoryValidator extends BaseAnalyzer {
   }
 }
 
-NEW: Dynamic pattern interfaces
+// NEW: Dynamic pattern interfaces
 interface DirectoryPatterns {
   typePatterns: PatternRule[];
   utilityPatterns: PatternRule[];

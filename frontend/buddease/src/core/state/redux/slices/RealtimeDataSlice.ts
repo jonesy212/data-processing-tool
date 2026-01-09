@@ -23,17 +23,17 @@ type AppRealtimeData = RealtimeData<
 >;
 
 
-Define interface for the state
+// Define interface for the state
 export interface RealtimeDataState {
   realtimeDataList: AppRealtimeData[];
 }
 
-Define initial state
+// Define initial state
 export const initialState: RealtimeDataState = {
   realtimeDataList: [],
 };
 
-Create slice
+// Create slice
 export const useRealtimeDataSlice = createSlice({
   name: 'realtimeData',
   initialState,
@@ -68,8 +68,8 @@ export const {
   removeRealtimeData
 } = useRealtimeDataSlice.actions;
 
-Export selector for accessing the realtime data list from the state
+// Export selector for accessing the realtime data list from the state
 export const selectRealtimeDataList = (state: { realtimeData: RealtimeDataState }) => state.realtimeData.realtimeDataList;
 
-Export reducer for the realtime data slice
+// Export reducer for the realtime data slice
 export default useRealtimeDataSlice.reducer;

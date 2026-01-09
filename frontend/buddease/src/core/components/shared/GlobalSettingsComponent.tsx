@@ -1,5 +1,5 @@
 GlobalSettingsComponent.tsx
-Example usage in a React component
+// Example usage in a React component
 import {
     initializeGlobalState,
     selectDarkMode,

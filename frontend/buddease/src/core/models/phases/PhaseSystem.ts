@@ -452,7 +452,7 @@ export class HierarchicalPhaseExecutor {
     }
 }
 
-Factory functions for easy use
+// Factory functions for easy use
 export async function runHierarchicalResolution(projectRoot?: string): Promise<Map<string, any>> {
     const executor = new HierarchicalPhaseExecutor(projectRoot);
     return await executor.executeAll();

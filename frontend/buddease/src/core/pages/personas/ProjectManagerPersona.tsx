@@ -23,7 +23,7 @@ interface ProjectManagerPersonaProps {
 
 type TeamDocument = Document & Team
 
-Adjust the SearchResultProps interface to accept Team instead of Document
+// Adjust the SearchResultProps interface to accept Team instead of Document
 
 const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
   teams,

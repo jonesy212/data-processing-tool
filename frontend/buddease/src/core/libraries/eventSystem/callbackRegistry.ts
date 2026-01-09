@@ -316,5 +316,5 @@ export class CallbackRegistry {
   }
 }
 
-Create a global instance
+// Create a global instance
 export const globalCallbackRegistry = new CallbackRegistry();

@@ -7,7 +7,7 @@ import { useAssignTeamMemberStore } from "@/core/state/stores/AssignTeamMemberSt
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 
-Define necessary types and interfaces
+// Define necessary types and interfaces
 type CollaborationStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
   | "assignedEvents"
@@ -24,7 +24,7 @@ type CollaborationStoreSubset = Pick<
   | "reassignUsersInTodos"
 >;
 
-Define a custom interface that extends necessary properties
+// Define a custom interface that extends necessary properties
 export interface CollaborationStore extends CollaborationStoreSubset, AssignBaseStore {
   // Add additional properties specific to CollaborationStore if needed
 }

@@ -2,7 +2,7 @@ CalendarEventAttendancePrediction.tsx
 import { CalendarEvent } from '@/core/calendar/CalendarEvent'; // Assuming Attendee is imported from CalendarEvent
 import AttendancePrediction, { EventAttendance } from "@/core/components/calendar/AttendancePrediction";
 
-Define the interface for AttendancePredictionResult
+// Define the interface for AttendancePredictionResult
 interface AttendancePredictionResult {
   eventId: string;
   attendancePrediction: Record<string, boolean>; // Attendee ID/email -> predicted attendance (true/false)

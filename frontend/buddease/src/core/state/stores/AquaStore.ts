@@ -35,5 +35,5 @@ export class AquaStore {
   });
 }
 
-Create a singleton instance
+// Create a singleton instance
 export const aquaStore = new AquaStore();

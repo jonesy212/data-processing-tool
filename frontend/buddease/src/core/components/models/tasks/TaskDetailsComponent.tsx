@@ -3,7 +3,7 @@ TaskDetails.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-using commong detais we genrate details for components by mapping through the objects.
+// using commong detais we genrate details for components by mapping through the objects.
 const TaskDetails = <
   T extends BaseDataEntity,
   K extends T = T,

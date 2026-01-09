@@ -1,10 +1,10 @@
-LogEntity.ts
-LogEntity.ts - Separate entity for logging
+// LogEntity.ts
+// LogEntity.ts - Separate entity for logging
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { LogData } from '@/core/models/LogData';
+import type { LogData } from '@/core/models/LogData';
 
-1. Base Log Entity
+// 1. Base Log Entity
 export interface BaseLogEntity extends BaseDataEntity {
   timestamp: Date;
   level: 'debug' | 'info' | 'warn' | 'error' | 'fatal';
@@ -17,7 +17,7 @@ export interface BaseLogEntity extends BaseDataEntity {
   stackTrace?: string; // for error logs
 }
 
-2. Type definitions with 6 parameters for Logs
+// 2. Type definitions with 6 parameters for Logs
 type LogEntity = BaseLogEntity;
 type LogK = BaseLogEntity;
 type LogMeta = DefaultMeta<BaseLogEntity, LogK>;
@@ -25,7 +25,7 @@ type LogAttachment = Attachment;
 type LogExcludedFields = DefaultExcludedFields<BaseLogEntity>;
 type LogIncludedFields = keyof BaseLogEntity;
 
-3. Log-specific types
+// 3. Log-specific types
 type LogDataEntity = LogData<BaseLogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields>;
 
 

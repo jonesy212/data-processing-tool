@@ -50,7 +50,7 @@ const fetchEventId = (events: any): string | undefined => {
   return undefined;
 };
 
-Main event processing function
+// Main event processing function
 const processEventsWithHandlers = (events: any, newData: any): void => {
   const eventId = fetchEventId(events);
   if (!eventId) {
