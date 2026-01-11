@@ -1,8 +1,10 @@
-IdeaLifecycleAPI.ts
-services/IdeaLifecycleAPI.ts
-import axios, { AxiosResponse } from 'axios';
+// IdeaLifecycleAPI.ts
+// services/IdeaLifecycleAPI.ts
+import axios from 'axios';
+import type { AxiosResponse } from 'axios';
+import type { Milestone } from "@/core/typings/milestoneTypes";
 
-Types
+// Types
 export interface IdeaData {
   _id: string;
   title: string;

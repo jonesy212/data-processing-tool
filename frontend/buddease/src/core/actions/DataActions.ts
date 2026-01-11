@@ -1,8 +1,8 @@
 // DataActions.ts
 // data/DataActions.ts
-import { SnapshotForActions } from '@/core/actions/AppActionTypes';
+import type { SnapshotForActions } from '@/core/actions/AppActionTypes';
+import type { AppSnapshot } from '@/core/typings/entities/AppEntity';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
-import { AppSnapshot } from '@/core/typings/entities/AppEntity';
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 
 
@@ -37,7 +37,12 @@ export const DataActions = () => ({
   bulkUpdateData: createAction<SnapshotForActions[]>("data/bulkUpdateData"),
   bulkRemoveData: createAction<string[]>("data/bulkRemoveData"),
 
-  // If you still need async thunks
+   loadDataAndProcessSuccess: createAction<{ result: DataProcessingResult }>("loadDataAndProcessSuccess"),
+  loadDataAndProcessFailure: createAction<{ error: string }>("loadDataAndProcessFailure"),
+  processDataForAnalysisSuccess: createAction<{ result: DataProcessingResult }>("processDataForAnalysisSuccess"),
+  processDataForAnalysisFailure: createAction<{ error: string }>("processDataForAnalysisFailure"),
+
+  // Async thunks
   createAndAddSnapshot: createAsyncThunk(
     'snapshot/createAndAddSnapshot',
     async (entity: AppSnapshot, thunkAPI) => {
@@ -54,8 +59,39 @@ export const DataActions = () => ({
           undefined,
           undefined
         );
-
         return baseSnapshot as SnapshotForActions;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+      }
+    }
+  ),
+  
+  // NEW: Async thunks for data processing
+  loadDataAndProcess: createAsyncThunk(
+    'data/loadDataAndProcess',
+    async (data: DataProcessing, thunkAPI) => {
+      try {
+        // This would call your actual API
+        const response = await axios.post(
+          `${API_BASE_URL}`,
+          data
+        );
+        return response.data as DataProcessingResult;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+      }
+    }
+  ),
+  
+  processDataForAnalysis: createAsyncThunk(
+    'data/processDataForAnalysis',
+    async (data: DataProcessing, thunkAPI) => {
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/process`,
+          data
+        );
+        return response.data as DataProcessingResult;
       } catch (error) {
         return thunkAPI.rejectWithValue(error);
       }

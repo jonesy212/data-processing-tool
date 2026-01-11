@@ -1,26 +1,26 @@
 // processSnapshotData.ts
-import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
+import type { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
 
-import { BaseEntity } from '@/core/config/BaseConfig';
-import { SharedSnapshotProperties } from '@/core/documents/RelatedProps';
-import { SnapshotIdentity } from '@/core/snapshots/SnapshotIdentity';
-import { SecurityReport, SecurityScanResult } from '@/core/typings/securityMeasureTypes';
-import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
+import type { BaseEntity, BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/core/config/BaseConfig';
+import type { SharedSnapshotProperties } from '@/core/documents/RelatedProps';
+import type { SnapshotIdentity } from '@/core/snapshots/SnapshotIdentity';
+import type { SecurityReport, SecurityScanResult } from '@/core/typings/securityMeasureTypes';
+import type { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
-import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
-import { CustomSnapshot } from '@/core/snapshots/CustomSnapshot';
-import { Snapshot, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotBaseProperties, SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
-import { SnapshotSecurity } from '@/core/snapshots/SnapshotSecurity';
+import type { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
+import type { CustomSnapshot } from '@/core/snapshots/CustomSnapshot';
+import type { Snapshot, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotBaseProperties, SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
+import type { SnapshotSecurity } from '@/core/snapshots/SnapshotSecurity';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotVersioning } from '@/core/snapshots/SnapshotVersioning';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotVersioning } from '@/core/snapshots/SnapshotVersioning';
 import { isSnapshotStore } from "@/core/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/utils/snapshotUtils';
-import { DataWithPriority } from "@/utils/versionUtils";
+import type { DataWithPriority } from "@/utils/versionUtils";
 
 interface EnhancedSnapshotData<
   T extends BaseDataEntity,

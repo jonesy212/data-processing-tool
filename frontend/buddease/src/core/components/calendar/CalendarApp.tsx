@@ -2,6 +2,7 @@
 "use client";
 
 import * as snapshotApi from '@/api/SnapshotApi';
+import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { default as findSnapshotStoresById, default as snapshotContainer } from '@/core/api/SnapshotApi';
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import CalendarDetails from "@/core/components/models/data/CalendarDetails";
@@ -12,45 +13,39 @@ import { createMeta } from "@/core/config/metadata/createMeta";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { CommonData } from "@/core/models/CommonData";
-import { BaseData, Data, DataDetails, DataDetailsComponent } from '@/core/models/data/Data';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { CommonData } from "@/core/models/CommonData";
+import type { BaseData, Data, DataDetails, DataDetailsComponent } from '@/core/models/data/Data';
 import { CalendarStatus, MeetingStatus, StatusType } from "@/core/models/data/StatusType";
-import { Member } from "@/core/models/members/Member";
-import { Project, ProjectType } from "@/core/models/projects/Project";
-import { TeamMember } from '@/core/models/teams/TeamMembers';
+import type { Member } from "@/core/models/members/Member";
+import type { Project, ProjectType } from "@/core/models/projects/Project";
+import type { TeamMember } from '@/core/models/teams/TeamMembers';
 import UserRoles from '@/core/models/UserRoles';
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import AnalyzeData from "@/core/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
-import {
-    snapshotFunction,
-    SnapshotsArray,
-    SnapshotsObject,
-    SnapshotUnion
-} from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
+import type { SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import  { snapshotFunction } from "@/core/snapshots/LocalStorageSnapshotStore";
 import { refreshUI } from '@/core/snapshots/refreshUI';
-import {
-    Snapshot
-} from "@/core/snapshots/Snapshot";
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { Snapshot } from "@/core/snapshots/Snapshot";
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';
 import {
     default as SnapshotStore,
     default as useSnapshotStore,
 } from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import {
-    DataStore,
-    useDataStore,
+    useDataStore
 } from "@/core/state/stores/DataStore";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
-import { Todo } from "@/core/todos/Todo";
+import type { DataStore } from "@/core/state/stores/DataStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Todo } from "@/core/todos/Todo";
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { AppUnifiedMetadata } from "@/core/typings/entities/AppMetadataEntity";
 import { snapshotType } from "@/core/typings/YourSpecificSnapshotType";

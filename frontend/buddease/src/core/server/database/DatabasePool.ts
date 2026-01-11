@@ -1,5 +1,6 @@
-DatabasePool.ts
-import { Pool, QueryResult } from 'pg';
+// DatabasePool.ts
+import { Pool } from 'pg';
+import type { QueryResult } from 'pg';
 
 // Define the Pool class
 export class DatabasePool {

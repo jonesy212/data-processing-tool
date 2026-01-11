@@ -1,13 +1,14 @@
-TeamApi.ts
+// TeamApi.ts
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { AxiosResponse } from "axios";
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import endpointConfigurations, { endpoints } from "@/core/api/endpointConfigurations";
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { useParams } from "react-router-dom";
 
 // Define the API base URL

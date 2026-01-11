@@ -1,16 +1,17 @@
-DataProcessingService.tsx
-DataProcessingService.ts
+// DataProcessingService.tsx
+
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { Team } from "@/core/components/teams/Team";
-import { MyDataType } from "@/core/config/MetaDataOptions";
-import { Project } from '@/core/models/projects/Project';
-import { TransactionData } from '@/core/payment/Transaction';
-import { UserData } from "@/core/users/User";
+import type { Team } from "@/core/components/teams/Team";
+import type { MyDataType } from "@/core/config/MetaDataOptions";
+import type { Project } from '@/core/models/projects/Project';
+import type { TransactionData } from '@/core/payment/Transaction';
+import type { UserData } from "@/core/users/User";
 
 import { DataActions } from '@/core/actions/DataActions';
 import axiosInstance from '@/core/api/csrfToken';
-import { CryptoPortfolio, ProjectActivity } from '@/core/components/crypto/CryptoPortfolio';
-import axios, { AxiosResponse } from 'axios';
+import type { CryptoPortfolio, ProjectActivity } from '@/core/components/crypto/CryptoPortfolio';
+import axios from 'axios';
+import type { AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
 
 // Use the data-processing endpoint from apiEndpoints.ts

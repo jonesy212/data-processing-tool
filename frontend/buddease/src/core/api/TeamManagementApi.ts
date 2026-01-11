@@ -1,5 +1,5 @@
-TeamManagementApi.ts
-TeamManagementService.ts
+// TeamManagementApi.ts
+
 import { TeamActions } from "@/core/actions/TeamActions";
 import { handleApiError } from "@/core/api/ApiLogs";
 import axiosInstance from "@/core/api/csrfToken";
@@ -7,7 +7,7 @@ import { endpoints } from "@/core/api/endpointConfigurations";
 import { getEndpoint } from "@/core/api/getEndpoint";
 import { getStoreId } from "@/core/api/service/ApiService";
 import { useTeamContext } from "@/core/components/context/TeamContext";
-import { Team } from "@/core/components/teams/Team";
+import type { Team } from "@/core/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
@@ -22,7 +22,7 @@ import { observable, runInAction } from "mobx";
 const API_BASE_URL = endpoints.teamManagement; // Update to the correct endpoint
 
 const { notify } = useNotification();
-const storeId = getStoreId(0)
+const storeId = getStoreId()
 
 export const teamManagementService = observable({
 

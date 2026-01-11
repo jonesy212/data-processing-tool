@@ -1,119 +1,47 @@
 // route.ts
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { BaseData } from '@/core/models/data/Data';
+import fs from 'fs';
+import path from 'path';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import { ServerDocumentGenerator } from '@/core/server/ServerDocumentGenerator';
+import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import type { BaseData } from '@/core/models/data/Data';
 import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
 import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';
 import PizZip from "pizzip";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { key: string } }
-) {
-  const key = request.nextUrl.pathname.split('/').pop();
-  
-  if (!key) {
-    return NextResponse.json({ error: 'Key is required' }, { status: 400 });
-  }
-  
-  try {
-    const data = await readServerCache(key);
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to read from cache' },
-      { status: 500 }
-    );
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const { key, data } = await request.json();
-    
-    if (!key || data === undefined) {
-      return NextResponse.json(
-        { error: 'Key and data are required' },
-        { status: 400 }
-      );
+    const body = await request.json();
+
+    // 1️⃣ Cache operation (key/data)
+    if (body.key && body.data !== undefined) {
+      await writeServerCache(body.key, body.data);
+      return NextResponse.json({ success: true });
     }
-    
-    await writeServerCache(key, data);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to write to cache' },
-      { status: 500 }
-    );
-  }
-}
 
-
-
-export async function POST(request: NextRequest) {
-  try {
-    const { key, data } = await request.json();
-    
-    if (!key || data === undefined) {
-      return NextResponse.json(
-        { error: 'Key and data are required' },
-        { status: 400 }
-      );
+    // 2️⃣ Financial report generation
+    if (body.type === 'financialReport') {
+      return await handleFinancialReport(body.options, body.documents);
     }
-    
-    await writeServerCache(key, data);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to write to cache' },
-      { status: 500 }
-    );
-  }
-}
 
+    // 3️⃣ Text document generation
+    if (body.type === 'textDocument') {
+      return await handleTextDocument(body.options, body.fileContent);
+    }
 
+    // Invalid payload
+    return NextResponse.json({ error: 'Invalid POST payload' }, { status: 400 });
 
-export async function POST(request: NextRequest) {
-  try {
-    const { options, documents } = await request.json();
-    const generator = new ServerDocumentGenerator();
-    
-    const result = await generator.createFinancialReport(options, documents);
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: result 
-    });
   } catch (error: any) {
+    console.error('POST error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message 
-      },
+      { success: false, error: error.message || 'Failed to process POST request' },
       { status: 500 }
     );
   }
 }
 
-
-export async function POST(request: NextRequest) {
-  try {
-    const { type, options, fileContent, documents } = await request.json();
-
-    if (type === 'financialReport') {
-      return await handleFinancialReport(options, documents);
-    } else {
-      return await handleTextDocument(options, fileContent);
-    }
-  } catch (error) {
-    console.error("Error generating document:", error);
-    return NextResponse.json(
-      { error: "Failed to generate document" },
-      { status: 500 }
-    );
-  }
-}
 
 async function handleTextDocument(options: DocumentOptions, fileContent: string) {
   const content = options.content || "Default Text Document Content";
@@ -157,17 +85,35 @@ async function handleFinancialReport(options: DocumentOptions, documents: Docume
   });
 }
 
-// Additional API endpoints for document management
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const generatedDir = path.join(process.cwd(), 'generated');
-    await fs.promises.mkdir(generatedDir, { recursive: true });
-    const files = await fs.promises.readdir(generatedDir);
-    
-    return NextResponse.json({ files });
-  } catch (error) {
+    const url = request.nextUrl;
+    const pathnameParts = url.pathname.split('/');
+    const key = pathnameParts.pop(); // last segment
+
+    // 1️⃣ Cache retrieval by key
+    if (key && key !== 'documents') { // avoid conflict with 'documents' path
+      const data = await readServerCache(key);
+      return NextResponse.json({ success: true, data });
+    }
+
+    // 2️⃣ Document listing
+    if (pathnameParts.includes('documents') || key === 'documents') {
+      const generatedDir = path.join(process.cwd(), 'generated');
+      await fs.promises.mkdir(generatedDir, { recursive: true });
+      const files = await fs.promises.readdir(generatedDir);
+      return NextResponse.json({ success: true, files });
+    }
+
+    // Invalid GET request
     return NextResponse.json(
-      { error: "Failed to read documents" },
+      { error: 'Invalid GET request' },
+      { status: 400 }
+    );
+  } catch (error: any) {
+    console.error('GET error:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to process GET request' },
       { status: 500 }
     );
   }

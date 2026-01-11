@@ -1,6 +1,7 @@
 // CalendarEvent.ts
 
-import type { CalendarStatus } from "@/core/models/data/StatusType
+import type { CalendarStatus } from '@/core/models/data/StatusType'
+import { ReminderTypes } from '@/core/typings/ReminderTypes';
 import type { AttendeeStatus } from '@/core/models/data/StatusType'
 import type { Label } from '@/core/branding/BrandingSettings';
 import type { Team } from "@/core/components/teams/Team";

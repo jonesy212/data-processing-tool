@@ -1,8 +1,9 @@
 // appTreeApi.ts
-// AppTreeApi.ts
-import { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization'
-import { handleApiError } from "@/core/api/ApiLogs";
+
+import type { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization'
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
+import { handleApiError } from "@/core/api/ApiLogs";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import {
     getFromLocalStorage,
@@ -11,7 +12,6 @@ import {
 import AppTreeService from "@/core/services/AppTreeService";
 import { useNotification, } from '@/core/state/context/NotificationContext';
 
-import type { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";
 import { setThreshold } from '@/utils/setThresholdUtils';
 import { AxiosError } from "axios";
@@ -191,6 +191,14 @@ const responses: ReassignEventResponse[] = [
   {
     eventId: "event1",
     assignee: "user1",
+    todoId: '',
+    assigneeId: '',
+    responseId: '',
+    userId: '',
+    comment: '',
+    timestamp: '',
+    reassignData: '',
+    assignedTo: '',
     events: { // Changed from empty string to proper object
       "group1": [] as ExtendedCalendarEvent<BaseDataRoot, BaseDataRoot, DefaultMeta<T, K>, Attachment, never, keyof BaseDataRoot>[],
       "group2": [] // Add more groups as needed

@@ -1,5 +1,4 @@
-generate.ts
-generate.ts
+// generate.ts
 import { ServerDocumentGenerator } from '@/core/server/ServerDocumentGenerator';
 import { ServerFileSystem } from '@/core/server/serverFileSystem';
 import { NextApiRequest, NextApiResponse } from 'next';

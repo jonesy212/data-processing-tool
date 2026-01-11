@@ -328,6 +328,7 @@ type UnifiedMetadata<
   apiKey?: string;
   apiEndpoint?: string;
   baseUrl?: string;
+  isCompressed?: boolean;
   config?: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   createdBy?: string;
   metadata: BackupMetadata; 

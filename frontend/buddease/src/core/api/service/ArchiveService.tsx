@@ -1,6 +1,7 @@
 // ArchiveService.tsx
 
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Version } from '@/core/versions/Version';
 import { LocalStorageAdapter, PersistenceLayer } from '@/core/dataIntegration/persistenceLayer';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
@@ -96,7 +97,10 @@ class ArchiveService {
   private storage: StorageService;
   private cloudProvider: CloudStorageProvider | null = null;
   private auth: typeof authService;
-  constructor(config: Partial<ArchiveConfig> = {}) {
+  constructor(
+    config: Partial<ArchiveConfig> = {},
+    storage: StorageService 
+  ) {
     this.config = { ...defaultConfig, ...config };
     
     // Initialize local persistence
@@ -157,6 +161,7 @@ class ArchiveService {
     await this.persistenceLayer.saveSnapshot(snapshotData as any);
   }
 
+
   private async storeInCloud(storageKey: string, data: any): Promise<void> {
     if (!this.cloudProvider) {
       throw new Error('Cloud storage provider not initialized');
@@ -181,8 +186,23 @@ class ArchiveService {
       // Add to cloud provider's file list
       this.cloudProvider.files.push(fileMetadata);
       
-      // Upload to cloud (simulated)
-      this.cloudProvider.uploadFile(storageKey, dataSize);
+      // Create a proper Snapshot object for upload
+      const snapshot: Snapshot<BaseDataRoot, any, any, any, any, any> = {
+        id: storageKey,
+        data: data, // The actual data
+        metadata: {
+          ...fileMetadata,
+          // Add any other snapshot-specific metadata
+          version: '1.0',
+          createdBy: this.auth.currentUser?.id || 'system',
+          dataType: typeof data,
+        },
+        timestamp: new Date(),
+        // Add other required Snapshot properties based on your Snapshot interface
+      };
+      
+      // Upload the snapshot to cloud
+      await this.cloudProvider.uploadFile(snapshot);
       
       console.log(`Successfully stored ${storageKey} in cloud storage`);
       
@@ -192,18 +212,17 @@ class ArchiveService {
     }
   }
 
-
-
   private calculateChecksum(data: string): string {
-    // Simple checksum implementation
+    // Simple checksum calculation - replace with actual implementation
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
       const char = data.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash;
     }
-    return hash.toString(36);
+    return hash.toString(16);
   }
+
 
   // Add method to retrieve from cloud
   private async retrieveFromCloud(storageKey: string): Promise<any> {
@@ -608,7 +627,7 @@ const generateArchiveId = (): string => {
   return `arc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
-#note update 
+// #note update 
 const compressData = async (data: string, type: 'gzip' | 'none' = 'gzip'): Promise<string> => {
   if (type === 'none') return data;
   

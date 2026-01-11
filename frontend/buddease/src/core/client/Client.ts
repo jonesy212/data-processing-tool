@@ -1,6 +1,6 @@
-Client.ts
+// Client.ts
 import type { Pool } from 'pg';
-
+import type { QueryResult } from 'pg';
 import internalApiService from '@/core/api/ApiClient';
 import type { ClientInformation } from '@/core/client/ClientInformation';
 import { mapLanguageToEnum } from '@/core/communications/Language';
