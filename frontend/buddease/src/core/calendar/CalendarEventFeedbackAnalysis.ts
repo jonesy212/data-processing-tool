@@ -1,6 +1,6 @@
 CalendarEventFeedbackAnalysis.ts
 import { EventFeedbackAnalysis } from "@/core/models/data/EventPriorityClassification";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 
 interface CalendarEventFeedbackAnalysis extends WritableDraft<EventFeedbackAnalysis> {
   eventId: string; // ID of the event being analyzed

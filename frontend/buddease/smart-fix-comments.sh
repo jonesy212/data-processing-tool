@@ -1,8 +1,36 @@
 #!/bin/bash
-echo "🔍 TypeScript Comment Fixer - FIXED DEDUPLICATION WITH BACKUP SUPPORT"
+echo "🔍 TypeScript Comment Fixer - FIXED DEDUPLICATION AND EXCLUDED WITH BACKUP SUPPORT"
+
+# Verify backup directories are excluded
+echo "🔍 Checking TypeScript configuration..."
+EXCLUDED=true
+for config in tsconfig.json tsconfig.scripts.json tsconfig.snapshots.json; do
+    if [ -f "$config" ]; then
+        if grep -q "\.ts-backups" "$config" 2>/dev/null; then
+            echo "✅ $config: Backup directory excluded"
+        else
+            echo "⚠️  $config: Backup directory NOT excluded"
+            EXCLUDED=false
+        fi
+    fi
+done
+
+if [ "$EXCLUDED" = false ]; then
+    echo ""
+    echo "⚠️  WARNING: Backup directories may not be fully excluded"
+    echo "   This could cause TypeScript errors in backup files"
+    echo "   Run: ./scripts/update-tsconfig-exclude.sh to fix"
+    echo ""
+    read -p "Continue anyway? (y/n): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
 
 # BACKUP SYSTEM
-BACKUP_DIR=".comment-fix-backups"
+BACKUP_ROOT=".ts-backups"
+BACKUP_DIR="$BACKUP_ROOT/comment-fixes"
 SESSION_ID="comment-fix-$(date +%Y%m%d-%H%M%S)"
 SESSION_BACKUP_DIR="$BACKUP_DIR/$SESSION_ID"
 BACKUP_MADE=false
@@ -39,7 +67,9 @@ create_session_info() {
   local files_fixed=("$@")
   mkdir -p "$SESSION_BACKUP_DIR"
   
-  cat > "$SESSION_BACKUP_DIR/session-info.json" << EOF
+  # Check if jq is available
+  if command -v jq &> /dev/null; then
+    cat > "$SESSION_BACKUP_DIR/session-info.json" << EOF
 {
   "sessionId": "$SESSION_ID",
   "timestamp": "$(date -Iseconds)",
@@ -49,27 +79,50 @@ create_session_info() {
   "note": "Backup created before applying comment fixes"
 }
 EOF
+  else
+    cat > "$SESSION_BACKUP_DIR/session-info.json" << EOF
+{
+  "sessionId": "$SESSION_ID",
+  "timestamp": "$(date -Iseconds)",
+  "backupType": "comment-fix",
+  "filesBackedUp": $(printf '"%s",' "${files_fixed[@]}" | sed 's/,$//' | sed 's/^/[/' | sed 's/$/]/'),
+  "command": "$0 $*",
+  "note": "Backup created before applying comment fixes"
+}
+EOF
+  fi
 }
 
-# Rollback function
+# Rollback function - updated for new structure
 rollback_session() {
   local session_id="$1"
   local backup_path="$BACKUP_DIR/$session_id"
   
   if [[ ! -d "$backup_path" ]]; then
     echo "❌ Backup session not found: $session_id"
-    return 1
+    echo "   Looking in: $backup_path"
+    
+    # Try to find it in the backup root
+    backup_path=$(find "$BACKUP_ROOT" -type d -name "*$session_id*" | head -1)
+    if [[ -z "$backup_path" ]]; then
+      echo "❌ Could not find session in any backup location"
+      return 1
+    fi
+    echo "   Found in: $backup_path"
   fi
   
   echo "🔄 Rolling back session: $session_id"
   
   # Find all backup files and restore them
-  find "$backup_path" -type f -name "*.ts" -o -name "*.tsx" | while read -r backup_file; do
+  find "$backup_path" -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.backup" \) | while read -r backup_file; do
     local relative_path="${backup_file#$backup_path/}"
+    # Remove .backup extension if present
+    relative_path="${relative_path%.backup}"
     local original_path="./$relative_path"
     
     if [[ -f "$backup_file" ]]; then
       echo "   Restoring: $relative_path"
+      mkdir -p "$(dirname "$original_path")"
       cp "$backup_file" "$original_path"
     fi
   done
@@ -94,14 +147,18 @@ while [[ $# -gt 0 ]]; do
         SESSION_TO_ROLLBACK="$2"
         shift 2
       else
-        # Use latest session
+        # Use latest session from backup directory
         SESSION_TO_ROLLBACK=$(ls -t "$BACKUP_DIR" 2>/dev/null | head -1)
         shift
       fi
       ;;
     --list-backups)
-      echo "📦 Available backup sessions:"
-      ls -lt "$BACKUP_DIR" 2>/dev/null || echo "   No backups found"
+      echo "📦 Available backup sessions in $BACKUP_DIR:"
+      if [[ -d "$BACKUP_DIR" ]]; then
+        ls -lt "$BACKUP_DIR" 2>/dev/null || echo "   No backups found"
+      else
+        echo "   Backup directory not found: $BACKUP_DIR"
+      fi
       exit 0
       ;;
     *)

@@ -13,7 +13,7 @@ import { AuthStore, useAuthStore } from '@/core/state/stores/AuthStore';
 import BrowserCheckStore from '@/core/state/stores/BrowserCheckStore';
 import { CalendarManagerStore, useCalendarManagerStore } from '@/core/state/stores/CalendarManagerStore';
 import { CollaborationStore, useCollaborationStore } from '@/core/state/stores/CollaborationStore';
-import { DataStore, useDataStore } from '@/core/state/stores/DataStore';
+import type { DataStore, useDataStore } from '@/core/state/stores/DataStore';
 import useDocumentStore, { DocumentStore } from '@/core/state/stores/DocumentStore';
 import useIconStore, { IconStore } from '@/core/state/stores/IconStore';
 import NotificationStore from '@/core/state/stores/NotificationStore';

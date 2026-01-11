@@ -1,7 +1,7 @@
 // Product.tsx
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CommonData } from "@/core/models/CommonData";
 import { UserData, VisualizationData } from "@/core/users/User";
 

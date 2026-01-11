@@ -12,7 +12,7 @@ import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificatio
 import type HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addLog } from '@/core/state/redux/slices/LogSlice';
-import { useDataStore } from '@/core/state/stores/DataStore';
+import type { useDataStore } from '@/core/state/stores/DataStore';
 import type { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';

@@ -1850,10 +1850,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useSorting.ts",
       "lineNumber": 6,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useSubscription.tsx",
@@ -6114,10 +6114,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarProvider.jsx",
       "lineNumber": 2,
-      "importPath": "@/app/state/stores/TaskStore",
+      "importPath": "@/core/state/stores/TaskStore",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/TaskStore\" to \"@/app/state/stores/TaskStore\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/TaskStore\" to \"@/core/state/stores/TaskStore\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarProvider.jsx",
@@ -6130,10 +6130,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarService.tsx",
       "lineNumber": 7,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarView.tsx",
@@ -6178,10 +6178,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarWeek.tsx",
       "lineNumber": 5,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarWeek.tsx",
@@ -6610,10 +6610,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/ExchangeComponent.tsx",
       "lineNumber": 8,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/StrategyOptions.ts",
@@ -8314,10 +8314,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phases/UIPhase.ts",
       "lineNumber": 16,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phases/UIPhase.ts",
@@ -9242,10 +9242,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/blog/CalendarUtils.ts",
       "lineNumber": 3,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/blog/generateSimulatedEventsUtils.tsx",
@@ -9290,10 +9290,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/community/CollaborationPage.tsx",
       "lineNumber": 6,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/community/CommunityProjectsPage.tsx",
@@ -11122,10 +11122,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/AppContext.tsx",
       "lineNumber": 6,
-      "importPath": "@/app/state/stores/TaskStore",
+      "importPath": "@/core/state/stores/TaskStore",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/TaskStore\" to \"@/app/state/stores/TaskStore\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/TaskStore\" to \"@/core/state/stores/TaskStore\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/AppContext.tsx",
@@ -11264,7 +11264,7 @@
       "suggestedFix": "Change \"@/app/state/redux/sagas/tenantSags\" to \"@/app/state/redux/sagas/tenantSags\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppCacheManagerStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppCacheManagerStore.ts",
       "lineNumber": 3,
       "importPath": "@/app/utils/AppCacheManager",
       "errorType": "ESM_RUNTIME",
@@ -11272,7 +11272,7 @@
       "suggestedFix": "Change \"@/app/utils/AppCacheManager\" to \"@/app/utils/AppCacheManager\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppStore.ts",
       "lineNumber": 3,
       "importPath": "@/app/components/calendar/CalendarSlice",
       "errorType": "ESM_RUNTIME",
@@ -11280,7 +11280,7 @@
       "suggestedFix": "Change \"@/app/components/calendar/CalendarSlice\" to \"@/app/components/calendar/CalendarSlice\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AquaStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AquaStore.ts",
       "lineNumber": 4,
       "importPath": "@/app/components/aqua/types",
       "errorType": "ESM_RUNTIME",
@@ -11288,7 +11288,7 @@
       "suggestedFix": "Change \"@/app/components/aqua/types\" to \"@/app/components/aqua/types\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignBaseStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignBaseStore.tsx",
       "lineNumber": 22,
       "importPath": "./AssignEventStore",
       "errorType": "ESM_RUNTIME",
@@ -11296,7 +11296,7 @@
       "suggestedFix": "Try one of these paths: AssignEventStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignBaseStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignBaseStore.tsx",
       "lineNumber": 23,
       "importPath": "./AssignTeamMemberStore",
       "errorType": "ESM_RUNTIME",
@@ -11304,7 +11304,7 @@
       "suggestedFix": "Try one of these paths: AssignTeamMemberStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignBaseStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignBaseStore.tsx",
       "lineNumber": 24,
       "importPath": "./AuthStore",
       "errorType": "ESM_RUNTIME",
@@ -11312,7 +11312,7 @@
       "suggestedFix": "Try one of these paths: AuthStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignBaseStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignBaseStore.tsx",
       "lineNumber": 25,
       "importPath": "./presentationStore",
       "errorType": "ESM_RUNTIME",
@@ -11320,15 +11320,15 @@
       "suggestedFix": "Try one of these paths: presentationStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTaskStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTaskStore.tsx",
       "lineNumber": 2,
-      "importPath": "@/app/state/stores/AssignBaseStore",
+      "importPath": "@/core/state/stores/AssignBaseStore",
       "errorType": "ESM_RUNTIME",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/AssignBaseStore\" to \"@/app/state/stores/AssignBaseStore\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/AssignBaseStore\" to \"@/core/state/stores/AssignBaseStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTeamMemberStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTeamMemberStore.tsx",
       "lineNumber": 2,
       "importPath": "@/app/AssignBaseStore",
       "errorType": "ESM_RUNTIME",
@@ -11336,7 +11336,7 @@
       "suggestedFix": "Change \"@/app/AssignBaseStore\" to \"@/app/AssignBaseStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AuthStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AuthStore.ts",
       "lineNumber": 15,
       "importPath": "./Scopes",
       "errorType": "ESM_RUNTIME",
@@ -11344,7 +11344,7 @@
       "suggestedFix": "Try one of these paths: Scopes.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 2,
       "importPath": "@/app/components/context/NotificationContext",
       "errorType": "ESM_RUNTIME",
@@ -11352,7 +11352,7 @@
       "suggestedFix": "Change \"@/app/components/context/NotificationContext\" to \"@/app/components/context/NotificationContext\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 3,
       "importPath": "@/app/components/models/teams/Contributor",
       "errorType": "ESM_RUNTIME",
@@ -11360,7 +11360,7 @@
       "suggestedFix": "Change \"@/app/components/models/teams/Contributor\" to \"@/app/components/models/teams/Contributor\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 4,
       "importPath": "@/app/components/utils/useSecureDocumentId",
       "errorType": "ESM_RUNTIME",
@@ -11368,7 +11368,7 @@
       "suggestedFix": "Change \"@/app/components/utils/useSecureDocumentId\" to \"@/app/components/utils/useSecureDocumentId\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 11,
       "importPath": "@/AssignEventStore",
       "errorType": "ESM_RUNTIME",
@@ -11376,15 +11376,15 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/AssignEventStore"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 16,
       "importPath": "./CalendarEvent",
       "errorType": "ESM_RUNTIME",
       "severity": "low",
-      "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarEvent"
+      "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarEvent"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 42,
       "importPath": "./AssignEventStore",
       "errorType": "ESM_RUNTIME",
@@ -11392,7 +11392,7 @@
       "suggestedFix": "Try one of these paths: AssignEventStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 43,
       "importPath": "./CalendarSettingsPage",
       "errorType": "ESM_RUNTIME",
@@ -11400,7 +11400,7 @@
       "suggestedFix": "Try one of these paths: CalendarSettingsPage.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 44,
       "importPath": "./CommonEvent",
       "errorType": "ESM_RUNTIME",
@@ -11408,7 +11408,7 @@
       "suggestedFix": "Try one of these paths: CommonEvent.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 45,
       "importPath": "./DetailsListStore",
       "errorType": "ESM_RUNTIME",
@@ -11416,7 +11416,7 @@
       "suggestedFix": "Try one of these paths: DetailsListStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 46,
       "importPath": "./StoreProvider",
       "errorType": "ESM_RUNTIME",
@@ -11424,7 +11424,7 @@
       "suggestedFix": "Try one of these paths: StoreProvider.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 70,
       "importPath": "@/app/snapshots",
       "errorType": "ESM_RUNTIME",
@@ -11432,7 +11432,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 93,
       "importPath": "./DocumentStore",
       "errorType": "ESM_RUNTIME",
@@ -11440,7 +11440,7 @@
       "suggestedFix": "Try one of these paths: DocumentStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 94,
       "importPath": "./RootStores",
       "errorType": "ESM_RUNTIME",
@@ -11448,7 +11448,7 @@
       "suggestedFix": "Try one of these paths: RootStores.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CollaborationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CollaborationStore.ts",
       "lineNumber": 2,
       "importPath": "@/app/AssignBaseStore",
       "errorType": "ESM_RUNTIME",
@@ -11456,7 +11456,7 @@
       "suggestedFix": "Change \"@/app/AssignBaseStore\" to \"@/app/AssignBaseStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CollaborationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CollaborationStore.ts",
       "lineNumber": 7,
       "importPath": "./AssignEventStore",
       "errorType": "ESM_RUNTIME",
@@ -11464,7 +11464,7 @@
       "suggestedFix": "Try one of these paths: AssignEventStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CollaborationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CollaborationStore.ts",
       "lineNumber": 8,
       "importPath": "./AssignTeamMemberStore",
       "errorType": "ESM_RUNTIME",
@@ -11472,7 +11472,7 @@
       "suggestedFix": "Try one of these paths: AssignTeamMemberStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CommonEvent.ts",
       "lineNumber": 15,
       "importPath": "@/app/snapshots",
       "errorType": "ESM_RUNTIME",
@@ -11480,7 +11480,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ContentStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ContentStore.ts",
       "lineNumber": 5,
       "importPath": "@/app/models/content/ContentItem",
       "errorType": "ESM_RUNTIME",
@@ -11488,7 +11488,7 @@
       "suggestedFix": "Change \"@/app/models/content/ContentItem\" to \"@/app/models/content/ContentItem\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DataStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DataStore.ts",
       "lineNumber": 30,
       "importPath": "@/app/snapshots",
       "errorType": "ESM_RUNTIME",
@@ -11496,7 +11496,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts",
       "lineNumber": 24,
       "importPath": "@/app/components/documents/types",
       "errorType": "ESM_RUNTIME",
@@ -11504,7 +11504,7 @@
       "suggestedFix": "Change \"@/app/components/documents/types\" to \"@/app/components/documents/types\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts",
       "lineNumber": 43,
       "importPath": "@/app/snapshots",
       "errorType": "ESM_RUNTIME",
@@ -11512,7 +11512,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DocumentStore.ts",
       "lineNumber": 41,
       "importPath": "./../../versions/VersionData",
       "errorType": "ESM_RUNTIME",
@@ -11520,7 +11520,7 @@
       "suggestedFix": "Try one of these paths: ../../versions/VersionData.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DocumentStore.ts",
       "lineNumber": 42,
       "importPath": "./../redux/ReducerGenerator",
       "errorType": "ESM_RUNTIME",
@@ -11528,7 +11528,7 @@
       "suggestedFix": "Try one of these paths: ../redux/ReducerGenerator.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DocumentStore.ts",
       "lineNumber": 43,
       "importPath": "./DetailsListStore",
       "errorType": "ESM_RUNTIME",
@@ -11536,7 +11536,7 @@
       "suggestedFix": "Try one of these paths: DetailsListStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/FilterStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/FilterStore.ts",
       "lineNumber": 12,
       "importPath": "@/app/documents/screenFunctionality/HighlightEvent",
       "errorType": "ESM_RUNTIME",
@@ -11544,7 +11544,7 @@
       "suggestedFix": "Change \"@/app/documents/screenFunctionality/HighlightEvent\" to \"@/app/documents/screenFunctionality/HighlightEvent\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/HistoryStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/HistoryStore.tsx",
       "lineNumber": 2,
       "importPath": "@/UndoRedoStore",
       "errorType": "ESM_RUNTIME",
@@ -11552,7 +11552,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/UndoRedoStore"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/IconStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/IconStore.ts",
       "lineNumber": 3,
       "importPath": "@/state/stores/RootStores",
       "errorType": "ESM_RUNTIME",
@@ -11560,7 +11560,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/state/stores/RootStores"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/IconStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/IconStore.ts",
       "lineNumber": 5,
       "importPath": "@/app/states/stores/StoreKeyGenerator",
       "errorType": "ESM_RUNTIME",
@@ -11568,7 +11568,7 @@
       "suggestedFix": "Change \"@/app/states/stores/StoreKeyGenerator\" to \"@/app/states/stores/StoreKeyGenerator\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 16,
       "importPath": "@/app/state/store",
       "errorType": "ESM_RUNTIME",
@@ -11576,7 +11576,7 @@
       "suggestedFix": "Replace require('@/app/state/store') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 28,
       "importPath": "@/app/state/store",
       "errorType": "ESM_RUNTIME",
@@ -11584,7 +11584,7 @@
       "suggestedFix": "Replace require('@/app/state/store') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 54,
       "importPath": "@/app/actions/NotificationActions",
       "errorType": "ESM_RUNTIME",
@@ -11592,7 +11592,7 @@
       "suggestedFix": "Replace require('@/app/actions/NotificationActions') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 75,
       "importPath": "@/app/state/context/NotificationContext",
       "errorType": "ESM_RUNTIME",
@@ -11600,7 +11600,7 @@
       "suggestedFix": "Replace require('@/app/state/context/NotificationContext') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 300,
       "importPath": "@/app/actions/NotificationActions",
       "errorType": "ESM_RUNTIME",
@@ -11608,7 +11608,7 @@
       "suggestedFix": "Replace require('@/app/actions/NotificationActions') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 303,
       "importPath": "@/app/state/context/NotificationContext",
       "errorType": "ESM_RUNTIME",
@@ -11616,7 +11616,7 @@
       "suggestedFix": "Replace require('@/app/state/context/NotificationContext') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 317,
       "importPath": "@/app/actions/NotificationActions",
       "errorType": "ESM_RUNTIME",
@@ -11624,7 +11624,7 @@
       "suggestedFix": "Replace require('@/app/actions/NotificationActions') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 320,
       "importPath": "@/app/state/context/NotificationContext",
       "errorType": "ESM_RUNTIME",
@@ -11632,7 +11632,7 @@
       "suggestedFix": "Replace require('@/app/state/context/NotificationContext') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 334,
       "importPath": "@/app/actions/NotificationActions",
       "errorType": "ESM_RUNTIME",
@@ -11640,7 +11640,7 @@
       "suggestedFix": "Replace require('@/app/actions/NotificationActions') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PaginationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PaginationStore.ts",
       "lineNumber": 66,
       "importPath": "./PaginationStore",
       "errorType": "ESM_RUNTIME",
@@ -11648,7 +11648,7 @@
       "suggestedFix": "Try one of these paths: PaginationStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PhaseStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PhaseStore.tsx",
       "lineNumber": 7,
       "importPath": "@/app/video/Video",
       "errorType": "ESM_RUNTIME",
@@ -11656,7 +11656,7 @@
       "suggestedFix": "Change \"@/app/video/Video\" to \"@/app/video/Video\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ProjectStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ProjectStore.ts",
       "lineNumber": 4,
       "importPath": "@/types/PhaseEntity",
       "errorType": "ESM_RUNTIME",
@@ -11664,7 +11664,7 @@
       "suggestedFix": "Change \"@/types/PhaseEntity\" to \"@/app/models/PhaseEntity\" (Fix PhaseEntity import path)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ProjectStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ProjectStore.ts",
       "lineNumber": 11,
       "importPath": "@/app/typiings/entites/milestoneTypes",
       "errorType": "ESM_RUNTIME",
@@ -11672,7 +11672,7 @@
       "suggestedFix": "Change \"@/app/typiings/entites/milestoneTypes\" to \"@/app/typiings/entites/milestoneTypes\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx",
       "lineNumber": 6,
       "importPath": "./BrowserCheckStore",
       "errorType": "ESM_RUNTIME",
@@ -11680,7 +11680,7 @@
       "suggestedFix": "Try one of these paths: BrowserCheckStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx",
       "lineNumber": 7,
       "importPath": "./RootStores",
       "errorType": "ESM_RUNTIME",
@@ -11688,7 +11688,7 @@
       "suggestedFix": "Try one of these paths: RootStores.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx",
       "lineNumber": 8,
       "importPath": "./StoreKeyGenerator",
       "errorType": "ESM_RUNTIME",
@@ -11696,7 +11696,7 @@
       "suggestedFix": "Try one of these paths: StoreKeyGenerator.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx",
       "lineNumber": 9,
       "importPath": "./TodoStore",
       "errorType": "ESM_RUNTIME",
@@ -11704,7 +11704,7 @@
       "suggestedFix": "Try one of these paths: TodoStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx",
       "lineNumber": 10,
       "importPath": "./TrackerStore",
       "errorType": "ESM_RUNTIME",
@@ -11712,7 +11712,7 @@
       "suggestedFix": "Try one of these paths: TrackerStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx",
       "lineNumber": 11,
       "importPath": "./IconStore",
       "errorType": "ESM_RUNTIME",
@@ -11720,7 +11720,7 @@
       "suggestedFix": "Try one of these paths: IconStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStores.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStores.ts",
       "lineNumber": 2,
       "importPath": "./../../libraries/eventSystem/callbackRegistry",
       "errorType": "ESM_RUNTIME",
@@ -11728,7 +11728,7 @@
       "suggestedFix": "Try one of these paths: ../../libraries/eventSystem/callbackRegistry.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStores.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStores.ts",
       "lineNumber": 23,
       "importPath": "@/app/state/hybrid/SettingManagerStore",
       "errorType": "ESM_RUNTIME",
@@ -11736,7 +11736,7 @@
       "suggestedFix": "Change \"@/app/state/hybrid/SettingManagerStore\" to \"@/app/state/hybrid/SettingManagerStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreGenerator.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreGenerator.tsx",
       "lineNumber": 7,
       "importPath": "fs",
       "errorType": "ESM_RUNTIME",
@@ -11744,7 +11744,7 @@
       "suggestedFix": "Replace require('fs') with ES6 import syntax"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreKeyGenerator.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreKeyGenerator.ts",
       "lineNumber": 17,
       "importPath": "@/store_key_generator",
       "errorType": "ESM_RUNTIME",
@@ -11752,7 +11752,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/store_key_generator"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TaskStore .tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TaskStore .tsx",
       "lineNumber": 38,
       "importPath": "./AssignTaskStore",
       "errorType": "ESM_RUNTIME",
@@ -11760,7 +11760,7 @@
       "suggestedFix": "Try one of these paths: AssignTaskStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx",
       "lineNumber": 36,
       "importPath": "./AssignTeamMemberStore",
       "errorType": "ESM_RUNTIME",
@@ -11768,7 +11768,7 @@
       "suggestedFix": "Try one of these paths: AssignTeamMemberStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx",
       "lineNumber": 37,
       "importPath": "./VideoStore",
       "errorType": "ESM_RUNTIME",
@@ -11776,7 +11776,7 @@
       "suggestedFix": "Try one of these paths: VideoStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ThemeStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ThemeStore.ts",
       "lineNumber": 4,
       "importPath": "@/app/security/validateTheme",
       "errorType": "ESM_RUNTIME",
@@ -11784,7 +11784,7 @@
       "suggestedFix": "Change \"@/app/security/validateTheme\" to \"@/app/security/validateTheme\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts",
       "lineNumber": 22,
       "importPath": "@/DetailsListStore",
       "errorType": "ESM_RUNTIME",
@@ -11792,7 +11792,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/DetailsListStore"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TrackerStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TrackerStore.ts",
       "lineNumber": 4,
       "importPath": "@/RootStores",
       "errorType": "ESM_RUNTIME",
@@ -11800,7 +11800,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootStores"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts",
       "lineNumber": 7,
       "importPath": "@/app/crypto/SafeParseData",
       "errorType": "ESM_RUNTIME",
@@ -11808,7 +11808,7 @@
       "suggestedFix": "Change \"@/app/crypto/SafeParseData\" to \"@/app/crypto/SafeParseData\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts",
       "lineNumber": 13,
       "importPath": "@/app/typings/types",
       "errorType": "ESM_RUNTIME",
@@ -11816,7 +11816,7 @@
       "suggestedFix": "Change \"@/app/typings/types\" to \"@/app/typings/types\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts",
       "lineNumber": 14,
       "importPath": "@/app/utils/createMessage",
       "errorType": "ESM_RUNTIME",
@@ -11824,7 +11824,7 @@
       "suggestedFix": "Change \"@/app/utils/createMessage\" to \"@/app/utils/createMessage\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserPresentationsStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserPresentationsStore.ts",
       "lineNumber": 11,
       "importPath": "./AssignEventStore",
       "errorType": "ESM_RUNTIME",
@@ -11832,7 +11832,7 @@
       "suggestedFix": "Try one of these paths: AssignEventStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 12,
       "importPath": "@/app/models/crypto/SanitizationFunctions",
       "errorType": "ESM_RUNTIME",
@@ -11840,7 +11840,7 @@
       "suggestedFix": "Change \"@/app/models/crypto/SanitizationFunctions\" to \"@/app/models/crypto/SanitizationFunctions\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 14,
       "importPath": "@/app/models/tasks/TaskDataSource",
       "errorType": "ESM_RUNTIME",
@@ -11848,7 +11848,7 @@
       "suggestedFix": "Change \"@/app/models/tasks/TaskDataSource\" to \"@/app/models/tasks/TaskDataSource\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 25,
       "importPath": "./AssignEventStore",
       "errorType": "ESM_RUNTIME",
@@ -11856,7 +11856,7 @@
       "suggestedFix": "Try one of these paths: AssignEventStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 26,
       "importPath": "./AssignTeamMemberStore",
       "errorType": "ESM_RUNTIME",
@@ -11864,7 +11864,7 @@
       "suggestedFix": "Try one of these paths: AssignTeamMemberStore.tsx"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 27,
       "importPath": "./UndoRedoStore",
       "errorType": "ESM_RUNTIME",
@@ -11872,7 +11872,7 @@
       "suggestedFix": "Try one of these paths: UndoRedoStore.ts"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/presentationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/presentationStore.ts",
       "lineNumber": 8,
       "importPath": "@/app/models/crypto/SanitizationFunctions",
       "errorType": "ESM_RUNTIME",
@@ -14080,7 +14080,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootSlice"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserPreferences/UserPreferencesStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserPreferences/UserPreferencesStore.ts",
       "lineNumber": 4,
       "importPath": "@/app/components/libraries/ui/theme/ThemeConfig",
       "errorType": "ESM_RUNTIME",
@@ -14088,12 +14088,12 @@
       "suggestedFix": "Change \"@/app/components/libraries/ui/theme/ThemeConfig\" to \"@/app/components/libraries/ui/theme/ThemeConfig\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/hooks/useProjectManager.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/hooks/useProjectManager.ts",
       "lineNumber": 5,
       "importPath": "../mobx/ProjectManagerStore",
       "errorType": "ESM_RUNTIME",
       "severity": "low",
-      "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/mobx/ProjectManagerStore"
+      "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/mobx/ProjectManagerStore"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/dAppAdapter/functionality/RealtimeUpdates.tsx",
@@ -16458,10 +16458,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useSorting.ts",
       "lineNumber": 6,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useSubscription.tsx",
@@ -18658,10 +18658,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarProvider.jsx",
       "lineNumber": 2,
-      "importPath": "@/app/state/stores/TaskStore",
+      "importPath": "@/core/state/stores/TaskStore",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/TaskStore\" to \"@/app/state/stores/TaskStore\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/TaskStore\" to \"@/core/state/stores/TaskStore\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarProvider.jsx",
@@ -18674,10 +18674,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarService.tsx",
       "lineNumber": 7,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarView.tsx",
@@ -18690,10 +18690,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarWeek.tsx",
       "lineNumber": 5,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/CalendarWeek.tsx",
@@ -19066,10 +19066,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/ExchangeComponent.tsx",
       "lineNumber": 8,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/StrategyOptions.ts",
@@ -20186,10 +20186,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phases/UIPhase.ts",
       "lineNumber": 16,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phases/UIPhase.ts",
@@ -20874,10 +20874,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/blog/CalendarUtils.ts",
       "lineNumber": 3,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/community/CollaborationData.ts",
@@ -20922,10 +20922,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/community/CollaborationPage.tsx",
       "lineNumber": 6,
-      "importPath": "@/app/state/stores/CalendarEvent",
+      "importPath": "@/core/state/stores/CalendarEvent",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/CalendarEvent\" to \"@/app/state/stores/CalendarEvent\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/CalendarEvent\" to \"@/core/state/stores/CalendarEvent\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/community/CommunityProjectsPage.tsx",
@@ -22450,10 +22450,10 @@
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/AppContext.tsx",
       "lineNumber": 6,
-      "importPath": "@/app/state/stores/TaskStore",
+      "importPath": "@/core/state/stores/TaskStore",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/TaskStore\" to \"@/app/state/stores/TaskStore\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/TaskStore\" to \"@/core/state/stores/TaskStore\" (Fix @/app imports)"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/AppContextBridge.ts",
@@ -22616,7 +22616,7 @@
       "suggestedFix": "Check if file exists: @reduxjs/toolkit"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppCacheManagerStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppCacheManagerStore.ts",
       "lineNumber": 3,
       "importPath": "@/app/utils/AppCacheManager",
       "errorType": "MISSING",
@@ -22624,7 +22624,7 @@
       "suggestedFix": "Change \"@/app/utils/AppCacheManager\" to \"@/app/utils/AppCacheManager\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppStore.ts",
       "lineNumber": 3,
       "importPath": "@/app/components/calendar/CalendarSlice",
       "errorType": "MISSING",
@@ -22632,7 +22632,7 @@
       "suggestedFix": "Change \"@/app/components/calendar/CalendarSlice\" to \"@/app/components/calendar/CalendarSlice\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppStore.ts",
       "lineNumber": 30,
       "importPath": "@reduxjs/toolkit",
       "errorType": "MISSING",
@@ -22640,7 +22640,7 @@
       "suggestedFix": "Check if file exists: @reduxjs/toolkit"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AquaStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AquaStore.ts",
       "lineNumber": 4,
       "importPath": "@/app/components/aqua/types",
       "errorType": "MISSING",
@@ -22648,15 +22648,15 @@
       "suggestedFix": "Change \"@/app/components/aqua/types\" to \"@/app/components/aqua/types\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTaskStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTaskStore.tsx",
       "lineNumber": 2,
-      "importPath": "@/app/state/stores/AssignBaseStore",
+      "importPath": "@/core/state/stores/AssignBaseStore",
       "errorType": "MISSING",
       "severity": "high",
-      "suggestedFix": "Change \"@/app/state/stores/AssignBaseStore\" to \"@/app/state/stores/AssignBaseStore\" (Fix @/app imports)"
+      "suggestedFix": "Change \"@/core/state/stores/AssignBaseStore\" to \"@/core/state/stores/AssignBaseStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTeamMemberStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTeamMemberStore.tsx",
       "lineNumber": 2,
       "importPath": "@/app/AssignBaseStore",
       "errorType": "MISSING",
@@ -22664,7 +22664,7 @@
       "suggestedFix": "Change \"@/app/AssignBaseStore\" to \"@/app/AssignBaseStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 2,
       "importPath": "@/app/components/context/NotificationContext",
       "errorType": "MISSING",
@@ -22672,7 +22672,7 @@
       "suggestedFix": "Change \"@/app/components/context/NotificationContext\" to \"@/app/components/context/NotificationContext\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 3,
       "importPath": "@/app/components/models/teams/Contributor",
       "errorType": "MISSING",
@@ -22680,7 +22680,7 @@
       "suggestedFix": "Change \"@/app/components/models/teams/Contributor\" to \"@/app/components/models/teams/Contributor\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 4,
       "importPath": "@/app/components/utils/useSecureDocumentId",
       "errorType": "MISSING",
@@ -22688,7 +22688,7 @@
       "suggestedFix": "Change \"@/app/components/utils/useSecureDocumentId\" to \"@/app/components/utils/useSecureDocumentId\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts",
       "lineNumber": 11,
       "importPath": "@/AssignEventStore",
       "errorType": "MISSING",
@@ -22696,7 +22696,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/AssignEventStore"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx",
       "lineNumber": 70,
       "importPath": "@/app/snapshots",
       "errorType": "MISSING",
@@ -22704,7 +22704,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CollaborationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CollaborationStore.ts",
       "lineNumber": 2,
       "importPath": "@/app/AssignBaseStore",
       "errorType": "MISSING",
@@ -22712,7 +22712,7 @@
       "suggestedFix": "Change \"@/app/AssignBaseStore\" to \"@/app/AssignBaseStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CommonEvent.ts",
       "lineNumber": 15,
       "importPath": "@/app/snapshots",
       "errorType": "MISSING",
@@ -22720,7 +22720,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ContentStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ContentStore.ts",
       "lineNumber": 5,
       "importPath": "@/app/models/content/ContentItem",
       "errorType": "MISSING",
@@ -22728,7 +22728,7 @@
       "suggestedFix": "Change \"@/app/models/content/ContentItem\" to \"@/app/models/content/ContentItem\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DataStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DataStore.ts",
       "lineNumber": 30,
       "importPath": "@/app/snapshots",
       "errorType": "MISSING",
@@ -22736,7 +22736,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts",
       "lineNumber": 24,
       "importPath": "@/app/components/documents/types",
       "errorType": "MISSING",
@@ -22744,7 +22744,7 @@
       "suggestedFix": "Change \"@/app/components/documents/types\" to \"@/app/components/documents/types\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts",
       "lineNumber": 43,
       "importPath": "@/app/snapshots",
       "errorType": "MISSING",
@@ -22752,7 +22752,7 @@
       "suggestedFix": "Change \"@/app/snapshots\" to \"@/app/snapshots\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/FilterStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/FilterStore.ts",
       "lineNumber": 12,
       "importPath": "@/app/documents/screenFunctionality/HighlightEvent",
       "errorType": "MISSING",
@@ -22760,7 +22760,7 @@
       "suggestedFix": "Change \"@/app/documents/screenFunctionality/HighlightEvent\" to \"@/app/documents/screenFunctionality/HighlightEvent\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/HistoryStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/HistoryStore.tsx",
       "lineNumber": 2,
       "importPath": "@/UndoRedoStore",
       "errorType": "MISSING",
@@ -22768,7 +22768,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/UndoRedoStore"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/IconStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/IconStore.ts",
       "lineNumber": 3,
       "importPath": "@/state/stores/RootStores",
       "errorType": "MISSING",
@@ -22776,7 +22776,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/state/stores/RootStores"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/IconStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/IconStore.ts",
       "lineNumber": 5,
       "importPath": "@/app/states/stores/StoreKeyGenerator",
       "errorType": "MISSING",
@@ -22784,7 +22784,7 @@
       "suggestedFix": "Change \"@/app/states/stores/StoreKeyGenerator\" to \"@/app/states/stores/StoreKeyGenerator\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 16,
       "importPath": "@/app/state/store",
       "errorType": "MISSING",
@@ -22792,7 +22792,7 @@
       "suggestedFix": "Change \"@/app/state/store\" to \"@/app/state/store\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts",
       "lineNumber": 28,
       "importPath": "@/app/state/store",
       "errorType": "MISSING",
@@ -22800,7 +22800,7 @@
       "suggestedFix": "Change \"@/app/state/store\" to \"@/app/state/store\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PhaseStore.tsx",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PhaseStore.tsx",
       "lineNumber": 7,
       "importPath": "@/app/video/Video",
       "errorType": "MISSING",
@@ -22808,7 +22808,7 @@
       "suggestedFix": "Change \"@/app/video/Video\" to \"@/app/video/Video\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ProjectStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ProjectStore.ts",
       "lineNumber": 4,
       "importPath": "@/types/PhaseEntity",
       "errorType": "MISSING",
@@ -22816,7 +22816,7 @@
       "suggestedFix": "Change \"@/types/PhaseEntity\" to \"@/app/models/PhaseEntity\" (Fix PhaseEntity import path)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ProjectStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ProjectStore.ts",
       "lineNumber": 11,
       "importPath": "@/app/typiings/entites/milestoneTypes",
       "errorType": "MISSING",
@@ -22824,7 +22824,7 @@
       "suggestedFix": "Change \"@/app/typiings/entites/milestoneTypes\" to \"@/app/typiings/entites/milestoneTypes\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStores.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStores.ts",
       "lineNumber": 23,
       "importPath": "@/app/state/hybrid/SettingManagerStore",
       "errorType": "MISSING",
@@ -22832,7 +22832,7 @@
       "suggestedFix": "Change \"@/app/state/hybrid/SettingManagerStore\" to \"@/app/state/hybrid/SettingManagerStore\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreKeyGenerator.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreKeyGenerator.ts",
       "lineNumber": 17,
       "importPath": "@/store_key_generator",
       "errorType": "MISSING",
@@ -22840,7 +22840,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/store_key_generator"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ThemeStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ThemeStore.ts",
       "lineNumber": 4,
       "importPath": "@/app/security/validateTheme",
       "errorType": "MISSING",
@@ -22848,7 +22848,7 @@
       "suggestedFix": "Change \"@/app/security/validateTheme\" to \"@/app/security/validateTheme\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts",
       "lineNumber": 22,
       "importPath": "@/DetailsListStore",
       "errorType": "MISSING",
@@ -22856,7 +22856,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/DetailsListStore"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TrackerStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TrackerStore.ts",
       "lineNumber": 4,
       "importPath": "@/RootStores",
       "errorType": "MISSING",
@@ -22864,7 +22864,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootStores"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UISlice.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UISlice.ts",
       "lineNumber": 3,
       "importPath": "@reduxjs/toolkit",
       "errorType": "MISSING",
@@ -22872,7 +22872,7 @@
       "suggestedFix": "Check if file exists: @reduxjs/toolkit"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts",
       "lineNumber": 7,
       "importPath": "@/app/crypto/SafeParseData",
       "errorType": "MISSING",
@@ -22880,7 +22880,7 @@
       "suggestedFix": "Change \"@/app/crypto/SafeParseData\" to \"@/app/crypto/SafeParseData\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts",
       "lineNumber": 13,
       "importPath": "@/app/typings/types",
       "errorType": "MISSING",
@@ -22888,7 +22888,7 @@
       "suggestedFix": "Change \"@/app/typings/types\" to \"@/app/typings/types\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts",
       "lineNumber": 14,
       "importPath": "@/app/utils/createMessage",
       "errorType": "MISSING",
@@ -22896,7 +22896,7 @@
       "suggestedFix": "Change \"@/app/utils/createMessage\" to \"@/app/utils/createMessage\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 12,
       "importPath": "@/app/models/crypto/SanitizationFunctions",
       "errorType": "MISSING",
@@ -22904,7 +22904,7 @@
       "suggestedFix": "Change \"@/app/models/crypto/SanitizationFunctions\" to \"@/app/models/crypto/SanitizationFunctions\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts",
       "lineNumber": 14,
       "importPath": "@/app/models/tasks/TaskDataSource",
       "errorType": "MISSING",
@@ -22912,7 +22912,7 @@
       "suggestedFix": "Change \"@/app/models/tasks/TaskDataSource\" to \"@/app/models/tasks/TaskDataSource\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/presentationStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/presentationStore.ts",
       "lineNumber": 8,
       "importPath": "@/app/models/crypto/SanitizationFunctions",
       "errorType": "MISSING",
@@ -22920,7 +22920,7 @@
       "suggestedFix": "Change \"@/app/models/crypto/SanitizationFunctions\" to \"@/app/models/crypto/SanitizationFunctions\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/useAppDispatch.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/useAppDispatch.ts",
       "lineNumber": 3,
       "importPath": "@reduxjs/toolkit",
       "errorType": "MISSING",
@@ -25392,7 +25392,7 @@
       "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootSlice"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserPreferences/UserPreferencesStore.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserPreferences/UserPreferencesStore.ts",
       "lineNumber": 4,
       "importPath": "@/app/components/libraries/ui/theme/ThemeConfig",
       "errorType": "MISSING",
@@ -25400,12 +25400,12 @@
       "suggestedFix": "Change \"@/app/components/libraries/ui/theme/ThemeConfig\" to \"@/app/components/libraries/ui/theme/ThemeConfig\" (Fix @/app imports)"
     },
     {
-      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/hooks/useProjectManager.ts",
+      "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/hooks/useProjectManager.ts",
       "lineNumber": 5,
       "importPath": "../mobx/ProjectManagerStore",
       "errorType": "MISSING",
       "severity": "low",
-      "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/mobx/ProjectManagerStore"
+      "suggestedFix": "Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/mobx/ProjectManagerStore"
     },
     {
       "filePath": "/Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/dAppAdapter/functionality/RealtimeUpdates.tsx",

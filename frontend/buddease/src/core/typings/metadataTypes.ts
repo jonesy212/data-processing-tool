@@ -6,8 +6,8 @@ import { ValidationRule } from '@/core/snapshots/ValidationRule';
 
 import { IBackendStructure } from '@/core/config/appStructure/IBackendStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { TaskMetadata, UnifiedMetadata, } from '@/core/config/MetaDataOptions';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { TaskMetadata, UnifiedMetadata, } from '@/core/config/MetaDataOptions';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { DatabaseSchema, ServiceSchema, StructureSchema } from '@/core/typings/database';
 import { AppTask } from '@/core/typings/entities/AppEntity';

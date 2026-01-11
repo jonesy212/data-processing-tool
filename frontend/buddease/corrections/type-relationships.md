@@ -6581,7 +6581,7 @@
 
 ### CollaborationBoardStore
 **Metadata:**
-- **File:** src/app/state/stores/CollaborationBoardStore.tsx
+- **File:** src/core/state/stores/CollaborationBoardStore.tsx
 - **Type:** component
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
@@ -11278,7 +11278,7 @@
 
 ### StoreProvider
 **Metadata:**
-- **File:** src/app/state/stores/StoreProvider.tsx
+- **File:** src/core/state/stores/StoreProvider.tsx
 - **Type:** component
 - **Role:** 🏛️ Root
 - **Dependencies:** 0

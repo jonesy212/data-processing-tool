@@ -1,5 +1,5 @@
 CalendarEventTrendDetectionResult.ts
-import { EventTrendType } from "@/core/models/data/EventPriorityClassification";
+import type { EventTrendType } from "@/core/models/data/EventPriorityClassification";
 
 interface CalendarEventTrendDetectionResult {
     eventId: string; // ID of the event

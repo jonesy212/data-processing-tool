@@ -1,5 +1,6 @@
 // createMessage.ts
 import type { ChatRoom } from '@/core/communications/ChatRoom';
+import type { BaseDataRoot } from '@/core/config/BaseConfig';
 import type { Sender } from '@/core/components/communications/CommunicationPage';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UserPreferences } from "@/core/config/UserPreferences";
@@ -100,7 +101,7 @@ export const createMessage = <
 
     id: uuidv4(),
     sender: sender || defaultSender,
-    senderId: sender?.id || defaultSender.id,
+    senderId: sender?.id.toString() || defaultSender.id,
     channel: channel || {
       id: "",
       creatorId: "",

@@ -13,7 +13,7 @@ import {
 } from '@/core/state/redux/slices/DataSlice'; // Adjust based on your project structure
 import { useDispatch } from 'react-redux';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 interface BaseDataOperations<
   T extends BaseDataEntity,

@@ -3,7 +3,7 @@ import { FilterActions } from "@/core/actions/FilterActions";
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/core/calendar/CalendarEventTimingOptimization";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import HighlightEvent from "@/core/highlighting/screenFunctionality/HighlightEvent";
 import {
     clearFilteredEvents as clearFilteredEventsAction

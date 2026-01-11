@@ -1,6 +1,6 @@
 // Profile.tsx
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '@/core/pages/personas/PersonaBuilder';
 import UserDetails, { User } from '@/core/users/User';
 import React from 'react';

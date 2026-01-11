@@ -1,5 +1,4 @@
-PermissionEnums.ts
-PermissionLevel.ts
+// PermissionLevel.ts
 export enum PermissionLevel {
   None = 'None',
   Read = 'Read',
@@ -9,7 +8,7 @@ export enum PermissionLevel {
   Owner = 'Owner' // Add the missing value
 }
 
-VisibilityLevel.ts
+// VisibilityLevel.ts
 export enum VisibilityLevel {
   Private = 'Private',       // Only owner
   Restricted = 'Restricted', // Specific users/groups

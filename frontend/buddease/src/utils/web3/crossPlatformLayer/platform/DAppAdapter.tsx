@@ -1,7 +1,9 @@
 // DAppAdapter.ts
-import { DAppPlugin } from '@/utils/web3/pluginSystem/plugins/PluginInterface';
-import loadPlugins from '@/utils/web3/pluginSystem/plugins/loader';
 import React, { useEffect, useState } from "react";
+import type { DAppPlugin } from '@/utils/web3/pluginSystem/plugins/PluginInterface';
+import type { Web3Provider } from '@/core/components/web3/Web3Provider'
+import loadPlugins from '@/utils/web3/pluginSystem/plugins/loader';
+import { AppPlugin } from '@/core/config/PluginConfig'
 
 export interface PluginManagerConfig {
   autoDiscover: boolean;

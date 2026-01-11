@@ -13,7 +13,7 @@ import { ChildRelationship, Data, SharedConfigType, SharedRelationshipData } fro
 import { PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
 import { Snapshots, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';

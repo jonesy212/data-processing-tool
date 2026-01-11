@@ -1,0 +1,239 @@
+// fetchUserAreaDimensions.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import { UILogger } from '@/core/logging/Logger';
+import { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
+
+interface AreaDimensions {
+  width: number;
+  height: number;
+}
+
+interface Area {
+  prefix: string;
+  name: string;
+  type: NotificationType;
+  id: string;
+  title: string;
+  chatThreadName?: string; 
+  chatMessageId?: string; 
+  chatThreadId?: string; 
+  dataDetails?: { [key: string]: any }; 
+  generatorType?: string; 
+  dimensions: AreaDimensions; 
+}
+
+interface FetchOptions<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  /**
+   * Core Data Fetching Options
+   */
+  /**
+   * Whether to process the snapshot with category logic
+   * @default true
+   */
+  processCategory?: boolean;
+  
+  /**
+   * Additional headers for the request
+   */
+  additionalHeaders?: Record<string, string>;
+  
+  /**
+   * Cache configuration
+   */
+  cache?: {
+    enabled: boolean;
+    maxAge?: number;
+    staleWhileRevalidate?: number;
+  };
+  
+  /**
+   * Error handling strategy
+   */
+  errorHandling?: 'throw' | 'log' | 'silent';
+  
+  /**
+   * Transformation to apply to the response
+   */
+  transform?: (data: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => any;
+  
+  /**
+   * Logger instance
+   */
+  logger?: typeof UILogger;
+
+  /**
+   * UI/DOM Related Options
+   */
+  /**
+   * Element ID to observe
+   */
+  elementId?: string;
+  
+  /**
+   * Whether to listen for resize events
+   * @default false
+   */
+  listenForResize?: boolean;
+  
+  /**
+   * Callback when dimensions change
+   */
+  onChange?: (dimensions: AreaDimensions) => void;
+
+  /**
+   * Additional metadata
+   */
+  metadata?: {
+    /**
+     * Request origin context
+     */
+    source?: string;
+    
+    /**
+     * Priority level
+     */
+    priority?: 'low' | 'medium' | 'high';
+    
+    /**
+     * Timeout in milliseconds
+     */
+    timeout?: number;
+  };
+}
+
+
+export const fetchUserAreaDimensions = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  options?: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): AreaDimensions => {
+  const { elementId, listenForResize, onChange } = options || {};
+
+  const getDimensions = (): AreaDimensions => {
+    if (elementId) {
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.warn(`Element with ID "${elementId}" not found.`);
+        return { width: 0, height: 0 };
+      }
+      const { width, height } = element.getBoundingClientRect();
+      return { width, height };
+    } else {
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
+  };
+
+  let dimensions = getDimensions();
+
+  if (listenForResize) {
+    window.addEventListener('resize', () => {
+      dimensions = getDimensions();
+      if (onChange) onChange(dimensions);
+    });
+  }
+
+  return dimensions;
+};
+
+const getChatThreadName = async (): Promise<string | undefined> => {
+  try {
+    const response = await fetch('/api/chat/threadName');
+    const data = await response.json();
+    return data.threadName; 
+  } catch (error) {
+    console.error('Error fetching chatThreadName:', error);
+    return undefined;
+  }
+};
+
+const getChatMessageId = async (): Promise<string | undefined> => {
+  try {
+    const messageId = sessionStorage.getItem('chatMessageId'); 
+    return messageId || undefined;
+  } catch (error) {
+    console.error('Error fetching chatMessageId:', error);
+    return undefined;
+  }
+};
+
+const generateChatThreadId = (): string => {
+  return `thread-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+};
+
+const getDataDetails = async (): Promise<{ [key: string]: any } | undefined> => {
+  try {
+    const response = await fetch('/api/data/details');
+    const details = await response.json();
+    return details; 
+  } catch (error) {
+    console.error('Error fetching dataDetails:', error);
+    return undefined;
+  }
+};
+
+const getGeneratorType = (): string | undefined => {
+  const generatorTypes = ['TypeA', 'TypeB', 'TypeC'];
+  const randomIndex = Math.floor(Math.random() * generatorTypes.length);
+  return generatorTypes[randomIndex];
+};
+
+const initializeArea = async (): Promise<Area> => {
+  const [chatThreadName, chatMessageId, dataDetails] = await Promise.all([
+    getChatThreadName(),
+    getChatMessageId(),
+    getDataDetails()
+  ]);
+
+  const chatThreadId = generateChatThreadId();
+  const generatorType = getGeneratorType();
+  const dimensions = fetchUserAreaDimensions(); 
+
+  const area: Area = {
+    prefix: 'USER',
+    name: 'JohnDoe',
+    type: NotificationTypeEnum.USER_ID,
+    id: '12345',
+    title: 'UserAccount',
+    dimensions, 
+    ...(chatThreadName && { chatThreadName }),
+    ...(chatMessageId && { chatMessageId }), 
+    ...(chatThreadId && { chatThreadId }), 
+    ...(dataDetails && { dataDetails }), 
+    ...(generatorType && { generatorType }), 
+  };
+
+  console.log('Initialized Area:', area);
+
+  const options: FetchOptions<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> = {
+    elementId: area.id, 
+    listenForResize: true, 
+    onChange: (dimensions: AreaDimensions) => {
+      console.log(`Updated dimensions for area "${area.name}":`, dimensions);
+    }
+  };
+
+  const areaDimensions = fetchUserAreaDimensions<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>(options);
+  console.log('Initial dimensions:', areaDimensions);
+
+  return area;
+};
+
+initializeArea();
+
+export type { Area, AreaDimensions, FetchOptions };
+

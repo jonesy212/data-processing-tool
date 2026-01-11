@@ -595,7 +595,7 @@
 **Exports:** 
 
 #### 13. CollaborationBoardStore
-**Defined in:** src/app/state/stores/CollaborationBoardStore.tsx
+**Defined in:** src/core/state/stores/CollaborationBoardStore.tsx
 **Props Type:** { children: React.ReactNode }
 **Exports:** useCollaborationBoard, CollaborationBoardStore
 
@@ -2184,7 +2184,7 @@
 **Exports:** useStepContext
 
 #### 325. StoreProvider
-**Defined in:** src/app/state/stores/StoreProvider.tsx
+**Defined in:** src/core/state/stores/StoreProvider.tsx
 **Props Type:** StoreProviderProp
 **Exports:** StoreContext, StoreProvider, useStore
 

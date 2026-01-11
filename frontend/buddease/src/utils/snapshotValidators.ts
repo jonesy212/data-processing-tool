@@ -1,13 +1,13 @@
-snapshotValidators.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+// snapshotValidators.ts
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
 import { SnapshotAnalyzer } from '@/core/generators/corrections/SnapshotAnalyzer';
 import { StructureValidator } from '@/core/generators/corrections/StructureValidator';
 import { ConfigurationValidator } from '@/core/generators/corrections/validators/ConfigurationValidator';
 import { FileStructureValidator } from '@/core/generators/corrections/validators/FileStructureValidator';
 import { MultiPlatformDirectoryValidator } from '@/core/generators/corrections/validators/MultiPlatformDirectoryValidator';
 import { PackageJsonValidator } from '@/core/generators/corrections/validators/PackageJsonValidator';
-import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
+import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 
 export type ValidationSuggestion = StringSuggestion | ImportFixSuggestion | CodeSuggestion;
 
@@ -30,7 +30,7 @@ export interface CodeSuggestion {
     };
 }
 
-Type guards
+// Type guards
 export const isStringSuggestion = (suggestion: ValidationSuggestion): suggestion is StringSuggestion =>
     suggestion.type === 'string';
 
@@ -1093,7 +1093,8 @@ export class SnapshotValidators {
                     'type_error': 'types',
                     'scripts': 'configuration',
                     'data': 'data', 
-                    'dependency': 'dependency'
+                    'dependency': 'dependency',
+                    'critical': 'critical'
                     } as const; // Use const assertion for better type inference
 
 

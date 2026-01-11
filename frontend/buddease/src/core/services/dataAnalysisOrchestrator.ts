@@ -4,7 +4,7 @@ import axiosInstance from '@/core/api/csrfToken';
 import dataProcessingService, { DataProcessing, DataProcessingResult } from "@/core/api/service/DataProcessingService";
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 export const sendDataToBackend = async (data: any) => {
   try {

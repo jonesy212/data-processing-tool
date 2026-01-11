@@ -2,7 +2,7 @@
 import { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import { Team } from "@/core/components/teams/Team";
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ProjectFeedback } from "@/core/features/support/ProjectFeedback";
 import { StatusType } from "@/core/models/data/StatusType";
 import { Member } from "@/core/models/members/Member";

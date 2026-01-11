@@ -24,7 +24,7 @@ interface EventDetails extends CalendarEventViewingDetailsProps {
 interface CalendarEventViewingDetailsBaseProps {
   eventId: string;
   title?: string;
-  None?: () => JSX.Element;
+  None?: () => React.JSX.Element;
   date?: string;
   productId?: string;
 }

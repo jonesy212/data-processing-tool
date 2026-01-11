@@ -16,7 +16,7 @@ import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreOptions } from "@/core/snapshots/SnapshotStoreOptions";
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
 interface SnapshotStoreContainer<

@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { userPreferences } from "@/core/config/UserPreferences";
 import userSettings, { UserSettings } from "@/core/config/UserSettings";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { UserData } from "@/core/users/User";
 

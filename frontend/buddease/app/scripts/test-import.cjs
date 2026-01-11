@@ -13,7 +13,7 @@ const testImports = [
   '@/app/api/ApiUser',
   '@/app/api/ApiVideo',
   '@/app/api/TeamManagementApi',
-  '@/app/state/stores/AssignBaseStore',
+  '@/core/state/stores/AssignBaseStore',
   '@/app/components/teams/Team',
   '@/core/config/BaseConfig',
   '@/app/documents/attachment/Attachment',

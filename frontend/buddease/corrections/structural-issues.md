@@ -136,7 +136,7 @@ Create the missing interface or fix the reference
 ---
 
 ## 📄 CollaborationBoardStore.tsx
-**Path:** src/app/state/stores/CollaborationBoardStore.tsx
+**Path:** src/core/state/stores/CollaborationBoardStore.tsx
 
 ### 1. Component 'CollaborationBoardStore' references missing props interface '{ children: React.ReactNode }'
 **Severity:** HIGH
@@ -2659,7 +2659,7 @@ Create the missing interface or fix the reference
 ---
 
 ## 📄 StoreProvider.tsx
-**Path:** src/app/state/stores/StoreProvider.tsx
+**Path:** src/core/state/stores/StoreProvider.tsx
 
 ### 1. Component 'StoreProvider' references missing props interface 'StoreProviderProp'
 **Severity:** HIGH

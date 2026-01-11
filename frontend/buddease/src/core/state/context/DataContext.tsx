@@ -6,7 +6,7 @@ import type {
     DataStore,
     VersionedData,
 } from "@/core/state/stores/DataStore";
-import { useDataStore } from "@/core/state/stores/DataStore";
+import type { useDataStore } from "@/core/state/stores/DataStore";
 import { createContext, ReactNode, useContext } from "react";
 
 interface DataContextProps<

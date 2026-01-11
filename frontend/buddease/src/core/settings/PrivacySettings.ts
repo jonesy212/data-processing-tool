@@ -1,8 +1,8 @@
 // PrivacySettings.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { UserRole } from "@/core/models/UserRole";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 
 
 interface SharingPreferences {

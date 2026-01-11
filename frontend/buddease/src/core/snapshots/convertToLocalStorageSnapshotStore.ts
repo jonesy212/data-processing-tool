@@ -1,7 +1,7 @@
 // convertToLocalStorageSnapshotStore.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { LocalStorageSnapshotStore } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { DataStore } from "@/core/state/stores/DataStore";
+import type { DataStore } from "@/core/state/stores/DataStore";
 
 
 function convertToLocalStorageSnapshotStore<T extends BaseDataEntity, K extends T = T>(

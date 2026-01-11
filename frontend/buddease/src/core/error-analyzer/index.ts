@@ -8,7 +8,7 @@ export { FixPrioritizer } from './FixPrioritizer';
 export { FixVerifier } from './FixVerifier';
 export { ImportSuggestionGenerator } from './ImportSuggestionGenerator';
 export { ProgressTracker } from './ProgressTracker';
-export { ReportGenerator } from './ReportGenerator';
+export type { ReportGenerator } from './ReportGenerator';
 export { TypeRelationshipAnalyzer } from './TypeRelationshipAnalyzer';
 export type { TypeScriptErrorAnalyzer } from './TypeScriptErrorAnalyzer';
 export { analyzeErrorsFromFile, analyzeErrorsFromJson, main, TypeScriptErrorFixSystem } from './TypeScriptErrorFixSystem';

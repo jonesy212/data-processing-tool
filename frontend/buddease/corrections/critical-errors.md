@@ -40,7 +40,7 @@
 ---
 
 ## 📄 TaskStore .tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TaskStore .tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TaskStore .tsx
 
 ### 1. undefined
 **Type:** error
@@ -49,8 +49,8 @@
 **Line 184:**
 **Problem Code:**
 ```typescript
-// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TaskStore .tsx at line 184
-// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TaskStore .tsx
+// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TaskStore .tsx at line 184
+// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TaskStore .tsx
 // 
 //     Possible causes:
 //     1. File may have syntax errors or unusual formatting
@@ -75,7 +75,7 @@
 ---
 
 ## 📄 TeamStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx
 
 ### 1. undefined
 **Type:** error
@@ -84,8 +84,8 @@
 **Line 135:**
 **Problem Code:**
 ```typescript
-// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx at line 135
-// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx
+// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx at line 135
+// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx
 // 
 //     Possible causes:
 //     1. File may have syntax errors or unusual formatting
@@ -110,7 +110,7 @@
 ---
 
 ## 📄 TodoStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts
 
 ### 1. undefined
 **Type:** error
@@ -119,8 +119,8 @@
 **Line 107:**
 **Problem Code:**
 ```typescript
-// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts at line 107
-// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts
+// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts at line 107
+// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts
 // 
 //     Possible causes:
 //     1. File may have syntax errors or unusual formatting
@@ -145,7 +145,7 @@
 ---
 
 ## 📄 UserStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts
 
 ### 1. undefined
 **Type:** error
@@ -154,8 +154,8 @@
 **Line 101:**
 **Problem Code:**
 ```typescript
-// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts at line 101
-// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts
+// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts at line 101
+// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts
 // 
 //     Possible causes:
 //     1. File may have syntax errors or unusual formatting

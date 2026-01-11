@@ -50,7 +50,6 @@
     "fix-and-deduplicate": "pnpm run fix-imports && pnpm run imports:deduplicate",
     "fix-all-and-deduplicate": "pnpm run fix-imports:all && pnpm run imports:deduplicate",
     "list:type-errors": "npx tsc --noEmit --skipLibCheck 2>&1 | grep \"is a type\" | sort | uniq",
-
     "pre-commit:imports": "pnpm run imports:analyze -- --limit=20",
     "pre-commit:deduplicate": "pnpm run imports:deduplicate -- --limit=50",
     "fix-imports:complete": "pnpm run fix-imports:all && pnpm run imports:deduplicate",
@@ -66,7 +65,6 @@
     "debug:ts-errors": "tsx debug-typescript-errors.ts",
     "fix:snapshots-first": "pnpm tsc:analyze-snapshots && pnpm analyze:snapshots",
     "fix:with-diagnosis": "pnpm tsc:diagnose-line332 && pnpm analyze:snapshots",
-
     "tsc:analyze-snapshots": "node src/core/scripts/analyze-snapshots-tsc.mjs",
     "tsc:diagnose-line332": "node src/app/scripts/diagnose-line-specific.js",
     "tsc:fix-generics": "node src/app/scripts/auto-fix-generics.js",
@@ -100,15 +98,10 @@
     "analyze:ts-quick": "pnpm type-check 2>&1 > ts-errors-quick.json && pnpm analyze:ts-errors:cli analyze ts-errors-quick.json --quick",
     "analyze-type-exports": "tsx src/app/scripts/fix-type-exports.ts --analyze",
     "fix-type-exports": "tsx app/scripts/fix-type-exports.ts --fix",
-    
-
     "find:comment-errors": "tsx scripts/fix-missing-comment-errors.ts --dry-run",
     "fix:comment-errors": "tsx scripts/fix-missing-comment-errors.ts",
     "analyze:syntax-errors": "npx tsc --noEmit --skipLibCheck 2>&1 | grep -E \"(TS1434|TS1109|TS1128)\" | head -30",
     "pre-commit:check-comments": "bash scripts/check-comment-integrity.sh",
-
-
-
     "detect-type-mismatches": "tsx src/app/scripts/detect-type-mismatches.ts",
     "check-type-file": "tsx src/app/scripts/fix-type-exports.ts",
     "ts:strict-type": "tsc --noEmit --isolatedModules --verbatimModuleSyntax",
@@ -137,22 +130,31 @@
     "fix-imports:rollback": "tsx app/scripts/fix-imports.ts --rollback",
     "fix-imports:report": "tsx app/scripts/fix-imports.ts",
     "fix-imports:scan": "tsx app/scripts/fix-imports.ts",
-    "fix:interface-imports": "tsx app/scripts/fix-interface-imports.ts",
-    "fix:interface-imports:quick": "tsx app/scripts/fix-interface-imports.ts quick",
-    "fix:interface-imports:preview": "tsx app/scripts/fix-interface-imports.ts --preview",
-    "fix:interface-imports:rollback": "tsx app/scripts/fix-interface-imports.ts --rollback",
+    "fix:all-imports": "pnpm fix-imports && pnpm fix:interface-imports",
+    "fix:all-imports:dry": "pnpm fix-imports:dry && pnpm fix:interface-imports:preview",
     "fix:interface-imports:dry-run": "tsx app/scripts/fix-interface-imports.ts preview",
-    "fix:interface-imports:analyze": "tsx app/scripts/fix-interface-imports.ts --analyze",
-    "fix:all-imports": "npm run fix-imports && npm run fix:interface-imports",
-    "fix:all-imports:dry": "npm run fix-imports:dry-run && npm run fix:interface-imports:preview",
+    "fix:interface-imports:quick": "tsx app/scripts/fix-interface-imports.ts quick",
+    "fix:interface-imports": "tsx app/scripts/fix-interface-imports.ts",
+    "fix:interface-imports:rollback": "tsx app/scripts/fix-interface-imports.ts --rollback",
+    "fix:interface-imports:analyze": "tsx app/scripts/fix-interface-imports.ts analyze",
     "fix:interface-imports:scan": "tsx app/scripts/fix-interface-imports.ts scan --report",
     "fix:interface-imports:all": "tsx app/scripts/fix-interface-imports.ts all",
     "fix:interface-imports:interactive": "tsx app/scripts/fix-interface-imports.ts interactive",
     "fix:interface-imports:safe": "tsx app/scripts/fix-interface-imports.ts safe",
-    "fix:interface-imports:target": "tsx app/scripts/fix-interface-imports.ts target src/app/state/stores/DataStore.ts",
-    "fix:datastore-imports": "tsx app/scripts/fix-interface-imports.ts quick",
+    "fix:interface-imports:target": "tsx app/scripts/fix-interface-imports.ts target",
     "fix:interface-imports:datastore": "tsx app/scripts/fix-interface-imports.ts target src/core/state/stores/DataStore.ts",
     "fix:interface-imports:apply": "tsx app/scripts/fix-interface-imports.ts all --apply",
+    "fix:interface-imports:analyze-file": "tsx app/scripts/fix-interface-imports.ts analyze",
+    "fix:interface-imports:core-types": "tsx app/scripts/fix-interface-imports.ts core-types",
+    "fix:interface-imports:snapshots": "tsx app/scripts/fix-interface-imports.ts target src/app/snapshots/",
+    "fix:interface-imports:state": "tsx app/scripts/fix-interface-imports.ts target src/app/state/",
+    "fix:interface-imports:target-path": "tsx app/scripts/fix-interface-imports.ts target",
+    "fix:datastore-imports": "tsx app/scripts/fix-interface-imports.ts quick",
+    "fix:imports:comprehensive": "pnpm fix:interface-imports:all --apply && pnpm fix:types:all",
+    "fix:imports:quick": "pnpm fix:interface-imports:safe && pnpm fix:types:quick",
+    "fix:imports:dry": "pnpm fix:interface-imports:preview && pnpm fix:types:dry",
+    "fix:interface-imports:preview": "tsx app/scripts/fix-interface-imports.ts preview",
+    "fix:imports:test-shared": "tsx app/scripts/shared/import-utils.test.ts",
     "test:imports": "pnpm type-check && pnpm analyze:all",
     "test:unit": "vitest run --coverage --watchAll=false",
     "test:integration": "vitest run --config vitest.integration.config.ts",
@@ -272,10 +274,10 @@
     "fix:patterns-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus patterns",
     "check:types": "tsc --noEmit --skipLibCheck 2>&1 | grep 'is a type' || true",
     "check:types:all": "tsc --noEmit --skipLibCheck",
-    "fix:types:capture": "node src/scripts/fix-all-type-imports.ts --dry-run",
     "fix:types": "tsx type-import-fixer-with-backup.ts",
     "fix:types:dry-run": "tsx type-import-fixer-with-backup.ts --dry-run",
     "fix:types:analyze": "tsx type-import-fixer-with-backup.ts --analyze-only",
+    "fix:types:capture": "node src/scripts/fix-all-type-imports.ts --dry-run",
     "fix:types:comprehensive": "tsx fix-all-type-imports.ts",
     "fix:types:comprehensive-dry": "tsx fix-all-type-imports.ts --dry-run",
     "fix:types:comprehensive-quick": "tsx fix-all-type-imports.ts --quick",
@@ -285,31 +287,22 @@
     "fix:types:rollback": "tsx src/scripts/fix-type-imports-with-backup.ts --rollback",
     "fix:types:backup-manager": "tsx src/scripts/fix-type-imports-with-backup.ts --list",
     "check:namespace-imports": "npx tsc --noEmit --isolatedModules --verbatimModuleSyntax 2>&1 | grep \"'*' is a type\" || echo '✅ No namespace import issues'",
- 
-
     "backup:type-imports": "bash scripts/backup-type-imports.sh backup",
     "backup:list": "bash scripts/backup-type-imports.sh list",
     "backup:cleanup": "bash scripts/backup-type-imports.sh cleanup",
-
     "fix:types:summary": "tsx -e \"console.log('\\n📊 TYPE IMPORT SUMMARY:'); console.log('='.repeat(40)); require('child_process').execSync('grep -r \\\"import.*BaseDataEntity.*from\\\" src/ --include=\\\"*.ts\\\" --include=\\\"*.tsx\\\" | grep -v \\\"import type\\\" | wc -l', {encoding:'utf8'}).split('\\n').forEach(l => console.log('Files needing fix:', l.trim()));\"",
-    
     "fix:types:cleanup": "rm -rf .type-import-backups .type-import-rollback",
     "fix:types:show-all": "find .type-import-backups -type f -name '*.backup' | sort -r | head -20",
     "fix:types:list-backups": "ls -la .import-fix-backups/ 2>/dev/null || echo 'No backups'",
     "fix:types:show-latest": "tail -20 .import-fix-backups/*.txt 2>/dev/null | head -50 || echo 'No backups'",
-    
     "fix:types:specific-dry": "tsx type-import-fixer-with-backup.ts --dry-run",
     "check:types:count": "tsc --noEmit --skipLibCheck 2>&1 | grep -c 'is a type' || true",
     "find:type-errors": "tsc --noEmit --skipLibCheck 2>&1 | grep -E \"'[^']+' is a type\" | sort | uniq -c | sort -rn",
     "fix:types:safe": "tsx type-import-fixer-with-backup.ts --dry-run",
-    
     "check:type-errors": "npx tsc --noEmit --skipLibCheck 2>&1 | grep \"is a type\" | wc -l",
-    
     "fix:types:complete-dry": "tsx src/scripts/fix-all-type-imports.ts --dry-run",
-    "fix:types:all": "tsx fix-all-type-imports-fixed.ts",
-    "fix:types:dry": "tsx fix-all-type-imports-fixed.ts --dry-run",
-    
-    
+    "fix:types:all": "tsx app/scripts/fix-all-type-imports.ts",
+    "fix:types:dry": "tsx app/scripts/fix-all-type-imports.ts --dry-run",
     "check:syntax": "tsc --noEmit --skipLibCheck 2>&1 | grep -E '(error TS|: - error)' | head -10",
     "check:type-imports": "tsc --noEmit --skipLibCheck 2>&1 | grep 'is a type' || echo '✅ No type-only import errors'",
     "count:type-imports": "tsc --noEmit --skipLibCheck 2>&1 | grep -c 'is a type' || echo 0",
@@ -317,7 +310,6 @@
     "fix:types:backup": "tsx type-import-fixer-with-backup.ts",
     "rollback:latest": "bash .smart-backups/rollback/latest/rollback.sh",
     "rollback:list": "ls -la .smart-backups/rollback/",
-    
     "rollback:to": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts restore",
     "dev:with-phase": "pnpm phase:scan && pnpm dev",
     "dev:with-analysis": "pnpm generate:tree:json && pnpm dev",
@@ -365,6 +357,9 @@
     "pre-commit": "pnpm lint && pnpm type-check",
     "pre-commit:ts": "pnpm analyze:ts-quick --quiet --min-confidence 70",
     "pre-commit:ts-strict": "pnpm analyze:ts-quick --quiet --min-confidence 90",
+    "tsconfig:fix": "bash fix-tsconfig-excludes.sh",
+    "tsconfig:check": "bash monitor-tsconfig.sh",
+    
     "pre-commit:phase": "pnpm pattern:scan --quick",
     "pre-commit:entity-check": "pnpm pattern:analyze --quick",
     "track:progress": "echo 'Check ./error-tracking/progress-report.md'",
@@ -398,7 +393,6 @@
     "ts:test-phase": "tsx src/test-phase.ts",
     "fix:types:clear": "tsx app/scripts/type-import-fixer-with-backup.ts",
     "fix:types:preview": "tsx app/scripts/type-import-fixer-with-backup.ts --dry-run",
-
     "analyze:snapshots": "PLATFORM=web pnpm generate:corrections:snapshots",
     "analyze:critical": "PLATFORM=web pnpm generate:corrections:critical",
     "analyze:quick-fixes": "PLATFORM=web pnpm generate:corrections:quick",
@@ -427,7 +421,8 @@
     "env:prod": "cp .env.prod .env",
     "env:list": "cat .env*",
     "dev:quick": "pnpm quick:fixes && pnpm dev",
-    "build:quick": "pnpm quick:fixes && pnpm build:all"
+    "build:quick": "pnpm quick:fixes && pnpm build:all",
+    "prepare": "husky"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -610,6 +605,7 @@
     "eslint-config-next": "16.0.1",
     "eslint-plugin-react": "^7.37.5",
     "glob": "^13.0.0",
+    "husky": "^9.1.7",
     "metro-config": "^0.83.3",
     "nock": "^14.0.10",
     "react-native-typescript-transformer": "^1.2.13",

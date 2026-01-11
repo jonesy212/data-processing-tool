@@ -20,10 +20,10 @@ import { Category } from '@/core/libraries/categories/generateCategoryProperties
 import { BaseData } from '@/core/models/data/Data';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { Subscription } from '@/core/subscriptions/Subscription';
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
 

@@ -1,7 +1,7 @@
 // NotificationManager.ts
 import { apiNotificationMessages } from "@/core/api/ApiData";
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";

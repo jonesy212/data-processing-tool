@@ -80,3 +80,8 @@ tsconfig.json
 .smart-backups/
 .smart-backup-config.local.json
 *.bak
+
+# Backup directories
+.comment-fix-backups/
+.type-import-backups/
+.import-fix-backups/

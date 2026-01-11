@@ -6,7 +6,7 @@ import { Attendee } from '@/core/components/calendar/Attendee';
 import { Team } from '@/core/components/teams/Team';
 import { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DataWithComment } from '@/core/dataIntegration/SafeParseData';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
 import { Exchange } from '@/core/models/cypto/Exchange';
 import { Data } from '@/core/models/data/Data';

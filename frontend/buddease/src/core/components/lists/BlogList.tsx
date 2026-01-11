@@ -1,7 +1,7 @@
 // BlogList.tsx
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ListGenerator from "@/core/generators/ListGenerator";
 import { Content } from '@/core/models/content/AddContent';
 import { Data, SharedRelationshipData } from '@/core/models/data/Data';

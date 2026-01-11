@@ -1,20 +1,36 @@
 // CalendarEntity.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { Attendee } from "@/core/components/calendar/Attendee";
+import AttendeeStatus from '@/core/pages/AccessDenied'
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { Attendee } from "@/core/components/calendar/Attendee";
+import { CalendarStatus } from "@/core/models/data/StatusType";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { defaultCategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { Reminder } from '@/core/settings/Reminder';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Reminder } from '@/core/settings/Reminder';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
-import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
+import type { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 
+export interface CalendarVisibility {
+  type: 'public' | 'private' | 'shared' | 'team-only' | 'department-only' | 'custom';
+  // Optional fields based on type
+  sharedWith?: string[]; // User IDs or emails
+  teamIds?: string[]; // Team IDs for team-only visibility
+  departmentIds?: string[]; // Department IDs for department-only
+  permissions?: {
+    canView: boolean;
+    canEdit: boolean;
+    canDelete: boolean;
+    canInvite: boolean;
+  };
+  accessLevel?: 'view-only' | 'edit' | 'admin';
+}
 
 // 1. Unified Base Calendar Entity
 export interface CalendarEntity extends BaseDataEntity {
@@ -27,8 +43,8 @@ export interface CalendarEntity extends BaseDataEntity {
   recurrenceRule?: string;
   timeZone: string;
   attendees?: Attendee[];
-  status: 'scheduled' | 'cancelled' | 'completed' | 'tentative';
-  visibility: 'public' | 'private' | 'shared';
+  status: CalendarStatus;
+  visibility: CalendarVisibility;
   
   // Sensitive calendar-specific fields
   organizerPersonalNotes?: string;
@@ -36,6 +52,8 @@ export interface CalendarEntity extends BaseDataEntity {
   attendeeEmails?: string[];
   reminders?: Reminder[];
 }
+
+
 
 // 2. Sensitive fields that should never be exposed
 type CalendarExcludedFields = 
@@ -157,41 +175,188 @@ export type {
     CalendarIncludedFields
 };
 
+// For the sensitive event:
 const sensitiveEvent: CalendarEntity = {
-  id: "event-123",
-  title: "Team Meeting",
-  startDate: new Date("2024-01-15T10:00:00Z"),
-  endDate: new Date("2024-01-15T11:00:00Z"),
-  description: "Quarterly planning",
-  location: "Conference Room A",
-  status: "scheduled",
-  visibility: "private",
-  categories: [defaultCategoryProperties], // Add the category object
-  timeZone: "UTC",
-  isAllDay: false, // Add missing required field
-  // Sensitive fields (will be excluded by default)
-  organizerPersonalNotes: "Discuss layoffs",
-  internalMeetingId: "int-789",
-  attendeeEmails: ["ceo@company.com", "hr@company.com"],
-  reminders: [{
-    id: "rem-1",
-    method: "email", // Fix: 'email' goes to method, not type
-    minutes: 15,
-    trigger: { type: "time_before_event", minutesBefore: 15 }, // Add trigger
-    isActive: true,
-    sent: false,
-    reminderType: {
-      id: "email-reminder",
-      category: "reminder",
-      severity: "info",
-      defaultSettings: {
-        method: "email",
-        timing: 15,
-        template: "Reminder: {event.title} in {minutes} minutes"
-      }
+  id: "event-confidential-456",
+  title: "Executive Compensation Review",
+  startDate: new Date("2024-01-20T14:00:00"),
+  endDate: new Date("2024-01-20T15:30:00"),
+  timeZone: "America/New_York",
+  description: "Confidential discussion about executive compensation packages and bonus structures for 2024.",
+  
+  // Status
+  status: CalendarStatus.Approved,
+  
+  // Strict visibility - private
+  visibility: {
+    type: "private",
+    permissions: {
+      canView: true,
+      canEdit: false,
+      canDelete: false,
+      canInvite: false
+    },
+    accessLevel: 'view-only',
+    sharedWith: [] // Empty array for truly private
+  },
+  
+  location: "Executive Board Room",
+  isAllDay: false,
+  
+  // Updated attendees with teamId, roleInTeam, and status
+  attendees: [
+    {
+      id: "user-ceo",
+      name: "Alex Johnson",
+      email: "alex@company.com",
+      teamId: "executive-team",
+      roleInTeam: "CEO",
+      status: AttendeeStatus.ACCEPTED,
+      role: "organizer", // For backward compatibility
+      avatar: "/avatars/alex.jpg"
+    },
+    {
+      id: "user-cfo", 
+      name: "Maria Garcia",
+      email: "maria@company.com",
+      teamId: "executive-team",
+      roleInTeam: "CFO",
+      status: AttendeeStatus.ACCEPTED,
+      role: "required",
+      avatar: "/avatars/maria.jpg"
+    },
+    {
+      id: "user-chairman",
+      name: "Robert Chen",
+      email: "robert@company.com",
+      teamId: "board-team",
+      roleInTeam: "Chairman",
+      status: AttendeeStatus.TENTATIVE,
+      role: "required",
+      avatar: "/avatars/robert.jpg"
+    },
+    {
+      id: "user-hr-director",
+      name: "Sarah Williams",
+      email: "sarah@company.com",
+      teamId: "hr-team",
+      roleInTeam: "HR Director",
+      status: AttendeeStatus.PENDING,
+      role: "optional"
     }
-  }],
-  attendees: [] // Add missing required field
+  ],
+
+  // Sensitive fields marked explicitly
+  organizerPersonalNotes: "HIGHLY CONFIDENTIAL - Do not discuss outside this meeting. Salary figures attached.",
+  internalMeetingId: "EXEC-COMP-2024-001",
+  attendeeEmails: ["alex@company.com", "maria@company.com", "robert@company.com"],
+  
+  reminders: [
+    {
+      id: "reminder-confidential-1",
+      trigger: "before_start",
+      method: "email",
+      reminderType: "standard", // Assuming ReminderType has this
+      customMessage: "CONFIDENTIAL: Executive Compensation Review in 2 days",
+      isActive: true,
+      sent: false,
+      minutes: 2880, // 2 days in minutes
+      customActions: [
+        {
+          id: "action-encrypt",
+          type: "encrypt_email",
+          label: "Encrypt email content"
+        }
+      ]
+    },
+    {
+      id: "reminder-confidential-2",
+      trigger: "before_start",
+      method: "in-app",
+      reminderType: "urgent",
+      customMessage: "High-priority confidential meeting",
+      isActive: true,
+      sent: false,
+      minutes: 60, // 1 hour before
+      customActions: [
+        {
+          id: "action-verify",
+          type: "identity_verification",
+          label: "Require biometric verification"
+        }
+      ]
+    }
+  ],
+  
+  // BaseDataEntity fields
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  version: 1,
+  metadata: {
+    tags: ["confidential", "executive", "compensation"],
+    priority: "critical",
+    securityLevel: "top-secret",
+    customFields: {
+      classification: "strictly-confidential",
+      retentionPeriod: "7_years",
+      ndaRequired: true
+    }
+  }
+};
+
+
+const sharedEvent: CalendarEntity = {
+  id: "event-shared-101",
+  title: "Project Kickoff",
+  startDate: new Date("2024-01-18T09:00:00"),
+  endDate: new Date("2024-01-18T10:00:00"),
+  timeZone: "America/New_York",
+  description: "Kickoff meeting for the Aurora project.",
+  
+  status: CalendarStatus.Tentative,
+  
+  visibility: {
+    type: "shared",
+    sharedWith: [
+      "user-pm-001",
+      "user-dev-002", 
+      "user-designer-003"
+    ],
+    permissions: {
+      canView: true,
+      canEdit: true,
+      canDelete: false,
+      canInvite: true
+    },
+    accessLevel: 'edit'
+  },
+  
+  // ... other fields
+};
+
+const departmentEvent: CalendarEntity = {
+  id: "event-dept-202",
+  title: "Engineering Sync",
+  startDate: new Date("2024-01-17T10:00:00"),
+  endDate: new Date("2024-01-17T10:30:00"),
+  timeZone: "America/New_York",
+  description: "Daily engineering team sync.",
+  
+  status: CalendarStatus.Approved,
+  
+  visibility: {
+    type: "department-only",
+    departmentIds: ["dept-engineering", "dept-qa"],
+    permissions: {
+      canView: true,
+      canEdit: true,
+      canDelete: true,
+      canInvite: true
+    },
+    accessLevel: 'admin'
+  },
+  
+  // ... other fields
 };
 // Public version automatically excludes sensitive fields
 const publicEvent: PublicCalendarEvent = createPublicCalendarEvent(sensitiveEvent);

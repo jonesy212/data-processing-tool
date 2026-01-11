@@ -7,9 +7,9 @@ import { BaseData, Data } from '@/core/models/data/Data';
 import { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { CustomSnapshotData } from '@/core/snapshots/SnapshotData';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/core/typings/entities/AppEntity";
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 

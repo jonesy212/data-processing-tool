@@ -1,6 +1,6 @@
 // ExternalCalendarOverlay.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 
 interface ExternalCalendarOverlay {
     id: string; // Unique identifier for the overlay

@@ -6,16 +6,17 @@ import {
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
-import { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
-import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
+import type { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
+import { ToolbarOptionsComponent } from "@/core/components/documents/ToolbarOptions";
+import type { ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
 import { selectedmetadata } from "@/core/components/routing/MetadataComponent";
 import SharingOptions from "@/core/components/shared/SharingOptions";
-import { Team } from "@/core/components/teams/Team";
+import type { Team } from "@/core/components/teams/Team";
 import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
+import type { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
 import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
+import type { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import { frontendStructure } from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
 import { saveDocumentToDatabase } from "@/core/config/database/updateDocumentInDatabase";
@@ -24,11 +25,11 @@ import { ModifiedDate } from "@/core/documents/DocType";
 import {
     getFormattedOptions
 } from "@/core/documents/DocumentCreationUtils";
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
-import { DocumentPath } from "@/core/documents/DocumentPath";
+import type { DocumentOptions, DocumentSize } from "@/core/documents/DocumentOptions";
+import type { DocumentPath } from "@/core/documents/DocumentPath";
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
-import { FinancialReport, ResearchReport, TechnicalReport } from "@/core/documents/Report";
-import {
+import type { FinancialReport, ResearchReport, TechnicalReport } from "@/core/documents/Report";
+import type {
     DocumentAnimationOptions,
     DocumentBuilderProps,
 } from "@/core/documents/SharedDocumentProps";
@@ -41,16 +42,16 @@ import ResizablePanels from "@/core/hooks/userInterface/ResizablePanels";
 import useResizablePanels from "@/core/hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "@/core/libraries/animations/movementAnimations/MovementAnimationActions";
 import { determineDocumentType } from "@/core/libraries/categories/determineDocumentType";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { CustomContentState } from "@/core/libraries/ui/CustomContentState";
-import { CommonData } from "@/core/models/CommonData";
-import { Content } from "@/core/models/content/AddContent";
-import { Data, TodoSubtasks } from '@/core/models/data/Data';
-import FileData from "@/core/models/data/FileData";
-import FolderData from "@/core/models/data/FolderData";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { CustomContentState } from "@/core/libraries/ui/CustomContentState";
+import type { CommonData } from "@/core/models/CommonData";
+import type { Content } from "@/core/models/content/AddContent";
+import type { Data, TodoSubtasks } from '@/core/models/data/Data';
+import type { FileData } from "@/core/models/data/FileData";
+import type { FolderData } from "@/core/models/data/FolderData";
 import { PhaseDocumentEnum } from '@/core/models/data/StatusType';
-import { DocumentPhase } from '@/core/models/phases/DocumentPhase';
-import { Phase } from '@/core/models/phases/Phase';
+import type { DocumentPhase } from '@/core/models/phases/DocumentPhase';
+import type { Phase } from '@/core/models/phases/Phase';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import PromptViewer from "@/core/prompts/PromptViewer";
 import BackendStructure, { backendStructure } from '@/core/server/database/BackendStructure';
@@ -60,21 +61,22 @@ import {
     DocumentObject
 } from "@/core/state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
-import { DocumentBase } from "@/core/state/stores/DocumentStore";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { DocumentBase } from "@/core/state/stores/DocumentStore";
 import { useAppDispatch } from "@/core/state/stores/useAppDispatch";
-import { DatasetModel } from "@/core/todos/tasks/DataSetModel";
+import type { DatasetModel } from "@/core/todos/tasks/DataSetModel";
 import Clipboard from "@/core/ts/clipboard";
-import { AllTypes } from "@/core/typings/PropTypes";
+import type { AllTypes } from "@/core/typings/PropTypes";
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import type { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
-import { AppMetadata } from '@/core/typings/metadataTypes';
+import type { AppMetadata } from '@/core/typings/metadataTypes';
 import AccessHistory, {
     convertAccessRecordToHistory,
 } from "@/core/versions/AccessHistory";
 import AppVersionImpl from "@/core/versions/AppVersion";
-import VersionImpl, { Version } from "@/core/versions/Version";
-import { VersionData } from "@/core/versions/VersionData";
+import VersionImpl from "@/core/versions/Version";
+import type { Version } from "@/core/versions/Version";
+import type { VersionData } from "@/core/versions/VersionData";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 import { getMetadataFromPlainText } from "@/utils/metadataUtils";
@@ -1276,8 +1278,8 @@ const DocumentBuilder: React.FC<DocumentBuilderProps<DocumentEntity, DocumentK, 
 
 
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetaDataOptions<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = useMetadata<T, K>(area)
-    const currentMeta: UnifiedMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = useMeta<T, K>(area)
+    const currentMetadata: UnifiedMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = useMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(area)
+    const currentMeta: StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = useMeta<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(area)
 
     const documentData: DocumentData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = {} as DocumentData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>
     

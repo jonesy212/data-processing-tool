@@ -1,16 +1,16 @@
 CalendarViewSlice.ts
 import axiosInstance from '@/core/api/csrfToken';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { formatCalendarAsCSV } from "@/core/calendar/formatCalendarAsCSV";
 import { formatCalendarAsXLS } from "@/core/calendar/formatCalendarAsXLS";
 import { formatCalendarAsXLSX } from "@/core/calendar/formatCalendarAsXLSX";
-import { SimpleCalendarEvent } from '@/core/components/calendar/CalendarContext';
-import { SetCustomEventNotificationsPayload } from "@/core/components/notifications/SetEventNotification";
+import type { SimpleCalendarEvent } from '@/core/components/calendar/CalendarContext';
+import type { SetCustomEventNotificationsPayload } from "@/core/components/notifications/SetEventNotification";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
-import { SupportedData } from "@/core/models/CommonData";
-import { CalendarStatus } from "@/core/models/data/StatusType";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { SupportedData } from "@/core/models/CommonData";
+import type { CalendarStatus } from "@/core/models/data/StatusType";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { SendStatus } from "@/core/state/redux/slices/NofiticationsSlice";
 import { RootState } from "@/core/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/core/state/stores/DetailsListStore";

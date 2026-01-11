@@ -347,7 +347,7 @@
     },
     {
       "timestamp": "2025-12-28T07:44:31.269Z",
-      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CommonEvent.ts",
       "originalImport": "@/core/snapshots/SnapshotStoreConfig",
       "newImport": "@/core/snapshots/SnapshotData",
       "line": 17,
@@ -356,7 +356,7 @@
     },
     {
       "timestamp": "2025-12-28T07:44:31.269Z",
-      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CommonEvent.ts",
       "originalImport": "@/core/snapshots/SnapshotWithCriteria",
       "newImport": "@/core/models/tracker/Tag",
       "line": 19,
@@ -365,7 +365,7 @@
     },
     {
       "timestamp": "2025-12-28T07:44:31.271Z",
-      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DataStore.ts",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DataStore.ts",
       "originalImport": "@/core/snapshots/SnapshotData",
       "newImport": "@/core/snapshots/SnapshotList",
       "line": 33,
@@ -374,7 +374,7 @@
     },
     {
       "timestamp": "2025-12-28T07:44:31.272Z",
-      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts",
       "originalImport": "@/core/snapshots/SnapshotConfig",
       "newImport": "@/core/snapshots/SnapshotWithCriteria",
       "line": 42,
@@ -383,7 +383,7 @@
     },
     {
       "timestamp": "2025-12-28T07:44:31.272Z",
-      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DocumentStore.ts",
       "originalImport": "@/core/models/data/StatusType",
       "newImport": "@/core/documents/DocumentOptions",
       "line": 12,

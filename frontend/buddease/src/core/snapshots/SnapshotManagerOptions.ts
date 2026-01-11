@@ -1,7 +1,7 @@
 // SnapshotManagerOptions.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { subscribeToSnapshot, subscribeToSnapshots } from "@/core/snapshots/index";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotStoreOptions } from "@/core/snapshots/SnapshotStoreOptions";

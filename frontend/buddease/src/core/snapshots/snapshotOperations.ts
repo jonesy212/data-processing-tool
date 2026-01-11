@@ -1,5 +1,5 @@
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 // snapshotOperations.ts
+import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotOperation } from '@/core/actions/SnapshotActions';
 import { snapshotApi } from '@/core/api/SnapshotApi';
 import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -24,7 +24,8 @@ import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { InitializedData, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
-import { data, SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import { data } from '@/core/snapshots/SnapshotWithCriteria';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import type { InitializedState } from '@/core/state/stores/DataStore';

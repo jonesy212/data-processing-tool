@@ -4,10 +4,10 @@ import { Category } from '@/core/libraries/categories/generateCategoryProperties
 import { BaseData } from '@/core/models/data/Data';
 import { NotificationPosition } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { EventManagement } from '@/core/snapshots/SnapshotEvents';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 

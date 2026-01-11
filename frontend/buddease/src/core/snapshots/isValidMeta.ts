@@ -1,8 +1,8 @@
 // isValidMeta.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { SchemaField } from '@/core/config/metadata/SchemaField';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { version } from '@/core/versions/Version';
 /**
  * Function to validate if a given metadata object is valid.

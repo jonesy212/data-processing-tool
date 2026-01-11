@@ -24,7 +24,7 @@ import type { InitializedData, SnapshotInstanceProps } from '@/core/snapshots/Sn
 import { storeProps } from "@/core/snapshots/SnapshotStoreProps";
 import type { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";
 import type { DataStore, InitializedState, initializeState } from '@/core/state/stores/DataStore';
-import { useDataStore } from '@/core/state/stores/DataStore';
+import type { useDataStore } from '@/core/state/stores/DataStore';
 import type { SubscribeResult } from '@/core/subscribers/Subscriber';
 import type { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
 import { subscribeToSnapshotImpl } from "@/core/subscribers/subscribeToSnapshotsImplementation";

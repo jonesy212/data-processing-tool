@@ -1,6 +1,6 @@
 // DocumentBuilderEntity.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 export type DocumentBuilderEntity = BaseDataEntity;
 export type DocumentBuilderK = DocumentBuilderEntity;

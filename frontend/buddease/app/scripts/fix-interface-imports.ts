@@ -4,26 +4,92 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import type { FixResult,
+  
+ } from '@/app/scripts/import-utils'
+import  { 
+  shouldBeTypeImport, 
+  fixImportStatement, 
+  findInterfaceExports,
+  createBackup, 
+  groupFixesByFile, 
+  sortFixesDescending, 
+  getContextTips,
+  applyFixes as applyFixesShared ,
+ } from '@/app/scripts/import-utils'
 
-interface FixResult {
-  file: string;
-  original: string;
-  fixed: string;
-  success: boolean;
-  line?: number;
+
+ function escapeForShell(str: string): string {
+  return str
+    .replace(/\$/g, '\\$')
+    .replace(/`/g, '\\`')
+    .replace(/\"/g, '\\"')
+    .replace(/\'/g, "\\'")
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]')
+    .replace(/\{/g, '\\{')
+    .replace(/\}/g, '\\}');
 }
 
-
+function escapeForGrep(str: string): string {
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)')
+    .replace(/\$/g, '\\$')
+    .replace(/\./g, '\\.')
+    .replace(/\*/g, '\\*')
+    .replace(/\?/g, '\\?')
+    .replace(/\{/g, '\\{')
+    .replace(/\}/g, '\\}');
+}
 
 async function focusOnTarget(target: string) {
   console.log(`🎯 Focusing on: ${target}\n`);
   
-  // Check if target exists
-  const fullPath = path.resolve(process.cwd(), target);
+  // Check if target exists as given
+  let fullPath = path.resolve(process.cwd(), target);
+  
+  if (!fs.existsSync(fullPath)) {
+    // Try to find it in src directory
+    const possiblePaths = [
+      path.resolve(process.cwd(), 'src', target),
+      path.resolve(process.cwd(), 'src', target + '.ts'),
+      path.resolve(process.cwd(), 'src', target + '.tsx'),
+      path.resolve(process.cwd(), target + '.ts'),
+      path.resolve(process.cwd(), target + '.tsx'),
+    ];
+    
+    // Search recursively in src directory
+    const findCmd = `find src/ -name "${target}*" -type f 2>/dev/null | head -5`;
+    try {
+      const foundFiles = execSync(findCmd, { encoding: 'utf8' })
+        .split('\n')
+        .filter(f => f.trim() && (f.endsWith('.ts') || f.endsWith('.tsx')));
+      
+      if (foundFiles.length > 0) {
+        console.log(`🔍 Found ${foundFiles.length} possible matches:`);
+        foundFiles.forEach((file, i) => {
+          console.log(`   ${i + 1}. ${file}`);
+        });
+        
+        // Use the first match
+        fullPath = path.resolve(process.cwd(), foundFiles[0]);
+        console.log(`\n📁 Using: ${foundFiles[0]}`);
+      }
+    } catch (error) {
+      // Continue with original path
+    }
+  }
   
   if (!fs.existsSync(fullPath)) {
     console.error(`❌ Target not found: ${target}`);
     console.log(`   Searched at: ${fullPath}`);
+    console.log(`💡 Try using a relative path like: src/core/state/stores/CommonEvent.ts`);
     return;
   }
   
@@ -32,7 +98,7 @@ async function focusOnTarget(target: string) {
   if (stats.isDirectory()) {
     await analyzeDirectory(target);
   } else if (stats.isFile()) {
-    await analyzeFile(target);
+    await analyzeFile(fullPath);
   } else {
     console.error(`❌ Target is neither file nor directory: ${target}`);
   }
@@ -71,92 +137,13 @@ async function fixAllInterfaceImports() {
     
     if (confirmed) {
       console.log('\n🔧 Applying fixes...');
-      applyFixes(allFixes);
+      applyFixesShared(allFixes);
     } else {
       console.log('\n❌ Cancelled');
     }
   } else {
     console.log('\n✅ No interface import fixes needed!');
   }
-}
-
-function findInterfaceExports(): Array<{file: string; interfaces: string[]}> {
-  const result: Array<{file: string; interfaces: string[]}> = [];
-  
-  // Use Node.js to find files instead of shell command for better portability
-  function findTypeScriptFiles(dir: string): string[] {
-    const files: string[] = [];
-    
-    try {
-      const items = fs.readdirSync(dir);
-      
-      for (const item of items) {
-        const fullPath = path.join(dir, item);
-        
-        try {
-          const stat = fs.statSync(fullPath);
-          
-          if (stat.isDirectory() && item !== 'node_modules' && !item.startsWith('.')) {
-            files.push(...findTypeScriptFiles(fullPath));
-          } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
-            files.push(fullPath);
-          }
-        } catch (error) {
-          // Skip files we can't access
-        }
-      }
-    } catch (error) {
-      // Skip directories we can't access
-    }
-    
-    return files;
-  }
-  
-  const srcDir = path.join(process.cwd(), 'src');
-  const files = fs.existsSync(srcDir) 
-    ? findTypeScriptFiles(srcDir)
-    : findTypeScriptFiles(process.cwd());
-  
-  console.log(`📁 Scanning ${files.length} TypeScript files...`);
-  
-  for (const file of files) {
-    try {
-      const content = fs.readFileSync(file, 'utf8');
-      const interfaces: string[] = [];
-      
-      // Find interface exports
-      const interfaceRegex = /export\s+(?:type\s+)?interface\s+(\w+)/g;
-      let match;
-      while ((match = interfaceRegex.exec(content)) !== null) {
-        interfaces.push(match[1]);
-      }
-      
-      // Find type exports
-      const typeRegex = /export\s+type\s+(\w+)(?:\s*=\s*[^;]+)?;/g;
-      while ((match = typeRegex.exec(content)) !== null) {
-        interfaces.push(match[1]);
-      }
-      
-      // Find export type { ... } statements
-      const typeExportRegex = /export\s+type\s*\{([^}]+)\}/g;
-      while ((match = typeExportRegex.exec(content)) !== null) {
-        const types = match[1].split(',').map(t => t.trim()).filter(Boolean);
-        interfaces.push(...types);
-      }
-      
-      if (interfaces.length > 0) {
-        const relativePath = path.relative(process.cwd(), file);
-        result.push({
-          file: relativePath,
-          interfaces: [...new Set(interfaces)] // Remove duplicates
-        });
-      }
-    } catch (error) {
-      // Skip files that can't be read
-    }
-  }
-  
-  return result;
 }
 
 
@@ -167,54 +154,66 @@ async function findAndFixInterfaceImports(interfaceFile: {file: string; interfac
   for (const interfaceName of interfaceFile.interfaces) {
     console.log(`   Checking ${interfaceName} from ${fileName}`);
     
-    // Find all imports of this interface
-    const findCmd = `grep -rn "import.*${interfaceName}.*from.*${fileName}" src/ --include="*.ts" --include="*.tsx" || true`;
-    const output = execSync(findCmd, { encoding: 'utf8' });
+    // Skip problematic interface names
+    if (interfaceName.includes('${')) {
+      console.log(`   ⚠️  Skipping ${interfaceName} - contains shell expansion characters`);
+      continue;
+    }
     
-    const importLines = output.split('\n').filter(line => {
-      const trimmed = line.trim();
-      return trimmed && 
-             trimmed.includes('import') && 
-             trimmed.includes(interfaceName) &&
-             !trimmed.includes('import type'); // Skip already fixed
-    });
+    // Escape the interface name
+    const escapedInterfaceName = escapeForShell(interfaceName);
+    const escapedFileName = escapeForShell(fileName);
     
-    for (const importLine of importLines) {
-      // Better regex to extract file path, line number, and content
-      const match = importLine.match(/^(.*?):(\d+):(.*)$/);
-      
-      if (!match) continue;
-      
-      const [, filePath, lineNumStr, originalImport] = match;
-      const lineNum = parseInt(lineNumStr) || 1;
-      
-      if (!filePath || !originalImport) continue;
-      
-      // Create the fixed import
-      let fixedImport = originalImport;
-      if (originalImport.startsWith('import {') || originalImport.startsWith('import {')) {
-        fixedImport = originalImport.replace('import {', 'import type {');
-      } else if (originalImport.startsWith(`import ${interfaceName} from`)) {
-        // Default import - can't use import type with default imports
-        console.log(`   ⚠️  ${interfaceName} has default import - manual check needed in ${filePath}`);
-        continue;
-      }
-      
-      fixes.push({
-        file: filePath,
-        original: originalImport.trim(),
-        fixed: fixedImport.trim(),
-        success: true,
-        line: lineNum
+    // Use a simpler, more reliable approach
+    const findCmd = `grep -rn "import.*from.*${escapedFileName}" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "import type" | grep "${escapedInterfaceName}" || true`;
+    
+    try {
+      const output = execSync(findCmd, { encoding: 'utf8' });
+      const importLines = output.split('\n').filter(line => {
+        const trimmed = line.trim();
+        return trimmed && 
+               trimmed.includes('import') && 
+               trimmed.includes(interfaceName) &&
+               !trimmed.includes('import type');
       });
       
-      console.log(`     - ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
+      for (const importLine of importLines) {
+        const match = importLine.match(/^(.*?):(\d+):(.*)$/);
+        if (!match) continue;
+        
+        const [, filePath, lineNumStr, originalImport] = match;
+        const lineNum = parseInt(lineNumStr) || 1;
+        
+        if (!filePath || !originalImport) continue;
+        
+        // Create the fixed import
+        let fixedImport = originalImport;
+        if (originalImport.startsWith('import {')) {
+          fixedImport = originalImport.replace('import {', 'import type {');
+        } else if (originalImport.startsWith(`import ${interfaceName} from`)) {
+          console.log(`   ⚠️  ${interfaceName} has default import - manual check needed in ${filePath}`);
+          continue;
+        }
+        
+        fixes.push({
+          file: filePath,
+          original: originalImport.trim(),
+          fixed: fixedImport.trim(),
+          success: true,
+          line: lineNum
+        });
+        
+        console.log(`     - ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
+      }
+    } catch (error: any) {
+      if (error.status !== 1) {
+        console.warn(`   Warning: Error searching for ${interfaceName}:`, error.message);
+      }
     }
   }
   
   return fixes;
 }
-
 
 // Also add a quick fix for DataStore specifically
 async function quickFixDataStore() {
@@ -256,7 +255,7 @@ async function quickFixDataStore() {
     const confirmed = await promptConfirmation();
     
     if (confirmed) {
-      applyFixes(fixes);
+      applyFixesShared(fixes);
     }
   }
 }
@@ -457,49 +456,112 @@ async function scanInterfaceImports(generateReport: boolean = false) {
   console.log('🔍 Scanning for interface import issues...\n');
   
   const interfaceFiles = findInterfaceExports();
+  console.log(`📊 Found ${interfaceFiles.length} interface files to scan\n`);
+  
   const issues: Array<{interface: string; file: string; count: number; examples: string[]}> = [];
   const allChanges: Array<{interface: string; fromFile: string; importFile: string; line: number; original: string}> = [];
   
-  for (const interfaceFile of interfaceFiles) {
-    const fileName = path.basename(interfaceFile.file, path.extname(interfaceFile.file));
+  let processedFiles = 0;
+  const totalFiles = interfaceFiles.length;
+  
+  // Process in batches to show progress
+  const BATCH_SIZE = 10;
+  
+  for (let i = 0; i < interfaceFiles.length; i += BATCH_SIZE) {
+    const batch = interfaceFiles.slice(i, i + BATCH_SIZE);
+    processedFiles += batch.length;
     
-    for (const interfaceName of interfaceFile.interfaces) {
-      const findCmd = `grep -rn "import.*${interfaceName}.*from.*['\"]${fileName}['\"]" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" || true`;
-      const output = execSync(findCmd, { encoding: 'utf8' });
+    console.log(`📈 Progress: ${processedFiles}/${totalFiles} files (${Math.round(processedFiles/totalFiles*100)}%)`);
+    
+    for (const interfaceFile of batch) {
+      const fileName = path.basename(interfaceFile.file, path.extname(interfaceFile.file));
       
-      const importLines = output.split('\n').filter(Boolean);
-      const count = importLines.length;
+      // Skip problematic files
+      if (fileName.includes('$') || fileName.includes('{') || fileName.includes('}')) {
+        console.log(`   ⏭️  Skipping problematic filename: ${fileName}`);
+        continue;
+      }
       
-      if (count > 0) {
-        const examples = importLines.slice(0, 3); // Keep first 3 as examples
+      // Only check first 3 interfaces per file to speed up
+      const interfacesToCheck = interfaceFile.interfaces.slice(0, 3);
+      
+      for (const interfaceName of interfacesToCheck) {
+        // Skip problematic interface names
+        if (interfaceName.includes('$') || interfaceName.includes('{') || interfaceName.includes('}')) {
+          continue;
+        }
         
-        issues.push({
-          interface: interfaceName,
-          file: fileName,
-          count,
-          examples
-        });
-        
-        // Collect details
-        for (const importLine of importLines) {
-          const [filePath, lineNumStr, ...rest] = importLine.split(':');
-          const lineNum = parseInt(lineNumStr) || 1;
-          const originalImport = rest.join(':').trim();
-          
-          allChanges.push({
-            interface: interfaceName,
-            fromFile: fileName,
-            importFile: filePath,
-            line: lineNum,
-            original: originalImport
+        // Use a simpler approach: first find files that import from this file
+        try {
+          // Step 1: Find files that import from this filename
+          const findImportsFromFile = `grep -l "from.*${fileName}" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | head -10 || true`;
+          const filesOutput = execSync(findImportsFromFile, { 
+            encoding: 'utf8',
+            timeout: 2000 // 2 second timeout
           });
+          
+          const files = filesOutput.split('\n').filter(Boolean);
+          
+          if (files.length === 0) continue;
+          
+          let count = 0;
+          const importLines: string[] = [];
+          
+          // Step 2: Check each file for this specific interface
+          for (const file of files) {
+            try {
+              const checkCmd = `grep -n "import.*${interfaceName}.*from" "${file}" 2>/dev/null | grep -v "import type" || true`;
+              const importsOutput = execSync(checkCmd, { 
+                encoding: 'utf8',
+                timeout: 1000 // 1 second timeout
+              });
+              
+              const lines = importsOutput.split('\n').filter(Boolean);
+              if (lines.length > 0) {
+                count += lines.length;
+                importLines.push(...lines.map(line => `${file}:${line}`));
+              }
+            } catch (error) {
+              // Skip file on error
+              continue;
+            }
+          }
+          
+          if (count > 0) {
+            const examples = importLines.slice(0, 3);
+            
+            issues.push({
+              interface: interfaceName,
+              file: fileName,
+              count,
+              examples
+            });
+            
+            // Collect details
+            for (const importLine of importLines) {
+              const [filePath, lineNumStr, ...rest] = importLine.split(':');
+              const lineNum = parseInt(lineNumStr) || 1;
+              const originalImport = rest.join(':').trim();
+              
+              allChanges.push({
+                interface: interfaceName,
+                fromFile: fileName,
+                importFile: filePath,
+                line: lineNum,
+                original: originalImport
+              });
+            }
+          }
+        } catch (error: any) {
+          // Skip on error
+          continue;
         }
       }
     }
   }
   
   if (generateReport) {
-    console.log('📊 INTERFACE IMPORT REPORT');
+    console.log('\n📊 INTERFACE IMPORT REPORT');
     console.log('========================\n');
     
     if (issues.length === 0) {
@@ -511,7 +573,8 @@ async function scanInterfaceImports(generateReport: boolean = false) {
     issues.sort((a, b) => b.count - a.count);
     
     console.log('Top issues needing fixes:');
-    issues.slice(0, 20).forEach((issue, index) => {
+    const displayCount = Math.min(issues.length, 20);
+    issues.slice(0, displayCount).forEach((issue, index) => {
       console.log(`${index + 1}. ${issue.interface} from ${issue.file}: ${issue.count} imports need "import type"`);
       if (issue.examples.length > 0) {
         console.log(`   Examples:`);
@@ -536,9 +599,10 @@ async function scanInterfaceImports(generateReport: boolean = false) {
     
     let reportContent = `# Interface Import Scan Report\n\n`;
     reportContent += `**Generated:** ${new Date().toISOString()}\n`;
-    reportContent += `**Total interface files:** ${interfaceFiles.length}\n`;
+    reportContent += `**Total interface files scanned:** ${interfaceFiles.length}\n`;
     reportContent += `**Interfaces needing fixes:** ${issues.length}\n`;
     reportContent += `**Total imports to fix:** ${total}\n\n`;
+    reportContent += `> **Note:** Scan limited to first 3 interfaces per file and first 10 importing files for performance.\n\n`;
     
     // Full list sorted by count
     reportContent += `## All Issues (sorted by frequency)\n\n`;
@@ -573,7 +637,8 @@ async function scanInterfaceImports(generateReport: boolean = false) {
     const filesByFixCount = Object.entries(fixesByFile)
       .sort(([, changesA], [, changesB]) => changesB.length - changesA.length);
     
-    filesByFixCount.slice(0, 10).forEach(([filePath, changes], index) => {
+    const topFiles = Math.min(filesByFixCount.length, 10);
+    filesByFixCount.slice(0, topFiles).forEach(([filePath, changes], index) => {
       const relativePath = path.relative(process.cwd(), filePath);
       actionContent += `### ${index + 1}. ${relativePath} (${changes.length} fixes)\n\n`;
       
@@ -605,68 +670,196 @@ async function scanInterfaceImports(generateReport: boolean = false) {
 
 async function interactiveFixInterfaceImports(args: string[]) {
   console.log('🎯 INTERACTIVE MODE\n');
+  console.log('⚠️  This mode shows you each interface found and lets you decide which to fix.\n');
   
+  // Get all interface files with progress
+  console.log('🔍 Finding interface files...');
   const interfaceFiles = findInterfaceExports();
+  console.log(`✅ Found ${interfaceFiles.length} files with interface exports\n`);
+  
   let totalFixed = 0;
+  let totalSkipped = 0;
+  let totalNoImports = 0;
+  let currentFileIndex = 0;
+  
+  // Update the prompt function to include 'exit'
+  async function promptContinue(): Promise<'y' | 'n' | 'exit'> {
+    return new Promise((resolve) => {
+      const stdin = process.stdin;
+      stdin.setEncoding('utf8');
+      
+      process.stdout.write(`\n📄 Continue to next file? (${currentFileIndex + 1}/${interfaceFiles.length}) (y/n/exit): `);
+      
+      stdin.once('data', (key) => {
+        const answer = key.toString().toLowerCase().trim();
+        if (answer === 'y' || answer === 'yes') {
+          resolve('y');
+        } else if (answer === 'exit' || answer === 'quit' || answer === 'q') {
+          resolve('exit');
+        } else {
+          resolve('n');
+        }
+        stdin.pause();
+      });
+    });
+  }
   
   for (const interfaceFile of interfaceFiles) {
+    currentFileIndex++;
     const fileName = path.basename(interfaceFile.file, path.extname(interfaceFile.file));
+    const relativePath = path.relative(process.cwd(), interfaceFile.file);
     
-    for (const interfaceName of interfaceFile.interfaces) {
-      const findCmd = `grep -rn "import.*${interfaceName}.*from.*${fileName}" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" || true`;
-      const output = execSync(findCmd, { encoding: 'utf8' });
+    console.log(`\n📁 File ${currentFileIndex}/${interfaceFiles.length}: ${fileName}`);
+    console.log(`   📍 Source: ${relativePath}`);
+    console.log(`   📊 Exports ${interfaceFile.interfaces.length} interfaces: ${interfaceFile.interfaces.slice(0, 3).join(', ')}${interfaceFile.interfaces.length > 3 ? `... (+${interfaceFile.interfaces.length - 3} more)` : ''}`);
+    
+    let fileFixed = 0;
+    let interfaceIndex = 0;
+    
+    // Limit to first 5 interfaces per file to keep it manageable
+    const interfacesToCheck = interfaceFile.interfaces.slice(0, 5);
+    
+    for (const interfaceName of interfacesToCheck) {
+      interfaceIndex++;
+      console.log(`\n   🔍 [${interfaceIndex}/${interfacesToCheck.length}] Checking ${interfaceName}...`);
       
-      const imports = output.split('\n').filter(Boolean);
-      if (imports.length === 0) continue;
-      
-      console.log(`\n📄 ${interfaceName} (${fileName}):`);
-      console.log(`   Found ${imports.length} imports to fix`);
-      
-      console.log('\n   Examples:');
-      imports.slice(0, 3).forEach(importLine => {
-        const [filePath] = importLine.split(':');
-        console.log(`   - ${path.basename(filePath)}`);
-      });
-      
-      const confirmed = await promptConfirmationWithMessage(`Fix ${imports.length} imports of ${interfaceName}? (y/n/skip): `);
-      
-      if (confirmed === 'y') {
-        // Apply fixes for this interface
-        const fixes: FixResult[] = [];
+      try {
+        // Use a faster, more targeted search
+        const findCmd = `grep -l "import.*${interfaceName}.*from.*${fileName}" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | head -10 || true`;
+        const filesOutput = execSync(findCmd, { 
+          encoding: 'utf8',
+          timeout: 2000 // 2 second timeout
+        });
         
-        for (const importLine of imports) {
-          const [filePath, ...rest] = importLine.split(':');
-          const originalImport = rest.join(':').replace(/^\d+:/, '').trim();
-          
-          if (originalImport.includes('import {') && originalImport.includes(interfaceName)) {
-            const fixedImport = originalImport.replace('import {', 'import type {');
-            
-            fixes.push({
-              file: filePath,
-              original: originalImport,
-              fixed: fixedImport,
-              success: true
+        const files = filesOutput.split('\n').filter(Boolean);
+        
+        if (files.length === 0) {
+          console.log(`      ✅ No imports found for ${interfaceName}`);
+          totalNoImports++;
+          continue;
+        }
+        
+        console.log(`      📊 Found ${files.length} file(s) importing ${interfaceName}`);
+        
+        // Collect actual import lines
+        let importLines: string[] = [];
+        let nonTypeImportCount = 0;
+        
+        for (const file of files) {
+          try {
+            const checkCmd = `grep -n "import.*${interfaceName}" "${file}" 2>/dev/null | grep -v "import type" || true`;
+            const importsOutput = execSync(checkCmd, { 
+              encoding: 'utf8',
+              timeout: 1000 
             });
+            
+            const lines = importsOutput.split('\n').filter(Boolean);
+            if (lines.length > 0) {
+              nonTypeImportCount += lines.length;
+              importLines.push(...lines.map(line => `${file}:${line}`));
+            }
+          } catch {
+            // Skip this file
           }
         }
         
-        if (fixes.length > 0) {
-          applyFixes(fixes);
-          totalFixed += fixes.length;
+        if (nonTypeImportCount === 0) {
+          console.log(`      ✅ All imports already use "import type"`);
+          continue;
         }
-      } else if (confirmed === 'skip') {
-        console.log(`   Skipped ${interfaceName}`);
+        
+        console.log(`      ❌ Found ${nonTypeImportCount} import(s) that need "import type"`);
+        
+        // Show examples
+        if (importLines.length > 0) {
+          console.log(`      📝 Examples:`);
+          importLines.slice(0, 2).forEach(line => {
+            const [filePath, lineNum, importText] = line.split(':');
+            const truncatedImport = importText.length > 50 ? importText.substring(0, 50) + '...' : importText;
+            console.log(`        - ${path.basename(filePath)}:${lineNum}: ${truncatedImport}`);
+          });
+          
+          if (importLines.length > 2) {
+            console.log(`        ... and ${importLines.length - 2} more`);
+          }
+        }
+        
+        const confirmed = await promptConfirmationWithMessage(
+          `\n      🚀 Fix ${nonTypeImportCount} import(s) of ${interfaceName}? (y/n/skip): `
+        );
+        
+        if (confirmed === 'y') {
+          // Apply fixes for this interface
+          const fixes: FixResult[] = [];
+          
+          for (const importLine of importLines) {
+            const [filePath, lineNumStr, ...rest] = importLine.split(':');
+            const lineNum = parseInt(lineNumStr) || 1;
+            const originalImport = rest.join(':').trim();
+            
+            if (originalImport.includes('import {') && originalImport.includes(interfaceName)) {
+              const fixedImport = originalImport.replace('import {', 'import type {');
+              
+              fixes.push({
+                file: filePath,
+                original: originalImport,
+                fixed: fixedImport,
+                success: true,
+                line: lineNum
+              });
+            }
+          }
+          
+          if (fixes.length > 0) {
+            await applyFixesShared(fixes);
+            fileFixed += fixes.length;
+            totalFixed += fixes.length;
+            console.log(`      ✅ Fixed ${fixes.length} import(s) of ${interfaceName}`);
+          }
+        } else if (confirmed === 'skip') {
+          console.log(`      ⏭️  Skipped ${interfaceName}`);
+          totalSkipped++;
+        } else {
+          console.log(`      ❌ Cancelled ${interfaceName}`);
+        }
+        
+      } catch (error: any) {
+        console.log(`      ⚠️  Error checking ${interfaceName}: ${error.message}`);
+        continue;
       }
+    }
+    
+    if (fileFixed > 0) {
+      console.log(`   🎉 Fixed ${fileFixed} import(s) in this file`);
+    }
+    
+    // Ask if user wants to continue after each file
+    if (currentFileIndex < interfaceFiles.length) {
+      const continueResponse = await promptContinue();
+      
+      if (continueResponse === 'exit') {
+        console.log('\n👋 Exiting interactive mode');
+        break;
+      } else if (continueResponse === 'n') {
+        console.log('\n👋 Stopping at user request');
+        break;
+      }
+      // If 'y', continue loop
     }
   }
   
-  console.log(`\n🎯 Total fixed: ${totalFixed} imports`);
+  console.log(`\n📊 INTERACTIVE MODE COMPLETE:`);
+  console.log(`   ✅ Fixed: ${totalFixed} import(s)`);
+  console.log(`   ⏭️  Skipped: ${totalSkipped} interface(s)`);
+  console.log(`   📭 No imports: ${totalNoImports} interface(s)`);
+  console.log(`   📁 Files processed: ${Math.min(currentFileIndex, interfaceFiles.length)}/${interfaceFiles.length}`);
 }
 
 async function safeFixInterfaceImports(args: string[]) {
   console.log('🛡️  SAFE MODE - Only fixing high-confidence interface imports\n');
+  console.log('🔍 Scanning for known type-only patterns...\n');
   
-  // Only fix interfaces that are definitely types (common patterns)
+  // Expanded list of high-confidence type patterns
   const HIGH_CONFIDENCE_PATTERNS = [
     'DataStore',
     'Snapshot',
@@ -674,48 +867,152 @@ async function safeFixInterfaceImports(args: string[]) {
     'ExecutionContext',
     'MilestoneDefinition',
     'EntityAnalysis',
-    'WorkflowTransition'
+    'WorkflowTransition',
+    'BaseEntity',
+    'UserEntity',
+    'Config',
+    'Props',
+    'State',
+    'Options',
+    'Metadata',
+    'Payload',
+    'Event',
+    'Type',
+    'Interface',
+    'Entity',
+    'Store',
+    'Manager',
+    'Handler'
   ];
   
   const interfaceFiles = findInterfaceExports();
+  console.log(`📊 Found ${interfaceFiles.length} interface files\n`);
+  
   const allFixes: FixResult[] = [];
+  let filesScanned = 0;
+  
+  // First, show what we're looking for
+  console.log('🔎 Looking for these patterns:');
+  HIGH_CONFIDENCE_PATTERNS.slice(0, 10).forEach(pattern => {
+    console.log(`   - ${pattern}`);
+  });
+  if (HIGH_CONFIDENCE_PATTERNS.length > 10) {
+    console.log(`   ... and ${HIGH_CONFIDENCE_PATTERNS.length - 10} more`);
+  }
+  console.log('');
   
   for (const interfaceFile of interfaceFiles) {
+    filesScanned++;
+    const fileName = path.basename(interfaceFile.file, path.extname(interfaceFile.file));
+    
+    // Show progress every 20 files
+    if (filesScanned % 20 === 0) {
+      console.log(`📈 Progress: ${filesScanned}/${interfaceFiles.length} files`);
+    }
+    
     for (const interfaceName of interfaceFile.interfaces) {
-      if (HIGH_CONFIDENCE_PATTERNS.some(pattern => interfaceName.includes(pattern))) {
-        console.log(`🔧 High confidence: ${interfaceName}`);
+      // Check if this interface matches any high-confidence pattern
+      const isHighConfidence = HIGH_CONFIDENCE_PATTERNS.some(pattern => 
+        interfaceName.includes(pattern) || 
+        interfaceName.endsWith(pattern) ||
+        new RegExp(`^${pattern}[A-Z]`).test(interfaceName)
+      );
+      
+      if (!isHighConfidence) continue;
+      
+      console.log(`🔧 Found high-confidence interface: ${interfaceName} (from ${fileName})`);
+      
+      try {
+        // Use more efficient search
+        const findCmd = `grep -l "import.*${interfaceName}" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | head -20 || true`;
+        const filesOutput = execSync(findCmd, { 
+          encoding: 'utf8',
+          timeout: 2000 
+        });
         
-        const findCmd = `grep -rn "import.*${interfaceName}.*from" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" || true`;
-        const output = execSync(findCmd, { encoding: 'utf8' });
+        const files = filesOutput.split('\n').filter(Boolean);
         
-        const importLines = output.split('\n').filter(Boolean);
+        if (files.length === 0) {
+          console.log(`   ⏭️  No imports found for ${interfaceName}`);
+          continue;
+        }
         
-        for (const importLine of importLines) {
-          const [filePath, ...rest] = importLine.split(':');
-          const originalImport = rest.join(':').replace(/^\d+:/, '').trim();
-          
-          if (originalImport.includes('import {') && originalImport.includes(interfaceName)) {
-            const fixedImport = originalImport.replace('import {', 'import type {');
-            
-            allFixes.push({
-              file: filePath,
-              original: originalImport,
-              fixed: fixedImport,
-              success: true
+        console.log(`   📊 Found ${files.length} file(s) importing ${interfaceName}`);
+        
+        // Check each file
+        for (const file of files) {
+          try {
+            const checkCmd = `grep -n "import.*${interfaceName}.*from" "${file}" 2>/dev/null | grep -v "import type" || true`;
+            const importsOutput = execSync(checkCmd, { 
+              encoding: 'utf8',
+              timeout: 1000 
             });
+            
+            const importLines = importsOutput.split('\n').filter(Boolean);
+            
+            for (const importLine of importLines) {
+              const [filePath, lineNumStr, ...rest] = importLine.split(':');
+              const lineNum = parseInt(lineNumStr) || 1;
+              const originalImport = rest.join(':').trim();
+              
+              if (originalImport.includes('import {') && originalImport.includes(interfaceName)) {
+                const fixedImport = originalImport.replace('import {', 'import type {');
+                
+                allFixes.push({
+                  file: filePath,
+                  original: originalImport,
+                  fixed: fixedImport,
+                  success: true,
+                  line: lineNum
+                });
+                
+                console.log(`      ✅ Will fix: ${path.basename(filePath)}:${lineNum}`);
+              }
+            }
+          } catch {
+            // Skip file on error
+            continue;
           }
         }
+        
+      } catch (error: any) {
+        console.log(`   ⚠️  Error checking ${interfaceName}: ${error.message}`);
+        continue;
       }
     }
   }
   
   if (allFixes.length > 0) {
-    console.log(`\n📋 Found ${allFixes.length} high-confidence fixes`);
-    console.log('\n🚀 Apply safe fixes? (y/n)');
+    console.log(`\n📋 SAFE MODE RESULTS:`);
+    console.log(`   Found ${allFixes.length} high-confidence fixes across ${new Set(allFixes.map(f => f.file)).size} files`);
+    
+    // Group fixes by file for summary
+    const fixesByFile: Record<string, FixResult[]> = {};
+    allFixes.forEach(fix => {
+      if (!fixesByFile[fix.file]) {
+        fixesByFile[fix.file] = [];
+      }
+      fixesByFile[fix.file].push(fix);
+    });
+    
+    console.log('\n📝 Files that will be modified:');
+    Object.entries(fixesByFile).slice(0, 10).forEach(([filePath, fixes]) => {
+      console.log(`   - ${path.basename(filePath)}: ${fixes.length} fix(es)`);
+    });
+    
+    if (Object.keys(fixesByFile).length > 10) {
+      console.log(`   ... and ${Object.keys(fixesByFile).length - 10} more files`);
+    }
+    
+    console.log('\n🚀 Apply these safe fixes? (y/n)');
     const confirmed = await promptConfirmation();
     
     if (confirmed) {
-      applyFixes(allFixes);
+      console.log('\n🔧 Applying safe fixes...');
+      await applyFixesShared(allFixes);
+      console.log('✅ Safe fixes applied successfully!');
+    } else {
+      console.log('\n❌ Safe fixes cancelled');
     }
   } else {
     console.log('\n✅ No high-confidence interface imports need fixing');
@@ -762,7 +1059,7 @@ async function analyzeDirectory(dirPath: string) {
   
   // Analyze each file
   for (const file of files.slice(0, 20)) { // Limit to first 20 files
-    await analyzeFile(file, true);
+    await analyzeFile(file, false);
   }
   
   if (files.length > 20) {
@@ -971,49 +1268,37 @@ async function applyFixes(fixes: FixResult[]) {
   let applied = 0;
   let failed = 0;
   
-  // Group by file for batch processing
-  const fixesByFile = new Map<string, FixResult[]>();
-  fixes.forEach(fix => {
-    if (!fixesByFile.has(fix.file)) {
-      fixesByFile.set(fix.file, []);
-    }
-    fixesByFile.get(fix.file)!.push(fix);
-  });
+  // Use shared helper
+  const fixesByFile = groupFixesByFile(fixes);
   
   for (const [filePath, fileFixes] of fixesByFile) {
     try {
-      // Create backup
-      const backupPath = `${filePath}.backup-${Date.now()}`;
-      const content = fs.readFileSync(filePath, 'utf8');
-      fs.writeFileSync(backupPath, content, 'utf8');
+      // Use shared helper
+      const backupPath = createBackup(filePath);
       console.log(`💾 Backup created: ${backupPath}`);
       
-      // Apply fixes
+      const content = fs.readFileSync(filePath, 'utf8');
       const lines = content.split('\n');
       
-      // Sort fixes by line number (descending) to avoid line number shifting
-      const sortedFixes = [...fileFixes].sort((a, b) => (b.line || 0) - (a.line || 0));
+      // Use shared helper
+      const sortedFixes = sortFixesDescending(fileFixes);
       
+      // KEEP ALL THE ORIGINAL LOGIC - it's specific to this script
       for (const fix of sortedFixes) {
-        // Try to find the line if line number is not provided or invalid
         let lineIndex = (fix.line || 1) - 1;
         
-        // If line number is not provided or out of bounds, search for the import
         if (lineIndex < 0 || lineIndex >= lines.length || !lines[lineIndex].includes(fix.original)) {
-          // Search for the import in the file
           lineIndex = lines.findIndex(line => 
             line.includes(fix.original) && 
-            !line.includes('import type') // Ensure we don't match already fixed imports
+            !line.includes('import type')
           );
           
           if (lineIndex === -1) {
-            // Try a more flexible search - just look for the import statement pattern
             const importMatch = fix.original.match(/import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/);
             if (importMatch) {
               const [, importNames, sourcePath] = importMatch;
               const importNamesList = importNames.split(',').map(name => name.trim());
               
-              // Search for any line containing all the import names and source path
               lineIndex = lines.findIndex(line => {
                 if (line.includes('import type')) return false;
                 if (!line.includes(sourcePath)) return false;
@@ -1024,14 +1309,11 @@ async function applyFixes(fixes: FixResult[]) {
         }
         
         if (lineIndex >= 0 && lineIndex < lines.length) {
-          // Check if this line needs fixing (not already fixed)
           if (lines[lineIndex].includes(fix.original) && !lines[lineIndex].includes('import type')) {
-            // Replace the original import with the fixed one
             lines[lineIndex] = lines[lineIndex].replace(fix.original, fix.fixed);
             applied++;
             console.log(`✅ Fixed: ${path.basename(filePath)}:${lineIndex + 1} (${fix.original} → ${fix.fixed})`);
           } else if (lines[lineIndex].includes('import type')) {
-            // Already fixed - skip
             console.log(`⏭️  Skipped: ${path.basename(filePath)}:${lineIndex + 1} (already using import type)`);
           } else {
             console.warn(`⚠️  Line ${lineIndex + 1} in ${filePath} doesn't match expected content`);
@@ -1045,7 +1327,6 @@ async function applyFixes(fixes: FixResult[]) {
         }
       }
       
-      // Write changes
       fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
       
     } catch (error) {
@@ -1059,7 +1340,7 @@ async function applyFixes(fixes: FixResult[]) {
   console.log(`❌ Failed: ${failed} fixes`);
   
   if (failed > 0) {
-    console.log(`\n💡 Tip: Try running 'pnpm fix:types:safe' which uses AST-based parsing instead of grep`);
+    console.log(`\n💡 ${getContextTips('interface')}`);
   }
 }
 
@@ -1162,100 +1443,7 @@ async function promptConfirmation(question: string = 'Apply these fixes?'): Prom
 }
 
 
-// Helper function to detect if an import should be type-only
-function shouldBeTypeImport(importStatement: string, importedNames: string[]): boolean {
-  // Common type-only patterns
-  const typePatterns = [
-    /DataStore$/,
-    /Entity$/,
-    /Metadata$/,
-    /Config$/,
-    /Interface$/,
-    /Type$/,
-    /Props$/,
-    /State$/,
-    /Context$/,
-    /Snapshot$/,
-    /Definition$/,
-    /Analysis$/,
-    /Transition$/
-  ];
-  
-  // Check each imported name
-  return importedNames.some(name => {
-    // Check against patterns
-    if (typePatterns.some(pattern => pattern.test(name))) {
-      return true;
-    }
-    
-    // Common type prefixes/suffixes
-    if (name.includes('DataEntity') || 
-        name.includes('Metadata') || 
-        name.includes('Config') ||
-        name.includes('Base') ||
-        name.includes('Default') ||
-        name.includes('Unified') ||
-        name.includes('Structured') ||
-        name.includes('Shared') ||
-        name.includes('Event')) {
-      return true;
-    }
-    
-    return false;
-  });
-}
 
-// Enhanced function to fix import statements
-function fixImportStatement(importStatement: string): string {
-  // Handle different import patterns
-  
-  // Pattern 1: import { X, Y } from 'path'
-  const namedImportRegex = /^import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"]/;
-  const namedMatch = importStatement.match(namedImportRegex);
-  
-  if (namedMatch) {
-    const imports = namedMatch[1].split(',').map(i => i.trim()).filter(Boolean);
-    const source = namedMatch[2];
-    
-    // Check if it should be a type import
-    if (shouldBeTypeImport(importStatement, imports)) {
-      return `import type { ${imports.join(', ')} } from '${source}'`;
-    }
-  }
-  
-  // Pattern 2: import X from 'path' (default import)
-  const defaultImportRegex = /^import\s+(\w+)\s+from\s+['"]([^'"]+)['"]/;
-  const defaultMatch = importStatement.match(defaultImportRegex);
-  
-  if (defaultMatch) {
-    const importName = defaultMatch[1];
-    const source = defaultMatch[2];
-    
-    // Check if it should be a type import (can't use import type with default in some cases)
-    // For default imports, we need to check the source filename
-    const fileName = path.basename(source, path.extname(source));
-    if (shouldBeTypeImport(importStatement, [importName, fileName])) {
-      return `import type ${importName} from '${source}'`;
-    }
-  }
-  
-  // Pattern 3: import * as X from 'path' (namespace import)
-  const namespaceImportRegex = /^import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+)['"]/;
-  const namespaceMatch = importStatement.match(namespaceImportRegex);
-  
-  if (namespaceMatch) {
-    const namespaceName = namespaceMatch[1];
-    const source = namespaceMatch[2];
-    
-    // Check if it should be a type import
-    const fileName = path.basename(source, path.extname(source));
-    if (shouldBeTypeImport(importStatement, [namespaceName, fileName])) {
-      console.warn(`⚠️  Namespace import ${namespaceName} might contain types - manual check needed`);
-    }
-  }
-  
-  return importStatement; // Return unchanged if no fix needed
-}
 
 // New function specifically for the pattern in your error
 async function fixTypeOnlyImportsFromCore() {
@@ -1290,17 +1478,33 @@ async function fixTypeOnlyImportsFromCore() {
   ];
   
   const allFixes: FixResult[] = [];
+  const changesByFile: Record<string, Array<{before: string, after: string, line: number}>> = {};
+  
+  console.log('📋 Targeted core modules:\n');
+  coreTypePatterns.forEach(({ from, patterns }) => {
+    console.log(`   📍 ${from}`);
+    console.log(`      Exports: ${patterns.join(', ')}`);
+  });
+  console.log('');
   
   for (const { patterns, from } of coreTypePatterns) {
-    console.log(`🔍 Checking imports from ${from}`);
+    console.log(`🔍 Checking: ${from}`);
     
-    // Build grep pattern to find these imports
+    // Extract just the filename without path for grep
+    const fileName = from.split('/').pop() || '';
+    if (!fileName) continue;
+    
+    // Build grep pattern
     const importPatterns = patterns.map(pattern => `\\b${pattern}\\b`).join('|');
-    const findCmd = `grep -rn "import.*{.*\\(${importPatterns}\\).*}.*from.*['\"]${from.replace('@/', '')}['\"]" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" || true`;
+    const findCmd = `grep -rn "import.*{.*\\(${importPatterns}\\).*}.*from.*${fileName}" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "import type" || true`;
     
     try {
       const output = execSync(findCmd, { encoding: 'utf8' });
       const importLines = output.split('\n').filter(Boolean);
+      
+      if (importLines.length > 0) {
+        console.log(`   📊 Found ${importLines.length} import(s) to fix`);
+      }
       
       for (const importLine of importLines) {
         const [filePath, lineNumStr, ...rest] = importLine.split(':');
@@ -1314,41 +1518,45 @@ async function fixTypeOnlyImportsFromCore() {
         if (originalImport.startsWith('import {')) {
           fixedImport = originalImport.replace('import {', 'import type {');
           
-          // Ensure we're importing from the correct path
-          if (!fixedImport.includes(from)) {
-            // Extract import names and rebuild
-            const match = originalImport.match(/^import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"]/);
-            if (match) {
-              const imports = match[1];
-              const currentSource = match[2];
-              fixedImport = `import type { ${imports} } from '${from}'`;
-              console.log(`   📍 Corrected import path: ${currentSource} → ${from}`);
-            }
+          // Track changes for report
+          if (!changesByFile[filePath]) {
+            changesByFile[filePath] = [];
           }
+          changesByFile[filePath].push({
+            before: originalImport,
+            after: fixedImport,
+            line: lineNum
+          });
+          
+          allFixes.push({
+            file: filePath,
+            original: originalImport,
+            fixed: fixedImport,
+            success: true,
+            line: lineNum
+          });
+          
+          // Show the exact change
+          console.log(`   📝 ${path.basename(filePath)}:${lineNum}`);
+          console.log(`      BEFORE: ${originalImport}`);
+          console.log(`      AFTER:  ${fixedImport}`);
+          console.log('');
         }
-        
-        allFixes.push({
-          file: filePath,
-          original: originalImport,
-          fixed: fixedImport,
-          success: true,
-          line: lineNum
-        });
-        
-        console.log(`   ✅ ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Continue on grep errors
     }
   }
   
   // Also find and fix any other imports from core that look like types
-  console.log('\n🔍 Checking for other type-only imports from @/core...');
-  const coreFindCmd = `grep -rn "import.*{.*}.*from.*['\"]@/core.*['\"]" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" | head -20 || true`;
+  console.log('🔍 Checking for other type-only imports from @/core...\n');
+  const coreFindCmd = `grep -rn "import.*{.*}.*from.*@/core" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "import type" | head -30 || true`;
   
   try {
     const output = execSync(coreFindCmd, { encoding: 'utf8' });
     const importLines = output.split('\n').filter(Boolean);
+    
+    console.log(`📊 Found ${importLines.length} potential type import(s) from @/core\n`);
     
     for (const importLine of importLines) {
       const [filePath, lineNumStr, ...rest] = importLine.split(':');
@@ -1370,11 +1578,26 @@ async function fixTypeOnlyImportsFromCore() {
         name.endsWith('Entity') ||
         name.endsWith('Metadata') ||
         name.endsWith('Config') ||
-        name.endsWith('Store')
+        name.endsWith('Store') ||
+        name.endsWith('Type') ||
+        name.endsWith('Interface') ||
+        name.endsWith('Props') ||
+        name.endsWith('Options') ||
+        name.endsWith('State')
       );
       
       if (hasType) {
         const fixedImport = originalImport.replace('import {', 'import type {');
+        
+        // Track changes for report
+        if (!changesByFile[filePath]) {
+          changesByFile[filePath] = [];
+        }
+        changesByFile[filePath].push({
+          before: originalImport,
+          after: fixedImport,
+          line: lineNum
+        });
         
         allFixes.push({
           file: filePath,
@@ -1384,31 +1607,444 @@ async function fixTypeOnlyImportsFromCore() {
           line: lineNum
         });
         
-        console.log(`   ✅ ${path.basename(filePath)}:${lineNum}: ${originalImport} → ${fixedImport}`);
+        // Show the exact change
+        console.log(`📝 ${path.basename(filePath)}:${lineNum}`);
+        console.log(`   BEFORE: ${originalImport}`);
+        console.log(`   AFTER:  ${fixedImport}`);
+        console.log('');
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     // Continue on grep errors
   }
   
   if (allFixes.length > 0) {
-    console.log(`\n📊 Found ${allFixes.length} type-only imports to fix`);
+    console.log('='.repeat(80));
+    console.log('📊 CHANGE SUMMARY');
+    console.log('='.repeat(80));
+    
+    // Group fixes by file for better display
+    const fixesByFile: Record<string, FixResult[]> = {};
+    allFixes.forEach(fix => {
+      if (!fixesByFile[fix.file]) {
+        fixesByFile[fix.file] = [];
+      }
+      fixesByFile[fix.file].push(fix);
+    });
+    
+    // Show detailed changes per file
+    console.log(`\n📋 Total changes: ${allFixes.length} import(s) in ${Object.keys(fixesByFile).length} file(s)\n`);
+    
+    Object.entries(fixesByFile).forEach(([filePath, fixes]) => {
+      const relativePath = path.relative(process.cwd(), filePath);
+      console.log(`📄 ${relativePath} (${fixes.length} change${fixes.length > 1 ? 's' : ''}):`);
+      
+      fixes.forEach((fix, index) => {
+        console.log(`   ${index + 1}. Line ${fix.line}:`);
+        console.log(`      ❌ ${fix.original}`);
+        console.log(`      ✅ ${fix.fixed}`);
+      });
+      console.log('');
+    });
+    
+    // Generate detailed report file
+    const reportDir = path.join(process.cwd(), 'reports');
+    if (!fs.existsSync(reportDir)) {
+      fs.mkdirSync(reportDir, { recursive: true });
+    }
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const reportFile = path.join(reportDir, `core-type-import-fixes-${timestamp}.md`);
+    
+    let reportContent = `# Core Type Import Fix Report\n\n`;
+    reportContent += `**Generated:** ${new Date().toISOString()}\n`;
+    reportContent += `**Total fixes:** ${allFixes.length}\n`;
+    reportContent += `**Files modified:** ${Object.keys(fixesByFile).length}\n\n`;
+    
+    // Add summary table
+    reportContent += `## Summary\n\n`;
+    reportContent += `| File | Changes | Status |\n`;
+    reportContent += `|------|---------|--------|\n`;
+    
+    Object.entries(fixesByFile).forEach(([filePath, fixes]) => {
+      const relativePath = path.relative(process.cwd(), filePath);
+      reportContent += `| \`${relativePath}\` | ${fixes.length} | ✅ Ready |\n`;
+    });
+    
+    // Add detailed changes
+    reportContent += `\n## Detailed Changes\n\n`;
+    
+    Object.entries(fixesByFile).forEach(([filePath, fixes]) => {
+      const relativePath = path.relative(process.cwd(), filePath);
+      reportContent += `### ${relativePath}\n\n`;
+      
+      fixes.forEach((fix, index) => {
+        reportContent += `**Change ${index + 1}** (Line ${fix.line}):\n\n`;
+        reportContent += `\`\`\`diff\n`;
+        reportContent += `- ${fix.original}\n`;
+        reportContent += `+ ${fix.fixed}\n`;
+        reportContent += `\`\`\`\n\n`;
+      });
+    });
+    
+    // Add command to apply
+    reportContent += `## How to Apply\n\n`;
+    reportContent += `These changes will be applied when you confirm in the interactive prompt.\n\n`;
+    reportContent += `If you want to preview the changes without applying:\n`;
+    reportContent += `\`\`\`bash\n`;
+    reportContent += `tsx fix-interface-imports.ts core-types --dry-run\n`;
+    reportContent += `\`\`\`\n`;
+    
+    fs.writeFileSync(reportFile, reportContent, 'utf8');
+    console.log(`📊 Detailed report saved to: ${reportFile}\n`);
     
     // Ask for confirmation
-    console.log('\n🚀 Apply fixes for type-only imports? (y/n)');
+    console.log('🚀 Apply these changes? (y/n)');
     const confirmed = await promptConfirmation();
     
     if (confirmed) {
-      applyFixes(allFixes);
+      console.log('\n🔧 Applying fixes...\n');
+      
+      let applied = 0;
+      let failed = 0;
+      
+      // Group fixes by file for efficient processing
+      const fixesByFileGrouped = groupFixesByFile(allFixes);
+      
+      for (const [filePath, fileFixes] of fixesByFileGrouped) {
+        try {
+          // Create backup
+          const backupPath = createBackup(filePath);
+          console.log(`💾 Backup created: ${backupPath}`);
+          
+          // Read file content
+          const content = fs.readFileSync(filePath, 'utf8');
+          const lines = content.split('\n');
+          
+          // Sort fixes by line number (descending) to avoid line number shifting
+          const sortedFixes = sortFixesDescending(fileFixes);
+          
+          // Apply fixes
+          for (const fix of sortedFixes) {
+            let lineIndex = (fix.line || 1) - 1;
+            
+            // Find the line if line number doesn't match
+            if (lineIndex < 0 || lineIndex >= lines.length || !lines[lineIndex].includes(fix.original)) {
+              lineIndex = lines.findIndex(line => line.includes(fix.original) && !line.includes('import type'));
+            }
+            
+            if (lineIndex >= 0 && lineIndex < lines.length) {
+              lines[lineIndex] = lines[lineIndex].replace(fix.original, fix.fixed);
+              applied++;
+              console.log(`✅ ${path.basename(filePath)}:${lineIndex + 1} - Fixed`);
+              console.log(`   ❌ Was: ${fix.original}`);
+              console.log(`   ✅ Now: ${fix.fixed}`);
+            } else {
+              console.warn(`⚠️  Could not find import in ${filePath}: ${fix.original}`);
+              failed++;
+            }
+          }
+          
+          // Write updated content
+          fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
+          
+        } catch (error) {
+          console.error(`❌ Error fixing ${filePath}:`, (error as Error).message);
+          failed += fileFixes.length;
+        }
+      }
+      
+      console.log('\n' + '='.repeat(80));
+      console.log('📊 FINAL RESULTS');
+      console.log('='.repeat(80));
+      console.log(`✅ Successfully applied: ${applied} fixes`);
+      console.log(`❌ Failed: ${failed} fixes`);
+      console.log(`📁 Files modified: ${Object.keys(fixesByFile).length}`);
+      
+      if (failed === 0) {
+        console.log('\n🎉 All core type imports fixed successfully!');
+      }
+      
     } else {
-      console.log('\n❌ Cancelled');
+      console.log('\n❌ Changes cancelled');
+      console.log('💡 You can review the report at:', reportFile);
     }
   } else {
     console.log('\n✅ No type-only import fixes needed!');
+    
+    // Still generate a report showing no changes needed
+    const reportDir = path.join(process.cwd(), 'reports');
+    if (!fs.existsSync(reportDir)) {
+      fs.mkdirSync(reportDir, { recursive: true });
+    }
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const reportFile = path.join(reportDir, `core-type-import-fixes-${timestamp}.md`);
+    
+    let reportContent = `# Core Type Import Fix Report\n\n`;
+    reportContent += `**Generated:** ${new Date().toISOString()}\n`;
+    reportContent += `**Status:** ✅ No changes needed\n\n`;
+    reportContent += `All imports from @/core modules are already correctly using \`import type\` where appropriate.\n`;
+    
+    fs.writeFileSync(reportFile, reportContent, 'utf8');
+    console.log(`📊 Report saved to: ${reportFile}`);
   }
 }
 
-// Main execution
+
+
+
+async function quickScanInterfaceImports() {
+  console.log('🚀 QUICK SCAN for interface import issues...\n');
+  console.log('📊 This scan focuses on common interface patterns and is much faster than a full scan.\n');
+  
+  // Common interface patterns that should always be type-only
+  const commonPatterns = [
+    { 
+      pattern: 'DataStore', 
+      description: 'Data stores and interfaces',
+      examples: ['DataStore', 'IDataStore', 'DataStoreConfig', 'DataStoreOptions']
+    },
+    { 
+      pattern: 'Entity', 
+      description: 'Database entities and models',
+      examples: ['Entity', 'BaseEntity', 'UserEntity', 'ProductEntity']
+    },
+    { 
+      pattern: 'Props', 
+      description: 'React component props',
+      examples: ['Props', 'ComponentProps', 'ButtonProps', 'ModalProps']
+    },
+    { 
+      pattern: 'State', 
+      description: 'Application state types',
+      examples: ['State', 'AppState', 'UserState', 'FormState']
+    },
+    { 
+      pattern: 'Config', 
+      description: 'Configuration types',
+      examples: ['Config', 'AppConfig', 'DatabaseConfig', 'AuthConfig']
+    },
+    { 
+      pattern: 'Options', 
+      description: 'Options and settings types',
+      examples: ['Options', 'PluginOptions', 'BuildOptions', 'RuntimeOptions']
+    },
+    { 
+      pattern: 'Interface', 
+      description: 'Interface declarations',
+      examples: ['Interface', 'UserInterface', 'ApiInterface', 'ServiceInterface']
+    },
+    { 
+      pattern: 'Type', 
+      description: 'Type aliases',
+      examples: ['Type', 'UserType', 'ActionType', 'ResponseType']
+    },
+    { 
+      pattern: 'Metadata', 
+      description: 'Metadata types',
+      examples: ['Metadata', 'FileMetadata', 'UserMetadata', 'DocumentMetadata']
+    },
+    { 
+      pattern: 'Payload', 
+      description: 'Data payloads',
+      examples: ['Payload', 'ApiPayload', 'EventPayload', 'RequestPayload']
+    }
+  ];
+  
+  const allIssues: Array<{
+    pattern: string;
+    fileCount: number;
+    issueCount: number;
+    exampleFiles: string[];
+  }> = [];
+  
+  let totalFilesWithIssues = 0;
+  let totalIssuesFound = 0;
+  
+  console.log('🔍 Checking for imports without "import type"...\n');
+  
+  for (const { pattern, description, examples } of commonPatterns) {
+    console.log(`🔎 Pattern: ${pattern}`);
+    console.log(`   📝 ${description}`);
+    console.log(`   💡 Examples: ${examples.slice(0, 3).join(', ')}${examples.length > 3 ? '...' : ''}`);
+    
+    try {
+      // Step 1: Find files that import anything matching this pattern
+      console.log(`   🔍 Searching for imports...`);
+      const findCmd = `grep -l "import.*${pattern}" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | head -15 || true`;
+      const filesOutput = execSync(findCmd, { 
+        encoding: 'utf8',
+        timeout: 3000 
+      });
+      
+      const files = filesOutput.split('\n').filter(Boolean);
+      
+      if (files.length === 0) {
+        console.log(`   ✅ No files importing ${pattern}\n`);
+        continue;
+      }
+      
+      console.log(`   📊 Found ${files.length} file(s) importing ${pattern}`);
+      
+      let patternIssueCount = 0;
+      const patternExampleFiles: string[] = [];
+      
+      // Step 2: Check each file for imports without "import type"
+      for (const file of files) {
+        try {
+          const checkCmd = `grep -n "import.*${pattern}.*from" "${file}" 2>/dev/null | grep -v "import type" | head -3 || true`;
+          const issuesOutput = execSync(checkCmd, { 
+            encoding: 'utf8',
+            timeout: 1000 
+          });
+          
+          const issues = issuesOutput.split('\n').filter(Boolean);
+          
+          if (issues.length > 0) {
+            patternIssueCount += issues.length;
+            patternExampleFiles.push(path.basename(file));
+            
+            // Show first issue as example
+            if (patternExampleFiles.length === 1 && issues.length > 0) {
+              const [firstIssue] = issues;
+              const [, lineNum, importText] = firstIssue.split(':');
+              const truncatedImport = importText.length > 60 ? importText.substring(0, 60) + '...' : importText;
+              console.log(`      ❌ ${path.basename(file)}:${lineNum}: ${truncatedImport}`);
+            }
+          }
+        } catch {
+          // Skip file on error
+          continue;
+        }
+      }
+      
+      if (patternIssueCount > 0) {
+        console.log(`   ⚠️  Found ${patternIssueCount} import(s) without "import type" in ${patternExampleFiles.length} file(s)`);
+        console.log(`      📁 Files: ${patternExampleFiles.slice(0, 3).join(', ')}${patternExampleFiles.length > 3 ? `... (+${patternExampleFiles.length - 3} more)` : ''}`);
+        
+        allIssues.push({
+          pattern,
+          fileCount: patternExampleFiles.length,
+          issueCount: patternIssueCount,
+          exampleFiles: patternExampleFiles
+        });
+        
+        totalFilesWithIssues += patternExampleFiles.length;
+        totalIssuesFound += patternIssueCount;
+      } else {
+        console.log(`   ✅ All ${pattern} imports use "import type"\n`);
+      }
+      
+    } catch (error: any) {
+      if (error.message.includes('timeout')) {
+        console.log(`   ⏱️  Timeout searching for ${pattern} (skipping)\n`);
+      } else {
+        console.log(`   ⚠️  Error searching for ${pattern}: ${error.message}\n`);
+      }
+      continue;
+    }
+    
+    console.log(''); // Empty line between patterns
+  }
+  
+  // Generate summary report
+  console.log('📊 QUICK SCAN RESULTS');
+  console.log('='.repeat(50));
+  
+  if (allIssues.length === 0) {
+    console.log('\n🎉 SUCCESS: No issues found!');
+    console.log('All common interface patterns are correctly using "import type"');
+    return;
+  }
+  
+  // Sort issues by count (highest first)
+  allIssues.sort((a, b) => b.issueCount - a.issueCount);
+  
+  console.log(`\n⚠️  FOUND ${totalIssuesFound} ISSUES across ${totalFilesWithIssues} files\n`);
+  
+  console.log('📈 TOP ISSUES BY PATTERN:');
+  console.log('┌' + '─'.repeat(40) + '┐');
+  
+  allIssues.slice(0, 8).forEach((issue, index) => {
+    const rank = index + 1;
+    const bar = '█'.repeat(Math.min(Math.floor(issue.issueCount / 3), 20));
+    console.log(`│ ${rank}. ${issue.pattern.padEnd(12)} ${issue.issueCount.toString().padStart(3)} issues ${bar.padEnd(20)} │`);
+  });
+  
+  console.log('└' + '─'.repeat(40) + '┘');
+  
+  // Show detailed breakdown
+  console.log('\n📋 DETAILED BREAKDOWN:');
+  allIssues.forEach(issue => {
+    console.log(`\n🔸 ${issue.pattern}: ${issue.issueCount} issue(s) in ${issue.fileCount} file(s)`);
+    if (issue.exampleFiles.length > 0) {
+      console.log(`   📁 Files affected: ${issue.exampleFiles.slice(0, 5).join(', ')}${issue.exampleFiles.length > 5 ? `... (+${issue.exampleFiles.length - 5} more)` : ''}`);
+    }
+  });
+  
+  // Recommendations
+  console.log('\n💡 RECOMMENDATIONS:');
+  if (allIssues.length > 0) {
+    const topPattern = allIssues[0].pattern;
+    console.log(`1. Run focused fix: pnpm fix:interface-imports:target src/ --pattern ${topPattern}`);
+    console.log(`2. Use safe mode: pnpm fix:interface-imports:safe`);
+    console.log(`3. Fix top issue first: ${topPattern} (${allIssues[0].issueCount} issues)`);
+  }
+  
+  console.log('\n🎯 NEXT STEPS:');
+  console.log('• Run interactive mode: pnpm fix:interface-imports:interactive');
+  console.log('• Run safe mode: pnpm fix:interface-imports:safe');
+  console.log('• Run full scan: pnpm fix:interface-imports:scan --report');
+  
+  // Save quick report
+  const reportDir = path.join(process.cwd(), 'reports');
+  if (!fs.existsSync(reportDir)) {
+    fs.mkdirSync(reportDir, { recursive: true });
+  }
+  
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const quickReportFile = path.join(reportDir, `quick-scan-${timestamp}.md`);
+  
+  let reportContent = `# Quick Interface Import Scan Report\n\n`;
+  reportContent += `**Generated:** ${new Date().toISOString()}\n`;
+  reportContent += `**Total issues found:** ${totalIssuesFound}\n`;
+  reportContent += `**Files affected:** ${totalFilesWithIssues}\n`;
+  reportContent += `**Patterns checked:** ${commonPatterns.length}\n\n`;
+  
+  reportContent += `## Issues Found\n\n`;
+  reportContent += `| Pattern | Issues | Files | Priority |\n`;
+  reportContent += `|---------|--------|-------|----------|\n`;
+  
+  allIssues.forEach(issue => {
+    const priority = issue.issueCount > 10 ? '🔴 HIGH' : issue.issueCount > 3 ? '🟡 MEDIUM' : '🟢 LOW';
+    reportContent += `| ${issue.pattern} | ${issue.issueCount} | ${issue.fileCount} | ${priority} |\n`;
+  });
+  
+  reportContent += `\n## Recommended Actions\n\n`;
+  if (allIssues.length > 0) {
+    const topIssue = allIssues[0];
+    reportContent += `1. **Fix ${topIssue.pattern} first** - ${topIssue.issueCount} issues across ${topIssue.fileCount} files\n`;
+    reportContent += `2. Use \`pnpm fix:interface-imports:safe\` for automatic high-confidence fixes\n`;
+    reportContent += `3. Use \`pnpm fix:interface-imports:interactive\` for selective fixing\n`;
+  }
+  
+  reportContent += `\n## Files to Check\n\n`;
+  allIssues.forEach(issue => {
+    reportContent += `### ${issue.pattern}\n`;
+    issue.exampleFiles.forEach(file => {
+      reportContent += `- ${file}\n`;
+    });
+    reportContent += '\n';
+  });
+  
+  fs.writeFileSync(quickReportFile, reportContent, 'utf8');
+  console.log(`\n📊 Quick report saved to: ${quickReportFile}`);
+  console.log('\n✅ Quick scan complete!');
+}
+
+
+
 async function main() {
   const args = process.argv.slice(2);
   
@@ -1436,13 +2072,14 @@ Options:
   --dry-run              Preview what would be changed without applying
   --help, -h             Show this help
   --report               Generate detailed report (with scan command)
+  --quick                Quick scan mode (faster but less thorough)
 
 Examples:
   # Analyze a specific file
-  tsx fix-interface-imports.ts target src/app/state/stores/DataStore.ts --dry-run
+  tsx fix-interface-imports.ts target src/core/state/stores/DataStore.ts --dry-run
   
   # Analyze a directory
-  tsx fix-interface-imports.ts analyze src/app/snapshots --dry-run
+  tsx fix-interface-imports.ts analyze src/core/snapshots --dry-run
   
   # Fix ALL interface imports
   tsx fix-interface-imports.ts all
@@ -1456,10 +2093,13 @@ Examples:
   # Scan and generate report
   tsx fix-interface-imports.ts scan --report
   
+  # Quick scan (faster)
+  tsx fix-interface-imports.ts scan --quick
+  
   # Interactive mode
   tsx fix-interface-imports.ts interactive
   
-  # Safe mode (only high-confidence fixes)
+  # Safe mode (only high-confidence interface imports)
   tsx fix-interface-imports.ts safe
     `);
     return;
@@ -1470,6 +2110,7 @@ Examples:
   const dryRun = restArgs.includes('--dry-run');
   const apply = restArgs.includes('--apply');
   const report = restArgs.includes('--report');
+  const quick = restArgs.includes('--quick');
   
   if (dryRun) {
     console.log('🔍 DRY RUN - No changes will be made\n');
@@ -1495,11 +2136,8 @@ Examples:
           process.exit(1);
         }
         
-        if (dryRun) {
-          await analyzeDirectory(target);
-        } else {
-          await focusOnTarget(target);
-        }
+        // FIX: Always use focusOnTarget, which handles both files and directories
+        await focusOnTarget(target);
         break;
       }
       
@@ -1530,7 +2168,11 @@ Examples:
         break;
         
       case 'scan':
-        await scanInterfaceImports(report);
+        if (quick) {
+          await quickScanInterfaceImports();
+        } else {
+          await scanInterfaceImports(report);
+        }
         break;
         
       case 'interactive':
@@ -1558,7 +2200,7 @@ Examples:
           console.log(`   Files affected: ${new Set(fixes.map(f => f.file)).size}`);
           
           if (!dryRun && (apply || await promptConfirmation(`Apply ${fixes.length} fixes?`))) {
-            await applyFixes(fixes);
+            await applyFixesShared(fixes);
           }
         } else {
           console.error(`❌ Unknown command: ${command}`);
@@ -1572,7 +2214,6 @@ Examples:
     process.exit(1);
   }
 }
-
 
 // ES Module entry point
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -5,8 +5,8 @@ if (typeof window === 'undefined') {
 }
 
 import determineFileType from '@/core/components/configs/DetermineFileType';
-import { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from '@/core/config/StructuredMetadata';
+import type { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from '@/core/config/StructuredMetadata';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';

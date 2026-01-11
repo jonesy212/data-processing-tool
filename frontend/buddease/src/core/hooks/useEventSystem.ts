@@ -1,6 +1,6 @@
 // useEventSystem.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CallbackRegistry } from '@/core/libraries/eventSystem/callbackRegistry';
 import { SnapshotEventHandlers } from '@/core/libraries/eventSystem/eventHandlers';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

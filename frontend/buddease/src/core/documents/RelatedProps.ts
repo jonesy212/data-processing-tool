@@ -1,16 +1,16 @@
 // RelatedProps.ts
-import { Label } from '@/core/branding/BrandingSettings';
-import { ExternalReference } from '@/core/calendar/ExternalReference';
+import type { Label } from '@/core/branding/BrandingSettings';
+import type { ExternalReference } from '@/core/calendar/ExternalReference';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta, RootCategories } from '@/core/config/BaseConfig';
 import type { Attachment, FileType } from '@/core/documents/attachment/Attachment';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { AccessControlEntry } from '@/core/permissions/AccessControlEntry';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { AccessControlEntry } from '@/core/permissions/AccessControlEntry';
 import { PermissionLevel, VisibilityLevel, } from '@/core/permissions/PermissionEnums';
 import { ValidationStatus } from '@/core/permissions/ValidationStatus';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { AllTypes } from '@/core/typings/PropTypes';
-import { Version } from "@/core/versions/Version";
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { AllTypes } from '@/core/typings/PropTypes';
+import type { Version } from "@/core/versions/Version";
 
 interface BaseEntityProperties { 
   _id?: string;

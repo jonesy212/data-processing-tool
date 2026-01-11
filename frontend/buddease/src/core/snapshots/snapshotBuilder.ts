@@ -1,7 +1,7 @@
 // snapshotBuilder.ts
 
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
 
 // Conditional Utility Types

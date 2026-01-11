@@ -1,7 +1,7 @@
-DynamicIntroTooltip.tsx
-import React, { useEffect } from 'react';
-import IntroJs from 'intro.js';
+// DynamicIntroTooltip.tsx
 
+import React, { useEffect } from 'react';
+import IntroJs, { Step, Options } from 'intro.js';
 
 export interface IntroStep {
   element?: HTMLElement | string;
@@ -16,14 +16,30 @@ interface DynamicIntroTooltipProps {
   steps: Partial<IntroStep>[];
 }
 
+// Helper function to convert your steps to Intro.js steps
+const convertToIntroJsSteps = (steps: Partial<IntroStep>[]): Partial<Step>[] => {
+  return steps.map(step => {
+    const convertedStep: any = { ...step };
+    
+    // Remove 'auto' position since Intro.js doesn't support it
+    if (convertedStep.position === 'auto') {
+      delete convertedStep.position;
+    }
+    
+    return convertedStep;
+  });
+};
+
 const DynamicIntroTooltip: React.FC<DynamicIntroTooltipProps> = ({ steps }) => {
   useEffect(() => {
-    const intro = IntroJs(document.body);
-
+    const intro = IntroJs();
+    
+    const introJsSteps = convertToIntroJsSteps(steps);
+    
     intro.setOptions({
-      steps,
+      steps: introJsSteps,
       tooltipClass: "custom-intro-tooltip",
-    });
+    } as Options);
 
     intro.start();
 
@@ -41,9 +57,7 @@ const DynamicIntroTooltip: React.FC<DynamicIntroTooltipProps> = ({ steps }) => {
   );
 };
 
-
 export default DynamicIntroTooltip;
-
 
 
 

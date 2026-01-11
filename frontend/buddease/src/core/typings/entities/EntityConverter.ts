@@ -1,6 +1,11 @@
 // EntityConverter.ts
+import { useSecureUserId } from '@/core/hooks/useSecureUserId';
+import { getUserData, getUsersData, processUserData } from '@/core/api/UsersApi';
+
+import { UserEntityFactory } from '@/utils/userEntityHelpers'
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { ApiEntity } from '@/core/typings/entities/ApiEntity';
+import type { SnapshotStorageEntity } from '@/core/typings/entities/SnapshotStorageOptionsEntity';
 import type { AppEntity } from '@/core/typings/entities/AppEntity';
 import type { AppMetadataEntity } from '@/core/typings/entities/AppMetadataEntity';
 import type { ArticleEntity } from '@/core/typings/entities/ArticleEntity';
@@ -37,13 +42,12 @@ import type { ProjectManagerEntity } from '@/core/typings/entities/ProjectManage
 import type { SenderEntity } from '@/core/typings/entities/SenderEntity';
 import type { SnapshotContainerEntity } from '@/core/typings/entities/SnapshotContainerEntity';
 import type { SnapshotEntity } from '@/core/typings/entities/SnapshotEntity';
-import type { SnapshotStorageEntity } from '@/core/typings/entities/SnapshotStorageOptionsEntity';
 import type { StorePropEntity } from '@/core/typings/entities/StorePropEntity';
 import type { TagEntity } from '@/core/typings/entities/TagEntity';
 import type { TaskEntity } from '@/core/typings/entities/TaskEntity';
 import type { TeamEntity } from '@/core/typings/entities/TeamEntity';
 import type { TrackerEntity } from '@/core/typings/entities/TrackerEntity';
-import type { UserEntity } from '@/core/typings/entities/UserEntity';
+import type { UserEntity, SecureUserEntity } from '@/core/typings/entities/UserEntity';
 import type { VersionEntity } from '@/core/typings/entities/VersionEntity';
 import type { VersionHistoryEntity } from '@/core/typings/entities/VersionHistoryEntity';
 import type { VideoEntity } from '@/core/typings/entities/VideoEntity';
@@ -51,18 +55,17 @@ import type { VideoEntity } from '@/core/typings/entities/VideoEntity';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 // --------------------
-// Step 1: Define entity mapping
+// Step 1: Define a simplified entity mapping without generics
 // --------------------
 
-// Map source entity type name to target type (for type-safe conversions)
-type EntityConversionMap<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> = {
+// Create a base interface that all entities extend
+interface BaseEntity {
+  id: string | number;
+  [key: string]: any;
+}
+
+// Simplified mapping without generics
+type EntityConversionMap = {
   ApiEntity: ApiEntity;
   AppEntity: AppEntity;
   AppMetadataEntity: AppMetadataEntity;
@@ -96,7 +99,7 @@ type EntityConversionMap<
   ProjectManagementEntity: ProjectManagementEntity;
   ProjectManagerEntity: ProjectManagerEntity;
   SenderEntity: SenderEntity;
-  SnapshotContainerEntity: SnapshotContainerEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotContainerEntity: BaseEntity; // Simplified - use BaseEntity
   SnapshotEntity: SnapshotEntity;
   SnapshotStorageEntity: SnapshotStorageEntity;
   StorePropEntity: StorePropEntity;
@@ -110,14 +113,25 @@ type EntityConversionMap<
   TeamEntity: TeamEntity;
 }& {
   [RuleKey in keyof typeof conversionRules]: ReturnType<typeof conversionRules[RuleKey]>;
-};;
+};
 
+// --------------------
+// Step 2: Define conversion rules
+// --------------------
 
-export const entityConversionRules: EntityConversionRules = {
-  UserEntity: (source: UserEntity) => ({
-    ...source,
-    teams: source.teams?.map(t => ({ ...t })) ?? [],
-  }),
+export const entityConversionRules: Record<keyof EntityConversionMap, (source: any) => any> = {
+    UserEntity: (source: UserEntity): SecureUserEntity => {
+    // NEVER include password or secret in converted output
+    const { password, secret, ...safeData } = source;
+    
+    return {
+      ...safeData,
+      teams: source.teams?.map((t: Team) => ({ ...t })) ?? [],
+      // Ensure dates are properly handled
+      createdAt: source.createdAt instanceof Date ? source.createdAt : new Date(source.createdAt),
+      updatedAt: source.updatedAt instanceof Date ? source.updatedAt : new Date(source.updatedAt),
+    };
+  },
   MemberEntity: (source: MemberEntity) => ({ ...source }),
   TaskEntity: (source: TaskEntity) => ({ ...source }),
   ProjectEntity: (source: ProjectEntity) => ({ ...source }),
@@ -139,9 +153,12 @@ export const entityConversionRules: EntityConversionRules = {
   PhaseEntity: (source: PhaseEntity) => ({ ...source }),
   ProductEntity: (source: ProductEntity) => ({ ...source }),
   SenderEntity: (source: SenderEntity) => ({ ...source }),
-  SnapshotContainerEntity: (source: SnapshotContainerEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({ ...source }),
+  
+  // Use 'any' for complex generic types
+  SnapshotContainerEntity: (source: any) => ({ ...source }),
+  
   SnapshotEntity: (source: SnapshotEntity) => ({ ...source }),
-  SnapshotStorageOptionsEntity: (source: SnapshotStorageOptionsEntity) => ({ ...source }),
+  SnapshotStorageEntity: (source: SnapshotStorageEntity) => ({ ...source }),
   StorePropEntity: (source: StorePropEntity) => ({ ...source }),
   TrackerEntity: (source: TrackerEntity) => ({ ...source }),
   VersionEntity: (source: VersionEntity) => ({ ...source }),
@@ -150,7 +167,7 @@ export const entityConversionRules: EntityConversionRules = {
   TagEntity: (source: TagEntity) => ({ ...source }),
   TeamEntity: (source: TeamEntity) => ({ ...source }),
   // Default rule: identity (simple spread) for all other entities
-};
+} as Record<keyof EntityConversionMap, (source: any) => any>;
 
 // --------------------
 // Step 3: EntityConverter class
@@ -180,18 +197,478 @@ export class EntityConverter {
   }
 }
 
+
 // --------------------
 // Step 4: Usage Examples
 // --------------------
 
-// Convert single UserEntity to MemberEntity
-const userEntity: UserEntity = { id, name, password, role, username: "user123", email: "user123@example.com", teams: [] };
-const memberEntity = EntityConverter.convertEntity<'UserEntity'>(userEntity);
+// Helper function to convert NODE_ENV to AppEntity environment
+function getAppEnvironment(): 'development' | 'staging' | 'production' | undefined {
+  const nodeEnv = process.env.NODE_ENV;
+  
+  switch (nodeEnv) {
+    case 'development':
+      return 'development';
+    case 'production':
+      return 'production';
+    case 'test':
+      // Map 'test' to 'development' or handle appropriately
+      return 'development'; // or 'staging' if you prefer
+    default:
+      return 'development';
+  }
+}
 
-// Convert array of TaskEntities (identity conversion)
-const taskEntities: TaskEntity[] = [{ id: 1, name: "Task1", path, draft }, { id: 2, name: "Task2", path, draft }];
-const convertedTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(taskEntities);
+// Alternative: Type-safe environment mapper
+const environmentMap: Record<string, 'development' | 'staging' | 'production'> = {
+  'development': 'development',
+  'dev': 'development',
+  'staging': 'staging',
+  'stage': 'staging',
+  'production': 'production',
+  'prod': 'production',
+  'test': 'development', // Map test to development
+  'testing': 'development',
+};
+
+function getSafeAppEnvironment(): 'development' | 'staging' | 'production' {
+  const nodeEnv = (process.env.NODE_ENV || 'development').toLowerCase();
+  return environmentMap[nodeEnv] || 'development';
+}
+
+
+function createMockUserEntity(userId: string): UserEntity {
+  const now = new Date();
+  const appEnvironment = getAppEnvironment(); // Use the helper
+  
+  return {
+    id: userId,
+    name: "Mock User",
+    email: "mock@example.com",
+    password: "mock-hashed-password",
+    role: "user",
+    username: "mockuser",
+    avatar: "",
+    teams: [],
+    createdAt: now,
+    updatedAt: now,
+    isActive: true,
+    // AppEntity properties
+    appId: 'buddease-mock',
+    appName: 'Buddease Mock',
+    version: '1.0.0',
+    environment: appEnvironment, // Type-safe
+    status: 'active',
+    lastLogin: now,
+    preferences: {},
+  };
+}
+
+// Example function to get real user data
+async function getUserEntityFromAPI(userId: string): Promise<UserEntity> {
+  try {
+    // Fetch real user data from your API
+    const apiUserData = await getUserData(userId);
+    const processedData = processUserData(apiUserData);
+    
+    // Create a complete user entity with real data
+    // Note: This assumes UserEntityFactory exists - you need to create it
+    return UserEntityFactory.createCompleteUserEntity({
+      id: processedData.id || userId,
+      name: processedData.name || processedData.username || "User",
+      email: processedData.email || "",
+      password: processedData.password || "", // Should be hashed already from API
+      role: processedData.role || "user",
+      appId: processedData.appId || processedData.applicationId || 'buddease',
+      appName: processedData.appName || 'Buddease Application',
+      version: processedData.version || '1.0.0',
+      environment: processedData.environment || 'development',
+      status: processedData.status || 'active',
+      avatar: processedData.avatar || processedData.profilePicture || "",
+      createdAt: new Date(processedData.createdAt || Date.now()),
+      updatedAt: new Date(processedData.updatedAt || Date.now()),
+      isActive: processedData.isActive ?? true,
+      lastLogin: processedData.lastLogin ? new Date(processedData.lastLogin) : undefined,
+      preferences: processedData.preferences || {},
+      secret: processedData.secret, // Only if provided by API
+    });
+  } catch (error) {
+    console.error('Failed to fetch user data from API:', error);
+    // Fallback to mock data
+    return createMockUserEntity(userId);
+  }
+}
+
+
+
+// Main usage example
+async function mainExample() {
+  const { userId, error } = useSecureUserId();
+
+  if (error) {
+    console.error('Authentication error:', error);
+    return;
+  }
+
+  if (!userId) {
+    console.warn('No user ID available - using mock data');
+    // Use mock data for testing/demo
+    const mockUserEntity = createMockUserEntity("test-user-id");
+    const mockMemberEntity = EntityConverter.convertEntity<'UserEntity'>(mockUserEntity);
+    console.log('Mock member entity:', mockMemberEntity);
+    return;
+  }
+
+  try {
+    // Get REAL user data from API
+    const realUserEntity = await getUserEntityFromAPI(userId);
+    
+    // Convert to MemberEntity using EntityConverter
+    const memberEntity = EntityConverter.convertEntity<'UserEntity'>(realUserEntity);
+    
+    console.log('Converted member entity:', memberEntity);
+    
+    // Example: Convert array of tasks (using real or mock data)
+    const taskEntities: TaskEntity[] = [
+      { 
+        id: 1, 
+        name: "Real Task 1", 
+        path: "/tasks/1", 
+        draft: false,
+        // Add other TaskEntity properties as needed
+      }, 
+      { 
+        id: 2, 
+        name: "Real Task 2", 
+        path: "/tasks/2", 
+        draft: true,
+        // Add other TaskEntity properties as needed
+      }
+    ];
+    
+    const convertedTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(taskEntities);
+    console.log('Converted tasks:', convertedTasks);
+    
+    // Convert multiple types dynamically
+    const allEntities: any[] = [realUserEntity, ...taskEntities];
+    const convertedAll = allEntities.map(e => 
+      EntityConverter.convertEntity(e.constructor.name as keyof EntityConversionMap)
+    );
+    console.log('All converted entities:', convertedAll);
+    
+  } catch (error) {
+    console.error('Error in main example:', error);
+  }
+}
+
 
 // Convert multiple types dynamically
-const allEntities: any[] = [userEntity, ...taskEntities];
-const convertedAll = allEntities.map(e => EntityConverter.convertEntity(e.constructor.name as keyof EntityConversionMap));
+async function convertMultipleEntities() {
+  const { userId, error } = useSecureUserId();
+  
+  if (error || !userId) {
+    console.error('No user ID available');
+    return [];
+  }
+  
+  try {
+    // Get real user entity
+    const realUserEntity = await getUserEntityFromAPI(userId);
+    
+    // Get or create task entities
+    const taskEntities: TaskEntity[] = [
+      { 
+        id: 1, 
+        name: "Task 1", 
+        path: "/tasks/1", 
+        draft: false,
+        // Add all required TaskEntity properties
+      },
+      { 
+        id: 2, 
+        name: "Task 2", 
+        path: "/tasks/2", 
+        draft: true,
+        // Add all required TaskEntity properties
+      }
+    ];
+    
+    // Create array with all entities
+    const allEntities: any[] = [realUserEntity, ...taskEntities];
+    
+    // Convert all entities
+    const convertedAll = allEntities.map(e => {
+      // Use constructor name or type property to determine entity type
+      const entityType = e.constructor?.name || e.type || 'Unknown';
+      return EntityConverter.convertEntity(entityType as keyof EntityConversionMap)(e);
+    });
+    
+    return convertedAll;
+    
+  } catch (error) {
+    console.error('Error converting entities:', error);
+    return [];
+  }
+}
+
+// Option 2: Using factory patterns
+async function convertEntitiesWithFactories() {
+  const { userId, error } = useSecureUserId();
+  
+  if (error || !userId) {
+    console.error('Authentication error:', error);
+    return [];
+  }
+  
+  // Create user entity using factory
+  const userEntity = UserEntityFactory.createCompleteUserEntity({
+    id: userId,
+    name: "Actual User Name", // Get from user profile or API
+    email: "actual@example.com", // Get from user profile or API
+    password: "hashed-actual-password", // Get from secure storage
+    role: "user", // Get from user profile
+    appId: "buddease",
+    appName: "Buddease Application",
+    version: "1.0.0",
+    environment: process.env.NODE_ENV || "development",
+    status: "active",
+    username: "actualuser", // Get from user profile
+    avatar: "", // Get from user profile
+    teams: [], // Get from user profile
+    createdAt: new Date(), // Get from user profile
+    updatedAt: new Date(), // Get from user profile
+    isActive: true, // Get from user profile
+  });
+  
+  // Create task entities (these might come from API too)
+  const taskEntities: TaskEntity[] = [
+    { 
+      id: 1, 
+      name: "Real Task 1", 
+      path: "/real-tasks/1", 
+      draft: false,
+      // ... other TaskEntity properties from your actual data
+    },
+    { 
+      id: 2, 
+      name: "Real Task 2", 
+      path: "/real-tasks/2", 
+      draft: true,
+      // ... other TaskEntity properties from your actual data
+    }
+  ];
+  
+  // Convert user entity
+  const memberEntity = EntityConverter.convertEntity<'UserEntity'>(userEntity);
+  
+  // Convert task entities
+  const convertedTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(taskEntities);
+  
+  // Combine and convert all entities
+  const allEntities: any[] = [userEntity, ...taskEntities];
+  const convertedAll = allEntities.map(e => {
+    if (e.id === userEntity.id) {
+      return memberEntity; // Already converted
+    } else if ('name' in e && 'path' in e && 'draft' in e) {
+      // This is likely a TaskEntity
+      return EntityConverter.convertEntity<'TaskEntity'>(e);
+    }
+    // Try to determine type dynamically
+    return EntityConverter.convertEntity(e.constructor.name as keyof EntityConversionMap)(e);
+  });
+  
+  return {
+    memberEntity,
+    convertedTasks,
+    convertedAll,
+  };
+}
+
+
+
+
+async function getTaskEntitiesFromAPI(): Promise<TaskEntity[]> {
+  try {
+    // Replace with actual API call to get tasks
+    // const response = await fetch('/api/tasks');
+    // return await response.json();
+    
+    // For now, return mock data that matches TaskEntity structure
+    return [
+      { 
+        id: 1, 
+        name: "API Task 1", 
+        path: "/api/tasks/1", 
+        draft: false,
+        // Add all other TaskEntity properties as needed
+      },
+      { 
+        id: 2, 
+        name: "API Task 2", 
+        path: "/api/tasks/2", 
+        draft: true,
+        // Add all other TaskEntity properties as needed
+      }
+    ];
+  } catch (error) {
+    console.error('Failed to fetch tasks:', error);
+    return [];
+  }
+}
+
+async function getMultipleUserEntities(userIds: string[]) {
+  try {
+    const usersData = await getUsersData(userIds);
+    
+    // Check if usersData is undefined or null
+    if (!usersData) {
+      console.warn('No user data returned from API');
+      return []; // Return empty array
+    }
+    
+    // Check if usersData is an array
+    if (!Array.isArray(usersData)) {
+      console.warn('Expected array of user data, got:', typeof usersData);
+      return []; // Return empty array
+    }
+    
+    return usersData.map((userData: any) => {
+      return UserEntityFactory.createSecureUserEntity({
+        id: userData.id,
+        name: userData.name || userData.username || "Unknown User",
+        email: userData.email,
+        role: userData.role || "user",
+        avatar: userData.avatar || "",
+        
+        // AppEntity properties
+        appId: userData.appId || 'buddease-app',
+        appName: userData.appName || 'Buddease',
+        version: userData.version || '1.0.0',
+        environment: userData.environment || 'development',
+        status: userData.status || 'active',
+        
+        // Optional
+        createdAt: new Date(userData.createdAt || Date.now()),
+        updatedAt: new Date(userData.updatedAt || Date.now()),
+        isActive: userData.isActive ?? true,
+      });
+    });
+  } catch (error) {
+    console.error('Failed to fetch users data:', error);
+    throw error;
+  }
+}
+
+// Main updated example
+export async function convertUserAndTasks() {
+  const { userId, error } = useSecureUserId();
+
+  if (error) {
+    console.error('Authentication error:', error);
+    return null;
+  }
+
+  if (!userId) {
+    console.warn('No user ID available - using mock data');
+    
+    // Create mock user entity with all required properties
+    const mockUserEntity = createMockUserEntity("test-user-id");
+    
+    // Convert mock user entity
+    const mockMemberEntity = EntityConverter.convertEntity<'UserEntity'>(mockUserEntity);
+    
+    // Get mock tasks
+    const mockTaskEntities = await getTaskEntitiesFromAPI();
+    const convertedMockTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(mockTaskEntities);
+    
+    // Combine mock entities
+    const allMockEntities: any[] = [mockUserEntity, ...mockTaskEntities];
+    const convertedAllMock = allMockEntities.map(e => 
+      EntityConverter.convertEntity(e.constructor.name as keyof EntityConversionMap)
+    );
+    
+    return {
+      member: mockMemberEntity,
+      tasks: convertedMockTasks,
+      all: convertedAllMock,
+    };
+  }
+
+  try {
+    // Get REAL user data from API
+    const realUserEntity = await getUserEntityFromAPI(userId);
+    
+    // Convert to MemberEntity
+    const memberEntity = EntityConverter.convertEntity<'UserEntity'>(realUserEntity);
+    
+    // Get REAL task data from API
+    const taskEntities = await getTaskEntitiesFromAPI();
+    const convertedTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(taskEntities);
+    
+    // Convert all entities dynamically
+    const allEntities: any[] = [realUserEntity, ...taskEntities];
+    const convertedAll = allEntities.map(e => {
+      // Determine entity type
+      if (e === realUserEntity) {
+        return memberEntity; // Already converted
+      } else if (taskEntities.includes(e)) {
+        // Find the converted task
+        const taskIndex = taskEntities.indexOf(e);
+        return convertedTasks[taskIndex];
+      }
+      // Fallback: try to convert based on type
+      const entityType = e.constructor?.name as keyof EntityConversionMap;
+      if (entityType && entityConversionRules[entityType]) {
+        return entityConversionRules[entityType](e);
+      }
+      return e; // Return as-is if can't convert
+    });
+    
+    return {
+      member: memberEntity,
+      tasks: convertedTasks,
+      all: convertedAll,
+    };
+    
+  } catch (error) {
+    console.error('Error converting entities:', error);
+    
+    // Fallback to mock data on error
+    const fallbackUserEntity = createMockUserEntity(userId);
+    const fallbackMemberEntity = EntityConverter.convertEntity<'UserEntity'>(fallbackUserEntity);
+    
+    return {
+      member: fallbackMemberEntity,
+      tasks: [],
+      all: [fallbackMemberEntity],
+      error: 'Failed to load real data, using fallback',
+    };
+  }
+}
+
+// Helper function to create a properly formatted mock user entity
+function createMockUserEntity(userId: string): UserEntity {
+  const now = new Date();
+  return {
+    id: userId,
+    name: "Mock User",
+    email: "mock@example.com",
+    password: "mock-hashed-password",
+    role: "user",
+    username: "mockuser",
+    avatar: "",
+    teams: [],
+    createdAt: now,
+    updatedAt: now,
+    isActive: true,
+    // AppEntity properties
+    appId: 'buddease-mock',
+    appName: 'Buddease Mock',
+    version: '1.0.0',
+    environment: 'development',
+    status: 'active',
+    // Optional properties
+    lastLogin: now,
+    preferences: {},
+  };
+}

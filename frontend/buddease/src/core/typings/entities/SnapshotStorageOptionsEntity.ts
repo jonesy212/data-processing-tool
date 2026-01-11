@@ -4,7 +4,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
 // Define specific entity type for snapshot storage
- interface SnapshotStorageEntity extends BaseDataEntity {
+export interface SnapshotStorageEntity extends BaseDataEntity {
   baseURL?: string;
   enabled?: boolean;
   maxRetries?: number;
@@ -34,7 +34,7 @@ type SnapshotStorageBaseParams = {
 };
 
 export type {
-    SnapshotStorageAttachment, SnapshotStorageBaseParams, SnapshotStorageEntity, SnapshotStorageExcludedFields,
+    SnapshotStorageAttachment, SnapshotStorageBaseParams, SnapshotStorageExcludedFields,
     SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta
 };
 

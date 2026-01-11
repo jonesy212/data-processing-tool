@@ -3,13 +3,13 @@ import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } f
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
-import { DataStore } from "@/core/state/stores/DataStore";
+import type { DataStore } from "@/core/state/stores/DataStore";
 import SnapshotStore from "./SnapshotStore";
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties

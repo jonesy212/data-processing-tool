@@ -1,5 +1,5 @@
 // UndoRedoStore.ts
-import { Data, } from '@/core/models/data/Data';
+import { Data } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';

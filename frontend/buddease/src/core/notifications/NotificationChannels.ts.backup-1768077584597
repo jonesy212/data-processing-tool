@@ -1,0 +1,239 @@
+// NotificationChannels.ts
+import { CalendarIntegrationSettings, ScreenShareSettings, VideoSettings, VoiceSettings } from '@/core/components/communications/chat/CalendarIntegrationSettings';
+import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { UserPreferences } from '@/core/config/UserPreferences';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { BaseNotificationSettings } from "@/core/features/support/NotificationSettings";
+import ChatSettings from '@/core/hooks/userInterface/ChatSettings';
+import { Project } from '@/core/models/projects/Project';
+import {
+    EmailSettings,
+    InAppSettings,
+    PushNotificationSettings,
+    SmsSettings,
+    WebhookSettings
+} from '@/core/settings/Reminder';
+import { Crypto } from '@/core/state/stores/CryptoStore';
+
+export type AdvancedChannels = 'chat' | 'calendar' | 'audioCall' | 'videoCall' | 'screenShare';
+
+interface RetryPolicy {
+  // Core retry configuration
+  maxRetries: number;
+  retryInterval: number; // in milliseconds
+  backoffMultiplier?: number; // exponential backoff multiplier (e.g., 2 for doubling)
+  maxRetryInterval?: number; // maximum wait between retries in ms
+    backoffFactor: number;
+
+  // Retry conditions
+  retryableStatusCodes?: number[]; // HTTP status codes that should trigger retry
+  retryableErrors?: string[]; // Specific error messages that should trigger retry
+  
+  // Advanced behavior
+  jitter?: boolean; // Add random delay to avoid thundering herd
+  timeout?: number; // Overall timeout for all retry attempts
+  
+  // Monitoring
+  onRetry?: (attempt: number, error: Error) => void;
+  onGiveUp?: (finalError: Error, totalAttempts: number) => void;
+}
+
+interface QuietHours {
+  // Basic quiet hours
+  enabled: boolean;
+  startTime: string; // Format: "HH:MM" in 24-hour format, e.g., "22:00"
+  endTime: string;   // Format: "HH:MM" in 24-hour format, e.g., "07:00"
+  timeZone: string;  // IANA timezone, e.g., "America/New_York"
+  
+  // Days of week
+  days: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday')[];
+  
+  // Override rules
+  overrides?: {
+    criticalAlerts?: boolean; // Allow critical alerts during quiet hours
+    specificUsers?: string[]; // User IDs that can bypass quiet hours
+    emergencyContacts?: boolean; // Allow emergency contact notifications
+  };
+  
+  // Custom schedules
+  customSchedules?: {
+    id: string;
+    name: string;
+    startTime: string;
+    endTime: string;
+    days: string[];
+    appliesTo?: string[]; // Specific notification types or channels
+  }[];
+  
+  // Behavior during quiet hours
+  behavior?: 'silent' | 'delayed' | 'batched';
+  delayedDeliveryTime?: string; // When to deliver delayed notifications
+  
+  // Vacation/away mode
+  vacationMode?: {
+    enabled: boolean;
+    startDate: Date;
+    endDate: Date;
+    autoReply?: string;
+    emergencyContact?: string;
+  };
+}
+
+interface BasicNotificationChannels {
+  email: boolean;
+  push: boolean;
+  sms: boolean;
+  chat: boolean;
+  inApp: boolean;
+  webhook: boolean;
+  calendar: boolean;
+  audioCall: boolean;
+  videoCall: boolean;
+  screenShare: boolean;
+}
+
+interface NotificationChannels<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  // Basic channel settings (can be boolean or full settings)
+  email: boolean | EmailSettings;
+  push: boolean | PushNotificationSettings;
+  sms: boolean | SmsSettings;
+  inApp: boolean | InAppSettings;
+  webhook: boolean | WebhookSettings;
+  crypto?: Crypto;
+  project?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  // Advanced configurations (separate channels)
+    advanced?: {
+      [K in AdvancedChannels]?: { enabled: boolean } & (
+        K extends 'chat' ? ChatSettings :
+        K extends 'calendar' ? CalendarIntegrationSettings :
+        K extends 'audioCall' ? VoiceSettings :
+        K extends 'videoCall' ? VideoSettings :
+        K extends 'screenShare' ? ScreenShareSettings :
+        never
+      );
+    };
+
+  userPreferences?: UserPreferences<any, any>;
+  
+  // Global settings
+  deliveryStrategy?: 'all' | 'sequential' | 'priority' | 'priority-based'; // Add 'priority'
+  retryPolicy?: RetryPolicy;
+  quietHours?: QuietHours;
+}
+
+interface GeneralNotificationTypes {
+  mention: boolean;
+  reaction: boolean;
+  follow: boolean;
+  poke: boolean;
+  activity: boolean;
+  thread: boolean;
+  inviteAccepted: boolean;
+  task: boolean;
+  file: boolean;
+  meeting: boolean;
+  directMessage: boolean;
+
+  audioCall: boolean,
+  videoCall: boolean,
+  screenShare: boolean,
+  chat: boolean,
+  calendar: boolean,
+
+  announcement: boolean;
+  reminder: boolean;
+  project: boolean;
+  inApp: boolean;
+}
+
+interface CryptoNotificationTypes {
+  priceAlerts: boolean;
+  tradeConfirmation: boolean;
+  marketNews: boolean;
+}
+
+interface EventNotificationsSettings extends BaseNotificationSettings {
+  channels: NotificationChannels;
+  types: GeneralNotificationTypes;
+}
+
+
+
+// RetryPolicy examples
+const aggressiveRetry: RetryPolicy = {
+  maxRetries: 5,
+  retryInterval: 1000,
+  backoffFactor: 2, // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+  maxRetryInterval: 30000,
+  retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+  jitter: true,
+  timeout: 120000
+};
+
+const conservativeRetry: RetryPolicy = {
+  maxRetries: 3,
+  retryInterval: 5000,
+  retryableStatusCodes: [429, 500, 503],
+  backoffFactor: 1.5, // Exponential backoff: 5s, 7.5s, 11.25s
+};
+
+// QuietHours examples
+const standardQuietHours: QuietHours = {
+  enabled: true,
+  startTime: "22:00",
+  endTime: "07:00", 
+  timeZone: "America/New_York",
+  days: ['monday', 'tuesday', 'wednesday', 'thursday', 'sunday'],
+  overrides: {
+    criticalAlerts: true,
+    emergencyContacts: true
+  },
+  behavior: 'delayed',
+  delayedDeliveryTime: "07:00"
+};
+
+const weekendQuietHours: QuietHours = {
+  enabled: true,
+  startTime: "23:00",
+  endTime: "09:00",
+  timeZone: "UTC",
+  days: ['friday', 'saturday'],
+  overrides: {
+    criticalAlerts: true
+  }
+};
+
+
+// Best approach: Define a clear interface
+interface NotificationEndpointConfig {
+  // Basic channels (objects or empty configs)
+  email?: EmailSettings | {};
+  push?: PushNotificationSettings | {};
+  sms?: SmsSettings | {};
+  inApp?: InAppSettings | {};
+  webhook?: WebhookSettings | {};
+  
+  
+  // Advanced channels (just the settings without 'enabled')
+  chat?: Omit<ChatSettings, 'enabled'>;
+  calendar?: Omit<CalendarIntegrationSettings, 'enabled'>;
+  audioCall?: Omit<VoiceSettings, 'enabled'>;
+  videoCall?: Omit<VideoSettings, 'enabled'>;
+  screenShare?: Omit<ScreenShareSettings, 'enabled'>;
+  
+  // Global
+  deliveryStrategy?: NotificationChannels['deliveryStrategy'];
+  retryPolicy?: NotificationChannels['retryPolicy'];
+  quietHours?: NotificationChannels['quietHours'];
+}
+
+export type { BasicNotificationChannels, CryptoNotificationTypes, EventNotificationsSettings, GeneralNotificationTypes, NotificationChannels, NotificationEndpointConfig, RetryPolicy };
+

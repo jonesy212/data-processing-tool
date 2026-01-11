@@ -1,0 +1,53 @@
+// convertSnapshotContainer.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotContainerType } from "@/core/snapshots/SnapshotContainer";
+;
+
+/**
+ * Converts a SnapshotContainerType into a Snapshot instance.
+ */
+export function convertSnapshotContainer<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  container?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+  if (!container) return null;
+
+  try {
+    // Extract key data from the container
+    const {
+      snapshotId,
+      data,
+      meta,
+      attachments,
+      snapshotStore,
+      timestamp,
+      snapshotCategory,
+      snapshotSubscriberId,
+    } = container;
+
+    // Construct Snapshot instance
+    const snapshot = new Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+      id: snapshotId ?? data?.id ?? "temp-" + Date.now(),
+      data: data as T,
+      meta: meta as Meta,
+      attachments: attachments ?? [],
+      storeId: snapshotStore?.getStoreId?.() ?? 0,
+      timestamp: timestamp ?? new Date().toISOString(),
+      category: snapshotCategory,
+      subscriberId: snapshotSubscriberId ?? null,
+    });
+
+    return snapshot;
+  } catch (error) {
+    console.error("convertSnapshotContainer failed:", error);
+    return null;
+  }
+}

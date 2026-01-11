@@ -1,20 +1,21 @@
 // Attendee.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { Team } from '@/core/components/teams/Team';
-import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { Team } from '@/core/components/teams/Team';
+import type { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/core/config/BaseConfig';
 import { transformProjectToUnifiedMetadata } from '@/core/config/MetaDataOptions';
-import { projectMetadata, StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { projectMetadata, StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
-import { Member } from '@/core/models/members/Member';
+import type { Member } from '@/core/models/members/Member';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
+import type { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
 import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
-import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
-import { VideoData } from '@/core/typings/videoTypes/Video';
+import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
+import type { VideoData } from '@/core/typings/videoTypes/Video';
 import { useState } from 'react';
 import useAttendancePrediction from './AttendancePrediction';
+import type { AttendeeStatus } from '@/core/models/data/StatusType'
 
 interface Attendee {
   id: string;
@@ -22,6 +23,8 @@ interface Attendee {
   email: string;
   teamId: Team["id"];
   roleInTeam: string;
+  status: AttendeeStatus;
+  avatar?: string;
 }
 
 interface BusyTime {
@@ -103,7 +106,7 @@ const useAttendeeAvailabilityAnalysis = <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = never,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
   event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -206,7 +209,7 @@ const event: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtta
   attendees: [],
   location: "Event location",
   getData: () => Promise.resolve({}) as Promise<Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>>,
-  meta: {} as StructuredMetadata<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>
+  meta: {} as StructuredMetadata<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields, , string>
 };
 
 const calendarManagerState: CalendarManagerState = {

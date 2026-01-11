@@ -1,7 +1,7 @@
 // ChangeLogEntry.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Version } from '@/core/versions/Version';
 
 // ChangeLogEntry Interface

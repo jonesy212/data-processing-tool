@@ -22,7 +22,7 @@ module.exports = {
     '^@/hooks/(.*)$': '<rootDir>/src/app/hooks/$1',
     '^@/types/(.*)$': '<rootDir>/src/app/typings/$1',
     '^@/typings/(.*)$': '<rootDir>/src/app/typings/$1',
-    '^@/store/(.*)$': '<rootDir>/src/app/state/stores/$1',
+    '^@/store/(.*)$': '<rootDir>/src/core/state/stores/$1',
     '^@/state/(.*)$': '<rootDir>/src/app/state/$1',
     '^@/generators/(.*)$': '<rootDir>/src/app/generators/$1',
     

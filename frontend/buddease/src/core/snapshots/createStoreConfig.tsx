@@ -12,7 +12,7 @@ import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { convertMetadata } from '@/core/snapshots/convertMetadata';
 import { ConfigureSnapshotStorePayload } from "@/core/snapshots/SnapshotConfig";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";

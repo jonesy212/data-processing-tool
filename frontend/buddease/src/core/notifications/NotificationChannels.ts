@@ -2,7 +2,7 @@
 import { CalendarIntegrationSettings, ScreenShareSettings, VideoSettings, VoiceSettings } from '@/core/components/communications/chat/CalendarIntegrationSettings';
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserPreferences } from '@/core/config/UserPreferences';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseNotificationSettings } from "@/core/features/support/NotificationSettings";
 import ChatSettings from '@/core/hooks/userInterface/ChatSettings';
 import { Project } from '@/core/models/projects/Project';
@@ -23,7 +23,8 @@ interface RetryPolicy {
   retryInterval: number; // in milliseconds
   backoffMultiplier?: number; // exponential backoff multiplier (e.g., 2 for doubling)
   maxRetryInterval?: number; // maximum wait between retries in ms
-    backoffFactor: number;
+  backoffFactor: number;
+  retryIntervalSeconds?: number;
 
   // Retry conditions
   retryableStatusCodes?: number[]; // HTTP status codes that should trigger retry
@@ -32,7 +33,6 @@ interface RetryPolicy {
   // Advanced behavior
   jitter?: boolean; // Add random delay to avoid thundering herd
   timeout?: number; // Overall timeout for all retry attempts
-  
   // Monitoring
   onRetry?: (attempt: number, error: Error) => void;
   onGiveUp?: (finalError: Error, totalAttempts: number) => void;

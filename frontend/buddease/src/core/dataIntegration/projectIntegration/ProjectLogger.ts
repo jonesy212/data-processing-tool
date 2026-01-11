@@ -1,7 +1,7 @@
 // ProjectLogger.ts
 import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
-import { createErrorNotificationContent, errorLogger } from '@/core/logging/Logger';
+import { errorLogger } from '@/core/logging/Logger';
 
 //  If you don't have this function, create a simple version
 
@@ -450,7 +450,10 @@ export class ProjectLogger extends Logger {
     );
 
     // Remove or fix the errorLogger reference
-    this.logError(errorMessage, new Error(errorMessage));
+    const error = context?.stackTrace 
+      ? new Error(errorMessage) 
+      : errorMessage;
+    this.logError(errorMessage, error, context);
 
     console.error("Project Error Details:", {
       projectId,

@@ -1,6 +1,6 @@
 ThemeUtils.ts
 
-import { ComponentsConfig } from "@/core/config/ComponentsConfig";
+import type { ComponentsConfig } from "@/core/config/ComponentsConfig";
 import { DEFAULT_COLOR } from "@/core/libraries/ui/theme/ThemeConfig";
 
 /**

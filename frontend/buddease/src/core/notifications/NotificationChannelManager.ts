@@ -1,7 +1,7 @@
-import { Project } from '@/core/models/projects/Project';
 import { BasicChannels } from '@/core/notifications/NotificationChannelHelper';
-import { NotificationChannels, NotificationEndpointConfig } from '@/core/notifications/NotificationChannels';
-import { EmailSettings, PushNotificationSettings } from '@/core/settings/Reminder';
+import type { Project } from '@/core/models/projects/Project';
+import type { NotificationChannels, NotificationEndpointConfig } from '@/core/notifications/NotificationChannels';
+import type { EmailSettings, PushNotificationSettings } from '@/core/settings/Reminder';
 
 export interface ChannelSettings {
   enabled: boolean;
@@ -44,17 +44,20 @@ export interface VoiceSettings extends ChannelSettings {
   provider: 'twilio' | 'vonage' | 'custom';
   voiceType?: string;
   language?: string;
+  maxParticipants?: number;
 }
 
 export interface VideoSettings extends ChannelSettings {
   provider: 'zoom' | 'teams' | 'jitsi';
   recordingEnabled?: boolean;
+  maxParticipants?: number;
 }
 
 export interface ScreenShareSettings extends ChannelSettings {
   provider: 'zoom' | 'teams' | 'custom' | 'jitsi';
   maxParticipants?: number;
-  allowControl: boolean
+  allowControl: boolean;
+  maxParticipants?: number;
 }
 
 
@@ -144,13 +147,13 @@ export class NotificationChannelManager {
   setAdvancedChannel(channel: 'screenShare', config: { enabled: boolean } & ScreenShareSettings): void;
 
 
-  setAdvancedChannel<K extends keyof AdvancedChannelConfigMap>(
-  channel: K,
-  config: AdvancedChannelConfigMap[K]
-) {
-  if (!this.channels.advanced) this.channels.advanced = {};
-  this.channels.advanced[channel] = config;
-  this.updateEndpointConfig();
+ setAdvancedChannel<K extends keyof AdvancedChannelConfigMap>(
+    channel: K,
+    config: AdvancedChannelConfigMap[K]
+  ) {
+    if (!this.channels.advanced) this.channels.advanced = {};
+    this.channels.advanced[channel] = config;
+    this.updateEndpointConfig();
   }
   
   // Check if any channel is enabled
@@ -239,6 +242,11 @@ export class NotificationChannelManager {
         name: 'My Project',
         description: 'Project Description',
         members: [],
+        leader: '',
+        budget: '',
+        phase: '',
+        phases: [],
+      
         tasks: [],                 // default empty
         startDate: new Date(),     // default now
         endDate: new Date(),       // default now

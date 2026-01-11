@@ -6,7 +6,7 @@ import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { SnapshotStoreOptions } from '@/core/snapshots/useSnapshotStore';
-import { useDataStore } from '@/core/state/stores/DataStore';
+import type { useDataStore } from '@/core/state/stores/DataStore';
 import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
 import {
     StorePropAttachment,

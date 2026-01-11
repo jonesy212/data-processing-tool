@@ -16,7 +16,7 @@ import { NotificationType } from '@/core/features/support/UnifiedNotificationTyp
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/core/interfaces/payload/payloadTypes";
 import { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
 import { Snapshots, SnapshotsArray, SnapshotUnion, } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { TransformMethods } from "@/core/snapshots/methods/transformMethods";
@@ -27,7 +27,7 @@ import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
-import { DataStore } from "@/core/state/stores/DataStore";
+import type { DataStore } from "@/core/state/stores/DataStore";
 import { AuditRecord, Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Subscription } from '@/core/subscriptions/Subscription';

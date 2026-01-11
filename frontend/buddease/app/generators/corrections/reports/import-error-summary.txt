@@ -1693,17 +1693,17 @@ src/app/hooks/useSorting.ts (4 errors):
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/settings/SortCriteria
 
-  2. Line 6: "@/app/state/stores/CalendarEvent"
+  2. Line 6: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   3. Line 5: "@/settings/SortCriteria"
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/settings/SortCriteria
 
-  4. Line 6: "@/app/state/stores/CalendarEvent"
+  4. Line 6: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
 src/app/hooks/useSubscription.tsx (3 errors):
   1. Line 5: "@/app/snapshots"
@@ -5043,30 +5043,30 @@ src/app/components/calendar/CalendarPhase.tsx (2 errors):
      Fix: Change "@/app/navigation/navigateToCalendar" to "@/app/navigation/navigateToCalendar" (Fix @/app imports)
 
 src/app/components/calendar/CalendarProvider.jsx (4 errors):
-  1. Line 2: "@/app/state/stores/TaskStore"
+  1. Line 2: "@/core/state/stores/TaskStore"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/TaskStore" to "@/app/state/stores/TaskStore" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/TaskStore" to "@/core/state/stores/TaskStore" (Fix @/app imports)
 
   2. Line 3: "@/CalendarEvents"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/CalendarEvents
 
-  3. Line 2: "@/app/state/stores/TaskStore"
+  3. Line 2: "@/core/state/stores/TaskStore"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/TaskStore" to "@/app/state/stores/TaskStore" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/TaskStore" to "@/core/state/stores/TaskStore" (Fix @/app imports)
 
   4. Line 3: "@/CalendarEvents"
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/CalendarEvents
 
 src/app/components/calendar/CalendarService.tsx (2 errors):
-  1. Line 7: "@/app/state/stores/CalendarEvent"
+  1. Line 7: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
-  2. Line 7: "@/app/state/stores/CalendarEvent"
+  2. Line 7: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
 src/app/components/calendar/CalendarView.tsx (6 errors):
   1. Line 10: "@/app/calendar/CalendarDay"
@@ -5094,17 +5094,17 @@ src/app/components/calendar/CalendarView.tsx (6 errors):
      Fix: Change "@/app/calendar/CalendarDay" to "@/app/calendar/CalendarDay" (Fix @/app imports)
 
 src/app/components/calendar/CalendarWeek.tsx (4 errors):
-  1. Line 5: "@/app/state/stores/CalendarEvent"
+  1. Line 5: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   2. Line 6: "@/CalendarWeek"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/CalendarWeek
 
-  3. Line 5: "@/app/state/stores/CalendarEvent"
+  3. Line 5: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   4. Line 6: "@/CalendarWeek"
      Type: MISSING, Severity: low
@@ -5513,9 +5513,9 @@ src/app/components/crypto/ExchangeComponent.tsx (8 errors):
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/models/data/fetchExchangeData" to "@/app/components/models/data/fetchExchangeData" (Fix @/app imports)
 
-  4. Line 8: "@/app/state/stores/CalendarEvent"
+  4. Line 8: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   5. Line 2: "@/.@/app/hooks/commHooks/useRealtimeExchangeData"
      Type: MISSING, Severity: high
@@ -5529,9 +5529,9 @@ src/app/components/crypto/ExchangeComponent.tsx (8 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/components/models/data/fetchExchangeData" to "@/app/components/models/data/fetchExchangeData" (Fix @/app imports)
 
-  8. Line 8: "@/app/state/stores/CalendarEvent"
+  8. Line 8: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
 src/app/components/crypto/StrategyOptions.ts (2 errors):
   1. Line 3: "./TradingStrategy"
@@ -7029,9 +7029,9 @@ src/app/hooks/phases/LifecycleManager.ts (2 errors):
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phases/Lifecycle
 
 src/app/hooks/phases/UIPhase.ts (6 errors):
-  1. Line 16: "@/app/state/stores/CalendarEvent"
+  1. Line 16: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   2. Line 21: "@/models/data/BaseConfig"
      Type: ESM_RUNTIME, Severity: medium
@@ -7041,9 +7041,9 @@ src/app/hooks/phases/UIPhase.ts (6 errors):
      Type: ESM_RUNTIME, Severity: medium
      Fix: Change "@/models/data/Attachment" to "@/src/models/data/Attachment" (Fix root aliases to use src subdirectory)
 
-  4. Line 16: "@/app/state/stores/CalendarEvent"
+  4. Line 16: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   5. Line 21: "@/models/data/BaseConfig"
      Type: MISSING, Severity: medium
@@ -7898,13 +7898,13 @@ src/app/pages/blog/BlogUtils.ts (1 errors):
      Fix: Try one of these paths: Blog.ts
 
 src/app/pages/blog/CalendarUtils.ts (2 errors):
-  1. Line 3: "@/app/state/stores/CalendarEvent"
+  1. Line 3: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
-  2. Line 3: "@/app/state/stores/CalendarEvent"
+  2. Line 3: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
 src/app/pages/blog/generateSimulatedEventsUtils.tsx (1 errors):
   1. Line 5: "./CalendarUtils"
@@ -7945,17 +7945,17 @@ src/app/pages/community/CollaborationPage.tsx (4 errors):
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/documents/editing/triggerAutosave" to "@/app/components/documents/editing/triggerAutosave" (Fix @/app imports)
 
-  2. Line 6: "@/app/state/stores/CalendarEvent"
+  2. Line 6: "@/core/state/stores/CalendarEvent"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
   3. Line 2: "@/app/components/documents/editing/triggerAutosave"
      Type: MISSING, Severity: high
      Fix: Change "@/app/components/documents/editing/triggerAutosave" to "@/app/components/documents/editing/triggerAutosave" (Fix @/app imports)
 
-  4. Line 6: "@/app/state/stores/CalendarEvent"
+  4. Line 6: "@/core/state/stores/CalendarEvent"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/CalendarEvent" to "@/app/state/stores/CalendarEvent" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/CalendarEvent" to "@/core/state/stores/CalendarEvent" (Fix @/app imports)
 
 src/app/pages/community/CommunityProjectsPage.tsx (4 errors):
   1. Line 3: "@/app/components/models/CommunityData"
@@ -9737,17 +9737,17 @@ src/app/snapshots/methods/validationMethods.ts (8 errors):
      Fix: Change "@/app/snapshotstoreOptions" to "@/app/snapshotstoreOptions" (Fix @/app imports)
 
 src/app/state/context/AppContext.tsx (3 errors):
-  1. Line 6: "@/app/state/stores/TaskStore"
+  1. Line 6: "@/core/state/stores/TaskStore"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/TaskStore" to "@/app/state/stores/TaskStore" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/TaskStore" to "@/core/state/stores/TaskStore" (Fix @/app imports)
 
   2. Line 7: "../stores/PhaseStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: ../stores/PhaseStore.tsx
 
-  3. Line 6: "@/app/state/stores/TaskStore"
+  3. Line 6: "@/core/state/stores/TaskStore"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/TaskStore" to "@/app/state/stores/TaskStore" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/TaskStore" to "@/core/state/stores/TaskStore" (Fix @/app imports)
 
 src/app/state/context/AppContextBridge.ts (2 errors):
   1. Line 3: "./AppStoresContext"
@@ -9886,7 +9886,7 @@ src/app/state/redux/RootSagas.ts (9 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/state/redux/sagas/tenantSags" to "@/app/state/redux/sagas/tenantSags" (Fix @/app imports)
 
-src/app/state/stores/AppCacheManagerStore.ts (2 errors):
+src/core/state/stores/AppCacheManagerStore.ts (2 errors):
   1. Line 3: "@/app/utils/AppCacheManager"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/utils/AppCacheManager" to "@/app/utils/AppCacheManager" (Fix @/app imports)
@@ -9895,7 +9895,7 @@ src/app/state/stores/AppCacheManagerStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/utils/AppCacheManager" to "@/app/utils/AppCacheManager" (Fix @/app imports)
 
-src/app/state/stores/AppStore.ts (3 errors):
+src/core/state/stores/AppStore.ts (3 errors):
   1. Line 3: "@/app/components/calendar/CalendarSlice"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/calendar/CalendarSlice" to "@/app/components/calendar/CalendarSlice" (Fix @/app imports)
@@ -9908,7 +9908,7 @@ src/app/state/stores/AppStore.ts (3 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: @reduxjs/toolkit
 
-src/app/state/stores/AquaStore.ts (2 errors):
+src/core/state/stores/AquaStore.ts (2 errors):
   1. Line 4: "@/app/components/aqua/types"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/aqua/types" to "@/app/components/aqua/types" (Fix @/app imports)
@@ -9917,7 +9917,7 @@ src/app/state/stores/AquaStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/components/aqua/types" to "@/app/components/aqua/types" (Fix @/app imports)
 
-src/app/state/stores/AssignBaseStore.tsx (4 errors):
+src/core/state/stores/AssignBaseStore.tsx (4 errors):
   1. Line 22: "./AssignEventStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: AssignEventStore.tsx
@@ -9934,16 +9934,16 @@ src/app/state/stores/AssignBaseStore.tsx (4 errors):
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: presentationStore.ts
 
-src/app/state/stores/AssignTaskStore.tsx (2 errors):
-  1. Line 2: "@/app/state/stores/AssignBaseStore"
+src/core/state/stores/AssignTaskStore.tsx (2 errors):
+  1. Line 2: "@/core/state/stores/AssignBaseStore"
      Type: ESM_RUNTIME, Severity: high
-     Fix: Change "@/app/state/stores/AssignBaseStore" to "@/app/state/stores/AssignBaseStore" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/AssignBaseStore" to "@/core/state/stores/AssignBaseStore" (Fix @/app imports)
 
-  2. Line 2: "@/app/state/stores/AssignBaseStore"
+  2. Line 2: "@/core/state/stores/AssignBaseStore"
      Type: MISSING, Severity: high
-     Fix: Change "@/app/state/stores/AssignBaseStore" to "@/app/state/stores/AssignBaseStore" (Fix @/app imports)
+     Fix: Change "@/core/state/stores/AssignBaseStore" to "@/core/state/stores/AssignBaseStore" (Fix @/app imports)
 
-src/app/state/stores/AssignTeamMemberStore.tsx (2 errors):
+src/core/state/stores/AssignTeamMemberStore.tsx (2 errors):
   1. Line 2: "@/app/AssignBaseStore"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/AssignBaseStore" to "@/app/AssignBaseStore" (Fix @/app imports)
@@ -9952,12 +9952,12 @@ src/app/state/stores/AssignTeamMemberStore.tsx (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/AssignBaseStore" to "@/app/AssignBaseStore" (Fix @/app imports)
 
-src/app/state/stores/AuthStore.ts (1 errors):
+src/core/state/stores/AuthStore.ts (1 errors):
   1. Line 15: "./Scopes"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: Scopes.ts
 
-src/app/state/stores/CalendarManagerStore.spec.ts (9 errors):
+src/core/state/stores/CalendarManagerStore.spec.ts (9 errors):
   1. Line 2: "@/app/components/context/NotificationContext"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/context/NotificationContext" to "@/app/components/context/NotificationContext" (Fix @/app imports)
@@ -9976,7 +9976,7 @@ src/app/state/stores/CalendarManagerStore.spec.ts (9 errors):
 
   5. Line 16: "./CalendarEvent"
      Type: ESM_RUNTIME, Severity: low
-     Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarEvent
+     Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarEvent
 
   6. Line 2: "@/app/components/context/NotificationContext"
      Type: MISSING, Severity: high
@@ -9994,7 +9994,7 @@ src/app/state/stores/CalendarManagerStore.spec.ts (9 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/AssignEventStore
 
-src/app/state/stores/CalendarManagerStore.tsx (9 errors):
+src/core/state/stores/CalendarManagerStore.tsx (9 errors):
   1. Line 42: "./AssignEventStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: AssignEventStore.tsx
@@ -10031,7 +10031,7 @@ src/app/state/stores/CalendarManagerStore.tsx (9 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/snapshots" to "@/app/snapshots" (Fix @/app imports)
 
-src/app/state/stores/CollaborationStore.ts (4 errors):
+src/core/state/stores/CollaborationStore.ts (4 errors):
   1. Line 2: "@/app/AssignBaseStore"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/AssignBaseStore" to "@/app/AssignBaseStore" (Fix @/app imports)
@@ -10048,7 +10048,7 @@ src/app/state/stores/CollaborationStore.ts (4 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/AssignBaseStore" to "@/app/AssignBaseStore" (Fix @/app imports)
 
-src/app/state/stores/CommonEvent.ts (2 errors):
+src/core/state/stores/CommonEvent.ts (2 errors):
   1. Line 15: "@/app/snapshots"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/snapshots" to "@/app/snapshots" (Fix @/app imports)
@@ -10057,7 +10057,7 @@ src/app/state/stores/CommonEvent.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/snapshots" to "@/app/snapshots" (Fix @/app imports)
 
-src/app/state/stores/ContentStore.ts (2 errors):
+src/core/state/stores/ContentStore.ts (2 errors):
   1. Line 5: "@/app/models/content/ContentItem"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/models/content/ContentItem" to "@/app/models/content/ContentItem" (Fix @/app imports)
@@ -10066,7 +10066,7 @@ src/app/state/stores/ContentStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/models/content/ContentItem" to "@/app/models/content/ContentItem" (Fix @/app imports)
 
-src/app/state/stores/DataStore.ts (2 errors):
+src/core/state/stores/DataStore.ts (2 errors):
   1. Line 30: "@/app/snapshots"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/snapshots" to "@/app/snapshots" (Fix @/app imports)
@@ -10075,7 +10075,7 @@ src/app/state/stores/DataStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/snapshots" to "@/app/snapshots" (Fix @/app imports)
 
-src/app/state/stores/DetailsListStore.ts (4 errors):
+src/core/state/stores/DetailsListStore.ts (4 errors):
   1. Line 24: "@/app/components/documents/types"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/documents/types" to "@/app/components/documents/types" (Fix @/app imports)
@@ -10092,7 +10092,7 @@ src/app/state/stores/DetailsListStore.ts (4 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/snapshots" to "@/app/snapshots" (Fix @/app imports)
 
-src/app/state/stores/DocumentStore.ts (3 errors):
+src/core/state/stores/DocumentStore.ts (3 errors):
   1. Line 41: "./../../versions/VersionData"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: ../../versions/VersionData.ts
@@ -10105,7 +10105,7 @@ src/app/state/stores/DocumentStore.ts (3 errors):
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: DetailsListStore.ts
 
-src/app/state/stores/FilterStore.ts (2 errors):
+src/core/state/stores/FilterStore.ts (2 errors):
   1. Line 12: "@/app/documents/screenFunctionality/HighlightEvent"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/documents/screenFunctionality/HighlightEvent" to "@/app/documents/screenFunctionality/HighlightEvent" (Fix @/app imports)
@@ -10114,7 +10114,7 @@ src/app/state/stores/FilterStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/documents/screenFunctionality/HighlightEvent" to "@/app/documents/screenFunctionality/HighlightEvent" (Fix @/app imports)
 
-src/app/state/stores/HistoryStore.tsx (2 errors):
+src/core/state/stores/HistoryStore.tsx (2 errors):
   1. Line 2: "@/UndoRedoStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/UndoRedoStore
@@ -10123,7 +10123,7 @@ src/app/state/stores/HistoryStore.tsx (2 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/UndoRedoStore
 
-src/app/state/stores/IconStore.ts (4 errors):
+src/core/state/stores/IconStore.ts (4 errors):
   1. Line 3: "@/state/stores/RootStores"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/state/stores/RootStores
@@ -10140,7 +10140,7 @@ src/app/state/stores/IconStore.ts (4 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/states/stores/StoreKeyGenerator" to "@/app/states/stores/StoreKeyGenerator" (Fix @/app imports)
 
-src/app/state/stores/NotificationServiceClass.ts (11 errors):
+src/core/state/stores/NotificationServiceClass.ts (11 errors):
   1. Line 16: "@/app/state/store"
      Type: ESM_RUNTIME, Severity: high
      Fix: Replace require('@/app/state/store') with ES6 import syntax
@@ -10185,12 +10185,12 @@ src/app/state/stores/NotificationServiceClass.ts (11 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/state/store" to "@/app/state/store" (Fix @/app imports)
 
-src/app/state/stores/PaginationStore.ts (1 errors):
+src/core/state/stores/PaginationStore.ts (1 errors):
   1. Line 66: "./PaginationStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: PaginationStore.ts
 
-src/app/state/stores/PhaseStore.tsx (2 errors):
+src/core/state/stores/PhaseStore.tsx (2 errors):
   1. Line 7: "@/app/video/Video"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/video/Video" to "@/app/video/Video" (Fix @/app imports)
@@ -10199,7 +10199,7 @@ src/app/state/stores/PhaseStore.tsx (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/video/Video" to "@/app/video/Video" (Fix @/app imports)
 
-src/app/state/stores/ProjectStore.ts (4 errors):
+src/core/state/stores/ProjectStore.ts (4 errors):
   1. Line 4: "@/types/PhaseEntity"
      Type: ESM_RUNTIME, Severity: low
      Fix: Change "@/types/PhaseEntity" to "@/app/models/PhaseEntity" (Fix PhaseEntity import path)
@@ -10216,7 +10216,7 @@ src/app/state/stores/ProjectStore.ts (4 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/typiings/entites/milestoneTypes" to "@/app/typiings/entites/milestoneTypes" (Fix @/app imports)
 
-src/app/state/stores/RootStoreComponent.tsx (6 errors):
+src/core/state/stores/RootStoreComponent.tsx (6 errors):
   1. Line 6: "./BrowserCheckStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: BrowserCheckStore.ts
@@ -10241,7 +10241,7 @@ src/app/state/stores/RootStoreComponent.tsx (6 errors):
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: IconStore.ts
 
-src/app/state/stores/RootStores.ts (3 errors):
+src/core/state/stores/RootStores.ts (3 errors):
   1. Line 2: "./../../libraries/eventSystem/callbackRegistry"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: ../../libraries/eventSystem/callbackRegistry.ts
@@ -10254,12 +10254,12 @@ src/app/state/stores/RootStores.ts (3 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/state/hybrid/SettingManagerStore" to "@/app/state/hybrid/SettingManagerStore" (Fix @/app imports)
 
-src/app/state/stores/StoreGenerator.tsx (1 errors):
+src/core/state/stores/StoreGenerator.tsx (1 errors):
   1. Line 7: "fs"
      Type: ESM_RUNTIME, Severity: high
      Fix: Replace require('fs') with ES6 import syntax
 
-src/app/state/stores/StoreKeyGenerator.ts (2 errors):
+src/core/state/stores/StoreKeyGenerator.ts (2 errors):
   1. Line 17: "@/store_key_generator"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/store_key_generator
@@ -10268,12 +10268,12 @@ src/app/state/stores/StoreKeyGenerator.ts (2 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/store_key_generator
 
-src/app/state/stores/TaskStore .tsx (1 errors):
+src/core/state/stores/TaskStore .tsx (1 errors):
   1. Line 38: "./AssignTaskStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: AssignTaskStore.tsx
 
-src/app/state/stores/TeamStore.tsx (2 errors):
+src/core/state/stores/TeamStore.tsx (2 errors):
   1. Line 36: "./AssignTeamMemberStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: AssignTeamMemberStore.tsx
@@ -10282,7 +10282,7 @@ src/app/state/stores/TeamStore.tsx (2 errors):
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: VideoStore.ts
 
-src/app/state/stores/ThemeStore.ts (2 errors):
+src/core/state/stores/ThemeStore.ts (2 errors):
   1. Line 4: "@/app/security/validateTheme"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/security/validateTheme" to "@/app/security/validateTheme" (Fix @/app imports)
@@ -10291,7 +10291,7 @@ src/app/state/stores/ThemeStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/security/validateTheme" to "@/app/security/validateTheme" (Fix @/app imports)
 
-src/app/state/stores/TodoStore.ts (2 errors):
+src/core/state/stores/TodoStore.ts (2 errors):
   1. Line 22: "@/DetailsListStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/DetailsListStore
@@ -10300,7 +10300,7 @@ src/app/state/stores/TodoStore.ts (2 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/DetailsListStore
 
-src/app/state/stores/TrackerStore.ts (2 errors):
+src/core/state/stores/TrackerStore.ts (2 errors):
   1. Line 4: "@/RootStores"
      Type: ESM_RUNTIME, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootStores
@@ -10309,7 +10309,7 @@ src/app/state/stores/TrackerStore.ts (2 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootStores
 
-src/app/state/stores/UIStore.ts (6 errors):
+src/core/state/stores/UIStore.ts (6 errors):
   1. Line 7: "@/app/crypto/SafeParseData"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/crypto/SafeParseData" to "@/app/crypto/SafeParseData" (Fix @/app imports)
@@ -10334,12 +10334,12 @@ src/app/state/stores/UIStore.ts (6 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/utils/createMessage" to "@/app/utils/createMessage" (Fix @/app imports)
 
-src/app/state/stores/UserPresentationsStore.ts (1 errors):
+src/core/state/stores/UserPresentationsStore.ts (1 errors):
   1. Line 11: "./AssignEventStore"
      Type: ESM_RUNTIME, Severity: low
      Fix: Try one of these paths: AssignEventStore.tsx
 
-src/app/state/stores/UserStore.ts (7 errors):
+src/core/state/stores/UserStore.ts (7 errors):
   1. Line 12: "@/app/models/crypto/SanitizationFunctions"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/models/crypto/SanitizationFunctions" to "@/app/models/crypto/SanitizationFunctions" (Fix @/app imports)
@@ -10368,7 +10368,7 @@ src/app/state/stores/UserStore.ts (7 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/models/tasks/TaskDataSource" to "@/app/models/tasks/TaskDataSource" (Fix @/app imports)
 
-src/app/state/stores/presentationStore.ts (2 errors):
+src/core/state/stores/presentationStore.ts (2 errors):
   1. Line 8: "@/app/models/crypto/SanitizationFunctions"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/models/crypto/SanitizationFunctions" to "@/app/models/crypto/SanitizationFunctions" (Fix @/app imports)
@@ -12652,7 +12652,7 @@ src/app/state/redux/slices/useTagManagerSlice.ts (5 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/RootSlice
 
-src/app/state/stores/UserPreferences/UserPreferencesStore.ts (2 errors):
+src/core/state/stores/UserPreferences/UserPreferencesStore.ts (2 errors):
   1. Line 4: "@/app/components/libraries/ui/theme/ThemeConfig"
      Type: ESM_RUNTIME, Severity: high
      Fix: Change "@/app/components/libraries/ui/theme/ThemeConfig" to "@/app/components/libraries/ui/theme/ThemeConfig" (Fix @/app imports)
@@ -12661,14 +12661,14 @@ src/app/state/stores/UserPreferences/UserPreferencesStore.ts (2 errors):
      Type: MISSING, Severity: high
      Fix: Change "@/app/components/libraries/ui/theme/ThemeConfig" to "@/app/components/libraries/ui/theme/ThemeConfig" (Fix @/app imports)
 
-src/app/state/stores/hooks/useProjectManager.ts (2 errors):
+src/core/state/stores/hooks/useProjectManager.ts (2 errors):
   1. Line 5: "../mobx/ProjectManagerStore"
      Type: ESM_RUNTIME, Severity: low
-     Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/mobx/ProjectManagerStore
+     Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/mobx/ProjectManagerStore
 
   2. Line 5: "../mobx/ProjectManagerStore"
      Type: MISSING, Severity: low
-     Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/mobx/ProjectManagerStore
+     Fix: Check if file exists: /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/mobx/ProjectManagerStore
 
 src/utils/web3/dAppAdapter/functionality/RealtimeUpdates.tsx (7 errors):
   1. Line 6: "@/app/calendar/DatePicker"
@@ -13770,12 +13770,12 @@ src/app/state/redux/SliceGenerator.tsx (1 errors):
      Type: MISSING, Severity: low
      Fix: Check if file exists: @reduxjs/toolkit
 
-src/app/state/stores/UISlice.ts (1 errors):
+src/core/state/stores/UISlice.ts (1 errors):
   1. Line 3: "@reduxjs/toolkit"
      Type: MISSING, Severity: low
      Fix: Check if file exists: @reduxjs/toolkit
 
-src/app/state/stores/useAppDispatch.ts (1 errors):
+src/core/state/stores/useAppDispatch.ts (1 errors):
   1. Line 3: "@reduxjs/toolkit"
      Type: MISSING, Severity: low
      Fix: Check if file exists: @reduxjs/toolkit

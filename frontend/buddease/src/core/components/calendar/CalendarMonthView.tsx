@@ -9,7 +9,7 @@ import { MonthInfo } from '@/core/components/calendar/Month';
 import CryptoTransaction from '@/core/components/crypto/CryptoTransaction';
 import TaskList from '@/core/components/lists/TaskList';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition, PriorityTypeEnum } from '@/core/models/data/StatusType';
 import { Project } from '@/core/models/projects/Project';

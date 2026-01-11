@@ -4,7 +4,7 @@
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import { IBackendStructure } from '@/core/config/appStructure/IBackendStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import BackendStructure from "@/core/server/database/BackendStructure";
 import { promises as fsPromises } from "fs";

@@ -26,9 +26,9 @@ import { MixedCriteria } from '@/core/pages/searches/CriteriaOptions';
 import { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 
-import '@/core/snapshots/Snapshot';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData, SnapshotItem } from '@/core/snapshots/SnapshotList';
 import { SnapshotStoreMethods } from '@/core/snapshots/SnapshotStoreMethods';

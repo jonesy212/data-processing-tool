@@ -49,8 +49,8 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { isValidFileCategory } from "@/core/snapshots/isValidFileCategory";
 
 // Data store and methods
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStore } from '@/core/state/stores/DataStore';
 
 // Operations and config
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
@@ -3169,9 +3169,6 @@ export default snapshotApi;
 
 export {
     createSnapshotContainer
-    // ... other exports
-    ,
-
     getSnapshot,
     getSnapshotCriteria,
     getSnapshotId

@@ -1,9 +1,9 @@
 // CommonEntities.ts
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
-import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import BackendStructure from '@/core/server/database/BackendStructure';
-import { Document } from '@/core/state/stores/DocumentStore';
+import type { Document } from '@/core/state/stores/DocumentStore';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/core/typings/entities/AppEntity";
 
 // Create helper types for common patterns

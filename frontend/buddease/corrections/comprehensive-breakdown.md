@@ -2921,127 +2921,127 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 2
 
 ### AssignBaseStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignBaseStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignBaseStore.tsx
 **Total Issues:** 4
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 2
 
 ### AssignEventStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignEventStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignEventStore.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### AssignTaskStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTaskStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTaskStore.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 2
 
 ### AssignTeamMemberStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTeamMemberStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTeamMemberStore.tsx
 **Total Issues:** 4
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 2
 
 ### CalendarManagerStore.spec
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### CalendarManagerStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### DataStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DataStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DataStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### DetailsListStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### ErrorStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ErrorStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ErrorStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### FilterStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/FilterStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/FilterStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
 
 ### HistoryStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/HistoryStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/HistoryStore.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### IconStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/IconStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/IconStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### MobXEntityStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/MobXEntityStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/MobXEntityStore.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### NotificationServiceClass
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### NotificationStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationStore.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### ProjectStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ProjectStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ProjectStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### RootStores
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStores.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStores.ts
 **Total Issues:** 4
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 2
 
 ### SettingsStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/SettingsStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/SettingsStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### TaskStore 
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TaskStore .tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TaskStore .tsx
 **Total Issues:** 4
 **Critical:** 1 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### TeamStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx
 **Total Issues:** 4
 **Critical:** 1 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### TodoStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts
 **Total Issues:** 5
 **Critical:** 1 | **High:** 0 | **Medium:** 2 | **Low:** 2
 
 ### ToolbarStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ToolbarStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ToolbarStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### TrackerStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TrackerStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TrackerStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
 
 ### UserStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts
 **Total Issues:** 5
 **Critical:** 1 | **High:** 0 | **Medium:** 2 | **Low:** 2
 
 ### presentationStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/presentationStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/presentationStore.ts
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 2
 
@@ -5136,67 +5136,67 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### ArticleStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ArticleStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ArticleStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### AuthStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AuthStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AuthStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### BrowserCheckStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/BrowserCheckStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/BrowserCheckStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### CollaborationStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CollaborationStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CollaborationStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### CommonEvent
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CommonEvent.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### ControlPanelStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ControlPanelStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ControlPanelStore.tsx
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### CryptoStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CryptoStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CryptoStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### DocumentStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DocumentStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### PaginationStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PaginationStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PaginationStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### StoreKeyGenerator
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreKeyGenerator.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreKeyGenerator.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### ThemeStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ThemeStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ThemeStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### UISlice
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UISlice.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UISlice.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### VideoStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/VideoStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/VideoStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -8546,67 +8546,67 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### AppCacheManagerStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppCacheManagerStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppCacheManagerStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### AppStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### CalendarSettingsPage
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarSettingsPage.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarSettingsPage.tsx
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### FeatureStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/FeatureStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/FeatureStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### PhaseActivityStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PhaseActivityStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PhaseActivityStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### PhaseStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PhaseStore.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PhaseStore.tsx
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### RootStoreComponent
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### StoreGenerator
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreGenerator.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreGenerator.tsx
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### UndoRedoStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UndoRedoStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UndoRedoStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### UserPresentationsStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserPresentationsStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserPresentationsStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### featureA
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/featureA.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/featureA.tsx
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### featureB
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/featureB.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/featureB.tsx
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### useProjectManager
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/hooks/useProjectManager.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/hooks/useProjectManager.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
@@ -9721,7 +9721,7 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### UIStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -10281,7 +10281,7 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### FlaskDataStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/mobxStores/FlaskDataStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/mobxStores/FlaskDataStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 0 | **Low:** 1
 
@@ -10496,12 +10496,12 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### AquaStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AquaStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AquaStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### TenantStore
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TenantStore.ts
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TenantStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
@@ -10641,7 +10641,7 @@
 **Critical:** 0 | **High:** 1 | **Medium:** 0 | **Low:** 0
 
 ### StoreProvider
-**File:** src/app/state/stores/StoreProvider.tsx
+**File:** src/core/state/stores/StoreProvider.tsx
 **Total Issues:** 1
 **Critical:** 0 | **High:** 1 | **Medium:** 0 | **Low:** 0
 
@@ -11485,7 +11485,7 @@
 **Implementations:** 0
 
 ### StoreProviderProp
-**File:** src/app/state/stores/StoreProvider.tsx
+**File:** src/core/state/stores/StoreProvider.tsx
 **Issues:** 1
 **Implementations:** 0
 

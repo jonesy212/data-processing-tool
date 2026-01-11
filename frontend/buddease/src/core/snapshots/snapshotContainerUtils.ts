@@ -17,7 +17,7 @@ import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigI
 import { SnapshotStoreProps, storeProps } from "@/core/snapshots/SnapshotStoreProps";
 import { data } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
-import { DataStore } from "@/core/state/stores/DataStore";
+import type { DataStore } from "@/core/state/stores/DataStore";
 import { store } from '@/core/state/stores/useAppDispatch';
 import { payload } from '@/core/subscribers/Subscriber';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';

@@ -1,6 +1,6 @@
-urlBuilder.ts
+// urlBuilder.ts
 
-import { EndpointConfig, EndpointDefinition } from '@/core/config/EndpointConfig';
+import type { EndpointConfig, EndpointDefinition } from '@/core/config/EndpointConfig';
 
 export const buildUrl = (endpoint: EndpointDefinition, params?: Record<string, any>): string => {
   let config: EndpointConfig;

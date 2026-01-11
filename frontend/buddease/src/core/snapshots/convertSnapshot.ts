@@ -7,7 +7,7 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
 
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot, SnapshotDataType } from '@/core/snapshots/Snapshot';
 import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
@@ -17,7 +17,7 @@ import { createSnapshotStoreOptions } from "@/core/snapshots/createSnapshotStore
 import { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
-import { DataStore, useDataStore } from "@/core/state/stores/DataStore";
+import type { DataStore, useDataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Subscription } from "@/core/subscriptions/Subscription";

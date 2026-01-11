@@ -1,0 +1,212 @@
+// ApiVersion.ts
+
+import axiosInstance from "@/core/api/csrfToken"; // Ensure this is set up correctly for API calls
+import { endpoints } from "@/core/api/endpointConfigurations";
+import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { useNotification } from '@/core/state/context/NotificationContext';
+import { YourResponseType } from '@/core/typings/responseTypes';
+
+import { handleApiError } from '@/core/api/ApiLogs';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { AxiosError } from "axios";
+
+// Define the API base URL for version data
+const VERSION_DATA_BASE_URL = endpoints.versionData;
+
+// Notification messages specific to version data
+const versionDataNotificationMessages = {
+  FETCH_VERSION_DATA_SUCCESS: NOTIFICATION_MESSAGES.VersionData.FETCH_VERSION_DATA_SUCCESS,
+  FETCH_VERSION_DATA_ERROR: NOTIFICATION_MESSAGES.VersionData.FETCH_VERSION_DATA_ERROR,
+  FETCH_ANALYSIS_RESULTS_ERROR: NOTIFICATION_MESSAGES.DataAnalysis.FETCH_ANALYSIS_RESULTS_ERROR
+};
+
+
+
+// Helper function for version context
+const getVersionContext = (additionalData: any): any => {
+  return {
+    versionNumber: additionalData?.versionNumber,
+    versionLabel: additionalData?.versionLabel,
+    parentEntityId: additionalData?.parentEntityId,
+    parentEntityType: additionalData?.parentEntityType,
+    isCurrent: additionalData?.isCurrent,
+    isDraft: additionalData?.isDraft,
+    changeType: additionalData?.changeType,
+    ...additionalData?.versionContext
+  };
+};
+
+// Handle API errors specifically for version data
+const handleVersionDataApiErrorAndNotify = (
+  error: AxiosError<unknown>,
+  errorMessageId: keyof typeof versionDataNotificationMessages,
+  additionalData?: any
+) => {
+  const { notify } = useNotification();
+  
+  // Get the error message text from the notification messages
+  const errorMessageText = versionDataNotificationMessages[errorMessageId] || "Version Data API error occurred";
+  
+  // Create more detailed error message based on HTTP status and version context
+  let userFriendlyMessage = errorMessageText;
+  const axiosError = error as AxiosError;
+  
+  if (axiosError.response) {
+    const status = axiosError.response.status;
+    
+    // Version-specific error messages
+    switch (status) {
+      case 400:
+        userFriendlyMessage = "Invalid version data provided";
+        break;
+      case 401:
+        userFriendlyMessage = "Authentication required to access version data";
+        break;
+      case 403:
+        userFriendlyMessage = "You don't have permission to access version data";
+        break;
+      case 404:
+        userFriendlyMessage = "Version data not found";
+        break;
+      case 409:
+        userFriendlyMessage = "Version conflict detected";
+        break;
+      case 412:
+        userFriendlyMessage = "Version precondition failed";
+        break;
+      case 422:
+        userFriendlyMessage = "Version data validation failed";
+        break;
+      case 500:
+        userFriendlyMessage = "Server error while processing version data";
+        break;
+      case 503:
+        userFriendlyMessage = "Version service unavailable";
+        break;
+      default:
+        if (status >= 500) {
+          userFriendlyMessage = "Version data server error";
+        } else if (status >= 400) {
+          userFriendlyMessage = "Version data request failed";
+        }
+    }
+  } else if (axiosError.request) {
+    userFriendlyMessage = "Network error: Unable to connect to version service";
+  } else {
+    userFriendlyMessage = "Version operation failed: " + (axiosError.message || "Unknown error");
+  }
+  
+  // Log the error for debugging
+  console.error("Version Data API Error:", {
+    messageId: errorMessageId,
+    message: userFriendlyMessage,
+    originalError: axiosError.message,
+    statusCode: axiosError.response?.status,
+    url: axiosError.config?.url,
+    method: axiosError.config?.method,
+    additionalData,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Show notification using consistent object format
+  notify({
+    id: `version_error_${String(errorMessageId)}_${Date.now()}`,
+    message: userFriendlyMessage,
+    data: {
+      entityType: 'version_data',
+      entityId: additionalData?.versionId || additionalData?.documentId || additionalData?.entityId || 'unknown',
+      action: additionalData?.action || errorMessageId.toString().toLowerCase().replace('_error', ''),
+      errorCode: axiosError.response?.status,
+      errorType: errorMessageId.toString(),
+      originalError: axiosError.message,
+      url: axiosError.config?.url,
+      method: axiosError.config?.method,
+      versionContext: getVersionContext(additionalData),
+      extra: additionalData || {},
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const,
+    metadata: {
+      isVersionError: true,
+      versionOperation: true,
+      requiresSync: additionalData?.requiresSync || false
+    }
+  });
+  
+  // Call the original error handler
+  handleApiError(error, userFriendlyMessage);
+};
+
+
+
+const fetchVersionData = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(snapshotId: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  const fetchVersionDataEndpoint = `${VERSION_DATA_BASE_URL}/${snapshotId}`;
+
+  return new Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(async (resolve, reject) => {
+    try {
+      const response = await axiosInstance.get<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(fetchVersionDataEndpoint);
+      resolve(response.data);  // Resolve the promise with the response data
+    } catch (error) {
+      console.error("Error fetching version data:", error);
+      handleVersionDataApiErrorAndNotify(error as AxiosError<unknown>, "FETCH_VERSION_DATA_ERROR");
+      reject(error);  // Reject the promise with the error
+    }
+  });
+};
+
+// Additional standard API methods can be defined below as needed
+
+// Example: Fetch analytics data
+const fetchAnalyticsData = async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    analyticsId: string
+): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  const fetchAnalyticsEndpoint = `${VERSION_DATA_BASE_URL}/analytics/${analyticsId}`;
+
+  try {
+    const response = await axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(fetchAnalyticsEndpoint);
+    return Promise.resolve(response.data);  // Explicitly wrapping the return in a Promise if needed
+  } catch (error) {
+    console.error("Error fetching analytics data:", error);
+    handleVersionDataApiErrorAndNotify(error as AxiosError<unknown>, "FETCH_ANALYSIS_RESULTS_ERROR");
+    return Promise.reject(error);
+  }
+};
+
+
+// Example: Store versioned analytics data
+const storeVersionedAnalyticsData = async (analyticsData: any): Promise<void> => {
+  try {
+    // Attempt to store versioned analytics data in local storage
+    localStorage.setItem('versionedAnalyticsData', JSON.stringify(analyticsData));
+    console.log('Versioned analytics data stored:', analyticsData);
+  } catch (localStorageError) {
+    console.error('Failed to store versioned analytics data:', localStorageError);
+    // Optionally handle backend storage or notify
+    // handleVersionDataApiErrorAndNotify(...);
+  }
+};
+
+
+export {
+    fetchAnalyticsData, fetchVersionData, storeVersionedAnalyticsData
+};
+

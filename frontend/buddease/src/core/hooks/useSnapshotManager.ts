@@ -14,7 +14,7 @@ import { Category, generateOrVerifySnapshotId } from '@/core/libraries/categorie
 import { Content } from "@/core/models/content/AddContent";
 import { BaseData } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { processSnapshot, Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
@@ -33,7 +33,7 @@ import {
     useNotification
 } from '@/core/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
-import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/core/state/stores/DataStore';
+import type { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/core/state/stores/DataStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { SubscriberCallbackType, Subscription } from '@/core/subscriptions/Subscription';
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';

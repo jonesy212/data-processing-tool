@@ -1,9 +1,9 @@
-roadmap.ts
-types/roadmap.ts
+// roadmap.ts
+// types/roadmap.ts
 
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import { Version } from '@/core/versions/Version';
-import { VersionData } from '@/core/versions/VersionData';
+import type { Version } from '@/core/versions/Version';
+import type { VersionData } from '@/core/versions/VersionData';
 
 // Simplified roadmap item
 export interface RoadmapItem {

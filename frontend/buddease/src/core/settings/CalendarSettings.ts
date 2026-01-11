@@ -1,6 +1,6 @@
 CalendarSettings.ts
 import { EventNotificationsSettings } from '@/core/notifications/NotificationChannels';
-import { ReminderSettings } from '@/core/settings/Reminder';
+import type { ReminderSettings } from '@/core/settings/Reminder';
 // Define the CalendarSettingsEnum to represent various calendar settings
 export enum CalendarSettingsEnum {
   ShowWeekends = 'ShowWeekends',

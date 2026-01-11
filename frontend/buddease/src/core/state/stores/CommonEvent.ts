@@ -1,31 +1,38 @@
 // CommonEvent.ts
 import * as snapshotApi from '@/core/api/SnapshotApi';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { useMetadata } from '@/core/config/useMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
+import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { StatusType } from '@/core/models/data/StatusType';
-import { Member } from '@/core/models/members/Member';
-import { SnapshotWithCriteria, TagsRecord } from '@/core/models/tracker/Tag';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Member } from '@/core/models/members/Member';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
+import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
 import { Subscriber } from '@/core/subscribers/Subscriber';
-import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import type { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/core/typings/entities/EventEntity';
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
-import { VideoData } from '@/core/typings/videoTypes/Video';
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { VideoData } from '@/core/typings/videoTypes/Video';
 import { convertToDataSnapshot } from '@/core/typings/YourSpecificSnapshotType';
-import { ExtendedVersionData } from '@/core/versions/VersionData';
+import type { ExtendedVersionData } from '@/core/versions/VersionData';
 import { isSnapshot } from '@/utils/snapshotUtils';
+
 
 interface CommonEvent<
   T extends BaseDataEntity,
@@ -34,24 +41,15 @@ interface CommonEvent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T  
-> extends Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
- {  
-  // Fixed: Data requires T, K, Meta
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Remove extends Data
+{  
   title: string;
-
-  // Shared date properties
   date: string | Date | undefined;
-
-  // Shared time properties
   startTime?: string;
   endTime?: string;
-  tags?: TagsRecord<T>| string[] | undefined;
-
-  // Recurrence properties
+  tags?: TagsRecord<T> | string[] | undefined;
   recurring?: boolean;
   recurrenceRule?: string;
-  
-  // Other common properties
   category?: symbol | string | Category | undefined;
   timezone?: string;
   participants: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -60,7 +58,9 @@ interface CommonEvent<
   collaborationTool?: string;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
-  // Optional `then` function for handling asynchronous snapshot updates
+  // Keep the data property with proper type
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
   then?: <
     TT extends BaseDataEntity,
     KK extends TT = TT,
@@ -71,7 +71,7 @@ interface CommonEvent<
   >(
     callback: (
       newData: Snapshot<TT, KK, MM, AA, EF, IF>
-  ) => void
+    ) => void
   ) => Snapshot<TT, KK, MM, AA, EF, IF> | undefined;
 }
 
@@ -86,6 +86,9 @@ export function implementThen<
 >(
   callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    
+  const { latestVersion = createLatestVersion<VT, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
+  
   const snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: "someId",
     data: new Map([
@@ -95,14 +98,69 @@ export function implementThen<
         description: "someDescription",
         timestamp: new Date(),
         length: 0,
-        data: {} as T,
+        // Add all required properties from Data interface
+        latestVersion: latestVersion, // This is required
+        major: 1,
+        minor: 0,
+        patch: 0,
+        category: undefined,
+        categoryProperties: undefined,
+        subtasks: [],
+        actions: [],
+        snapshotWithCriteria: undefined,
+        value: null,
+        label: null,
+        metadata: {},
+        toInitializedData: () => ({} as any),
+        // BaseData properties
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
+        // Add any other required properties from BaseData
+        sharedData: undefined,
+        children: [],
+        data: {} as any,
+        size: 0,
+        startDate: new Date().toISOString(),
+        endDate: new Date(),
+        isScheduled: false,
+        status: null,
+        tags: [],
+        phase: null,
+        phaseType: undefined,
+        initialState: undefined,
+        dueDate: null,
+        priority: null,
+        assignee: null,
+        collaborators: [],
+        comments: undefined,
+        attachments: [],
+        analysisType: null,
+        analysisResults: [],
+        audioUrl: undefined,
+        videoUrl: undefined,
+        videoThumbnail: undefined,
+        videoDuration: undefined,
+        collaborationOptions: [],
+        videoData: undefined,
+        additionalData: undefined,
+        ideas: [],
+        members: [],
+        leader: null,
+        snapshotStores: [],
+        snapshots: undefined,
+        text: undefined,
+        notificationTypes: undefined,
+        userConfig: undefined,
+        scheduled: undefined,
+        // Data specific
         events: undefined,
         meta: undefined,
         snapshotStoreConfig: {},
         getSnapshotItems: () => [],
         defaultSubscribeToSnapshots: () => { },
         versionInfo: {},
-      } as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>]
+      } as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>],
     ]),
     timestamp: new Date(),
     subscriberId: "someSubscriberId",
@@ -110,9 +168,9 @@ export function implementThen<
     content: {
 
       apiEndpoint: 'snapshot-apiEndpoint',
-      apiKey: 'snapshot-apiKey',
+      apiKey: 0,
       timeout: 'snapshot-timeout',
-      retryAttempts: 'snapshot-retryAttempts',
+      retryAttempts: 0,
      
 
       id: "someId",
@@ -126,11 +184,12 @@ export function implementThen<
       items: [],
       data: {} as T,
     },
-    store: undefined,
+    store: {} as CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     events: {} as Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     // Corrected getSnapshotId implementation
-    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
+    getSnapshotId: function (key: string | T,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
       // If the key is a string, you can use it directly
       if (typeof key === 'string') {
         return snapshot.id; // or some logic to derive the ID
@@ -173,6 +232,7 @@ export function implementThen<
         unsubscribeReason: string;
         unsubscribeData: any;
       },
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null): void {
       // Remove reference to callback
       let callbackRef = callback;
@@ -182,6 +242,7 @@ export function implementThen<
     },
 
     fetchSnapshot: function (
+      snapshotId: string,
       callback: (
         snapshotId: string,
         payload: FetchSnapshotPayload<K> | undefined,
@@ -199,7 +260,7 @@ export function implementThen<
         const convertedSnapshot = convertToDataSnapshot(snapshot);
 
         const criteria = snapshotApi.getSnapshotCriteria(
-          snapshotContainer as unknown as SnapshotContainer<Data, Data>,
+          snapshotContainer as unknown as SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           convertedSnapshot 
         );
         const id = snapshotApi.getSnapshotId(criteria);
@@ -225,14 +286,14 @@ export function implementThen<
 
     handleSnapshot: function (
       id: string,
-      snapshotId: tring | number | null,
+      snapshotId: string | number | null,
       snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,  // Use conditional type to ensure properties exist
       snapshotData: T,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
-      event: Event,
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category?: Category,
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
@@ -253,7 +314,7 @@ export function implementThen<
       unsubscribe: UnsubscribeDetails,
       subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       data: T,
-      event: Event,
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       value: T,
     ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -281,6 +342,7 @@ export function implementThen<
   return snapshot;
 }
 
+const area = fetchUserAreaDimensions().toString()
 const metadata: UnifiedMetadata<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields> = useMetadata<BaseData<any>>(area);
 
 // Define the `defaultCommonEvent` object using the `CommonEvent` interface
@@ -312,7 +374,7 @@ const defaultCommonEvent: CommonEvent<EventEntity, EventK, EventMeta, EventAttac
     ) => void) => implementThen(callback),
   analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
   analysisResults: [],
-  videoData: {} as VideoData<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields>,
+  videoData: {} as VideoData<EventEntity, EventK>,
 };
 export { defaultCommonEvent };
 export type { CommonEvent };

@@ -2,7 +2,7 @@
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { CommonCalendarProps } from '@/core/components/calendar/Calendar';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Task } from '@/core/models/tasks/Task';
 import React from 'react';
 

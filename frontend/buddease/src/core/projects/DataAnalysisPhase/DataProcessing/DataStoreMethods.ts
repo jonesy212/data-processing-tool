@@ -11,7 +11,7 @@ import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { SnapshotStoreMethods } from '@/core/snapshots/SnapshotStoreMethods';
-import { DataStore } from "@/core/state/stores/DataStore";
+import type { DataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 ;

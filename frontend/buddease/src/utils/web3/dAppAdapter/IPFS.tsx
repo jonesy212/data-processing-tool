@@ -84,7 +84,7 @@ export class ExtendedDAppAdapter<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->  extends CustomDAppAdapter {
+>  extends CustomDAppAdapter<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
   private ipfs: Awaited<ReturnType<typeof create>> | null = null;
   private ethereumProvider: ethers.JsonRpcProvider;
   

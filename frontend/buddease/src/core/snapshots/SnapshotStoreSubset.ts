@@ -16,7 +16,7 @@ import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

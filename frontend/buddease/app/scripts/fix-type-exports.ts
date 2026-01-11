@@ -581,22 +581,20 @@ class TypeExportAnalyzer {
           const lineIndex = issue.line - 1;
           if (lineIndex >= 0 && lineIndex < lines.length) {
             const line = lines[lineIndex];
-            
-            // Fix the export by adding `type` keyword if missing
             if (issue.exportType === 'interface' || issue.exportType === 'type') {
-              // Check if it's already a type-only export
-              if (!line.includes('export type') && !line.includes('export interface')) {
-                // Fix: add 'type' keyword for type aliases
-                if (issue.exportType === 'type') {
-                  const fixedLine = line.replace(/export\s+(type|interface)?/, 'export type ');
-                  lines[lineIndex] = fixedLine;
-                  hasChanges = true;
-                  fixed++;
-                  
-                  console.log(`✅ Fixed: ${path.relative(this.projectRoot, filePath)}:${issue.line}`);
-                  console.log(`   Before: ${line.trim()}`);
-                  console.log(`   After:  ${fixedLine.trim()}`);
-                } else {
+            // Check if it's already a type-only export
+            if (!line.includes('export type') && !line.includes('export interface')) {
+              // Fix: add 'type' keyword for type aliases
+              if (issue.exportType === 'type') {
+                const fixedLine = line.replace(/export\s+(type|interface)?/, 'export type ');
+                lines[lineIndex] = fixedLine;
+                hasChanges = true;
+                fixed++;
+                
+                console.log(`✅ Fixed: ${path.relative(this.projectRoot, filePath)}:${issue.line}`);
+                console.log(`   Before: ${line.trim()}`);
+                console.log(`   After:  ${fixedLine.trim()}`);
+              } else {
                   // For interfaces, ensure they're exported as type-only
                   if (!line.includes('export interface')) {
                     const fixedLine = line.replace(/export\s+/, 'export interface ');

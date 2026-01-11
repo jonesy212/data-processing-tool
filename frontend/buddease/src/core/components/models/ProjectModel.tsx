@@ -2,7 +2,7 @@
 import DatabaseClient from '@/core/api/DatabaseClient';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import { ClientDatabaseService } from '@/core/config/DatabaseTypes';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/core/models/projects/Project';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 

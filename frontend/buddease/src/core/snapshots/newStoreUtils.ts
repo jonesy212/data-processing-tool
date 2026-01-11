@@ -9,7 +9,7 @@ import { CreateSnapshotStoresPayload } from '@/core/interfaces/payload/payloadTy
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { snapshot, Snapshot } from "@/core/snapshots/Snapshot";
 import { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotConfig';

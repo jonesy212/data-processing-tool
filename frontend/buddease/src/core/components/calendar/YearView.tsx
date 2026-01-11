@@ -4,7 +4,7 @@ import MonthView from '@/core/components/calendar/CalendarMonthView';
 import { YearInfo } from '@/core/components/calendar/CalendarYear';
 import { Month } from '@/core/components/calendar/Month';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project } from '@/core/models/projects/Project';
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import React, { Fragment } from "react";

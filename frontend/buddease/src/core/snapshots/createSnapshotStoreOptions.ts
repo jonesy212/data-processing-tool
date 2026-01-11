@@ -58,7 +58,7 @@ import { handleSnapshotOperation } from '@/core/snapshots/handleSnapshotOperatio
 import handleSnapshotStoreOperation from '@/core/snapshots/handleSnapshotStoreOperation';
 import { getCategory } from '@/core/snapshots/snapshotContainerUtils';
 import type { DataStore, InitializedState } from '@/core/state/stores/DataStore';
-import { useDataStore } from '@/core/state/stores/DataStore';
+import type { useDataStore } from '@/core/state/stores/DataStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { subscribeToSnapshotsImpl } from "@/core/subscribers/subscribeToSnapshotsImplementation";

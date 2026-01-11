@@ -31,12 +31,28 @@
     "phase:standardize": "pnpm phase:backup && pnpm phase:analyze && pnpm fix:phase-high && pnpm phase:report",
     "phase:complete": "pnpm phase:backup && pnpm phase:analyze && pnpm fix:phase-all && pnpm test:param-swaps && pnpm phase:report",
 
+    "tsconfig:fix": "bash scripts/fix-tsconfig-excludes.sh",
+    "tsconfig:check": "bash scripts/monitor-tsconfig.sh",
+
     "dev:with-phase": "pnpm phase:scan && pnpm dev",
     "build:with-phase": "pnpm phase:validate && pnpm build",
     "pre-commit:phase": "pnpm pattern:scan --quick",
     "ci:phase": "pnpm phase:analyze --fail-on-errors"
   }
 }
+
+
+## 0. Pre-flight Configuration Check (Recommended)
+
+Before running the phase system, ensure TypeScript configuration files
+do not include backup or generated directories.
+
+Check only (CI-safe):
+pnpm tsconfig:check
+
+Auto-fix (local development):
+pnpm tsconfig:fix
+
 
 # Entity Standardization Workflow Guide
 1. Getting Started

@@ -5,7 +5,7 @@ import teamApiService from '@/core/api/TeamApi';
 import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
 import { Team } from '@/core/components/teams/Team';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';

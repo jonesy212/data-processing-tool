@@ -11,7 +11,7 @@ import { Category } from '@/core/libraries/categories/generateCategoryProperties
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 
 
 

@@ -3,7 +3,7 @@ import responsiveDesignStore from "@/core/components/styling/ResponsiveDesign";
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import { backendConfig } from "@/core/config/BackendConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import BackendStructure from '@/core/server/database/BackendStructure';
 import getAppPath from "./appPath";
 

@@ -1,6 +1,6 @@
 CalendarEventEngagementMetrics.ts
-import { EngagementMetrics } from "@/core/models/data/EventPriorityClassification";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { EngagementMetrics } from "@/core/models/data/EventPriorityClassification";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 
 interface CalendarEventEngagementMetrics extends WritableDraft<EngagementMetrics[]> {
     eventId: string; // ID of the event

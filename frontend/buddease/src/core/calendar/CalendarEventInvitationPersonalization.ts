@@ -1,6 +1,6 @@
 CalendarEventInvitationPersonalization.ts
-import { PersonalizedInvitation } from "@/core/models/data/EventPriorityClassification";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { PersonalizedInvitation } from "@/core/models/data/EventPriorityClassification";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 
 interface CalendarEventInvitationPersonalization extends WritableDraft<PersonalizedInvitation> {
   eventId: string; // ID of the event

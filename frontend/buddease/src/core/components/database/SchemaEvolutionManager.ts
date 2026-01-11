@@ -6,7 +6,7 @@ import {
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { ValidationRule } from '@/core/snapshots/ValidationRule';
 import { BackendDatabaseService, DatabaseType } from '@/core/typings/database';

@@ -46,7 +46,7 @@ import { CalendarEventWithCriteria } from "@/core/pages/searches/FilterCriteria"
 import { createSnapshot } from "@/core/snapshots/createSnapshot";
 import { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
-import { useDataStore } from "@/core/state/stores/DataStore";
+import type { useDataStore } from "@/core/state/stores/DataStore";
 import { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
 import { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
 import { SnapshotEvents } from "@/core/typings/snapshotTypes";

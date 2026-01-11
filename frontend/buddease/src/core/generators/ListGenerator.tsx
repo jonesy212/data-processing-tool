@@ -1,7 +1,7 @@
 // ListGenerator.tsx
 import DetailsListItem from '@/core/components/models/data/DetailsListItem';
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Data } from '@/core/models/data/Data';
 import { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import {

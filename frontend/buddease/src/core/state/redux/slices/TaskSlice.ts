@@ -1,7 +1,7 @@
 // TaskSlice.ts
 import { updateTaskPositionAPI } from '@/core/api/TasksApi';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { TagEntity } from '@/core/typings/entities/TagEntity';
 import { UserEntity } from '@/core/typings/entities/UserEntity';
 

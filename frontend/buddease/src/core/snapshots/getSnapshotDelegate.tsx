@@ -1,7 +1,7 @@
 // getSnapshotDelegate.tsx
 import * as snapshotApi from '@/core/api/SnapshotApi';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 

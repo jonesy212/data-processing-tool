@@ -1,6 +1,6 @@
 // RealTimeVisualization.tsx
 
-import { useRealTimeDataStore } from '@/core/models/realtime/RealTimeDataStore';
+import type { useRealTimeDataStore } from '@/core/models/realtime/RealTimeDataStore';
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 import React, { useEffect, useState } from 'react';
 

@@ -2,7 +2,7 @@
 import { BaseData } from '@/core/models/data/Data';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
-import { createDataStore } from '@/core/state/stores/DataStore';
+import type { createDataStore } from '@/core/state/stores/DataStore';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { createBaseDataEntity } from '@/core/config/createBaseDataEntity';

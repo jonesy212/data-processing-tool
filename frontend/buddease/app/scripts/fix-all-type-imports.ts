@@ -1,11 +1,23 @@
 #!/usr/bin/env tsx
 // Fixed Type-Only Import Fixer - NO COMMENTS BUG
-
+import type { FixResult, TypeImportError } from '@/app/scripts/import-utils'
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies'
 import { enhanceFixesWithContext } from '@/core/generators/corrections/BaseImportFix'
+import  { 
+  shouldBeTypeImport, 
+  fixImportStatement, 
+  findInterfaceExports,
+  createBackup, 
+  groupFixesByFile, 
+  sortFixesDescending, 
+  getContextTips,
+} from '@/app/scripts/import-utils'
+
+
+
 // Helper to safely get error message
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -17,23 +29,6 @@ function getErrorMessage(error: unknown): string {
   }
 }
 
-export interface TypeImportError {
-  typeName: string;
-  file: string;
-  line?: number;
-  column?: number;
-  importStatement?: string;
-  errorMessage?: string;
-  originalLine: string;
-}
-
-interface FixResult {
-  file: string;
-  original: string;
-  fixed: string;
-  success: boolean;
-  line: number;
-}
 
 function fixNamespaceImports(errors: TypeImportError[]): FixResult[] {
   const fixes: FixResult[] = [];
@@ -167,18 +162,6 @@ function captureAllTypeErrors(): TypeImportError[] {
   }
   
   return errors;
-}
-
-function normalizePath(filePath: string): string {
-  // Remove any double slashes
-  let normalized = filePath.replace(/\/\//g, '/');
-  
-  // Resolve relative paths
-  if (!path.isAbsolute(normalized)) {
-    normalized = path.resolve(process.cwd(), normalized);
-  }
-  
-  return normalized;
 }
 
 function findImportStatements(errors: TypeImportError[]): TypeImportError[] {
@@ -338,96 +321,93 @@ function generateFixes(errors: TypeImportError[]): FixResult[] {
   return fixes;
 }
 
-// FIXED applyFixes function - NO COMMENT BUG
+
 function applyFixes(fixes: FixResult[], dryRun: boolean = false) {
   console.log(`\n${dryRun ? '🔍 DRY RUN' : '🔧 APPLYING FIXES'}`);
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   
-  const fixesByFile = new Map<string, FixResult[]>();
-  
-  // Group fixes by file
-  fixes.forEach(fix => {
-    const normalizedPath = normalizePath(fix.file);
-    if (!fixesByFile.has(normalizedPath)) {
-      fixesByFile.set(normalizedPath, []);
+  if (dryRun) {
+    console.log(`Would apply ${fixes.length} fixes across ${new Set(fixes.map(f => f.file)).size} files`);
+    
+    fixes.slice(0, 10).forEach(fix => {
+      const shortOriginal = fix.original.length > 50 ? fix.original.substring(0, 50) + '...' : fix.original;
+      const shortFixed = fix.fixed.length > 50 ? fix.fixed.substring(0, 50) + '...' : fix.fixed;
+      console.log(`  ${path.basename(fix.file)}:${fix.line || 1}: ${shortOriginal} → ${shortFixed}`);
+    });
+    
+    if (fixes.length > 10) {
+      console.log(`  ... and ${fixes.length - 10} more fixes`);
     }
-    fixesByFile.get(normalizedPath)!.push({...fix, file: normalizedPath});
-  });
+    
+    return;
+  }
   
   let totalApplied = 0;
   let totalFailed = 0;
+  
+  // Use shared helper
+  const fixesByFile = groupFixesByFile(fixes);
   
   for (const [filePath, fileFixes] of fixesByFile) {
     try {
       const relativePath = path.relative(process.cwd(), filePath);
       console.log(`\n📄 ${relativePath}: ${fileFixes.length} fix${fileFixes.length > 1 ? 'es' : ''}`);
       
-      if (!dryRun) {
-        // Simple backup
-        const backupPath = `${filePath}.backup-${Date.now()}`;
-        const content = fs.readFileSync(filePath, 'utf8');
-        fs.writeFileSync(backupPath, content, 'utf8');
-        console.log(`   💾 Backup: ${path.basename(backupPath)}`);
-      }
+      // Use shared helper
+      const backupPath = createBackup(filePath);
+      console.log(`   💾 Backup: ${path.basename(backupPath)}`);
       
-      if (!dryRun) {
-        const content = fs.readFileSync(filePath, 'utf8');
-        let lines = content.split('\n');
-        
-        // Sort fixes by line number (descending)
-        const sortedFixes = [...fileFixes].sort((a, b) => (b.line || 0) - (a.line || 0));
-        
-        for (const fix of sortedFixes) {
-          const lineIndex = fix.line - 1;
-          if (lineIndex >= 0 && lineIndex < lines.length) {
-            // Find the import statement
-            let importStart = lineIndex;
-            while (importStart > 0 && !lines[importStart].trim().startsWith('import')) {
-              importStart--;
+      const content = fs.readFileSync(filePath, 'utf8');
+      let lines = content.split('\n');
+      
+      // Use shared helper
+      const sortedFixes = sortFixesDescending(fileFixes);
+      
+      // KEEP ALL THE ORIGINAL LOGIC - it's specific to this script
+      for (const fix of sortedFixes) {
+        const lineIndex = fix.line - 1;
+        if (lineIndex >= 0 && lineIndex < lines.length) {
+          let importStart = lineIndex;
+          while (importStart > 0 && !lines[importStart].trim().startsWith('import')) {
+            importStart--;
+          }
+          
+          let importEnd = importStart;
+          while (importEnd < lines.length && !lines[importEnd].trim().endsWith(';')) {
+            importEnd++;
+          }
+          
+          const actualImport = lines.slice(importStart, importEnd + 1)
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          
+          if (actualImport === fix.original) {
+            let cleanFixed = fix.fixed;
+            if (cleanFixed.startsWith('//')) {
+              cleanFixed = cleanFixed.replace(/^\/\/\s*/, '');
+              console.log(`   ⚠️  Removed // prefix from fix`);
             }
             
-            let importEnd = importStart;
-            while (importEnd < lines.length && !lines[importEnd].trim().endsWith(';')) {
-              importEnd++;
-            }
-            
-            // Get the actual import
-            const actualImport = lines.slice(importStart, importEnd + 1)
-              .join(' ')
-              .replace(/\s+/g, ' ')
-              .trim();
-            
-            // Verify we're replacing the right thing
-            if (actualImport === fix.original) {
-              // CRITICAL: Ensure fixed import doesn't have //
-              let cleanFixed = fix.fixed;
-              if (cleanFixed.startsWith('//')) {
-                cleanFixed = cleanFixed.replace(/^\/\/\s*/, '');
-                console.log(`   ⚠️  Removed // prefix from fix`);
-              }
-              
-              // Handle multi-line fixes
-              if (cleanFixed.includes('\n')) {
-                const newLines = cleanFixed.split('\n');
-                lines.splice(importStart, importEnd - importStart + 1, ...newLines);
-              } else {
-                lines[importStart] = cleanFixed;
-              }
-              
-              totalApplied++;
-              console.log(`   ✅ Fixed line ${importStart + 1}`);
+            if (cleanFixed.includes('\n')) {
+              const newLines = cleanFixed.split('\n');
+              lines.splice(importStart, importEnd - importStart + 1, ...newLines);
             } else {
-              console.log(`   ⚠️  Skipping - import doesn't match`);
-              console.log(`      Expected: "${fix.original.substring(0, 60)}..."`);
-              console.log(`      Found: "${actualImport.substring(0, 60)}..."`);
-              totalFailed++;
+              lines[importStart] = cleanFixed;
             }
+            
+            totalApplied++;
+            console.log(`   ✅ Fixed line ${importStart + 1}`);
+          } else {
+            console.log(`   ⚠️  Skipping - import doesn't match`);
+            console.log(`      Expected: "${fix.original.substring(0, 60)}..."`);
+            console.log(`      Found: "${actualImport.substring(0, 60)}..."`);
+            totalFailed++;
           }
         }
-        
-        // Write changes
-        fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
       }
+      
+      fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
       
     } catch (error) {
       console.log(`   ❌ Error:`, getErrorMessage(error));
@@ -438,11 +418,15 @@ function applyFixes(fixes: FixResult[], dryRun: boolean = false) {
   console.log('\n📊 SUMMARY:');
   console.log(`   Total files: ${fixesByFile.size}`);
   console.log(`   Total fixes: ${fixes.length}`);
-  if (!dryRun) {
-    console.log(`   Applied: ${totalApplied}`);
-    console.log(`   Failed: ${totalFailed}`);
-  } else {
-    console.log(`   Would apply: ${fixes.length} fixes`);
+  console.log(`   Applied: ${totalApplied}`);
+  console.log(`   Failed: ${totalFailed}`);
+  
+  if (totalFailed > 0) {
+    console.log(`\n💡 ${getContextTips('type')}`);
+    console.log(`\n🔍 Consider checking these specific patterns:`);
+    console.log(`   • Mixed imports (types + values in same statement)`);
+    console.log(`   • Namespace imports that contain both types and values`);
+    console.log(`   • Default imports from type-only modules`);
   }
 }
 

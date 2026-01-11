@@ -1,4 +1,4 @@
-phaseTypes.ts
+// phaseTypes.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
@@ -10,7 +10,7 @@ import { CustomPhaseHooks, Phase, PhaseData } from "@/core/models/phases/Phase";
 import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
 
 
-Phase-specific type parameters
+// Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
 type PhaseK = PhaseEntity;
 type PhaseMeta = DefaultMeta<PhaseEntity, PhaseK>;
@@ -110,7 +110,7 @@ const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault =
   ...options
 } as PhaseDefault);
 
-Empty/default phase
+// Empty/default phase
 const emptyPhase: PhaseDefault = createDefaultPhase();
 
 

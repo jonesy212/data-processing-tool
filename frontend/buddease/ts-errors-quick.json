@@ -206,7 +206,7 @@ src/app/state/redux/RootSagas.ts(62,11): error TS1005: ':' expected.
 src/app/state/redux/RootSagas.ts(63,27): error TS1005: ',' expected.
 src/app/state/redux/sagas/fileSagas.ts(278,1): error TS1005: '(' expected.
 src/app/state/redux/slices/ThemeSlice.ts(1391,40): error TS1109: Expression expected.
-src/app/state/stores/UserPresentationsStore.ts(126,5): error TS1005: ',' expected.
+src/core/state/stores/UserPresentationsStore.ts(126,5): error TS1005: ',' expected.
 src/app/todos/TodoComponent.ts(11,5): error TS1109: Expression expected.
 src/app/typings/entities/AdminUserEntity.ts(19,1): error TS1128: Declaration or statement expected.
 src/app/typings/entities/ConfigEntity.ts(27,3): error TS1005: ',' expected.

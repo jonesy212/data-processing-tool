@@ -10,7 +10,7 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { BaseData, Data } from '@/core/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import { CriteriaType } from "@/core/pages/searches/CriteriaType";
-import { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';

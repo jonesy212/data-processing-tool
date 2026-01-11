@@ -1,5 +1,5 @@
-CustomActionEngine.ts
-import { ReminderCondition } from '@/core/settings/ReminderCondition';
+// CustomActionEngine.ts
+import type { ReminderCondition } from '@/core/settings/ReminderCondition';
 import ReminderConditionEngine from '@/core/settings/ReminderConditionEngine';
 
 interface CustomAction {

@@ -11,7 +11,7 @@ import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';

@@ -1,10 +1,10 @@
 // realtimeTypes.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/core/documents/RelatedProps";
 import { RealtimeUpdateCallback } from '@/core/hooks/commHooks/useRealtimeData';
 import { Data } from '@/core/models/data/Data';
-import { SharedMetadata } from '@/core/shared/SharedMetadata';
+import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { EventData } from "@/core/state/stores/AssignEventStore";
 import { AllTypes } from "@/core/typings/PropTypes";

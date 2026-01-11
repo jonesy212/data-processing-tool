@@ -31,7 +31,7 @@ import { getCategoryProperties } from '@/core/libraries/categories/CategoryManag
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { T } from '@/core/models/data/dataStoreMethods';
 import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { createSnapshotItem, SnapshotItem } from "@/core/snapshots/SnapshotList";

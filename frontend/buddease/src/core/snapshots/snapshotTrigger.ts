@@ -5,7 +5,7 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 
 import { archiveSnapshot } from '@/core/api/service/ArchiveService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { validateSnapshot } from '@/core/snapshots/snapshotOperations';
 import {
     handleDataUpdateSnapshot,

@@ -40,7 +40,7 @@ import { dataStoreMethods } from '@/core/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from '@/core/models/data/StatusType';
 import { DebugInfo, TempData } from '@/core/models/data/TempData';
 import { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { defaultSubscribeToSnapshots } from '@/core/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import {

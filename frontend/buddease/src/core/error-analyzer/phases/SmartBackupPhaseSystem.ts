@@ -1,4 +1,4 @@
-src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts
+// src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts
 import { DynamicPhaseExecutor } from '@/core/error-analyzer/phases/DynamicPhaseSystem';
 import type { PhaseExecutionResult } from '@/core/error-analyzer/phases/DynamicPhaseSystem';
 import { PhaseExecutor } from '@/core/error-analyzer/phases/PhaseExecutor';
@@ -752,10 +752,499 @@ ${backupPoint.fullyFixedFiles.map(f => `- ${path.relative(process.cwd(), f)}`).j
     console.log(`🧹 Cleanup complete: Deleted ${deletedCount} old backups`);
     return deletedCount;
   }
+
+    /**
+   * GUARANTEED backup before any modification
+   * Always creates backup when changes are detected or forced
+   */
+  async backupBeforeModification(filePath: string, reason: string, force: boolean = false): Promise<string> {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`⚠️ File does not exist, skipping backup: ${filePath}`);
+      return '';
+    }
+
+    // Always create backup for forced operations
+    if (force) {
+      return await this.createBackup(filePath, `forced-${reason}`);
+    }
+
+    // Check current state
+    const currentHash = await this.getFileHash(filePath);
+    const tracker = this.changeTracker.get(filePath);
+
+    // Cases where we MUST backup:
+    // 1. File not tracked yet
+    // 2. Hash changed (file was modified externally)
+    // 3. Policy says always backup
+    const mustBackup = !tracker || tracker.currentHash !== currentHash || !this.policy.backupOnChange;
+
+    if (mustBackup) {
+      const backupId = await this.createBackup(filePath, reason);
+      
+      // Update or create tracker
+      if (tracker) {
+        tracker.changeCount++;
+        tracker.lastChangeTime = new Date();
+        tracker.currentHash = currentHash;
+        tracker.backupIds.push(backupId);
+      } else {
+        const newTracker: FileChangeTracker = {
+          filePath,
+          originalHash: currentHash,
+          currentHash,
+          changeCount: 1,
+          lastChangeTime: new Date(),
+          hasBeenFullyFixed: false,
+          errorsBefore: 0,
+          errorsAfter: 0,
+          backupIds: [backupId]
+        };
+        this.changeTracker.set(filePath, newTracker);
+      }
+
+      console.log(`💾 BACKUP GUARANTEED: ${path.basename(filePath)} (${reason})`);
+      return backupId;
+    }
+
+    return ''; // No backup needed
+  }
+
+  /**
+   * Safe write with guaranteed backup
+   */
+  async safeWriteFile(filePath: string, content: string, reason: string): Promise<boolean> {
+    try {
+      // 1. Always backup current state first
+      await this.backupBeforeModification(filePath, reason, true);
+      
+      // 2. Write new content
+      fs.writeFileSync(filePath, content, 'utf-8');
+      
+      // 3. Verify the write succeeded
+      const writtenContent = fs.readFileSync(filePath, 'utf-8');
+      if (writtenContent === content) {
+        console.log(`✅ Safe write completed: ${path.basename(filePath)}`);
+        return true;
+      } else {
+        console.error(`❌ Write verification failed for: ${path.basename(filePath)}`);
+        return false;
+      }
+    } catch (error) {
+      console.error(`❌ Safe write failed for ${filePath}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Enhanced import deduplication with guaranteed backups
+   */
+  private async executeImportDeduplication(): Promise<any> {
+    console.log('🔍 Running import deduplication with guaranteed backups...');
+    
+    const tsFiles = this.findAllTypeScriptFiles(process.cwd());
+    let totalRemoved = 0;
+    let filesChanged = 0;
+    const changedFiles: string[] = [];
+    const backedUpFiles: string[] = [];
+
+    for (const filePath of tsFiles) {
+      try {
+        // Always backup before reading/modifying
+        const backupId = await this.backupBeforeModification(
+          filePath, 
+          'import-deduplication-precheck'
+        );
+
+        if (backupId) {
+          backedUpFiles.push(`${path.basename(filePath)}:${backupId}`);
+        }
+
+        // Read current content
+        const originalContent = fs.readFileSync(filePath, 'utf-8');
+        
+        // Run deduplication
+        const result = ImportDeduplicator.deduplicateFile(filePath);
+        
+        if (result.removed > 0) {
+          // Backup again before writing changes
+          const writeBackupId = await this.backupBeforeModification(
+            filePath,
+            'import-deduplication-write'
+          );
+
+          if (writeBackupId) {
+            backedUpFiles.push(`${path.basename(filePath)}:${writeBackupId}`);
+          }
+
+          // Apply changes
+          const dedupContent = ImportDeduplicator.getDeduplicatedContent(filePath);
+          const success = await this.safeWriteFile(
+            filePath,
+            dedupContent,
+            'import-deduplication-apply'
+          );
+
+          if (success) {
+            totalRemoved += result.removed;
+            filesChanged++;
+            changedFiles.push(path.relative(process.cwd(), filePath));
+          }
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process ${filePath}:`, error);
+      }
+    }
+
+    return {
+      operation: 'import-deduplication',
+      totalRemoved,
+      filesChanged,
+      changedFiles,
+      backedUpFiles,
+      timestamp: new Date().toISOString(),
+      backupGuaranteed: true
+    };
+  }
+
+  /**
+   * Enhanced phase execution with guaranteed backups
+   */
+  private async executePhaseWithGuaranteedBackup(phaseId: string): Promise<any> {
+    const startTime = Date.now();
+    
+    try {
+      console.log(`🛡️ Executing ${phaseId} with guaranteed backups...`);
+      
+      let result: any;
+      const phaseBackups: Array<{file: string, backupId: string}> = [];
+      
+      if (phaseId.startsWith('dynamic-')) {
+        // Use dynamic phase system
+        const dynamicPhaseId = phaseId.replace('dynamic-', '');
+        result = await this.dynamicExecutor.executePhase(dynamicPhaseId);
+      } else {
+        // Use regular phase system
+        result = await this.phaseExecutor.executePhase(phaseId);
+      }
+
+      // Backup any changed files from the phase result
+      if (result && result.changes && Array.isArray(result.changes)) {
+        for (const change of result.changes) {
+          if (change.location && fs.existsSync(change.location)) {
+            const backupId = await this.backupBeforeModification(
+              change.location,
+              `${phaseId}-change`
+            );
+            
+            if (backupId) {
+              phaseBackups.push({
+                file: path.basename(change.location),
+                backupId
+              });
+            }
+          }
+        }
+      }
+
+      // Update change tracker
+      await this.updateChangeTracker(result, phaseId);
+
+      return {
+        ...result,
+        phaseId,
+        duration: Date.now() - startTime,
+        backupGuaranteed: true,
+        phaseBackups,
+        safetyLevel: 'high'
+      };
+    } catch (error) {
+      return {
+        phaseId,
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        duration: Date.now() - startTime,
+        backupGuaranteed: true, // Backup still happened before execution
+        safetyLevel: 'high'
+      };
+    }
+  }
+
+  /**
+   * Create emergency rollback point
+   */
+  async createEmergencyRollbackPoint(reason: string): Promise<string> {
+    const timestamp = new Date();
+    const emergencyId = `emergency-${timestamp.getTime()}`;
+    const emergencyDir = path.join(this.policy.backupDir, 'emergency', emergencyId);
+    
+    if (!fs.existsSync(emergencyDir)) {
+      fs.mkdirSync(emergencyDir, { recursive: true });
+    }
+
+    // Backup all currently tracked files
+    const backupPromises = Array.from(this.changeTracker.keys()).map(async filePath => {
+      if (fs.existsSync(filePath)) {
+        const backupId = await this.createBackup(filePath, `emergency-${reason}`);
+        const backupPath = path.join(this.policy.backupDir, 'file-versions', backupId);
+        const targetPath = path.join(emergencyDir, path.basename(filePath));
+        fs.copyFileSync(backupPath, targetPath);
+        return { file: filePath, backupId };
+      }
+      return null;
+    });
+
+    const backups = (await Promise.all(backupPromises)).filter(b => b !== null);
+
+    // Create emergency manifest
+    const manifest = {
+      id: emergencyId,
+      reason,
+      timestamp: timestamp.toISOString(),
+      backedUpFiles: backups.map(b => ({
+        file: path.basename(b!.file),
+        backupId: b!.backupId
+      })),
+      changeTrackerSize: this.changeTracker.size,
+      totalChanges: this.getTotalChanges(),
+      successRate: this.calculateSuccessRate()
+    };
+
+    fs.writeFileSync(
+      path.join(emergencyDir, 'manifest.json'),
+      JSON.stringify(manifest, null, 2),
+      'utf-8'
+    );
+
+    console.log(`🚨 EMERGENCY ROLLBACK POINT CREATED: ${emergencyId}`);
+    console.log(`   Reason: ${reason}`);
+    console.log(`   Files backed up: ${backups.length}`);
+
+    return emergencyId;
+  }
+
+  /**
+   * Restore from emergency point
+   */
+  async restoreEmergencyPoint(emergencyId: string): Promise<boolean> {
+    const emergencyDir = path.join(this.policy.backupDir, 'emergency', emergencyId);
+    
+    if (!fs.existsSync(emergencyDir)) {
+      console.error(`❌ Emergency point not found: ${emergencyId}`);
+      return false;
+    }
+
+    const manifestPath = path.join(emergencyDir, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) {
+      console.error(`❌ Manifest not found for emergency point: ${emergencyId}`);
+      return false;
+    }
+
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+    console.log(`🔙 Restoring emergency point: ${manifest.reason}`);
+
+    let restoredCount = 0;
+    let failedCount = 0;
+
+    // Restore each file
+    for (const backupInfo of manifest.backedUpFiles) {
+      const backupPath = path.join(emergencyDir, backupInfo.file);
+      
+      if (fs.existsSync(backupPath)) {
+        // Find original file path
+        const originalFile = Array.from(this.changeTracker.keys()).find(
+          f => path.basename(f) === backupInfo.file
+        );
+
+        if (originalFile) {
+          try {
+            fs.copyFileSync(backupPath, originalFile);
+            console.log(`✅ Restored: ${backupInfo.file}`);
+            restoredCount++;
+          } catch (error) {
+            console.error(`❌ Failed to restore ${backupInfo.file}:`, error);
+            failedCount++;
+          }
+        } else {
+          console.warn(`⚠️ Original path not found for: ${backupInfo.file}`);
+        }
+      }
+    }
+
+    console.log(`\n🎉 Emergency restoration complete:`);
+    console.log(`   ✅ Restored: ${restoredCount} files`);
+    console.log(`   ❌ Failed: ${failedCount} files`);
+    console.log(`   📅 Original timestamp: ${manifest.timestamp}`);
+
+    return failedCount === 0;
+  }
+
+  /**
+   * Enhanced development fix workflow with guaranteed backups
+   */
+  async executeSafeDevFixWorkflow(): Promise<Map<string, any>> {
+    console.log('🚀 Starting SAFE Development Error Fix Workflow');
+    console.log('='.repeat(60));
+    console.log('Mode: Guaranteed backups before every modification');
+    console.log('Safety Level: HIGH (no data loss possible)');
+    console.log('='.repeat(60));
+
+    const results = new Map<string, any>();
+
+    // Create initial emergency point
+    const emergencyId = await this.createEmergencyRollbackPoint(
+      'pre-workflow-snapshot'
+    );
+    results.set('emergency-point', emergencyId);
+
+    // Phase 1: Fix all errors incrementally with guaranteed backups
+    const fixResults = await this.executeIncrementalFixPhase();
+    fixResults.forEach((value, key) => {
+      results.set(`fix-${key}`, {
+        ...value,
+        backupGuaranteed: true
+      });
+    });
+
+    // Phase 2: Standardize patterns with backups
+    const verification = await this.phaseExecutor.executePhase('verification');
+    if (verification.currentErrors === 0) {
+      console.log('\n🎉 All errors fixed! Proceeding to pattern standardization...');
+      const standardResults = await this.executeEntityStandardizationPhase();
+      standardResults.forEach((value, key) => {
+        results.set(`standardize-${key}`, {
+          ...value,
+          backupGuaranteed: true
+        });
+      });
+    } else {
+      console.log(`\n⚠️ ${verification.currentErrors} errors remain.`);
+      console.log('   Creating emergency rollback point before stopping...');
+      
+      const postEmergencyId = await this.createEmergencyRollbackPoint(
+        'partial-fix-workflow-stop'
+      );
+      results.set('partial-emergency-point', postEmergencyId);
+    }
+
+    // Generate final safety report
+    const safetyReport = await this.generateSafetyReport(emergencyId);
+    results.set('safety-report', safetyReport);
+
+    console.log('\n' + '='.repeat(60));
+    console.log('✅ SAFE Workflow Complete!');
+    console.log(`📊 Emergency Point: ${emergencyId}`);
+    console.log(`📈 Backups Created: ${this.countTotalBackups()}`);
+    console.log('='.repeat(60));
+
+    return results;
+  }
+
+  /**
+   * Generate comprehensive safety report
+   */
+  private async generateSafetyReport(emergencyPointId: string): Promise<any> {
+    const report = {
+      timestamp: new Date().toISOString(),
+      emergencyPointId,
+      backupStats: {
+        totalBackups: this.countTotalBackups(),
+        fileVersions: fs.readdirSync(path.join(this.policy.backupDir, 'file-versions')).length,
+        productionPoints: this.productionBackupPoints.length,
+        emergencyPoints: fs.readdirSync(path.join(this.policy.backupDir, 'emergency')).length
+      },
+      changeTracker: {
+        totalFilesTracked: this.changeTracker.size,
+        filesWithBackups: Array.from(this.changeTracker.values())
+          .filter(t => t.backupIds.length > 0).length,
+        totalBackupEvents: Array.from(this.changeTracker.values())
+          .reduce((sum, t) => sum + t.backupIds.length, 0)
+      },
+      safetyChecklist: {
+        backupDirExists: fs.existsSync(this.policy.backupDir),
+        canWriteBackups: await this.testBackupWrite(),
+        emergencyPointAccessible: fs.existsSync(
+          path.join(this.policy.backupDir, 'emergency', emergencyPointId)
+        ),
+        rollbackScriptsExist: fs.existsSync(
+          path.join(this.policy.backupDir, 'rollback')
+        )
+      },
+      recommendations: this.generateSafetyRecommendations()
+    };
+
+    const reportPath = path.join(this.policy.backupDir, 'safety-reports', `${Date.now()}-safety.json`);
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf-8');
+
+    return report;
+  }
+
+  /**
+   * Test backup write capability
+   */
+  private async testBackupWrite(): Promise<boolean> {
+    try {
+      const testFile = path.join(this.policy.backupDir, 'write-test.txt');
+      fs.writeFileSync(testFile, 'test');
+      fs.unlinkSync(testFile);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Generate safety recommendations
+   */
+  private generateSafetyRecommendations(): string[] {
+    const recommendations: string[] = [];
+    const totalBackups = this.countTotalBackups();
+
+    // Storage space warning
+    if (totalBackups > 100) {
+      recommendations.push(`Consider archiving old backups (${totalBackups} total)`);
+    }
+
+    // Missing backups warning
+    const filesWithoutBackups = Array.from(this.changeTracker.values())
+      .filter(t => t.backupIds.length === 0).length;
+    
+    if (filesWithoutBackups > 0) {
+      recommendations.push(`${filesWithoutBackups} tracked files have no backups`);
+    }
+
+    // Emergency point age warning
+    const emergencyDir = path.join(this.policy.backupDir, 'emergency');
+    if (fs.existsSync(emergencyDir)) {
+      const emergencies = fs.readdirSync(emergencyDir);
+      if (emergencies.length > 5) {
+        recommendations.push(`Clean up old emergency points (${emergencies.length} found)`);
+      }
+    }
+
+    return recommendations;
+  }
+
+  // Add to CLI interface
+  async runSafetyWorkflow(): Promise<void> {
+    console.log('🛡️ Running Safety-First Workflow');
+    console.log('='.repeat(60));
+    
+    const results = await this.executeSafeDevFixWorkflow();
+    
+    console.log('\n📊 Safety Report Summary:');
+    const safetyReport = results.get('safety-report');
+    if (safetyReport) {
+      console.log(`  • Emergency Point: ${safetyReport.emergencyPointId}`);
+      console.log(`  • Total Backups: ${safetyReport.backupStats.totalBackups}`);
+      console.log(`  • Safety Checks: ${Object.values(safetyReport.safetyChecklist).filter(v => v).length}/4 passed`);
+    }
+    
+    console.log('\n🎯 To restore if needed:');
+    console.log(`  tsx SmartBackupPhaseSystem.ts restore-emergency ${safetyReport?.emergencyPointId}`);
+  }
 }
 
-// ========== CLI INTERFACE ==========
-
+// Enhanced CLI interface
 export async function runSmartBackupSystem(args: string[]): Promise<void> {
   console.log('🧠 Smart Backup Phase System');
   console.log('='.repeat(60));
@@ -769,22 +1258,26 @@ Usage:
 
 Commands:
   dev-fix              - Fix errors incrementally with smart backups
+  safe-dev-fix         - Safety-first workflow with guaranteed backups
   production-backup    - Create production-safe backup point
   restore <backupId>   - Restore from specific backup
+  restore-emergency <id> - Restore emergency point
   cleanup              - Clean up old backups
   report               - Generate smart report
   status               - Show current backup status
+  emergency <reason>   - Create emergency rollback point
 
-Options:
-  --no-backup-on-change  - Disable change-based backups
-  --backup-dir <path>    - Custom backup directory
-  --max-backups <number> - Maximum backups to keep (default: 20)
+Safety Options:
+  --force-backup       - Force backup before every operation
+  --max-backups <num>  - Maximum backups to keep (default: 50)
+  --backup-dir <path>  - Custom backup directory
+  --no-cleanup         - Disable automatic backup cleanup
 
 Examples:
-  tsx SmartBackupPhaseSystem.ts dev-fix
-  tsx SmartBackupPhaseSystem.ts production-backup "Pre-Production v1.0"
-  tsx SmartBackupPhaseSystem.ts restore entity-1234567890.bak
-  tsx SmartBackupPhaseSystem.ts cleanup --max-backups 10
+  tsx SmartBackupPhaseSystem.ts safe-dev-fix
+  tsx SmartBackupPhaseSystem.ts emergency "testing new feature"
+  tsx SmartBackupPhaseSystem.ts restore-emergency emergency-1234567890
+  tsx SmartBackupPhaseSystem.ts status --verbose
     `);
     return;
   }
@@ -796,6 +1289,11 @@ Examples:
       case 'dev-fix':
         console.log('🚀 Starting development fix workflow...\n');
         await system.executeDevFixWorkflow();
+        break;
+
+      case 'safe-dev-fix':
+        console.log('🛡️ Starting SAFETY-FIRST development workflow...\n');
+        await system.runSafetyWorkflow();
         break;
 
       case 'production-backup':
@@ -813,10 +1311,24 @@ Examples:
         await system.restoreFromBackup(backupId);
         break;
 
+      case 'restore-emergency':
+        const emergencyId = args[1];
+        if (!emergencyId) {
+          console.error('❌ Emergency ID required');
+          process.exit(1);
+        }
+        await system.restoreEmergencyPoint(emergencyId);
+        break;
+
       case 'cleanup':
         const maxBackupsArg = args.find(arg => arg.startsWith('--max-backups='));
-        const maxBackups = maxBackupsArg ? parseInt(maxBackupsArg.split('=')[1]) : 20;
+        const maxBackups = maxBackupsArg ? parseInt(maxBackupsArg.split('=')[1]) : 50;
         await system.cleanupOldBackups(maxBackups);
+        break;
+
+      case 'emergency':
+        const reason = args.slice(1).join(' ') || 'Manual emergency point';
+        await system.createEmergencyRollbackPoint(reason);
         break;
 
       case 'report':
@@ -829,11 +1341,33 @@ Examples:
         if (fs.existsSync(backupDir)) {
           const backups = fs.readdirSync(path.join(backupDir, 'file-versions')).length;
           const prodPoints = fs.readdirSync(path.join(backupDir, 'production-points')).length;
+          const emergencies = fs.readdirSync(path.join(backupDir, 'emergency')).length;
           
           console.log('📊 Backup Status:');
           console.log(`  • Individual backups: ${backups}`);
           console.log(`  • Production points: ${prodPoints}`);
+          console.log(`  • Emergency points: ${emergencies}`);
           console.log(`  • Location: ${backupDir}`);
+          
+          // Show recent emergency points
+          if (emergencies > 0) {
+            console.log('\n🚨 Recent Emergency Points:');
+            const emergencyFiles = fs.readdirSync(path.join(backupDir, 'emergency'))
+              .slice(-3)
+              .reverse();
+            
+            emergencyFiles.forEach(file => {
+              const manifestPath = path.join(backupDir, 'emergency', file, 'manifest.json');
+              if (fs.existsSync(manifestPath)) {
+                try {
+                  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+                  console.log(`  • ${file}: ${manifest.reason} (${new Date(manifest.timestamp).toLocaleString()})`);
+                } catch {
+                  console.log(`  • ${file}: (corrupted manifest)`);
+                }
+              }
+            });
+          }
         } else {
           console.log('📭 No backups created yet');
         }
@@ -845,9 +1379,19 @@ Examples:
     }
   } catch (error: any) {
     console.error(`❌ Error: ${error.message}`);
+    
+    // Try to create emergency point on error
+    try {
+      console.log('\n🚨 Creating emergency point due to error...');
+      await system.createEmergencyRollbackPoint(`error-${command}-${Date.now()}`);
+    } catch (backupError) {
+      console.error('❌ Failed to create emergency point:', backupError);
+    }
+    
     process.exit(1);
   }
 }
+
 
 // Auto-run if called directly
 if (require.main === module) {

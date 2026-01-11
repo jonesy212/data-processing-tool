@@ -3,7 +3,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 function convertSnapshotsToRecord<
   T extends BaseDataEntity,

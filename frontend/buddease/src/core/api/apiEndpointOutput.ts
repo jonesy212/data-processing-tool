@@ -1,5 +1,6 @@
-apiEndpointOutput.ts
-import { NestedEndpoints, endpoints } from "@/core/api/ApiEndpoints";
+// apiEndpointOutput.ts
+import { endpoints } from "@/core/api/ApiEndpoints";
+import type { NestedEndpoints } from "@/core/api/ApiEndpoints";
 import { endpointPreferences } from "@/core/api/ApiPreferencesEndpoints";
 import { generatedApiCode } from "@/core/generators/ApiCodeGenerator";
 
@@ -32,16 +33,18 @@ console.log(
     123
   )
 );
-Output: https://your-api-base-url/users/123
+
+// Output: https://your-api-base-url/users/123
 console.log(
   (usersEndpoints as { [key: string]: (userId: number) => string })?.updateRole(
     123
   )
 );
-Output: https://your-api-base-url/users/123/update-role
+// Output: https://your-api-base-url/users/123/update-role
 console.log(
   (
     endpoints.users as { [key: string]: (userIds: number[]) => string }
   )?.updateRoles([456, 789])
 );
-Output: https://your-api-base-url/users/456,789/update-roles
+
+// Output: https://your-api-base-url/users/456,789/update-roles

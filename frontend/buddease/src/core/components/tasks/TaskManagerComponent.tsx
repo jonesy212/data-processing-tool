@@ -5,7 +5,7 @@ import { UIActions } from "@/core/actions/UIActions";
 import { checkTodoCompletion, updateTodo } from "@/core/api/ApiTodo";
 import { handleTaskApiErrorAndNotify } from "@/core/api/TasksApi";
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import updateUI from "@/core/documents/editing/updateUI";
 import { brandingSettings } from '@/core/libraries/theme/BrandingService';
 import ContentRenderer from "@/core/libraries/ui/ContentRenderer";

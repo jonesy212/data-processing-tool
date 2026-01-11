@@ -1903,7 +1903,7 @@
     "source": "TypeScript"
   },
   {
-    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserPresentationsStore.ts",
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserPresentationsStore.ts",
     "code": "TS1005",
     "message": "',' expected.",
     "startLineNumber": 126,

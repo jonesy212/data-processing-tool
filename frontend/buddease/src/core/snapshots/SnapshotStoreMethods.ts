@@ -2,11 +2,11 @@
 // SnapshotSttoreMethods.ts
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { Subscription } from '@/core/subscriptions/Subscription';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

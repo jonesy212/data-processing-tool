@@ -1,5 +1,5 @@
-useSecureUserId.ts
-useSecureUserId.ts
+// useSecureUserId.ts
+
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import UserRoles from '@/core/models/UserRoles';
 import { useAuth } from '@/core/state/context/AuthContext';

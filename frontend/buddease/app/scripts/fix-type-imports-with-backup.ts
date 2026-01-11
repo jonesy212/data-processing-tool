@@ -5,7 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import type { TypeImportError } from '@/app/scripts/fix-all-type-imports'
+import type { TypeImportError } from '@/app/scripts/import-utils'
 
 interface BackupInfo {
     file: string;

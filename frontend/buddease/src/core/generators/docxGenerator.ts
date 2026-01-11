@@ -1,6 +1,6 @@
 // docxGenerator.ts - Generic version
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { saveAs } from '@/core/documents/editing/autosave';
 import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
 import { User, UserData } from "@/core/users/User";

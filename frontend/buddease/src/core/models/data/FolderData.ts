@@ -1,6 +1,6 @@
 // FolderData.ts
 import { ScheduledData } from '@/core/calendar/ScheduledData';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
   
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { User } from '@/core/users/User';

@@ -1,5 +1,5 @@
-DataActions.ts
-data/DataActions.ts
+// DataActions.ts
+// data/DataActions.ts
 import { SnapshotForActions } from '@/core/actions/AppActionTypes';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { AppSnapshot } from '@/core/typings/entities/AppEntity';

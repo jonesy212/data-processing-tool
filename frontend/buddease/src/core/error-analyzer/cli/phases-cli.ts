@@ -146,7 +146,7 @@ program
       // Check if it's the DataStore import error
       if (error.message.includes('does not provide an export')) {
         console.log('\n🔧 Detected DataStore import issue. Quick fix:');
-        console.log('   1. Check DataStore exports: pnpm check-type-file src/app/state/stores/DataStore.ts');
+        console.log('   1. Check DataStore exports: pnpm check-type-file src/core/state/stores/DataStore.ts');
         console.log('   2. Fix type exports: pnpm fix-type-exports --fix');
         console.log('   3. Try again: pnpm ts:phase ' + phaseName + ' --force');
       }
@@ -537,7 +537,7 @@ program
       // Check if it's the DataStore import error
       if (error.message.includes('does not provide an export')) {
         console.log('\n🔧 Detected DataStore import issue. Quick fix:');
-        console.log('   1. Check DataStore exports: pnpm check-type-file src/app/state/stores/DataStore.ts');
+        console.log('   1. Check DataStore exports: pnpm check-type-file src/core/state/stores/DataStore.ts');
         console.log('   2. Fix type exports: pnpm fix-type-exports --fix');
         console.log('   3. Try again: pnpm ts:phase ' + phaseName + ' --force');
       }

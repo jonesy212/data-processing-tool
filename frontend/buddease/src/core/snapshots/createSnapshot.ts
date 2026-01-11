@@ -6,7 +6,7 @@ import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { defaultSnapshotBuilder } from '@/core/snapshots/defaultSnapshotBuilder';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/core/snapshots/methods/utilMethods';

@@ -1,12 +1,12 @@
 // SnapshotIdentity.ts
-import { Task } from "@/core/components/models/tasks/Task";
+import type { Task } from "@/core/components/models/tasks/Task";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { ProjectPhaseTypeEnum, StatusType } from "@/core/models/data/StatusType";
-import { PhaseDefault } from '@/core/typings/phaseTypes';
-import { AllTypes } from "@/core/typings/PropTypes";
-import { User } from "@/core/users/User";
+import type { PhaseDefault } from '@/core/typings/phaseTypes';
+import type { AllTypes } from "@/core/typings/PropTypes";
+import type { User } from "@/core/users/User";
 
 export interface SnapshotIdentity<
   T extends BaseDataEntity,
@@ -54,7 +54,7 @@ export interface SnapshotIdentity<
   namespace?: string;
   realm?: string;
   domain?: string;
-  environment?: 'development' | 'staging' | 'production' | 'test';
+  environment?: 'development' | 'staging' | 'production' | 'test' | string;
   instanceId?: string;
   sessionId?: string;
   requestId?: string;

@@ -1,22 +1,26 @@
 // UserEntity.ts
-import { UserProfile } from '@/core/api/ApiUser';
+import type { UserProfile } from '@/core/api/ApiUser';
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Permission } from '@/core/permissions/Permission';
-import { LoginCredentials } from '@/core/server/auth/AuthServerService';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { Permission } from '@/core/permissions/Permission';
+import type { LoginCredentials } from '@/core/server/auth/AuthServerService';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { AppEntity } from '@/core/typings/entities/AppEntity';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { AppEntity } from '@/core/typings/entities/AppEntity';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { UserPreferences } from '@/core/typings/userTypes';
-import { User, UserData } from "@/core/users/User";
+import type { User, UserData } from "@/core/users/User";
+import type { ApplyFieldFilters } from '@/core/typings/entities/AppEntity'
+
 // Define the actual UserEntity interface
-interface UserEntity extends AppEntity {
+interface UserEntity extends Partial<AppEntity> {
   id: string;
   name: string;
   email: string;
@@ -140,6 +144,19 @@ type BasicUser = Pick<AppUser, "id" | "username" | "email" | "role" | "isActive"
 type PremiumUser = AppUser & { tier: "premium" | "enterprise" };
 type AdminUser = AppUser & { role: "admin" | "superadmin"; permissions: string[] };
 
+
+// Secure UserEntity without sensitive fields
+export type SecureUserEntity = Omit<UserEntity, 'password' | 'secret'>;
+
+// Public user entity (for API responses)
+export type PublicUserEntity = Pick<UserEntity, 
+  'id' | 'name' | 'email' | 'role' | 'avatar' | 'createdAt' | 'updatedAt' | 'isActive'
+>;
+
+// Minimal user entity (for lists)
+export type MinimalUserEntity = Pick<UserEntity, 
+  'id' | 'name' | 'email' | 'role' | 'avatar'
+>;
 // User state types
 type UserSession = {
   user: AppUser;

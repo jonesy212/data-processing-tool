@@ -1,6 +1,6 @@
 // ExchangeData.ts
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/core/documents/RelatedProps";
 import { SharedTimestamps } from "@/core/models/CommonData";
 import { ExchangeDataTypeEnum } from "@/core/models/cypto/exchangeIntegration";

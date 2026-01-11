@@ -4462,7 +4462,7 @@
 ```
 
 ## 📄 AssignBaseStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignBaseStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignBaseStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -4488,7 +4488,7 @@
 ```
 
 ## 📄 AssignEventStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignEventStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignEventStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -4505,7 +4505,7 @@
 ```
 
 ## 📄 AssignTaskStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTaskStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTaskStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -4531,7 +4531,7 @@
 ```
 
 ## 📄 AssignTeamMemberStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AssignTeamMemberStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AssignTeamMemberStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -4557,7 +4557,7 @@
 ```
 
 ## 📄 CalendarManagerStore.spec.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.spec.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.spec.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -4574,7 +4574,7 @@
 ```
 
 ## 📄 CalendarManagerStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CalendarManagerStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -4591,7 +4591,7 @@
 ```
 
 ## 📄 SettingsStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/SettingsStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/SettingsStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -4608,7 +4608,7 @@
 ```
 
 ## 📄 TaskStore .tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TaskStore .tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TaskStore .tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -4625,7 +4625,7 @@
 ```
 
 ## 📄 presentationStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/presentationStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/presentationStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -8864,7 +8864,7 @@
 ```
 
 ## 📄 AuthStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AuthStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AuthStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -8881,7 +8881,7 @@
 ```
 
 ## 📄 CollaborationStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CollaborationStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CollaborationStore.ts
 
 ### 1. undefined
 **Type:** warning
@@ -8893,7 +8893,7 @@
 ```
 
 ## 📄 CommonEvent.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CommonEvent.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -8910,7 +8910,7 @@
 ```
 
 ## 📄 MobXEntityStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/MobXEntityStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/MobXEntityStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -8927,7 +8927,7 @@
 ```
 
 ## 📄 PaginationStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PaginationStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PaginationStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -8944,7 +8944,7 @@
 ```
 
 ## 📄 ProjectStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ProjectStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ProjectStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -8961,7 +8961,7 @@
 ```
 
 ## 📄 RootStores.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStores.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStores.ts
 
 ### 1. undefined
 **Type:** warning
@@ -8982,7 +8982,7 @@
 ```
 
 ## 📄 StoreKeyGenerator.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreKeyGenerator.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreKeyGenerator.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -8999,7 +8999,7 @@
 ```
 
 ## 📄 ThemeStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ThemeStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ThemeStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -9016,7 +9016,7 @@
 ```
 
 ## 📄 TodoStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TodoStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TodoStore.ts
 
 ### 1. undefined
 **Type:** warning
@@ -9037,7 +9037,7 @@
 ```
 
 ## 📄 UserStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UserStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UserStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -9916,7 +9916,7 @@
 ```
 
 ## 📄 StoreGenerator.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/StoreGenerator.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/StoreGenerator.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -9928,7 +9928,7 @@
 ```
 
 ## 📄 VideoStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/VideoStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/VideoStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -11172,7 +11172,7 @@
 ```
 
 ## 📄 AppStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -11184,7 +11184,7 @@
 ```
 
 ## 📄 DataStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DataStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DataStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -11201,7 +11201,7 @@
 ```
 
 ## 📄 DetailsListStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DetailsListStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -11213,7 +11213,7 @@
 ```
 
 ## 📄 DocumentStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/DocumentStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -11225,7 +11225,7 @@
 ```
 
 ## 📄 HistoryStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/HistoryStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/HistoryStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -11237,7 +11237,7 @@
 ```
 
 ## 📄 NotificationStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -11249,7 +11249,7 @@
 ```
 
 ## 📄 TeamStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/TeamStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -18167,7 +18167,7 @@
 ```
 
 ## 📄 AppCacheManagerStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/AppCacheManagerStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/AppCacheManagerStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18179,7 +18179,7 @@
 ```
 
 ## 📄 BrowserCheckStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/BrowserCheckStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/BrowserCheckStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18191,7 +18191,7 @@
 ```
 
 ## 📄 CryptoStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CryptoStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/CryptoStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18203,7 +18203,7 @@
 ```
 
 ## 📄 FeatureStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/FeatureStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/FeatureStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18215,7 +18215,7 @@
 ```
 
 ## 📄 IconStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/IconStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/IconStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18227,7 +18227,7 @@
 ```
 
 ## 📄 NotificationServiceClass.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/NotificationServiceClass.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18239,7 +18239,7 @@
 ```
 
 ## 📄 PhaseActivityStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PhaseActivityStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PhaseActivityStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18251,7 +18251,7 @@
 ```
 
 ## 📄 PhaseStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/PhaseStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/PhaseStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -18263,7 +18263,7 @@
 ```
 
 ## 📄 RootStoreComponent.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/RootStoreComponent.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/RootStoreComponent.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -18275,7 +18275,7 @@
 ```
 
 ## 📄 ToolbarStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/ToolbarStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/ToolbarStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18287,7 +18287,7 @@
 ```
 
 ## 📄 UIStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/UIStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/UIStore.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -18299,7 +18299,7 @@
 ```
 
 ## 📄 featureB.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/featureB.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/featureB.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -18311,7 +18311,7 @@
 ```
 
 ## 📄 FlaskDataStore.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/mobxStores/FlaskDataStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/core/state/stores/mobxStores/FlaskDataStore.ts
 
 ### 1. undefined
 **Type:** suggestion

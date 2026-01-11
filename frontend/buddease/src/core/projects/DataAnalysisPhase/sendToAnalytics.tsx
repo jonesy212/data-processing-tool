@@ -3,7 +3,7 @@ import axiosInstance from '@/core/api/csrfToken';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 const sendToAnalytics = <
   T extends BaseDataEntity,

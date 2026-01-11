@@ -3,7 +3,7 @@ import { hasPriority } from '@/core/api/processSnapshotData';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Snapshot, SnapshotData } from '@/core/snapshots/Snapshot';
-import { useDataStore } from '@/core/state/stores/DataStore';
+import type { useDataStore } from '@/core/state/stores/DataStore';
 
 interface DataWithVersion {
   version?: string;

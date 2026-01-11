@@ -4,7 +4,7 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition, PriorityTypeEnum } from '@/core/models/data/StatusType';

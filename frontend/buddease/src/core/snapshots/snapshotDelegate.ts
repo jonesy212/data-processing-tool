@@ -18,7 +18,7 @@ import { SnapshotContainer, SnapshotData, SnapshotDataType } from '@/core/snapsh
 import { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';

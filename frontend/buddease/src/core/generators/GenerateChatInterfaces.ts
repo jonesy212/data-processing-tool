@@ -3,7 +3,7 @@
 import { ChatRoom } from '@/core/communications/ChatRoom';
 import { Sender } from '@/core/components/communications/CommunicationPage';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Tag } from "@/core/models/tracker/Tag";
 import { User, UserData } from "@/core/users/User";
 

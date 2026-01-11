@@ -1,7 +1,7 @@
 // ScheduledData.ts
 
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Data } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
 import { Task } from "@/core/models/tasks/Task";

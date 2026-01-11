@@ -1,15 +1,20 @@
-AccessDenied.tsx
-components/AccessDenied.tsx
-import { UserRole } from '@/core/models/UserRole';
+// AccessDenied.tsx
+// components/AccessDenied.tsx
+
+import type { UserRole } from '@/core/models/UserRole';
 import { UserRoleEnum } from '@/core/models/UserRoles';
 import React from 'react';
 
 interface CustomAction {
+  id: string;
   label: string;
-  onClick: () => void;
+  type: string; // Add type property
+  onClick?: () => void; // Keep optional for backward compatibility
   primary?: boolean;
   danger?: boolean;
   secondary?: boolean;
+  disabled?: boolean;
+  icon?: string;
 }
 
 interface AccessDeniedProps {

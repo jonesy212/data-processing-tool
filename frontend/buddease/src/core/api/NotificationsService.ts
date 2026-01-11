@@ -1,7 +1,7 @@
 // NotificationsService.ts
 import { endpoints } from "@/core/api/endpointConfigurations";
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';

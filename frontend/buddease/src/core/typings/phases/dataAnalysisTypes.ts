@@ -1,5 +1,5 @@
 dataAnalysisTypes.ts
-export enum DataAnalysisSubPhase {
+export type enum DataAnalysisSubPhase {
     DEFINE_OBJECTIVE,
     DATA_COLLECTION,
     CLEAN_DATA,

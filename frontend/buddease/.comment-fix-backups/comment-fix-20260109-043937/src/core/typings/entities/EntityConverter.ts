@@ -1,4 +1,4 @@
-EntityConverter.ts
+// EntityConverter.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { ApiEntity } from '@/core/typings/entities/ApiEntity';
 import { AppEntity } from '@/core/typings/entities/AppEntity';
@@ -49,9 +49,9 @@ import { VideoEntity } from '@/core/typings/entities/VideoEntity';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
---------------------
+// --------------------
 // Step 1: Define entity mapping
---------------------
+// --------------------
 
 // Map source entity type name to target type (for type-safe conversions)
 type EntityConversionMap<
@@ -110,6 +110,10 @@ type EntityConversionMap<
 }& {
   [RuleKey in keyof typeof conversionRules]: ReturnType<typeof conversionRules[RuleKey]>;
 };;
+
+export interface EntityConversionRules {
+  [entityName: string]: (source: any) => any;
+}
 
 
 export const entityConversionRules: EntityConversionRules = {
@@ -179,9 +183,9 @@ export class EntityConverter {
   }
 }
 
---------------------
+// --------------------
 // Step 4: Usage Examples
---------------------
+// --------------------
 
 // Convert single UserEntity to MemberEntity
 const userEntity: UserEntity = { id, name, password, role, username: "user123", email: "user123@example.com", teams: [] };

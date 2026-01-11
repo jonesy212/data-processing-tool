@@ -1,5 +1,5 @@
 // CustomAction.ts
-import { ReminderCondition, condition } from '@/core/settings/ReminderCondition';
+import type { ReminderCondition, condition } from '@/core/settings/ReminderCondition';
 
 interface CustomAction {
   id: string;

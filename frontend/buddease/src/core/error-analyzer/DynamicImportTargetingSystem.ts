@@ -32,7 +32,7 @@ export interface FolderAnalysis {
     importDependencies: Map<string, string[]>;
 }
 
-export interface FixResult {
+export interface FixTargetResult {
     success: boolean;
     filesFixed: number;
     fixesApplied: number;
@@ -63,7 +63,7 @@ export class DynamicImportTargetingSystem {
         dryRun?: boolean;
         interactive?: boolean;
         minConfidence?: 'high' | 'medium' | 'low';
-    } = {}): Promise<FixResult> {
+    } = {}): Promise<FixTargetResult> {
         console.log(`🎯 Targeting: ${pattern.type}:${pattern.value}`);
 
         // Build dynamic export map first
@@ -411,8 +411,8 @@ export class DynamicImportTargetingSystem {
     async fixMultiplePatterns(patterns: TargetingPattern[], options?: {
         dryRun?: boolean;
         interactive?: boolean;
-    }): Promise<FixResult[]> {
-        const results: FixResult[] = [];
+    }): Promise<FixTargetResult[]> {
+        const results: FixTargetResult[] = [];
         
         for (const pattern of patterns) {
             console.log(`\n🎯 Processing pattern: ${pattern.type}:${pattern.value}`);
@@ -423,7 +423,7 @@ export class DynamicImportTargetingSystem {
         return results;
     }
 
-    async fixAllTypeOnlyImports(folder?: string): Promise<FixResult> {
+    async fixAllTypeOnlyImports(folder?: string): Promise<FixTargetResult> {
         const pattern: TargetingPattern = {
             type: folder ? 'folder' : 'glob',
             value: folder || '**/*',
@@ -569,7 +569,7 @@ export class DynamicImportFixerCLI {
         // Would display the export map structure
     }
 
-    private printResult(result: FixResult): void {
+    private printResult(result: FixTargetResult): void {
         console.log('\n📊 Fix Results:');
         console.log(`✅ Success: ${result.success}`);
         console.log(`📁 Files fixed: ${result.filesFixed}`);

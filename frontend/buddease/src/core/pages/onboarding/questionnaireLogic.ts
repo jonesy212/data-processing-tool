@@ -1,6 +1,6 @@
 // questionnaireLogic.ts (create a new file)
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { OnboardingPhase } from '@/core/pages/personas/UserJourneyManager';

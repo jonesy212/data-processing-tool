@@ -1,7 +1,7 @@
 // convertToSnapshotStoreConfig.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 
 function convertToSnapshotStoreConfig<

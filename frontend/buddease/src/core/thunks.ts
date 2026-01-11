@@ -1,6 +1,6 @@
 // thunks.ts
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
-import { useDataStore } from '@/core/state/stores/DataStore';
+import type { useDataStore } from '@/core/state/stores/DataStore';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

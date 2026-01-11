@@ -1,12 +1,12 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": ["./tsconfig.base.json", "./tsconfig.excludes.json"],
   "compilerOptions": {
     "module": "ESNext",
     "target": "ES2020",
     "moduleResolution": "node"
   },
   "include": [
-    "src/app/scripts/**/*",
-    "src/app/generators/**/*"
+    "src/core/scripts/**/*",
+    "src/core/generators/**/*"
   ]
 }

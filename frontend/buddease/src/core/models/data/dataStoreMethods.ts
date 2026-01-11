@@ -5,7 +5,7 @@ import { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/core/snapshots/SnapshotConfig';
-import { DataStore } from "@/core/state/stores/DataStore";
+import type { DataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { addToSnapshotList, isBaseData, isSnapshot } from '@/utils/snapshotUtils';
 ;

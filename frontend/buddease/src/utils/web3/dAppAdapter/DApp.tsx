@@ -30,7 +30,8 @@ import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceCon
 import FluencePlugin from "@/utils/web3/pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import YourClass from "@/utils/YourClass";
-import React, { FC } from "react";
+import type { FC } from "react";
+import React from "react";
 import winston from "winston";
 
 export type CustomDocumentOptionProps<
@@ -78,7 +79,7 @@ class CustomDAppAdapter<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
   // DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-> extends YourClass {
+> extends YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   private adapter: FC<DAppAdapterProps>;
   private config: DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   private database = new FluenceConnection();
@@ -93,6 +94,9 @@ class CustomDAppAdapter<
     this.initDatabaseConnections();
     this.implementAnalytics();
     
+
+    const DAppPropsType: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+
     interface AdapterProps extends DAppAdapterProps {
       appName: string;
       appVersion: string;
@@ -223,7 +227,7 @@ class CustomDAppAdapter<
     return this._apiKey;
   }
 
-  createCustomApp(appData: CustomApp, errorMessage: string): YourClass {
+  createCustomApp(appData: CustomApp, errorMessage: string): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     try {
 
        // Use setter to assign appData, which also sets the apiKey
@@ -305,7 +309,7 @@ class CustomDAppAdapter<
   updateCustomApp(
     appId: string,
     updatedAppData: Partial<CustomApp>
-  ): YourClass {
+  ): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     try {
       // Implement your logic here for updating a custom app
       console.log(
@@ -323,7 +327,7 @@ class CustomDAppAdapter<
     return yourClassInstance
   }
 
-  deleteCustomApp(appId: string): YourClass {
+  deleteCustomApp(appId: string): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     try {
       // Implement your logic here for deleting a custom app
       console.log("Deleting custom app with ID:", appId);
@@ -336,7 +340,7 @@ class CustomDAppAdapter<
     return yourClassInstance
   }
 
-  enableRealtimeCollaboration(): YourClass {
+  enableRealtimeCollaboration(): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Implement your logic here for enabling realtime collaboration
     console.log("Realtime collaboration enabled");
 
@@ -351,7 +355,7 @@ class CustomDAppAdapter<
     return yourClassInstance
   }
 
-  enableChatFunctionality(): YourClass {
+  enableChatFunctionality(): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Implement your logic here for enabling chat functionality
     console.log("Chat functionality enabled");
 
@@ -377,7 +381,7 @@ class CustomDAppAdapter<
    * Enables real-time updates.
    * @returns {YourClass} Returns an instance of YourClass for method chaining.
    */
-  async enableRealtimeUpdates(): Promise<YourClass> {
+  async enableRealtimeUpdates(): Promise<YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     try {
       // Implement your logic here for enabling real-time updates
       winston.info("Real-time updates enabled");
@@ -564,7 +568,7 @@ class CustomDAppAdapter<
   }
 
   
-  implementAnalytics(): YourClass {
+  implementAnalytics(): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     try {
       winston.info("Analytics integration in progress...");
 
@@ -630,7 +634,10 @@ class CustomDAppAdapter<
     }
   }
 
-  customizeTheme(themeConfig: ThemeConfig, dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): YourClass {
+  customizeTheme(
+    themeConfig: ThemeConfig, 
+    dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): YourClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     try {
       console.log("Theme customization in progress...");
 

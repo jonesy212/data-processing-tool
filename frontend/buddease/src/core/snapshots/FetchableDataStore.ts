@@ -4,7 +4,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { DataStore } from '@/core/state/stores/DataStore';
+import type { DataStore } from '@/core/state/stores/DataStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 
 

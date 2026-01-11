@@ -1,5 +1,5 @@
 appUtils.ts
-import { AppTree } from "@/core/generators/generateAppTree";
+import type { AppTree } from "@/core/generators/generateAppTree";
 
 // Helper function to retrieve a file from the tree structure
 const getFileFromTree = (appTree: AppTree, fileName: string): string | null => {

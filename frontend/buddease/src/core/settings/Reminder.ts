@@ -1,12 +1,14 @@
-Reminder.ts
-import { NotificationChannels, RetryPolicy } from '@/core/notifications/NotificationChannels';
-import { CustomAction } from '@/core/settings/CustomAction';
-import { EscalationAction } from "@/core/settings/EscalationAction";
-import { ReminderCondition } from '@/core/settings/ReminderConditionEngine';
-// Core reminder definition
+// Reminder.ts
+import type { NotificationChannels, RetryPolicy } from '@/core/notifications/NotificationChannels';
+import { ReminderTypes, createReminderTypeFromEnum } from '@/core/typings/ReminderTypes';
+import type { CustomAction } from '@/core/settings/CustomAction';
+import type { EscalationAction } from "@/core/settings/EscalationAction";
+import type { ReminderCondition } from '@/core/settings/ReminderConditionEngine';
+import type { SharedTimestamps, SharedStatusFlags, BaseEntityProperties, SharedIdentifiers } from '@/core/documents/RelatedProps';
+import type { ReminderTemplate } from '@/core/settings/ReminderTemplate'
 
-// Option B: With dedicated ReminderType if you need more complexity
-interface ReminderType {
+// With dedicated ReminderType if you need more complexity
+export interface ReminderType {
   id: string;
   category: 'reminder' | 'alert' | 'follow-up' | 'notification' | 'action';
   severity: 'info' | 'warning' | 'error' | 'critical';
@@ -17,16 +19,39 @@ interface ReminderType {
   };
 }
 
-interface Reminder {
+interface Reminder extends 
+  BaseEntityProperties,
+  SharedTimestamps,
+  SharedStatusFlags {
+  
   id: string;
   trigger: ReminderTrigger;
   method: 'email' | 'push' | 'sms' | 'in-app' | 'desktop';
-  reminderType: ReminderType; // Use the complex type
+  reminderType: ReminderType;
   customMessage?: string;
   isActive: boolean;
   sent: boolean;
   minutes?: number;
   customActions?: CustomAction[];
+  
+  
+  // Your suggested additions (mapped to existing types where possible)
+  description?: string;
+  acknowledged?: boolean;
+  acknowledgedAt?: Date;
+  snoozeCount?: number;
+  maxSnoozeCount?: number;
+  relatedEventId?: string;
+  recurrence?: {
+    pattern: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    interval?: number;
+    endDate?: Date;
+    exceptions?: Date[];
+  };
+  metadata?: Record<string, any>;
+  tags?: string[];
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  expirationDate?: Date;
 }
 
 interface ReminderPreferences {
@@ -60,6 +85,32 @@ interface ReminderPreferences {
   timeZone?: string;
   dateFormat?: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
   useNaturalLanguageTime?: boolean; // “Remind me in 2 hours” parsing
+
+  //new not used
+  maxDailyReminders?: number;        // Limit reminders per day
+  reminderGrouping?: boolean;        // Group similar reminders
+  earlyReminders?: boolean;          // Send reminders earlier than scheduled
+  lateReminders?: boolean;           // Send reminders if missed
+  reminderThemes?: {                  // Visual customization
+    colorScheme?: 'light' | 'dark' | 'auto';
+    accentColor?: string;
+    fontSize?: 'small' | 'medium' | 'large';
+  };
+  notificationBadges?: boolean;      // Show badge counts
+  readReceipts?: boolean;            // Confirm when reminders are read
+  deliveryReports?: boolean;         // Get reports on delivery status
+  reminderArchive?: {                // Auto-archive settings
+    enabled: boolean;
+    afterDays: number;               // Archive after X days
+    autoDelete: boolean;             // Delete after archive
+  };
+  crossDeviceSync?: boolean;         // Sync across all user devices
+  backupReminders?: boolean;         // Backup reminders to cloud
+  accessibility?: {                  // Accessibility features
+    highContrast: boolean;
+    screenReaderSupport: boolean;
+    largerText: boolean;
+  };
 }
 
 
@@ -88,8 +139,72 @@ interface ReminderSettings {
   
   // User preferences
   userPreferences?: ReminderPreferences;
+
+
+
+   // Suggested additions:
+  version?: string;                  // Settings version for migrations
+  templateLibrary?: {                // Pre-defined reminder templates
+    [key: string]: ReminderTemplate;
+  };
+  analytics?: {                      // Usage analytics settings
+    trackOpens: boolean;
+    trackClicks: boolean;
+    trackDismissals: boolean;
+    anonymizeData: boolean;
+  };
+  integrations?: {                   // Third-party integrations
+    calendarSync: boolean;
+    taskManagerSync: boolean;
+    crmIntegration: boolean;
+    chatIntegration: boolean;
+  };
+  security?: {                       // Security settings
+    requireAuthForChanges: boolean;
+    twoFactorForCritical: boolean;
+    auditLog: boolean;
+    ipWhitelist?: string[];
+  };
+  compliance?: {                     // Regulatory compliance
+    gdprCompliant: boolean;
+    dataRetentionDays: number;
+    dataEncryption: boolean;
+    exportFormat: 'json' | 'csv' | 'pdf';
+  };
+  backup?: {                         // Backup settings
+    autoBackup: boolean;
+    backupFrequency: 'daily' | 'weekly' | 'monthly';
+    backupLocation: 'local' | 'cloud' | 'both';
+    encryptionKey?: string;
+  };
 }
 
+
+interface EscalationRule {
+  id: string;
+  name: string;
+  conditions: EscalationCondition[];
+  actions: EscalationAction[];
+  maxEscalationLevel: number;
+  
+  // Suggested additions:
+  description?: string;              // Rule description
+  enabled?: boolean;                 // Whether rule is active
+  priority?: number;                 // Rule execution priority
+  applicableReminderTypes?: string[]; // Which reminder types this applies to
+  applicableChannels?: string[];     // Which channels this applies to
+  timeZone?: string;                 // Timezone for time-based conditions
+  escalationDelay?: number;          // Minutes between escalation levels
+  stopOnAcknowledgment?: boolean;    // Stop escalation if acknowledged
+  stopOnCompletion?: boolean;        // Stop escalation if completed
+  notificationOnEscalate?: boolean;  // Notify when escalation occurs
+  auditTrail?: {                     // Change tracking
+    createdBy: string;
+    createdDate: Date;
+    lastModifiedBy?: string;
+    lastModifiedDate?: Date;
+  };
+}
 
 // Trigger types
 type ReminderTrigger = 
@@ -111,7 +226,7 @@ type ReminderMethod =
   | 'webhook'
   | 'multiple'; // Combined methods
 
-Event-specific reminders
+// Event-specific reminders
 interface EventReminder extends Reminder {
   eventTypes: string[]; // 'meeting', 'birthday', 'deadline', etc.
   priorityLevels: ('low' | 'medium' | 'high')[];
@@ -172,7 +287,7 @@ interface SmsSettings {
   categories?: ('alerts' | 'reminders' | 'security')[];
 }
 
-In-app notifications (inside dashboard or app)
+// In-app notifications (inside dashboard or app)
 interface InAppSettings {
   enabled: boolean;
   sound?: boolean;
@@ -196,7 +311,7 @@ interface WebhookSettings {
 
 
 
-EscalationCondition.ts
+// EscalationCondition.ts
 export interface EscalationCondition {
   id: string;
   type:
@@ -300,7 +415,8 @@ const userNotificationChannels: NotificationChannels = {
     authToken: 'my-secret-token',
     retryPolicy: {
       maxRetries: 3,
-      retryIntervalSeconds: 60,
+      retryInterval: 60,
+       backoffFactor: 0
     },
     payloadFormat: 'json',
     events: ['user.updated', 'payment.failed'],
@@ -355,22 +471,16 @@ const userNotificationChannels: NotificationChannels = {
 };
 
 
+// Updated example with ReminderTypes enum
 const reminderExample: Reminder = {
   id: "rem-001",
   trigger: { type: "time_before_event", minutesBefore: 30 },
   method: "push",
-  reminderType: { 
-    id: "alert-type",
-    category: "alert",
-    severity: "warning",
-    defaultSettings: {
-      method: "push",
-      timing: 30,
-      template: "Upcoming event in {minutes} minutes"
-    }
-  },
+  reminderType: createReminderTypeFromEnum(ReminderTypes.ALERT), // Using enum
   isActive: true,
   sent: false,
+  title: "Upcoming Event",
+  description: "Team meeting in 30 minutes",
   customActions: [
     {
       id: "act-001",
@@ -385,4 +495,12 @@ const reminderExample: Reminder = {
       enabled: true,
     },
   ],
+  // Added properties
+  createdAt: new Date(),
+  priority: "high",
+  tags: ["meeting", "team"],
+  metadata: {
+    eventId: "evt-123",
+    organizer: "john@example.com"
+  }
 };

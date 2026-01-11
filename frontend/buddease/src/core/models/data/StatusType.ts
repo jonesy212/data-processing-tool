@@ -1,4 +1,5 @@
-StatusType.ts
+// StatusType.ts
+
 // Define the type for the status property
 
 export type CustomNotificationType =
@@ -150,6 +151,17 @@ enum CalendarStatus {
   Approved = StatusType.Confirmed,
 
   // Add more status options as needed
+}
+
+
+// Define AttendeeStatus enum
+enum AttendeeStatus {
+  PENDING = "pending",
+  ACCEPTED = "accepted", 
+  DECLINED = "declined",
+  TENTATIVE = "tentative",
+  MAYBE = "maybe",
+  NO_RESPONSE = "no-response"
 }
 
 enum NotificationStatus {
@@ -416,7 +428,7 @@ export {
   IncludeType,
   Layout, NotificationPosition, NotificationStatus,
   Orientation,
-  OutcomeType,
+  OutcomeType, AttendeeStatus,
   PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
   StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
   TodoStatus, MeetingStatus,
