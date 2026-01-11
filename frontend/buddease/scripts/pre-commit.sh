@@ -1,5 +1,6 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# scripts/pre-commit.sh
+set -e
 
 echo "🔒 Buddease Dynamic Pre-commit Checks Starting..."
 
@@ -38,7 +39,7 @@ for file in $STAGED_FILES; do
     fi
   done
 
-  if [[ "$SKIP" == true ]]; then
+  if [ "$SKIP" = true ]; then
     continue
   fi
 
@@ -48,8 +49,8 @@ for file in $STAGED_FILES; do
   fi
 done
 
-if [[ "$FORBIDDEN" == true ]]; then
-  echo "🚫 Remove forbidden backup/temp files before committing."
+if [ "$FORBIDDEN" = true ]; then
+  echo "🚫 Commit blocked. Remove forbidden backup/temp files or update ALLOWED_PATTERNS in scripts/pre-commit.sh."
   exit 1
 fi
 

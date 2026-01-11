@@ -26,7 +26,7 @@ npx husky add .husky/pre-commit "bash scripts/pre-commit.sh"
 chmod +x scripts/pre-commit.sh
 
 # ✅ Test the hook manually (optional)
-bash pre-commit.sh
+bash scripts/pre-commit.sh
 
 # 6️⃣ Attempt a test commit to confirm everything works
 git add .
@@ -51,6 +51,19 @@ Runs tsc --noEmit on all tsconfig*.json files to catch compilation errors before
 Backup & Temporary File Protection
 
 Blocks accidental commits of old or temporary backup files (e.g., .bak, .backup-*, .dedup-backup.*), unless explicitly allowed.
+
+Commentary:
+
+Sometimes older backups exist from prior edits or scripts. These should not be committed unless explicitly included in the ALLOWED_PATTERNS.
+
+Staging them accidentally will cause the pre-commit hook to block your commit.
+
+To fix, either remove them from staging:
+
+bash
+Copy code
+git restore --staged path/to/backup-file
+Or add the pattern to ALLOWED_PATTERNS in scripts/pre-commit.sh if the backup must be committed.
 
 Linting & Formatting Enforcement
 
@@ -102,7 +115,6 @@ If any of these steps fail, the commit is blocked, and an error report is shown.
 
 Step-by-Step Checklist for Users
 1️⃣ Verify Husky Installation
-Run:
 
 bash
 Copy code
@@ -110,13 +122,11 @@ npx husky install
 Check that .husky/pre-commit exists.
 
 2️⃣ Check Script Permissions
-Ensure scripts/pre-commit.sh is executable:
 
 bash
 Copy code
 chmod +x scripts/pre-commit.sh
 3️⃣ Run Pre-Commit Manually (Optional)
-Test the hook without committing:
 
 bash
 Copy code
@@ -124,27 +134,32 @@ bash scripts/pre-commit.sh
 Ensure there are no TypeScript errors, no disallowed files, and linting passes.
 
 4️⃣ Attempt a Test Commit
-Stage any changes:
 
 bash
 Copy code
 git add .
-Commit normally:
-
-bash
-Copy code
 git commit -m "Test pre-commit hook"
 Confirm that the hook runs and allows or blocks the commit correctly.
 
-5️⃣ Fix Any Issues
+5️⃣ Handle Backup Files Correctly
+
+If your commit is blocked because of backup files:
+
+bash
+Copy code
+git restore --staged path/to/backup-file
+Only explicitly allowed backup files (.bak, .backup-*, .dedup-backup.*) can be staged.
+
+If a backup file must be committed, add its pattern to ALLOWED_PATTERNS in scripts/pre-commit.sh.
+
+6️⃣ Fix Any Issues
+
 Resolve TypeScript errors, linting issues, or remove any disallowed backup files.
 
 Re-run the hook manually if needed, then commit.
 
 Notes & Recommendations
 This hook is dynamic: adding new scripts or tsconfig files will automatically be included in future commits.
-
-Only explicitly allowed backup files (.bak, .backup-*, .dedup-backup.*) can be staged.
 
 Keep lint-staged configuration updated to cover all relevant file types and rules.
 
@@ -156,3 +171,14 @@ Husky Git Hooks Documentation
 lint-staged
 
 TypeScript Compiler Options
+
+yaml
+Copy code
+
+This version explicitly explains:
+
+- Why backups might appear in your staging area.  
+- How to remove them or allow them intentionally.  
+- Keeps the Quick Start commands front and center.  
+
+---
