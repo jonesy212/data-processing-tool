@@ -1,4 +1,0 @@
-// Original import at lines 1-3:
-import type { StructuredMetadata } from '@/core/config/StructuredMetadata'
-// // //RetrieveSnapshotData.tsx
-// import { StructuredMetadata } from "@/core/config/StructuredMetadata";

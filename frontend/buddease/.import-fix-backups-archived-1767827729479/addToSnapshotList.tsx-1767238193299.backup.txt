@@ -1,3 +1,0 @@
-// Original import at lines 1-2:
-import type { Attachment } from '@/core/documents/attachment/Attachment'
-//import { Attachment } from '@/core/documents/attachment/Attachment';

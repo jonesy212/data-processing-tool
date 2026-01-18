@@ -43,8 +43,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
-
 # Ignore build output
 /dist/
 
@@ -57,31 +55,37 @@ next-env.d.ts
 # Ignore logs
 logs/
 
-
-# Ignore specific files added in this commit
-tsconfig.json
-
-# pnpm-lock.yaml
-
-# Ignore modified files
-# ../../.vscode/settings.json
-# package.json
-
-
-# Ignore all .py files
-*.py
-
-
 # Ignore all .py files
 *.py
 
 /frontend/buddease/src/app/components/documents/privateDocs
-# Smart Backup System
-.smart-backups/
-.smart-backup-config.local.json
+
+# ============= BACKUP & REPORT FILES =============
+# Backup patterns
+*.backup.*
+*.backup-*
 *.bak
+*.missing-comment-backup.*
+backup-*
+~*
 
 # Backup directories
+.smart-backups/
+.migration-backups/
+.migration-reports/
 .comment-fix-backups/
 .type-import-backups/
 .import-fix-backups/
+.permanent-safe-points/
+
+# Reports
+reports/
+*.report.*
+*.summary.*
+*-import-fixes-*.md
+*-import-summary-*.txt
+*-type-import-fixes-*.md
+
+# Test files
+test-*
+test-headers/
