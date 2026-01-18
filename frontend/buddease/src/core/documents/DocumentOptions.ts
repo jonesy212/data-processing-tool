@@ -6,7 +6,7 @@ import {
     LanguageEnum,
 } from "@/core/communications/LanguageEnum";
 import { CustomProperties, HighlightColor } from "@/core/components/styling/Palette";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { MetadataEntriesType, StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { UserSettings } from "@/core/config/UserSettings";
@@ -18,7 +18,7 @@ import { DocumentAnimationOptions } from "@/core/documents/SharedDocumentProps";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { computeChecksum, DocumentData, RevisionOptions } from "@/core/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import {
     BorderStyle,
     DocumentSize,
@@ -34,7 +34,8 @@ import { Document } from "@/core/state/stores/DocumentStore";
 import { AllTypes } from '@/core/typings/PropTypes';
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import { UserIdea } from "@/core/users/Ideas";
-import VersionImpl, { version, Version } from '@/core/versions/Version';
+import type { version, Version } from '@/core/versions/Version';
+import VersionImpl from '@/core/versions/Version';
 import { VersionData } from "@/core/versions/VersionData";
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/core/versions/createLatestVersion';
 import * as docx from "docx";
@@ -133,7 +134,7 @@ interface Style<
 
 // Define the interface for DocumentBuilderOptions extending DocumentOptions
 export interface DocumentBuilderOptions<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -174,7 +175,7 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 };
 
 export interface DocumentOptions<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -642,7 +643,7 @@ const area = fetchUserAreaDimensions().toString()
 
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
 export const getDefaultDocumentOptions = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

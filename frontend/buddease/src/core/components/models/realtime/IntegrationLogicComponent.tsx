@@ -9,14 +9,14 @@ import year from "@/core/components/calendar/CalendarYear";
 import CryptoTransaction from "@/core/components/crypto/CryptoTransaction";
 import { Task } from "@/core/components/models/tasks/Task";
 import { AttendancePredictionResult } from '@/core/models/data/CalendarEventAttendancePrediction';
-import { BaseData } from '@/core/models/data/Data';
-import { IntegrateComponentsProps } from '@/core/models/realtime/IntegrationLogic';
+import type { BaseData } from '@/core/models/data/Data';
+import type { IntegrateComponentsProps } from '@/core/models/realtime/IntegrationLogic';
 import TaskManagementManager from "@/core/projects/TaskManagementPhase";
 import Milestone, {
     CalendarManagerState,
 } from "@/core/state/redux/slices/CalendarSlice";
 import { selectSelectedProject } from "@/core/state/redux/slices/CollaborationSlice";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { rootStores } from "@/core/state/stores/RootStores";
 import { ContentPost } from "@/core/typings/contentTypes";
 import ControlPanel from "@/utils/ControlPanel";

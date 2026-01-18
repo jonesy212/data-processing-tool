@@ -1,4 +1,4 @@
-IntrusionDetectionSystem.ts
+// IntrusionDetectionSystem.ts
 class IntrusionDetectionSystem {
     constructor() {
       // Initialize intrusion detection system configuration

@@ -1,7 +1,7 @@
-
 // FilterCriteria.ts
+
 import { extractCriteria } from '@/core/api/SnapshotApi';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import {
     CodingLanguageEnum,
     LanguageEnum,
@@ -11,7 +11,7 @@ import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentMana
 import { FeedbackPhaseEnum } from "@/core/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/core/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/core/components/phases/TenantManagementPhase";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -20,7 +20,7 @@ import { MessageType } from "@/core/generators/MessaageType";
 import AnimationTypeEnum from "@/core/libraries/animations/AnimationLibrary";
 import { CategoryIdentifier } from "@/core/libraries/categories/generateCategoryProperties";
 import { StatusTrackable, Timestamped } from "@/core/models/CommonData";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import {
     BookmarkStatus,
     CalendarStatus,
@@ -98,7 +98,7 @@ interface FilterCriteria extends Timestamped, StatusTrackable {
 }
 
 const applyFilters = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -308,7 +308,7 @@ const applyFilters = <
 
 // Utility function to check if a snapshot matches the provided criteria
 function matchesCriteria<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

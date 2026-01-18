@@ -1,4 +1,4 @@
-ErrorState.ts
+// ErrorState.ts
 interface ErrorState {
   errorMessage: string; // Error message to display
   errorCode?: number; // Optional error code

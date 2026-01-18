@@ -1,10 +1,8 @@
 // OnboardingHook.ts
 import { useSecureStoreId } from '@/core/hooks/useSecureStoreId';
-// OnboardingHooks.ts
-
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { Tracker } from '@/core/models/tracker/Tracker';
+import { UserTracker } from '@/core/models/tracker/UserTracker';
 import { initializeUserData } from '@/core/pages/onboarding/PersonaBuilderData';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { rootStores } from '@/core/state/stores/RootStores';
@@ -48,7 +46,7 @@ export const useDynamicOnboarding = <
         // Use initializeUserData to ensure you have the required information
         const userData = initializeUserData(this.user, id);
 
-        const tracker: Tracker = {
+        const tracker: UserTracker = {
           id: phase.id,
           name: phase.description,
           phases: [],

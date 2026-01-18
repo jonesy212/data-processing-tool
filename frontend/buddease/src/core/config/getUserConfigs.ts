@@ -1,4 +1,4 @@
-getUserConfigs.ts
+// getUserConfigs.ts
 import { UserConfigs } from "@/core/api/userConfigs";
 import { userPreferences } from "@/core/config/UserPreferences";
 import userSettings from "@/core/config/UserSettings";
@@ -10,7 +10,6 @@ import userSettings from "@/core/config/UserSettings";
  */
 export const getUserConfigs = async (): Promise<typeof UserConfigs> => {
   try {
-    // --- 1️⃣ Node.js / Backend Path
     if (typeof window === "undefined") {
       const fs = await import("fs");
       const path = require("path");

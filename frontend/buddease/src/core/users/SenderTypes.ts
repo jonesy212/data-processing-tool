@@ -1,4 +1,4 @@
-SenderTypes.ts
+// SenderTypes.ts
 
 import { Sender } from '@/core/components/communications/CommunicationPage';
 

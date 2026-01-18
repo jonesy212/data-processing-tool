@@ -1,5 +1,6 @@
-ThemeManagerServiceContext.tsx
-import themeSettings, { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
+// ThemeManagerServiceContext.tsx
+import type { ThemeConfig } from '@/core/libraries/ui/theme/ThemeConfig';
+import themeSettings from '@/core/libraries/ui/theme/ThemeConfig';
 import React, { createContext, useContext, useState } from "react";
 
 // Define the type for ThemeManagerServiceProps

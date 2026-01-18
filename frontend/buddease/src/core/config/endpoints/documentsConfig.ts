@@ -1,4 +1,4 @@
-documentsConfig.ts
+// documentsConfig.ts
 documentConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { DocumentEndpoints } from '@/core/typings/categories/DocumentEndpoints';

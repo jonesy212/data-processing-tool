@@ -1,4 +1,4 @@
-TikTokIntegration.ts
+// TikTokIntegration.ts
 import { Video } from '@/core/typings/videoTypes/Video';
 import UserDetails from '@/core/users/User';
 

@@ -1,4 +1,4 @@
-Blog.ts
+// Blog.ts
 export interface Blog {
   id: string; // Unique identifier for the blog
   title: string; // Title of the blog

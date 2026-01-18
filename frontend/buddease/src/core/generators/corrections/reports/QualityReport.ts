@@ -1,6 +1,6 @@
-QualityReport.ts
+// QualityReport.ts
 src/app/quality/reports/QualityReport.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';
 import path from 'path';

@@ -1,4 +1,4 @@
-EnterprisePrompt.tsx
+// EnterprisePrompt.tsx
 class EnterprisePrompt {
   private title: string;
   private description: string;

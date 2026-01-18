@@ -1,4 +1,4 @@
-TeamPreferencesStep.tsx
+// TeamPreferencesStep.tsx
 
 import PreferencesStep from '@/core/components/phases/steps/PreferencesStep';
 import React from 'react';

@@ -1,7 +1,7 @@
-DefaultCalendarEventViewingDetails.tsx
+// DefaultCalendarEventViewingDetails.tsx
 import { handleApiError } from '@/core/api/ApiLogs';
 import ProjectService from "@/core/api/service/ProjectService";
-import { CalendarEventViewingDetailsProps } from '@/core/components/calendar/CalendarEventViewingDetails';
+import type { CalendarEventViewingDetailsProps } from '@/core/components/calendar/CalendarEventViewingDetails';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { ButtonGenerator } from '@/core/generators/GenerateButtons';
 import { handleAddComponent, handleUpdateComponent } from '@/core/libraries/ui/components/Component';

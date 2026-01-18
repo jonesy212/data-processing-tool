@@ -1,3 +1,4 @@
+// ApiLogs.ts
 Apilogs.ts
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -5,7 +6,8 @@ import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages"
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addLog } from "@/core/state/redux/slices/LogSlice";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { observable, runInAction } from "mobx";
 
 const API_BASE_URL = endpoints.logging;

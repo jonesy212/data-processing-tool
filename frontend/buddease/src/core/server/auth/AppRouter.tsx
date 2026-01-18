@@ -1,4 +1,4 @@
-AppRouter.tsx
+// AppRouter.tsx
 
 import { RouteGuard } from "@/core/components/routing/RouteGuard";
 import Home from "@/core/page";

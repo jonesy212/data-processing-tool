@@ -1,6 +1,7 @@
-DynamicColorPalette.tsx
+// DynamicColorPalette.tsx
 components/DynamicColorPalette.tsx
-import ColorPalette, { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
+import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
+import ColorPalette from '@/core/components/styling/ColorPalette';
 import React from 'react';
 
 interface DynamicColorPaletteProps {

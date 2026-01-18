@@ -1,4 +1,4 @@
-generateCaptions.ts
+// generateCaptions.ts
 // Assume generateCaptions function definition
 
 // Define the generateCaptions function

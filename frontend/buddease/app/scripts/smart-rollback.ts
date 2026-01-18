@@ -1,0 +1,1 @@
+../../scripts/typescript/backup-recovery/smart-rollback.ts

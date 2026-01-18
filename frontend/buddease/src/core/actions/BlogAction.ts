@@ -1,4 +1,4 @@
-BlogAction.ts
+// BlogAction.ts
 blogActions.ts
 import { BlogPost } from "@/core/pages/blog/BlogPost";
 import { BlogComment } from "@/core/state/redux/slices/BlogSlice";

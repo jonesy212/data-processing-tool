@@ -1,5 +1,5 @@
 // SnapshotCategoryManager.tsx
-import { SnapshotCategory, SnapshotCategoryType } from "@/core/api/getSnapshotEndpoint";
+import type { SnapshotCategory, SnapshotCategoryType } from "@/core/api/getSnapshotEndpoint";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 

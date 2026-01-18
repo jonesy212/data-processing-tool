@@ -9,7 +9,6 @@ const DashboardOverview = () => {
   );
 };
 
-// ProjectWorkspace.jsx
 
 const ProjectWorkspace = () => {
   return (

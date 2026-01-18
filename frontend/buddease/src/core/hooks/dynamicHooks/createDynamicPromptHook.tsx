@@ -1,6 +1,7 @@
-createDynamicPromptHook.tsx
+// createDynamicPromptHook.tsx
 DynamicPromptHookGenerator.tsx
-import createDynamicHook, { DynamicHookParams, DynamicHookResult } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import type { DynamicHookParams, DynamicHookResult } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 
 
 export type DynamicPromptHookParams = DynamicHookParams;

@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+// phases-cli.ts
 src/app/error-analyzer/cli/phases-cli.ts
 
 import { PhaseExecutor, phaseRunners } from '@/core/error-analyzer/phases/PhaseExecutor';

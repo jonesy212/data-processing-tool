@@ -1,4 +1,4 @@
-getSnapshotEntries.ts
+// getSnapshotEntries.ts
 import { K, T } from "@/core/models/data/dataStoreMethods";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 

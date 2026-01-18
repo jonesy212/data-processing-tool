@@ -1,3 +1,4 @@
+// RealtimeUpdates.tsx
 RealtimeUpdatesComponent.tsx
 
 import { headersConfig } from '@/core/components/shared/SharedHeaders';

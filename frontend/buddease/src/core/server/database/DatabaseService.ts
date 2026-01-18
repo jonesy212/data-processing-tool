@@ -1,4 +1,4 @@
-// ClientDatabaseService.ts
+// DatabaseService.ts
 // SERVER-SIDE ONLY - This goes in /server/ directory
 import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import type { ClientDatabaseService, DatabaseQuery } from '@/core/config/DatabaseTypes';

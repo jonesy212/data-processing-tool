@@ -1,5 +1,4 @@
 // CustomDataProvider.tsx
-// CustomDataProvider.ts
 import type { BaseRecord, CreateResponse, DeleteOneParams, CreateParams, DeleteOneResponse, GetListParams, GetListResponse, GetOneParams, GetOneResponse, UpdateParams, UpdateResponse } from "@refinedev/core";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { fetchProviderData, createProviderRecord,

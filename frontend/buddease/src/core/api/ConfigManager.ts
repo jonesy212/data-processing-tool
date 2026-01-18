@@ -1,6 +1,6 @@
-ConfigManager.ts
+// ConfigManager.ts
 import { handleApiError } from '@/core/api/ApiLogs';
-import { SharedConfig } from '@/core/config/BaseConfig';
+import type { SharedConfig } from '@/core/config/BaseConfig';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { useNotification } from "@/core/state/context/NotificationContext";

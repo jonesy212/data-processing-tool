@@ -1,4 +1,4 @@
-ThemeCustomization.tsx
+// ThemeCustomization.tsx
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { TableStyle } from "@/core/hooks/userInterface/TableStyle";
 import { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";

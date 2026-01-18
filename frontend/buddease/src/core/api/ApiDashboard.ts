@@ -1,4 +1,4 @@
-ApiDashboard.ts
+// ApiDashboard.ts
 // Some file where loadDashboardState is defined or imported
 export const loadDashboardState = async () => {
     try {

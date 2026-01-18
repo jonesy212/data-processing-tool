@@ -1,4 +1,4 @@
-SubscriptionCriteria.ts
+// SubscriptionCriteria.ts
 interface SubscriptionCriteria {
   eventType: string; // e.g., "security breach", "system alert"
   severity?: string; // e.g., "high", "medium", "low"

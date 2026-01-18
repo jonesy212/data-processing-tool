@@ -10,7 +10,7 @@ import FrontendStructure, { frontend, frontendStructure } from "@/core/config/ap
 import getAppPath from "@/core/config/appStructure/appPath";
 import { AppThunk } from "@/core/configs/appThunk";
 import { ModifiedDate } from "@/core/documents/DocType";
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DocumentBuilder, {
@@ -25,7 +25,7 @@ import { backend, backendStructure } from '@/core/server/database/BackendStructu
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { Document } from "@/core/state/stores/DocumentStore";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/core/typings/documentTypes";
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';

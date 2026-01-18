@@ -1,3 +1,4 @@
+// HybridSyncService.ts
 app/services/HybridSyncService.ts
 import { IndexedDBRepository } from '@/core/repositories/IndexedDBRepository';
 import { SqlRepository } from '@/core/repositories/SqlRepository';

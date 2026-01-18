@@ -1,6 +1,7 @@
-Layouts.tsx
+// Layouts.tsx
 components/Layout.tsx
-import DashboardLoader, { DashboardView } from '@/core/pages/dashboards/DashboardLoader';
+import type { DashboardView } from '@/core/pages/dashboards/DashboardLoader';
+import DashboardLoader from '@/core/pages/dashboards/DashboardLoader';
 import React, { useState } from 'react';
 
 interface LayoutProps {

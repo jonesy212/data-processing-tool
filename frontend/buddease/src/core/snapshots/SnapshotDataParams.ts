@@ -1,5 +1,5 @@
 // SnapshotDataParams.ts
-import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
@@ -13,7 +13,7 @@ import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 
 interface SnapshotDataParams<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

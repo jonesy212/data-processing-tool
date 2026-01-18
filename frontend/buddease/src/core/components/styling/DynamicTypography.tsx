@@ -1,6 +1,6 @@
 // DynamicTypography.tsx
-// components/DynamicTypography.tsx
-import DummyCardLoader, { ContentItem } from "@/core/cards/DummyCardLoader";
+import type { ContentItem } from '@/core/cards/DummyCardLoader';
+import DummyCardLoader from '@/core/cards/DummyCardLoader';
 import React from "react";
 
 interface BodyTextProps {

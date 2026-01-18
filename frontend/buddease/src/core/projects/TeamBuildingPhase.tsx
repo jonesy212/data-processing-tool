@@ -1,4 +1,4 @@
-TeamBuildingPhase.tsx
+// TeamBuildingPhase.tsx
 import { useTeamBuildingPhase } from "@/core/hooks/phaseHooks/CollaborationPhaseHooks";
 import React, { useEffect } from "react";
 

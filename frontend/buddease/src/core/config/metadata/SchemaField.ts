@@ -1,4 +1,4 @@
-SchemaField.ts
+// SchemaField.ts
 
 interface SchemaField {
     schemaType: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'array';

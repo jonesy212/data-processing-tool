@@ -1,4 +1,4 @@
-// scripts/comprehensive-circular-detection.ts
+// detect-all-circular-deps.ts
 import { TypeScriptDependencyAnalyzer } from '@/app/scripts/analyzeDependencies';
 import { TypeScriptDuplicateAnalyzer } from '@/app/scripts/analyzeDuplicates';
 import { generateRoadmaps } from '@/app/scripts/generateRoadmaps';
@@ -117,7 +117,6 @@ class ComprehensiveCircularDetector {
 
   private async runTypeScriptAnalysis(): Promise<any[]> {
     try {
-      // Use the EnhancedFixStrategy from fix-strategy.ts
       const { EnhancedFixStrategy } = await import('@/app/error-analyzer/fix-strategy');
       const analyzer = new EnhancedFixStrategy();
       const analysis = await analyzer.analyzeTypeScriptErrors();

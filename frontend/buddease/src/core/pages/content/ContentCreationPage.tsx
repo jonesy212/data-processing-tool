@@ -1,4 +1,4 @@
-ContentCreationPage.tsx
+// ContentCreationPage.tsx
 
 import { ButtonGenerator } from '@/core/generators/GenerateButtons';
 import AddContent from '@/core/models/content/AddContent';

@@ -1,4 +1,4 @@
-asyncFunction.ts
+// asyncFunction.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { SupportedData } from "@/core/models/CommonData";

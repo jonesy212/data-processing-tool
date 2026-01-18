@@ -10,7 +10,7 @@ import {
 } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { Content } from "@/core/models/content/AddContent";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import {
     NotificationStatus,
     SubscriberTypeEnum,
@@ -67,7 +67,7 @@ import {
     YourSpecificSnapshotType,
     convertMapToSnapshot
 } from "@/core/typings/YourSpecificSnapshotType";
-import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
+import type { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import {
     SnapshotAttachment,
     SnapshotEntity,

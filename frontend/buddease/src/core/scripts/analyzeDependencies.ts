@@ -1,4 +1,4 @@
-analyzeDependencies.ts
+// analyzeDependencies.ts
 scripts/analyzeDependencies.ts
 import fs from 'fs';
 import path from 'path';

@@ -5,7 +5,6 @@ import path from 'path';
 async function verifyArchitecture() {
     console.log('🔍 Verifying headers architecture...\n');
     
-    // 1. Check SharedHeaders.ts
     const sharedHeadersPath = path.join(process.cwd(), 'src/app/components/shared/SharedHeaders.ts');
     const sharedContent = fs.readFileSync(sharedHeadersPath, 'utf8');
     
@@ -14,7 +13,6 @@ async function verifyArchitecture() {
     console.log('   - Exports headersConfig:', sharedContent.includes("export const headersConfig"));
     console.log('   - Type:', sharedContent.match(/export const headersConfig: (.*?) =/)?.[1]);
     
-    // 2. Check HeadersConfig.tsx
     const headersConfigPath = path.join(process.cwd(), 'src/app/api/headers/HeadersConfig.tsx');
     const configContent = fs.readFileSync(headersConfigPath, 'utf8');
     

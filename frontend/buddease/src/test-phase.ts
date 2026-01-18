@@ -1,3 +1,4 @@
+// test-phase.ts
 import { PhaseExecutor } from '@/core/error-analyzer/phases/PhaseExecutor';
 
 async function main() {

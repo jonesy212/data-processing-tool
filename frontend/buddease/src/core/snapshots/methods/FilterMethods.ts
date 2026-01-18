@@ -9,7 +9,7 @@ import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshot
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 export const FilterMethods = {
   getSnapshots: function <

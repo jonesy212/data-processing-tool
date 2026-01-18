@@ -1,6 +1,6 @@
-BlogSlice.ts
+// BlogSlice.ts
 
-import { BlogComment, CustomComment, EntityComments, VideoComment } from '@/core/models/comments/Comments';
+import type { BlogComment, CustomComment, EntityComments, VideoComment } from '@/core/models/comments/Comments';
 import { BlogPost } from '@/core/pages/blog/BlogPost';
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";

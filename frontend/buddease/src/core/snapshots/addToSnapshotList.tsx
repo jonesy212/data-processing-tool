@@ -1,3 +1,4 @@
+// addToSnapshotList.tsx
 // import type { Attachment } from '@/core/documents/attachment/Attachment'
 
 // import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -9,11 +10,10 @@
 // import type {  Snapshot } from '@/core/snapshots/Snapshot';
 // import { SnapshotActions } from "@/core/actions/SnapshotActions";
 // import SnapshotStore from "./SnapshotStore";
-// import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+// import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 // import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 // import { Subscriber } from "@/core/subscribers/Subscriber";
 
-// // addToSnapshotList.ts
 // const addToSnapshotList = async  <  
 // T extends BaseDataEntity,
   // K extends T = T,

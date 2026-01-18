@@ -1,5 +1,4 @@
 // MovementAnimationActions.tsx
-// movementAnimations/useMovementAnimations.ts
 import { useState } from "react";
 import type { RefObject } from "react";
 

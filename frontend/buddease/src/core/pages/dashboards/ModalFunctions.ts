@@ -1,4 +1,4 @@
-ModalFunctions.ts
+// ModalFunctions.ts
 import { useState, React } from "react";
 
 interface ModalFunctions {

@@ -14,7 +14,6 @@ import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
 
-// Use the data-processing endpoint from apiEndpoints.ts
 const API_BASE_URL = endpoints.dataProcessing;
 
 interface DataProcessing {

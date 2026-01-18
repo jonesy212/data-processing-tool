@@ -1,6 +1,6 @@
-drawingLibrary.ts
+// drawingLibrary.ts
 Import type declarations from the corresponding .d.ts file
-import { DrawingFunctions, DrawingOptions } from '@/core/libraries/drawing/drawingLibrary';
+import type { DrawingFunctions, DrawingOptions } from '@/core/libraries/drawing/drawingLibrary';
 import { Drawing } from '@/core/libraries/drawing/generateDrawingJSON';
 import 'drawingLibrary';
 

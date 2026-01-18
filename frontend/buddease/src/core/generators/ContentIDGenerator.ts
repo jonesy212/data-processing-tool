@@ -1,4 +1,4 @@
-ContentIDGenerator.ts
+// ContentIDGenerator.ts
 
 import {
     BaseDataEntity,
@@ -7,8 +7,8 @@ import {
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import { Data, DataDetails } from '@/core/models/data/Data';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { Data, DataDetails } from '@/core/models/data/Data';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
 import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator
 

@@ -1,8 +1,8 @@
-BrandingUpdater.tsx
+// BrandingUpdater.tsx
 
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import RandomWalkSuggestions from '@/core/hooks/userInterface/RandomWalkSuggestions';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import configServiceInstance from '@/core/services/ConfigurationService';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { useNotification } from "@/core/state/context/NotificationContext";

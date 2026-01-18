@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// app/scripts/fix-import-wrappers.ts
+// fix-import-wrappers.ts
 
 import fs from 'fs';
 import path from 'path';

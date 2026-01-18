@@ -1,5 +1,4 @@
-SocialMediaIntegrationService.tsx
-SocialMediaIntegrationService.ts
+// SocialMediaIntegrationService.tsx
 
 // Import necessary modules and types
 import { useSecureAccountId } from '@/core/hooks/useSecureAccountId';

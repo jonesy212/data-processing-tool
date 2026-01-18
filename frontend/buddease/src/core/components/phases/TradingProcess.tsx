@@ -1,4 +1,4 @@
-TradingProcess.tsx
+// TradingProcess.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import React, { useState } from "react";
 

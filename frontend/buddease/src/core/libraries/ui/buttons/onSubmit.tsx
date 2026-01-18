@@ -1,5 +1,4 @@
-onSubmit.tsx
-onSubmit.ts
+// onSubmit.tsx
 import React from 'react';
 
 interface ButtonProps {

@@ -1,5 +1,5 @@
-BlogsEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// BlogsEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface BlogsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

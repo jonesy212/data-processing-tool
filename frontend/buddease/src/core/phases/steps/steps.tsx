@@ -1,4 +1,4 @@
-steps.tsx
+// steps.tsx
 import TradingPreferencesStep from "@/core/components/phases/TradingPreferencesStep";
 import { TradeData } from "@/core/components/trading/TradeData";
 import TradingBasicInfoStep from "@/core/phases/steps/trading/TradingBasicInfoStep";

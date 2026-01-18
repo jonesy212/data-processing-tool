@@ -1,7 +1,7 @@
-TeamActions.ts
+// TeamActions.ts
 
-import { Team } from "@/core/components/teams/Team";
-import { Member } from "@/core/models/members/Member";
+import type { Team } from "@/core/components/teams/Team";
+import type { Member } from "@/core/models/members/Member";
 import { createAction } from "@reduxjs/toolkit";
 
 export const TeamActions = {

@@ -1,4 +1,4 @@
-FadeInAnimation.tsx
+// FadeInAnimation.tsx
 import React, { useEffect, useState } from 'react';
 
 interface FadeInProps {

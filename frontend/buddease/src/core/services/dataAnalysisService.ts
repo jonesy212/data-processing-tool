@@ -1,4 +1,4 @@
-// DataAnalysisService.ts
+// dataAnalysisService.ts
 import { DataAnalysis } from '@/core/projects/DataAnalysisPhase/DataAnalysis';
 
 class DataAnalysisService {

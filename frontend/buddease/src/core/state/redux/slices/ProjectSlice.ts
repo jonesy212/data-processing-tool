@@ -1,13 +1,13 @@
 // ProjectSlice.ts
 import { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import { Team } from "@/core/components/teams/Team";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ProjectFeedback } from "@/core/features/support/ProjectFeedback";
 import { StatusType } from "@/core/models/data/StatusType";
 import { Member } from "@/core/models/members/Member";
 import { Project } from '@/core/models/projects/Project';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Contributor } from "@/core/models/teams/Contributor";
 import { JobRole } from '@/core/models/UserRoles';
 import { Product } from "@/core/products/Product";
@@ -16,28 +16,28 @@ import { JobDescription } from "@/core/projects/JobDescription";
 import ProjectProgress from '@/core/projects/projectManagement/ProjectProgress';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import Milestone, {
-    ProductMilestone,
+  ProductMilestone,
 } from "@/core/state/redux/slices/CalendarSlice";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import {
-    MeetingEntity
+  MeetingEntity
 } from '@/core/typings/entities/MeetingEntity';
 import {
-    ProjectManagerAttachment,
-    ProjectManagerEntity,
-    ProjectManagerExcludedFields,
-    ProjectManagerIncludedFields,
-    ProjectManagerK,
-    ProjectManagerMeta
+  ProjectManagerAttachment,
+  ProjectManagerEntity,
+  ProjectManagerExcludedFields,
+  ProjectManagerIncludedFields,
+  ProjectManagerK,
+  ProjectManagerMeta
 } from '@/core/typings/entities/ProjectManagerEntity';
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Draft, produce } from "immer";
 import { useDispatch } from "react-redux";
 
 interface ProjectState<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -74,7 +74,7 @@ const initialState: ProjectState = {
 };
 
 interface YourStateType<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -94,7 +94,7 @@ export interface ProjectMetrics {
 
 
 function createUpdatedProject<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

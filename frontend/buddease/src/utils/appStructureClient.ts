@@ -1,5 +1,6 @@
-appStructureClient.ts
-Client-side file 
+// appStructureClient.ts
+// Client-side file 
+
 import AppStructure, { FileSystemService } from '@/core/config/appStructure/AppStructure';
 
 Browser-compatible file system (using API calls)

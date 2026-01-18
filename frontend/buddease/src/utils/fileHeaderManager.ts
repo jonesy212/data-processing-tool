@@ -1,4 +1,4 @@
-utils/fileHeaderManager.ts
+// fileHeaderManager.ts
 import fs from 'fs';
 import path from 'path';
 

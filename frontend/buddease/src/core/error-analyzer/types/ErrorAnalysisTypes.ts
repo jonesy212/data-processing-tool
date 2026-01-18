@@ -1,5 +1,6 @@
-// src/app/error-analyzer/types/ErrorAnalysisTypes.ts
+// ErrorAnalysisTypes.ts
 import type { FixStrategyTypeDef } from '@/core/error-analyzer/types/FixStrategyTypes';
+import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager'
 
 // ========== SHARED INTERFACES ==========
 export interface SharedErrorLocation {
@@ -20,9 +21,6 @@ export interface SharedPriority {
   priorityScore: number;
 }
 
-export interface SharedConfidence {
-  confidence: number; // 0-100
-}
 
 export interface SharedTypeInfo {
   name: string;
@@ -83,17 +81,6 @@ export interface RelationshipMap {
   fileDependencies: Map<string, string[]>; // file -> imported files
 }
 
-export interface FixPlan extends 
-  SharedConfidence {
-  id: string;
-  error: TSCompilerError;
-  fixType: FixStrategyTypeDef
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  suggestedFix: string;
-  affectedFiles: string[];
-  validationRules: string[];
-  requiresManualReview: boolean;
-}
 
 export interface TypeHierarchy {
   root: TypeNode;

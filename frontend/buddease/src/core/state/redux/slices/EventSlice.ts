@@ -1,9 +1,9 @@
-EventSlice.ts
+// EventSlice.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { AppThunk } from "@/core/configs/appThunk";
 import { CustomEventExtension } from '@/core/events/BaseCustomEvent';
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { fetchEvents } from "./SecurityEventSlice";
 

@@ -1,4 +1,4 @@
-DataFrameSlice.ts
+// DataFrameSlice.ts
 import DataFrameAPI from "@/core/api/DataframeApi";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";

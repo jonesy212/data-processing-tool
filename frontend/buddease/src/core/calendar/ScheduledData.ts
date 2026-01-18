@@ -1,12 +1,13 @@
 // ScheduledData.ts
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
-import { Task } from "@/core/models/tasks/Task";
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
-import TodoImpl, { Todo, UserAssignee } from "@/core/todos/Todo";
+import type { Task } from "@/core/models/tasks/Task";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { Todo, UserAssignee } from '@/core/todos/Todo';
+import TodoImpl from '@/core/todos/Todo';
 import {
     TaskAttachment,
     TaskEntity,
@@ -29,7 +30,7 @@ export interface Schedule {
 }
 
 export type TaskOrTodo<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

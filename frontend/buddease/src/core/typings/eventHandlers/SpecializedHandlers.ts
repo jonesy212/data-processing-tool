@@ -1,4 +1,4 @@
-// app/utils/eventHandlers/SpecializedHandlers.ts
+// SpecializedHandlers.ts
 import { KeyboardEventListener, MouseEventListener, ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
 
 

@@ -1,4 +1,4 @@
-CalendarEventCollaborator.ts
+// CalendarEventCollaborator.ts
 interface CalendarEventCollaborator {
   id: string;
   name: string;

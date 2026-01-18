@@ -5,7 +5,7 @@ import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";

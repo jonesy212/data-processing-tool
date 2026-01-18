@@ -1,5 +1,6 @@
-// src/app/utils/ErrorReporter.ts
-import { ErrorManager, CategorizedError } from '@/utils/ErrorManager';
+// ErrorReporter.ts
+import type { CategorizedError } from '@/utils/ErrorManager';
+import { ErrorManager } from '@/utils/ErrorManager';
 import fs from 'fs';
 import path from 'path';
 

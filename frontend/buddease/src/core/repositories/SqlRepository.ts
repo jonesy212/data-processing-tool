@@ -1,3 +1,4 @@
+// SqlRepository.ts
 app/repositories/SqlRepository.ts
 import { databaseConnection } from '@/core/config/databaseConnection'; // Your existing PostgreSQL config
 import { DomainObject } from '@/core/typings/DomainObject';

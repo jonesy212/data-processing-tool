@@ -1,7 +1,7 @@
 // SnapshotGetters.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 
 interface SnapshotGetters<
   T extends BaseDataEntity,

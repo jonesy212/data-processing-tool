@@ -1,5 +1,5 @@
-CorrectionMessageGenerator.ts
-utils/CorrectionMessageGenerator.ts
+// CorrectionMessageGenerator.ts
+
 import path from 'path';
 
 export class CorrectionMessageGenerator {

@@ -1,5 +1,6 @@
-TaskProgressBar.tsx
-import ProgressBar, { Progress, ProgressPhase } from "@/core/models/tracker/ProgressBar";
+// TaskProgressBar.tsx
+import type { Progress, ProgressPhase } from '@/core/models/tracker/ProgressBar';
+import ProgressBar from '@/core/models/tracker/ProgressBar';
 import React from "react";
 
 interface TaskProgressBarProps {

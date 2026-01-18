@@ -4,7 +4,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/core/documents/RelatedProps';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
@@ -17,7 +17,7 @@ import { SnapshotDataResponse } from "@/utils/retrieveSnapshotData";
 ;
 
 import { SnapshotItem } from "@/core/snapshots/SnapshotList";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 
 
 type OptionalSnapshotProps<

@@ -1,4 +1,4 @@
-unsubscribeFromChatNotifications.ts
+// unsubscribeFromChatNotifications.ts
 const unsubscribeFromChatNotifications = () => {
     // Implementation to unsubscribe from chat notifications
   };

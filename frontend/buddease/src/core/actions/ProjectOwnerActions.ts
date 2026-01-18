@@ -1,7 +1,8 @@
 // ProjectOwnerActions.ts
 import type { Team } from '@/core/components/teams/Team';
 import type { Project, ProjectData } from '@/core/models/projects/Project';
-import MemberData, { TeamMember } from '@/core/models/teams/TeamMembers';
+import type { TeamMember } from '@/core/models/teams/TeamMembers';
+import MemberData from '@/core/models/teams/TeamMembers';
 import type { User } from '@/core/users/User';
 import { createAction } from '@reduxjs/toolkit';
 

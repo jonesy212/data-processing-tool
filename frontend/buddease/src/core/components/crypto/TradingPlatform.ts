@@ -1,4 +1,4 @@
-TradingPlatform.ts
+// TradingPlatform.ts
 
 // Define a type for trading platforms
 export type TradingPlatform = {

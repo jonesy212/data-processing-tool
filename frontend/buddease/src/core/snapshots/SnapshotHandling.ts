@@ -1,13 +1,13 @@
 // SnapshotHandling.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';

@@ -1,6 +1,6 @@
-CalendarEventPriorityClassification.ts
-import { EventPriorityClassification } from "@/core/models/data/EventPriorityClassification";
-import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
+// CalendarEventPriorityClassification.ts
+import type { EventPriorityClassification } from "@/core/models/data/EventPriorityClassification";
+import type { WritableDraft } from '@/core/state/redux/ReducerGenerator';
 
 interface CalendarEventPriorityClassification extends WritableDraft<EventPriorityClassification>{
     eventId: string; // ID of the event being classified

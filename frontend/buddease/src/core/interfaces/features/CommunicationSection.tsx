@@ -1,4 +1,4 @@
-CommunicationSection.tsx
+// CommunicationSection.tsx
 // CommunicationSection component
 import React from 'react';
 

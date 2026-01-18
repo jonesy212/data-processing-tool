@@ -1,3 +1,4 @@
+// DomainObject.ts
 typings/DomainObject.ts
 export interface DomainObject {
   id: string;

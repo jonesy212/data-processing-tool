@@ -1,5 +1,5 @@
-FeedbackReportGenerator.ts
-import { Feedback } from "@/core/features/support/Feedback";
+// FeedbackReportGenerator.ts
+import type { Feedback } from "@/core/features/support/Feedback";
 
 export interface FeedbackReport {
   projectId: string;

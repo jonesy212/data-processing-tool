@@ -1,5 +1,5 @@
-TeamsEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// TeamsEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface TeamsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

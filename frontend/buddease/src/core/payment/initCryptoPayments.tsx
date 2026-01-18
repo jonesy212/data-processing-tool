@@ -1,4 +1,4 @@
-initCryptoPayments.tsx
+// initCryptoPayments.tsx
 
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";

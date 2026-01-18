@@ -1,4 +1,4 @@
-useResizablePanels.ts
+// useResizablePanels.ts
 import { useState } from 'react';
 
 const useResizablePanels = () => {

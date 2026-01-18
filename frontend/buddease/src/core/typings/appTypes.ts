@@ -11,13 +11,12 @@ import { Subscription } from '@/core/subscriptions/Subscription';
 
 import {
     BaseDataEntity,
-    BaseDataRoot,
     DefaultExcludedFields,
-    DefaultMeta,
+    DefaultMeta
 } from '@/core/config/BaseConfig';
 
 interface CommunicationType<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -73,7 +72,7 @@ interface CollaborationOption {
 
 
 interface CreationPhase<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -111,7 +110,7 @@ interface CryptoInformation {
 }
 
 interface CryptoCommunity<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

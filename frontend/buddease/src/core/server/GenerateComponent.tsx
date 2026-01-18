@@ -1,9 +1,9 @@
 // GenerateComponent.tsx
 import { Label } from '@/core/branding/BrandingSettings';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import { createMetaState } from '@/core/config/MetadataStateManager';
+import type { createMetaState } from '@/core/config/MetadataStateManager';
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import { ModifiedDate } from "@/core/documents/DocType";
 import {
     getDefaultDocumentOptions,
@@ -18,7 +18,8 @@ import { DocumentSize } from "@/core/models/data/StatusType";
 import { Phase } from '@/core/models/phases/Phase';
 import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
-import PersonaTypeEnum, { PersonaBuilder } from "@/core/pages/personas/PersonaBuilder";
+import type { PersonaBuilder } from '@/core/pages/personas/PersonaBuilder';
+import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import { CategoryProperties, NestedCategoryKeys, dataVisualizationProperties, defaultCondition } from '@/core/pages/personas/ScenarioBuilder';
 import { generateValidationRulesCode } from "@/core/server/security/validationRulesCode";
 import { buildDocument } from '@/core/services/documentService';

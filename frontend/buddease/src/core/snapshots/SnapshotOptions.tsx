@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';

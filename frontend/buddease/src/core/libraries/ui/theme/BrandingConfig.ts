@@ -1,1 +1,1 @@
-BrandingConfig.ts
+// BrandingConfig.ts

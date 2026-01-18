@@ -1,4 +1,4 @@
-// EmailSetupForm.tsx
+// EmailSetUpForm.tsx
 import React, { useState } from 'react';
 
 

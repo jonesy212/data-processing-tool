@@ -1,4 +1,4 @@
-generateDrawingJSON.ts
+// generateDrawingJSON.ts
 interface Drawing {
     id: string;
   name: string;

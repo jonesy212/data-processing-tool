@@ -1,7 +1,8 @@
 // userConfigs.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { userPreferences } from "@/core/config/UserPreferences";
-import userSettings, { UserSettings } from "@/core/config/UserSettings";
+import type { UserSettings } from '@/core/config/UserSettings';
+import userSettings from '@/core/config/UserSettings';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { UserData } from "@/core/users/User";

@@ -1,4 +1,4 @@
-PlanningSection.tsx
+// PlanningSection.tsx
 // PlanningSection component
 import React from 'react';
 

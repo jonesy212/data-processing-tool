@@ -1,6 +1,6 @@
-ErrorPatternMatcher.ts
+// ErrorPatternMatcher.ts
 
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { CorrectionCategory } from '@/core/typings/correctionTypes';
 import fs from 'fs';
@@ -52,7 +52,6 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       const eslintCorrections = this.analyzeEslintOutput();
       corrections.push(...eslintCorrections);
 
-      // Analyze package.json for dependency issues
       const dependencyCorrections = this.analyzeDependencies();
       corrections.push(...dependencyCorrections);
 
@@ -100,7 +99,6 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       suggestion: 'Check type definitions, use type assertions if needed, or extend interfaces properly'
     });
 
-    // React & Next.js Specific Errors
     this.errorPatterns.set('react-hook-deps', {
       pattern: /React Hook .* has (a missing dependency|missing dependencies):/g,
       correctionCategory: 'react',
@@ -528,7 +526,6 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     let currentError: { message: string; file?: string; line?: number } | null = null;
 
     for (const line of lines) {
-      // Match TypeScript error format: file.ts(line,column): error TS1234: message
       const errorMatch = line.match(/(.+\.tsx?)\((\d+),(\d+)\):\s+error\s+(TS\d+):\s*(.+)/);
       
       if (errorMatch) {
@@ -627,7 +624,6 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     const lines = output.split('\n');
     
     lines.forEach(line => {
-      // Match ESLint error format: /path/to/file.ts: line 1, col 5, Error - Message (rule-name)
       const eslintMatch = line.match(/(.+):\s+line\s+(\d+),\s+col\s+(\d+),\s+(Error|Warning)\s+-\s+(.+)\s+\((.+)\)/);
       
       if (eslintMatch) {

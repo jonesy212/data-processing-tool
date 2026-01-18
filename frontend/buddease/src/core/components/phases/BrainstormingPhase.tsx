@@ -1,4 +1,4 @@
-BrainstormingPhase.tsx
+// BrainstormingPhase.tsx
 import React from 'react';
 
 const BrainstormingPhase: React.FC = () => {

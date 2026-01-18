@@ -1,5 +1,5 @@
-Transaction.ts
-import { CustomTransactionProps } from '@/core/typings/cryptoTypes/SmartContractInteraction';
+// Transaction.ts
+import type { CustomTransactionProps } from '@/core/typings/cryptoTypes/SmartContractInteraction';
 import { AccessList, Signature } from "ethers";
 
 interface BaseTransaction {

@@ -1,17 +1,17 @@
 // BlogComponent.tsx
 import * as subscriberApi from '@/core/api/subscriberApi';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { BaseMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { BaseMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Content } from '@/core/models/content/AddContent';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import Tracker from '@/core/models/tracker/Tracker';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { Subscriber, SubscriberCallback } from '@/core/subscribers/Subscriber';
+import type { Subscriber, SubscriberCallback } from '@/core/subscribers/Subscriber';
 import { Subscription } from '@/core/subscriptions/Subscription';
 import type { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/core/typings/entities/BlogEntity';
 

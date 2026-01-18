@@ -1,4 +1,4 @@
-methodBinder.ts
+// methodBinder.ts
 export function bindMethods<
   T extends object,
   U extends object

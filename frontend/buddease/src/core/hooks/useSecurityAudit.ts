@@ -1,6 +1,6 @@
-useSecurityAudit.ts
+// useSecurityAudit.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useSecureUserId as fetchSecureUserId } from '@/core/hooks/useSecureUserId';
 

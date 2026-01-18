@@ -1,18 +1,18 @@
 // useNotificationSystem.ts
 
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { NotificationType } from '@/core/state/context/NotificationContext';
 
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { displayToast, showErrorMessage, showToast } from '@/core/models/display/ShowToast';
 import { LogData } from "@/core/models/LogData";
 import ErrorHandler from '@/core/shared/ErrorHandler';
-import { SendStatus } from '@/core/state/redux/slices/NofiticationsSlice';
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { SendStatus } from '@/core/state/redux/slices/NofiticationsSlice';
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import { useCallback, useMemo, useRef } from 'react';
 
 export interface NotificationData<
@@ -69,7 +69,7 @@ export interface NotificationData<
 
 // Main NotificationSystem interface with proper generics
 export interface NotificationSystem<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

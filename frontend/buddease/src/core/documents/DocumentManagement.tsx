@@ -2,11 +2,11 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentData, } from "@/core/documents/editing/DocumentBuilder";
-import type DocumentGenerator from "@/core/server/ServerDocumentGenerator";
-import type { DocumentTypeEnum } from "@/core/server/ServerDocumentGenerator";
+import type { ServerDocumentGenerator } from "@/core/server/ServerDocumentGenerator";
+import { DocumentTypeEnum } from "@/core/server/ServerDocumentGenerator";
 import type { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 
-const documentGenerator = new DocumentGenerator(); // Create an instance of DocumentGenerator
+const documentGenerator = new ServerDocumentGenerator(); // Create an instance of ServerDocumentGenerator
 
 export function manageDocuments<
   T extends BaseDataEntity,

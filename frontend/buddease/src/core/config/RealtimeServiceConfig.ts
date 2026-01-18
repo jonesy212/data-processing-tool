@@ -1,4 +1,4 @@
-RealtimeServiceConfig.ts
+// RealtimeServiceConfig.ts
 import {
     BaseDataEntity,
     DefaultExcludedFields,

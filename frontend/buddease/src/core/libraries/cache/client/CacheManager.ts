@@ -1,8 +1,8 @@
-CacheManager.ts
+// CacheManager.ts
 client/CacheManager.ts
 'use client';
 
-import { CacheWriteOptions } from '@/core/libraries/cache/client/index';
+import type { CacheWriteOptions } from '@/core/libraries/cache/client/index';
 import axios from "axios";
 import { create } from "mobx-persist";
 

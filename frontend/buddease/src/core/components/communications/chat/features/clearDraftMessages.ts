@@ -1,4 +1,4 @@
-clearDraftMessages.ts
+// clearDraftMessages.ts
 
 /**
  * Clears draft messages for the given roomId.

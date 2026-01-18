@@ -1,4 +1,4 @@
-createMappingConfig.ts
+// createMappingConfig.ts
 import type { DefaultMeta } from '@/core/config/BaseConfig';
 import { MappingConfig } from "@/core/config/MappingConfig";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';

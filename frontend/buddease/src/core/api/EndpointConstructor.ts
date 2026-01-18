@@ -1,4 +1,4 @@
-EndpointConstructor.ts
+// EndpointConstructor.ts
 import { Endpoints } from '@/core/api/ApiEndpoints';
 import { endpoints } from "@/core/api/endpointConfigurations";
 

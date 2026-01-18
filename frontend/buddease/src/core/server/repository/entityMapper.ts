@@ -1,4 +1,4 @@
-entityMapper.ts
+// entityMapper.ts
 server/repository/mappers/userMapper.ts
 
 import type { DefaultExcludedFields } from '@/core/config/BaseConfig';

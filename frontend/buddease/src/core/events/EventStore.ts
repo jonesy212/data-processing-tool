@@ -17,7 +17,7 @@ import type { EventRecord, InitializedState } from "@/core/state/stores/DataStor
 import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
@@ -174,7 +174,7 @@ export type EventStore<
 
 // Define the default event store
 const defaultEventStore = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

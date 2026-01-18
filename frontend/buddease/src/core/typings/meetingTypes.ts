@@ -1,6 +1,6 @@
-meetingTypes.ts
+// meetingTypes.ts
 
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { Meeting } from '@/core/components/communications/scheduler/Meeting';
 import { Todo } from '@/core/todos/Todo';
 import { MeetingBaseParams } from '@/core/typings/entities/MeetingEntity';

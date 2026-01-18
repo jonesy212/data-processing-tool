@@ -1,3 +1,4 @@
+// AppProviders.tsx
 'use client';
 
 import { AuthProvider } from '@/core/components/Provider'; // Import useAuth

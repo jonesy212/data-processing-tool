@@ -1,4 +1,4 @@
-PriorityMapper.ts
+// PriorityMapper.ts
 export function getPriority(severity: string): number {
   const priorityMap = {
     critical: 1,

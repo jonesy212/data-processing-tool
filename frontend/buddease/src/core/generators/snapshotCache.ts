@@ -1,6 +1,6 @@
 // snapshotCache.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';

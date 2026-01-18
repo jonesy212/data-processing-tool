@@ -1,5 +1,4 @@
 // axiosInstance.ts
-// In Next.js API routes or getServerSideProps
 import axios from 'axios';
 
 const API_BASE_URL = "/api/" 

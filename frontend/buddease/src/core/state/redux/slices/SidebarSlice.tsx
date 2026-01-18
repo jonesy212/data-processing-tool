@@ -1,4 +1,4 @@
-SidebarSlice.tsx
+// SidebarSlice.tsx
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 

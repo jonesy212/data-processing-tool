@@ -1,4 +1,4 @@
-transformStoreConfigOptions.ts
+// transformStoreConfigOptions.ts
 transformStoreConfig.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 

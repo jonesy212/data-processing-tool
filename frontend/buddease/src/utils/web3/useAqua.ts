@@ -1,3 +1,4 @@
+// useAqua.ts
 UseAqua.tsx
 import LoadAquaState from '@/core/dashboards/LoadAquaState';
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';

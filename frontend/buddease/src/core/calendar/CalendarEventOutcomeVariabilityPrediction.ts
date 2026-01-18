@@ -1,5 +1,5 @@
-CalendarEventOutcomeVariabilityPrediction.ts
-import { OutcomeVariabilityPrediction } from "@/core/models/data/EventPriorityClassification";
+// CalendarEventOutcomeVariabilityPrediction.ts
+import type { OutcomeVariabilityPrediction } from "@/core/models/data/EventPriorityClassification";
 
 interface CalendarEventOutcomeVariabilityPrediction extends OutcomeVariabilityPrediction {
     eventId: string; // ID of the event

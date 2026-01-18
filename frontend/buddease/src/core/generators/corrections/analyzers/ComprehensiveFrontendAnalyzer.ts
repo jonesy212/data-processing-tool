@@ -1,7 +1,7 @@
-ComprehensiveFrontendAnalyzer.ts
+// ComprehensiveFrontendAnalyzer.ts
 import { FrontendAnalysis } from '@/core/generators/corrections/analyzers/frontendAnalyzer';
 import { ReactWebAnalyzer } from '@/core/generators/corrections/analyzers/ReactWebAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 /**
  * Comprehensive Frontend Analyzer that combines both approaches
  */

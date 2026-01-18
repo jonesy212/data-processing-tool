@@ -1,4 +1,4 @@
-globalCollaborationConfig.ts
+// globalCollaborationConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { GlobalCollaborationEndpoints } from '@/core/typings/categories/GlobalCollaborationEndpoints';
 

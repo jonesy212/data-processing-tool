@@ -1,4 +1,4 @@
-ProjectManagementSettings.ts
+// ProjectManagementSettings.ts
 interface ProjectManagementSettings {
   
     enableProjectManagement: boolean;

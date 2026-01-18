@@ -1,4 +1,4 @@
-JobDescription.ts
+// JobDescription.ts
 export interface JobDescription {
   id: string;
   title: string;

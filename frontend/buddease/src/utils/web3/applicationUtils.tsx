@@ -3,53 +3,56 @@ import * as articleApi from '@/core/api/articleApi';
 import { ApiNotificationsService } from '@/core/api/NotificationsService';
 import { sendEmail } from '@/core/api/sendEmail';
 import { sendSMS } from '@/core/api/sendSMS';
-import {
+import type {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/core/config/BaseConfig";
-import {
-    fetchUserAreaDimensions,
+import type {
     UnifiedMetadata,
     UnifiedMetaDataOptions,
+} from '@/core/config/MetaDataOptions';
+import {
+    fetchUserAreaDimensions
 } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { Content } from '@/core/models/content/AddContent';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { Content } from '@/core/models/content/AddContent';
 import {
     ActivityActionEnum,
     ActivityTypeEnum,
     ProjectStateEnum,
     StatusType
 } from '@/core/models/data/StatusType';
-import { Project, ProjectDetails } from '@/core/models/projects/Project';
-import { Task } from '@/core/models/tasks/Task';
+import type { Project, ProjectDetails } from '@/core/models/projects/Project';
+import type { Task } from '@/core/models/tasks/Task';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { updateProject } from '@/core/state/redux/slices/ProjectManagerSlice';
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
-import { AxiosResponse } from 'axios';
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { AxiosResponse } from 'axios';
 import { useDispatch } from 'react-redux';
 
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import NotificationManager from "@/core/features/support/NotificationManager";
 import { useSecureUserId } from "@/core/hooks/useSecureUserId";
-import {
-    CombinedEvents,
+import type { CombinedEvents } from "@/core/hooks/useSnapshotManager";
+import  {
     useSnapshotManager,
 } from "@/core/hooks/useSnapshotManager";
-import { CalendarEventWithCriteria } from "@/core/pages/searches/FilterCriteria";
+import type { CalendarEventWithCriteria } from "@/core/pages/searches/FilterCriteria";
 import { createSnapshot } from "@/core/snapshots/createSnapshot";
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import type { useDataStore } from "@/core/state/stores/DataStore";
-import { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
-import { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
-import { SnapshotEvents } from "@/core/typings/snapshotTypes";
+import type { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
+import type { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
+import type { SnapshotEvents } from "@/core/typings/snapshotTypes";
+import { useNotification } from '@/core/state/context/NotificationContext';
 import { snapshot } from "@/utils/snapshotUtils";
 
 const dispatch = useDispatch();
@@ -605,7 +608,7 @@ const isValidStatus = (status: StatusType): boolean => {
 
 // Helper function to validate tasks array
 const isValidTasks = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -757,7 +760,7 @@ const tradeExections = ({
 const userId = useSecureUserId();
 
 const unsubscribe = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

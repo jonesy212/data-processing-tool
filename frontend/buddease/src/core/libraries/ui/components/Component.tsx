@@ -1,4 +1,4 @@
-// Component.tsx - FIXED VERSION
+// Component.tsx
 import { ComponentActions } from "@/core/actions/ComponentActions";
 import ProjectService from "@/core/api/service/ProjectService";
 import type { ComponentConfig } from '@/core/config/ComponentConfig';

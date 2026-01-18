@@ -1,7 +1,8 @@
-KuCoinAPI.ts
+// KuCoinAPI.ts
 
 // Import necessary modules
-import axios, { AxiosInstance } from 'axios';
+import type { AxiosInstance } from 'axios';
+import axios from 'axios';
 
 // Define KuCoinAPI class
 class KuCoinAPI {

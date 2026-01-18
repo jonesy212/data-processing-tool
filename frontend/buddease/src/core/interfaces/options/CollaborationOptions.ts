@@ -249,7 +249,6 @@ console.log(collaborationOptions);
 
 export type {
   TeamCollaborationAnalysis, CommunityEngagementFeature, DataAnalysisTool, Decision, MonetizationAndIncentiveOption, VisualizationResult, CommunicationOption, RealTimeCollaborationTool,
-  CollaborationOptions
 };
 
 

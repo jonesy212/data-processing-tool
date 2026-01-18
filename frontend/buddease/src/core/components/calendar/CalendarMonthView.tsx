@@ -1,11 +1,10 @@
 // CalendarMonthView.tsx
-// MonthView.jsx
 import { TaskActions } from '@/core/actions/TaskActions';
 import * as taskApi from '@/core/api/TasksApi';
-import { CommonCalendarProps } from '@/core/components/calendar/Calendar';
+import type { CommonCalendarProps } from '@/core/components/calendar/Calendar';
 import CalendarMonth from '@/core/components/calendar/CalendarMonth';
 import { YearInfo } from '@/core/components/calendar/CalendarYear';
-import { MonthInfo } from '@/core/components/calendar/Month';
+import type { MonthInfo } from '@/core/components/calendar/Month';
 import CryptoTransaction from '@/core/components/crypto/CryptoTransaction';
 import TaskList from '@/core/components/lists/TaskList';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -13,10 +12,10 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition, PriorityTypeEnum } from '@/core/models/data/StatusType';
 import { Project } from '@/core/models/projects/Project';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { updateTask } from '@/core/state/redux/slices/CollaborationSlice';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import {
     dropTask,
     resizeTask,
@@ -25,7 +24,7 @@ import {
 } from '@/core/state/redux/slices/TaskSlice';
 import { rootStores } from '@/core/state/stores/RootStores';
 import { ContentPost } from '@/core/typings/contentTypes';
-import { TaskEntity } from '@/core/typings/entities/TaskEntity';
+import type { TaskEntity } from '@/core/typings/entities/TaskEntity';
 import { Action, Dispatch, ThunkAction } from '@reduxjs/toolkit';
 import React from 'react';
 import { useDispatch } from 'react-redux';

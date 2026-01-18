@@ -1,5 +1,5 @@
 // AppCacheManagerAPI.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
 import { BackendConfig } from '@/core/config/BackendConfig';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

@@ -1,7 +1,7 @@
 // PhaseTransitions.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { CustomPhaseHooks } from '@/core/models/phases/Phase';
 import { ReactNode } from "react";
 

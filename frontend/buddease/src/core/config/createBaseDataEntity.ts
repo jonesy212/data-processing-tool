@@ -1,4 +1,4 @@
-createBaseDataEntity.ts
+// createBaseDataEntity.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 
 

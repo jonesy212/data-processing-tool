@@ -1,4 +1,4 @@
-didUtils.ts
+// didUtils.ts
 
 /**
  * Utility functions related to Decentralized Identifiers (DID) operations.

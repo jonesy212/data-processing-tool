@@ -1,4 +1,4 @@
-NotificationSettings.ts
+// NotificationSettings.ts
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 
 interface BaseNotificationSettings {

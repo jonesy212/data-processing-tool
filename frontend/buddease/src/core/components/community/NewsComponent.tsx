@@ -1,6 +1,6 @@
-NewsComponent.tsx
+// NewsComponent.tsx
 import useFiltering from '@/core/hooks/useFiltering';
-import { SearchOptions } from '@/core/pages/searches/SearchOptions';
+import type { SearchOptions } from '@/core/pages/searches/SearchOptions';
 import { useState } from 'react';
 
 const NewsComponent = (options: SearchOptions) => {

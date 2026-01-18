@@ -11,7 +11,7 @@ import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { TeamEntity } from '@/core/typings/entities/TeamEntity';
+import type { TeamEntity } from '@/core/typings/entities/TeamEntity';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 type TeamK = TeamEntity;

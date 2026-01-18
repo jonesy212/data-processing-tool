@@ -1,4 +1,4 @@
-userPreferencesSaga.ts
+// userPreferencesSaga.ts
 // Import necessary dependencies and constants
 import useApiUserPreferences from '@/core/api/preferences/ApiUserPreferences';
 import { UserPreferences } from '@/core/config/UserPreferences';

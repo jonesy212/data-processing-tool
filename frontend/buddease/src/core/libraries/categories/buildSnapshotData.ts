@@ -1,5 +1,5 @@
 // buildSnapshotData.ts
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { AllCategoryValues } from "@/core/models/data/DataStructureCategories";
 import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 // Type to represent data structures for various categories

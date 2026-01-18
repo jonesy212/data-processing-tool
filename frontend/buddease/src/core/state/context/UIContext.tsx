@@ -1,5 +1,4 @@
-UIContext.tsx
-UIContext.ts
+// UIContext.tsx
 stores/StoreProvider.tsx
 import { displayToast } from '@/core/models/display/ShowToast';
 import UIStore from '@/core/state/stores/UIStore';

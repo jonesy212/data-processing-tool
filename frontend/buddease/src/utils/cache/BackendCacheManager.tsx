@@ -1,4 +1,4 @@
-BackendCacheManager.ts
+// BackendCacheManager.tsx
 import axiosInstance from '@/core/api/csrfToken';
 class BackendCacheManager {
   private baseUrl: string;

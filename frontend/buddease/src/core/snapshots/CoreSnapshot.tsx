@@ -6,27 +6,27 @@ import { Sender } from '@/core/components/communications/CommunicationPage';
 import { Task } from '@/core/components/models/tasks/Task';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { CombinedEvents } from '@/core/hooks/useSnapshotManager';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { Content } from "@/core/models/content/AddContent";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { SnapshotBase } from "@/core/snapshots/SnapshotContainer";
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotIdentity } from '@/core/snapshots/SnapshotIdentity';
 import type { InitializedState } from '@/core/state/stores/DataStore';
 import { PhaseDefault } from '@/core/typings/phaseTypes';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 import { Label } from "@/core/branding/BrandingSettings";
-import type { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/core/documents/RelatedProps';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { SharedTimestamps } from '@/core/models/CommonData';
-import { ProjectPhaseTypeEnum, StatusType } from "@/core/models/data/StatusType";
+import type { ProjectPhaseTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { SnapshotOperation } from "@/core/snapshots/index";
 import {
@@ -35,25 +35,25 @@ import {
     SnapshotsArray
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotItem } from "@/core/snapshots/SnapshotList";
 import { SnapshotMethods } from "@/core/snapshots/SnapshotMethods";
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
-import { InitializedDataStore } from "@/core/snapshots/SnapshotStoreOptions";
+import type { InitializedDataStore } from "@/core/snapshots/SnapshotStoreOptions";
 import { SnapshotCRUD } from "@/core/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { AllTypes } from "@/core/typings/PropTypes";
+import type { AllTypes } from "@/core/typings/PropTypes";
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
 import { User } from "@/core/users/User";
 import { default as SnapshotStore } from "./SnapshotStore";
 
 interface CoreSnapshot<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

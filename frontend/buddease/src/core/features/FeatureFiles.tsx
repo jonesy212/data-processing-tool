@@ -1,4 +1,4 @@
-FeatureFiles.tsx
+// FeatureFiles.tsx
 app/features/prompts/FeatureFiles.tsx
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";

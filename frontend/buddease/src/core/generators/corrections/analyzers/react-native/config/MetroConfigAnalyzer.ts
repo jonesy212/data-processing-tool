@@ -1,5 +1,5 @@
-MetroConfigAnalyzer.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// MetroConfigAnalyzer.ts
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import fs from 'fs';
 import path from 'path';

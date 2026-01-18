@@ -1,8 +1,8 @@
-isYourSettingsResponseType.ts
+// isYourSettingsResponseType.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { AppEntity } from '@/core/typings/entities/AppEntity';
+import type { AppEntity } from '@/core/typings/entities/AppEntity';
 import { YourResponseType, YourSettingsResponseType } from '@/core/typings/responseTypes';
 
 function isYourSettingsResponseType<

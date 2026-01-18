@@ -1,4 +1,4 @@
-PromptViewer.tsx
+// PromptViewer.tsx
 
 import { Prompt } from "@/core/prompts/PromptPage";
 import React from "react";

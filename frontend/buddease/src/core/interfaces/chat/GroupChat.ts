@@ -1,4 +1,4 @@
-GroupChat.ts
+// GroupChat.ts
  import ChatMessage from "@/core/components/communications/chat/ChatMessage";
 import { TeamMember } from "@/core/models/teams/TeamMembers";
 

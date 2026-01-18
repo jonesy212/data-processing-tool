@@ -1,4 +1,4 @@
-ScheduleEventDashboard.tsx
+// ScheduleEventDashboard.tsx
 import { ProjectManagementActions } from "@/core/actions/ProjectManagementActions";
 import { ButtonGenerator, useButtonGeneratorProps } from "@/core/generators/GenerateButtons";
 import { Button, Space } from "antd";

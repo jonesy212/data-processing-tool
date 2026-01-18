@@ -1,7 +1,7 @@
 // fetchMethods.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
@@ -11,7 +11,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 export const FetchMethods = {
   fetchData: async function <
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,

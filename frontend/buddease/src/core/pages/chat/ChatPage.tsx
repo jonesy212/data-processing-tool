@@ -1,4 +1,4 @@
-ChatPage.tsx
+// ChatPage.tsx
  
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import {

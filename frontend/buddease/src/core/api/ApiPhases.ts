@@ -3,7 +3,8 @@ import { handleApiErrorAndNotify } from '@/core/api/ApiData';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { AppPhase } from '@/core/typings/entities/PhaseEntity';
-import axios, { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
+import axios from 'axios';
 
 // Base URL for your API
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;

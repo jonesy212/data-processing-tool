@@ -1,4 +1,4 @@
-authenticateWithWix.ts
+// authenticateWithWix.ts
 
 
 // Function to authenticate with Wix API

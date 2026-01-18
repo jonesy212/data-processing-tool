@@ -1,4 +1,4 @@
-AnimatedDashboard.tsx
+// AnimatedDashboard.tsx
 import DynamicIntroTooltip from "@/core/DynamicIntroTooltip";
 import { AnimatedComponent } from '@/core/libraries/animations/AnimationComponent';
 

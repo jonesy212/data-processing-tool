@@ -1,8 +1,8 @@
-TaskMetadata.ts
+// TaskMetadata.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { TaskMetadata } from '@/core/config/MetaDataOptions';
+import type { TaskMetadata } from '@/core/config/MetaDataOptions';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 
 
 

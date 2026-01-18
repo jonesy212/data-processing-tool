@@ -1,4 +1,4 @@
-idleTimeoutConstants.ts
+// idleTimeoutConstants.ts
 // Define the EXTENDED__DURATION
 export const EXTENDED__DURATION = 60000; // 1 minute in milliseconds
 

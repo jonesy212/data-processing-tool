@@ -1,14 +1,29 @@
 #!/usr/bin/env tsx
-src/app/error-analyzer/enhanced-cli.ts
+// enhanced-cli.ts
+// app/error-analyzer/enhanced-cli.ts
 
 import { ErrorFixManager } from '@/core/error-analyzer/ErrorFixManager';
 import { FileRelationshipAnalyzer } from '@/core/error-analyzer/FileRelationshipAnalyzer';
 import { TypeScriptErrorFixSystem } from '@/core/error-analyzer/TypeScriptErrorFixSystem';
+import type { TSCompilerError, FixPlan } from '@/core/error-analyzer/ErrorFixManager';
+import type { AnalyzedError, RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-// Add type definitions
+interface FileRelationship {
+  file: string;
+  dependencies: string[];
+  dependents: string[];
+  priorityScore: number;
+  errorCount: number;
+}
+
+interface NavigationPlan {
+  priority: string[];
+  dependencies: Map<string, string[]>;
+  recommendations: string[];
+}
 
 class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
   private relationshipAnalyzer: FileRelationshipAnalyzer;
@@ -24,21 +39,29 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     
     // Read errors
     const content = fs.readFileSync(filePath, 'utf-8');
-    const errors = JSON.parse(content);
+    const errors: TSCompilerError[] = JSON.parse(content);
     
     // Create fix manager and analyze
     const fixManager = new ErrorFixManager();
     
+    // Type-safe access to private methods
+    const errorAnalyzer = (fixManager as any).errorAnalyzer;
+    const relationshipAnalyzer = (fixManager as any).relationshipAnalyzer;
+    
+    if (!errorAnalyzer || !relationshipAnalyzer) {
+      throw new Error('Failed to access error analyzer components');
+    }
+    
     // Step 1: Analyze errors and get fix plans
     console.log('🔍 Analyzing errors and relationships...');
-    const analyzedErrors = await (fixManager as any).errorAnalyzer.analyzeErrors(errors);
-    const relationshipMap = await (fixManager as any).relationshipAnalyzer.buildRelationshipMap(errors);
-    const fixPlans = await (fixManager as any).generateFixPlans(analyzedErrors, relationshipMap);
+    const analyzedErrors: AnalyzedError[] = await errorAnalyzer.analyzeErrors(errors);
+    const relationshipMap: RelationshipMap = await relationshipAnalyzer.buildRelationshipMap(errors);
+    const fixPlans: FixPlan[] = await (fixManager as any).generateFixPlans(analyzedErrors, relationshipMap);
     
     // Step 2: Analyze file relationships
     console.log('🗺️ Building file relationship map...');
     const fileRelationships = await this.relationshipAnalyzer.analyzeRelationships(
-      fixPlans as FixPlan[],
+      fixPlans,
       relationshipMap
     );
     
@@ -46,18 +69,18 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     console.log('📋 Generating navigation plan...');
     const strategy = await this.relationshipAnalyzer.generateFixStrategy(
       fileRelationships,
-      fixPlans as FixPlan[]
+      fixPlans
     );
     
     // Step 4: Generate navigation plan
     const navigationPlan = await this.relationshipAnalyzer.generateNavigationPlan(
       fileRelationships,
-      fixPlans as FixPlan[]
+      fixPlans
     );
     
-    // FIX: Create descriptive timestamp with error count
+    // Create descriptive timestamp with error count
     const errorCount = errors.length;
-    const fileCount = new Set(errors.map((e: any) => e.resource)).size;
+    const fileCount = new Set(errors.map((e: TSCompilerError) => e.resource)).size;
     const date = new Date();
     const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
     const formattedTime = date.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
@@ -74,7 +97,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     // Save grouped data with descriptive name
     const hierarchyGroups = await this.relationshipAnalyzer.groupByHierarchy(fileRelationships);
     const connectionGroups = await this.relationshipAnalyzer.groupByConnections(fileRelationships);
-    const confidenceGroups = await this.relationshipAnalyzer.groupByConfidence(fixPlans as FixPlan[]);
+    const confidenceGroups = await this.relationshipAnalyzer.groupByConfidence(fixPlans);
     
     fs.writeFileSync(
       path.join(outputDir, '03-file-groups.json'),
@@ -84,7 +107,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
           totalErrors: errorCount,
           totalFiles: fileCount,
           fixPlansCount: fixPlans.length,
-          highConfidenceCount: (fixPlans as FixPlan[]).filter(p => p.confidence >= 80).length
+          highConfidenceCount: fixPlans.filter(p => p.confidence >= 80).length
         },
         hierarchyGroups,
         connectionGroups,
@@ -96,7 +119,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     );
     
     // Also create a summary file
-    const summary = this.generateSummary(errors, fixPlans as FixPlan[], fileCount);
+    const summary = this.generateSummary(errors, fixPlans, fileCount);
     fs.writeFileSync(path.join(outputDir, '00-quick-summary.md'), summary);
     
     console.log(`✅ Analysis complete!`);
@@ -108,7 +131,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     console.log(summary.split('\n').slice(0, 15).join('\n'));
   }
 
-  private generateSummary(errors: any[], fixPlans: FixPlan[], fileCount: number): string {
+  private generateSummary(errors: TSCompilerError[], fixPlans: FixPlan[], fileCount: number): string {
     const lines: string[] = [];
     
     lines.push('# 📊 TypeScript Error Analysis Summary');
@@ -218,6 +241,8 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
         if (error.stdout?.includes('error TS')) {
           console.log(`   ⚠️  Errors found in ${path.basename(file)}`);
           await this.analyzeSingleFile(file, error.stdout);
+        } else {
+          console.log(`   ❌ Error checking ${path.basename(file)}:`, error.message);
         }
       }
     }
@@ -235,8 +260,16 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     
     // Analyze to find connected files
     const fixManager = new ErrorFixManager();
-    const analyzedErrors = await (fixManager as any).errorAnalyzer.analyzeErrors(mainErrors);
-    const relationshipMap = await (fixManager as any).relationshipAnalyzer.buildRelationshipMap(mainErrors);
+    const errorAnalyzer = (fixManager as any).errorAnalyzer;
+    const relationshipAnalyzer = (fixManager as any).relationshipAnalyzer;
+    
+    if (!errorAnalyzer || !relationshipAnalyzer) {
+      console.error('❌ Failed to access analyzer components');
+      return;
+    }
+    
+    const analyzedErrors: AnalyzedError[] = await errorAnalyzer.analyzeErrors(mainErrors);
+    const relationshipMap: RelationshipMap = await relationshipAnalyzer.buildRelationshipMap(mainErrors);
     
     // Get all connected files
     const connectedFiles = new Set<string>();
@@ -268,12 +301,20 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     const allErrors = await this.getAllProjectErrors();
     const fixManager = new ErrorFixManager();
     
-    const analyzedErrors = await (fixManager as any).errorAnalyzer.analyzeErrors(allErrors);
-    const relationshipMap = await (fixManager as any).relationshipAnalyzer.buildRelationshipMap(allErrors);
-    const fixPlans = await (fixManager as any).generateFixPlans(analyzedErrors, relationshipMap);
+    const errorAnalyzer = (fixManager as any).errorAnalyzer;
+    const relationshipAnalyzer = (fixManager as any).relationshipAnalyzer;
+    
+    if (!errorAnalyzer || !relationshipAnalyzer) {
+      console.error('❌ Failed to access analyzer components');
+      return;
+    }
+    
+    const analyzedErrors: AnalyzedError[] = await errorAnalyzer.analyzeErrors(allErrors);
+    const relationshipMap: RelationshipMap = await relationshipAnalyzer.buildRelationshipMap(allErrors);
+    const fixPlans: FixPlan[] = await (fixManager as any).generateFixPlans(analyzedErrors, relationshipMap);
     
     // Filter by confidence
-    const highConfidencePlans = (fixPlans as FixPlan[]).filter(p => p.confidence >= minConfidence);
+    const highConfidencePlans = fixPlans.filter(p => p.confidence >= minConfidence);
     
     console.log(`Found ${highConfidencePlans.length} high-confidence fixes out of ${fixPlans.length} total`);
     
@@ -308,12 +349,20 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     
     if (errors.length > 0) {
       const fixManager = new ErrorFixManager();
-      const analyzedErrors = await (fixManager as any).errorAnalyzer.analyzeErrors(errors);
-      const relationshipMap = await (fixManager as any).relationshipAnalyzer.buildRelationshipMap(errors);
-      const fixPlans = await (fixManager as any).generateFixPlans(analyzedErrors, relationshipMap);
+      const errorAnalyzer = (fixManager as any).errorAnalyzer;
+      const relationshipAnalyzer = (fixManager as any).relationshipAnalyzer;
+      
+      if (!errorAnalyzer || !relationshipAnalyzer) {
+        console.error('   ❌ Failed to access analyzer components');
+        return;
+      }
+      
+      const analyzedErrors: AnalyzedError[] = await errorAnalyzer.analyzeErrors(errors);
+      const relationshipMap: RelationshipMap = await relationshipAnalyzer.buildRelationshipMap(errors);
+      const fixPlans: FixPlan[] = await (fixManager as any).generateFixPlans(analyzedErrors, relationshipMap);
       
       console.log(`   📝 Suggested fixes:`);
-      for (const plan of (fixPlans as FixPlan[]).slice(0, 3)) { // Show first 3
+      for (const plan of fixPlans.slice(0, 3)) { // Show first 3
         console.log(`     • ${plan.suggestedFix.split('\n')[0]}`);
       }
       if (fixPlans.length > 3) {
@@ -322,9 +371,9 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     }
   }
 
-  private parseTscOutput(output: string, filePath: string): any[] {
+  private parseTscOutput(output: string, filePath: string): TSCompilerError[] {
     const lines = output.split('\n');
-    const errors: any[] = [];
+    const errors: TSCompilerError[] = [];
     const errorPattern = /\((\d+),(\d+)\):\s+error\s+TS(\d+):\s+(.+)$/;
     
     for (const line of lines) {
@@ -334,10 +383,14 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
           const [, lineNum, colNum, code, message] = match;
           errors.push({
             resource: filePath,
+            owner: 'unknown',
+            source: 'TypeScript',
             code: `TS${code}`,
             message: message.trim(),
             startLineNumber: parseInt(lineNum),
             startColumn: parseInt(colNum),
+            endLineNumber: parseInt(lineNum),
+            endColumn: parseInt(colNum) + 10, // Approximate
             severity: 8
           });
         }
@@ -371,7 +424,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     return files;
   }
 
-  private async getFileErrors(filePath: string): Promise<any[]> {
+  private async getFileErrors(filePath: string): Promise<TSCompilerError[]> {
     try {
       const result = execSync(`npx tsc --noEmit --pretty false ${filePath} 2>&1`, {
         encoding: 'utf8',
@@ -382,6 +435,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
       if (error.stdout) {
         return this.parseTscOutput(error.stdout, filePath);
       }
+      console.error(`Error checking ${filePath}:`, error.message);
       return [];
     }
   }
@@ -406,7 +460,7 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
     return null;
   }
 
-  private async getAllProjectErrors(): Promise<any[]> {
+  private async getAllProjectErrors(): Promise<TSCompilerError[]> {
     console.log('🔍 Checking entire project for TypeScript errors...');
     
     try {
@@ -416,36 +470,18 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
       });
       
       // Parse all errors from output
-      const errors: any[] = [];
-      const lines = result.split('\n');
-      const errorPattern = /^(.*\.(?:ts|tsx))\((\d+),(\d+)\):\s+error\s+TS(\d+):\s+(.+)$/;
-      
-      for (const line of lines) {
-        const match = line.match(errorPattern);
-        if (match) {
-          const [, file, lineNum, colNum, code, message] = match;
-          errors.push({
-            resource: path.resolve(file.trim()),
-            code: `TS${code}`,
-            message: message.trim(),
-            startLineNumber: parseInt(lineNum),
-            startColumn: parseInt(colNum),
-            severity: 8
-          });
-        }
-      }
-      
-      return errors;
+      return this.parseAllTscOutput(result);
     } catch (error: any) {
       if (error.stdout) {
         return this.parseAllTscOutput(error.stdout);
       }
+      console.error('Error running TypeScript check:', error.message);
       return [];
     }
   }
 
-  private parseAllTscOutput(output: string): any[] {
-    const errors: any[] = [];
+  private parseAllTscOutput(output: string): TSCompilerError[] {
+    const errors: TSCompilerError[] = [];
     const lines = output.split('\n');
     const errorPattern = /^(.*\.(?:ts|tsx))\((\d+),(\d+)\):\s+error\s+TS(\d+):\s+(.+)$/;
     
@@ -455,10 +491,14 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
         const [, file, lineNum, colNum, code, message] = match;
         errors.push({
           resource: path.resolve(file.trim()),
+          owner: 'unknown',
+          source: 'TypeScript',
           code: `TS${code}`,
           message: message.trim(),
           startLineNumber: parseInt(lineNum),
           startColumn: parseInt(colNum),
+          endLineNumber: parseInt(lineNum),
+          endColumn: parseInt(colNum) + 10,
           severity: 8
         });
       }
@@ -485,6 +525,36 @@ class EnhancedTypeScriptErrorFixSystem extends TypeScriptErrorFixSystem {
       console.log(`     • ... and ${errors.length - 2} more errors`);
     }
   }
+}
+
+// Helper function to parse raw tsc output into JSON format
+function parseRawTypeScriptOutput(output: string): TSCompilerError[] {
+  const errors: TSCompilerError[] = [];
+  const lines = output.split('\n');
+  
+  // Pattern for TypeScript error lines
+  const errorPattern = /^(.*\.(?:ts|tsx|js|jsx))\((\d+),(\d+)\):\s+error\s+TS(\d+):\s+(.+)$/;
+  
+  for (const line of lines) {
+    const match = line.match(errorPattern);
+    if (match) {
+      const [, resource, startLine, startColumn, code, message] = match;
+      errors.push({
+        resource: path.resolve(resource.trim()),
+        owner: 'unknown',
+        source: 'TypeScript',
+        code: `TS${code}`,
+        message: message.trim(),
+        startLineNumber: parseInt(startLine, 10),
+        startColumn: parseInt(startColumn, 10),
+        endLineNumber: parseInt(startLine, 10),
+        endColumn: parseInt(startColumn, 10) + 10,
+        severity: 8
+      });
+    }
+  }
+  
+  return errors;
 }
 
 // CLI Interface
@@ -525,111 +595,102 @@ Examples:
   
   const command = args[0];
   
-  switch (command) {
-    case 'navigate':
-      if (args[1]) {
-        await system.analyzeWithNavigation(args[1]);
-      } else {
-        console.error('Error: Please provide a JSON file path');
-      }
-      break;
-      
-    case 'fix:folder':
-      if (args[1]) {
-        await system.fixByHierarchy(args[1]);
-      } else {
-        console.error('Error: Please provide a folder path');
-      }
-      break;
-      
-    case 'fix:connections':
-      if (args[1]) {
-        await system.fixByConnections(args[1]);
-      } else {
-        console.error('Error: Please provide a starting file');
-      }
-      break;
-      
-    case 'fix:confidence':
-      const minConfidence = args[1] ? parseInt(args[1]) : 80;
-      await system.fixByConfidence(minConfidence);
-      break;
-      
-    case 'strategy':
-      // Generate strategy from current tsc output
-      console.log('🔍 Running TypeScript check...');
-      try {
-        // Run tsc and capture output
-        const tscOutput = execSync('npx tsc --noEmit --pretty false 2>&1', {
-          encoding: 'utf8',
-          stdio: 'pipe'
-        });
+  try {
+    switch (command) {
+      case 'navigate':
+        if (args[1]) {
+          await system.analyzeWithNavigation(args[1]);
+        } else {
+          console.error('Error: Please provide a JSON file path');
+          process.exit(1);
+        }
+        break;
         
-        // Parse the raw output into JSON format
-        const errors = parseRawTypeScriptOutput(tscOutput);
+      case 'fix:folder':
+        if (args[1]) {
+          await system.fixByHierarchy(args[1]);
+        } else {
+          console.error('Error: Please provide a folder path');
+          process.exit(1);
+        }
+        break;
         
-        // Save as JSON file
-        const errorsFile = 'ts-errors-latest.json';
-        fs.writeFileSync(errorsFile, JSON.stringify(errors, null, 2));
+      case 'fix:connections':
+        if (args[1]) {
+          await system.fixByConnections(args[1]);
+        } else {
+          console.error('Error: Please provide a starting file');
+          process.exit(1);
+        }
+        break;
         
-        console.log(`✅ Found ${errors.length} errors, saved to ${errorsFile}`);
+      case 'fix:confidence':
+        const minConfidence = args[1] ? parseInt(args[1]) : 80;
+        if (isNaN(minConfidence) || minConfidence < 0 || minConfidence > 100) {
+          console.error('Error: min-confidence must be a number between 0 and 100');
+          process.exit(1);
+        }
+        await system.fixByConfidence(minConfidence);
+        break;
         
-        // Now analyze with navigation
-        await system.analyzeWithNavigation(errorsFile);
-        
-      } catch (error: any) {
-        // tsc returns error code when errors exist
-        if (error.stdout) {
-          const errors = parseRawTypeScriptOutput(error.stdout);
+      case 'strategy':
+        // Generate strategy from current tsc output
+        console.log('🔍 Running TypeScript check...');
+        try {
+          // Run tsc and capture output
+          const tscOutput = execSync('npx tsc --noEmit --pretty false 2>&1', {
+            encoding: 'utf8',
+            stdio: 'pipe'
+          });
+          
+          // Parse the raw output into JSON format
+          const errors = parseRawTypeScriptOutput(tscOutput);
+          
+          // Save as JSON file
           const errorsFile = 'ts-errors-latest.json';
           fs.writeFileSync(errorsFile, JSON.stringify(errors, null, 2));
+          
           console.log(`✅ Found ${errors.length} errors, saved to ${errorsFile}`);
+          
+          // Now analyze with navigation
           await system.analyzeWithNavigation(errorsFile);
-        } else {
-          console.error('❌ Failed to run TypeScript check:', error.message);
+          
+        } catch (error: any) {
+          // tsc returns error code when errors exist
+          if (error.stdout) {
+            const errors = parseRawTypeScriptOutput(error.stdout);
+            const errorsFile = 'ts-errors-latest.json';
+            fs.writeFileSync(errorsFile, JSON.stringify(errors, null, 2));
+            console.log(`✅ Found ${errors.length} errors, saved to ${errorsFile}`);
+            await system.analyzeWithNavigation(errorsFile);
+          } else {
+            console.error('❌ Failed to run TypeScript check:', error.message);
+            process.exit(1);
+          }
         }
-      }
-      break;
-      
-    case 'quick-wins':
-      await system.fixByConfidence(80);
-      break;
-      
-    default:
-      console.error(`Unknown command: ${command}`);
-  }
-}
-
-// Helper function to parse raw tsc output into JSON format
-function parseRawTypeScriptOutput(output: string): any[] {
-  const errors: any[] = [];
-  const lines = output.split('\n');
-  
-  // Pattern for TypeScript error lines
-  const errorPattern = /^(.*\.(?:ts|tsx|js|jsx))\((\d+),(\d+)\):\s+error\s+TS(\d+):\s+(.+)$/;
-  
-  for (const line of lines) {
-    const match = line.match(errorPattern);
-    if (match) {
-      const [, resource, startLine, startColumn, code, message] = match;
-      errors.push({
-        resource: path.resolve(resource.trim()),
-        code: `TS${code}`,
-        message: message.trim(),
-        startLineNumber: parseInt(startLine, 10),
-        startColumn: parseInt(startColumn, 10),
-        endLineNumber: parseInt(startLine, 10),
-        endColumn: parseInt(startColumn, 10) + 10, // Approximate
-        severity: 8, // Error
-        source: 'TypeScript'
-      });
+        break;
+        
+      case 'quick-wins':
+        await system.fixByConfidence(80);
+        break;
+        
+      default:
+        console.error(`Unknown command: ${command}`);
+        process.exit(1);
     }
+  } catch (error: any) {
+    console.error(`❌ Error executing command "${command}":`, error.message);
+    if (error.stack) {
+      console.error('Stack trace:', error.stack);
+    }
+    process.exit(1);
   }
-  
-  return errors;
 }
 
-// ES Module way to check if this is the main module
+// Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(console.error);
+  main().catch(error => {
+    console.error('❌ Fatal error:', error.message);
+    process.exit(1);
+  });
 }

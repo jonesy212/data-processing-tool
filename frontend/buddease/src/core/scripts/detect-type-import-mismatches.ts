@@ -1,4 +1,4 @@
-// scripts/detect-type-import-mismatches.ts
+// detect-type-import-mismatches.ts
 
 import { execSync } from 'child_process';
 import path from 'path'

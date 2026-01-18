@@ -1,5 +1,4 @@
-UserSupportFeedbackActions.ts
-UserSupportFeedbackActions.ts
+// UserSupportFeedbackActions.ts
 
 import { createAction } from "@reduxjs/toolkit";
 

@@ -1,8 +1,8 @@
-CommonLayout.tsx
-CommonLayout.ts
+// CommonLayout.tsx
 
 import React from 'React';
 import axios from 'axios';
+
 interface CommonLayoutProps {
   children: React.ReactNode
 }

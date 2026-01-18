@@ -1,4 +1,4 @@
-ThemeNotificationHelpers.ts
+// ThemeNotificationHelpers.ts
 import { handleApiErrorAndNotify } from "@/core/api/ApiData";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 

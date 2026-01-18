@@ -20,7 +20,6 @@ import type {  AxiosRequestConfig, AxiosResponse } from "axios";
 const API_BASE_URL = endpoints.client;
 // Define a function to create headers using the provided configuration
 export const createHeaders = (): typeof HeadersConfig => {
-  // Access and return the header configurations from HeadersConfig.tsx
   return {
     "Content-Type": "application/json",
     Accept: "application/json",

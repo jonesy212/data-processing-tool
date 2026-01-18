@@ -1,4 +1,4 @@
-Company.ts
+// Company.ts
 
 import { Client } from "@/core/client/Client";
 import { Project } from "@/core/models/projects/Project";

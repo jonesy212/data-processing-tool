@@ -1,4 +1,4 @@
-CalendarEventImpactPrediction.ts
+// CalendarEventImpactPrediction.ts
 interface CalendarEventImpactPrediction {
     eventId: string; // ID of the event
     predictedImpact: number; // Predicted impact of the event

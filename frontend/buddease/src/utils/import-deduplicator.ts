@@ -1,5 +1,5 @@
-scripts/deduplicate-imports.ts
-import { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
+// import-deduplicator.ts
+import type { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
 import fs from 'fs';
 import path from 'path';
 
@@ -45,6 +45,65 @@ export class ImportDeduplicator {
     };
   }
 
+    /**
+   * Get deduplicated content without modifying the file
+   * This is useful for previewing changes or applying changes with proper backups
+   */
+  static getDeduplicatedContent(filePath: string): string {
+    const { imports, duplicateGroups } = this.analyzeImportsInFile(filePath);
+    
+    if (duplicateGroups.length === 0) {
+      // Return original content if no duplicates
+      return fs.readFileSync(filePath, 'utf-8');
+    }
+    
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const lines = content.split('\n');
+    
+    const linesToKeep = new Set<number>();
+    const linesToRemove = new Set<number>();
+    
+    // Mark which lines to keep and which to remove
+    duplicateGroups.forEach(group => {
+      if (group.length > 1) {
+        linesToKeep.add(imports[group[0]].line - 1);
+        for (let i = 1; i < group.length; i++) {
+          linesToRemove.add(imports[group[i]].line - 1);
+        }
+      }
+    });
+    
+    // Merge imports
+    const mergedImports = this.mergeImports(imports.filter((_, idx) => 
+      !linesToRemove.has(imports[idx].line - 1)
+    ));
+    
+    // Generate new content
+    const newLines: string[] = [];
+    
+    lines.forEach((line, index) => {
+      if (linesToRemove.has(index)) {
+        return; // Skip removed lines
+      }
+      
+      if (linesToKeep.has(index)) {
+        // Replace with merged import
+        const imp = imports.find(i => i.line - 1 === index);
+        if (imp) {
+          const mergedImp = mergedImports.find(m => m.source === imp.source);
+          if (mergedImp) {
+            newLines.push(this.generateImportStatement(mergedImp));
+            return;
+          }
+        }
+      }
+      
+      newLines.push(line);
+    });
+    
+    return newLines.join('\n');
+  }
+  
   /**
    * Convert deduplication analysis to your ImportAnalysis format
    */
@@ -647,7 +706,6 @@ async function analyzeImportsForDuplicates(): Promise<void> {
   }
 }
 
-// Export the class for use in other files (like fix-imports.ts)
 export default ImportDeduplicator;
 
 // For standalone script execution

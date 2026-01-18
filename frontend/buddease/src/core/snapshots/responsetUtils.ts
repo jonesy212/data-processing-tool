@@ -6,12 +6,12 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { Snapshot, SnapshotData } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from '@/core/snapshots/SnapshotStoreDataResponse';
-import { SnapshotStoreProps } from '@/core/snapshots/useSnapshotStore';
+import type { SnapshotStoreProps } from '@/core/snapshots/useSnapshotStore';
 import type { DataStore, InitializedState } from '@/core/state/stores/DataStore';
 
 function handleSnapshot<  

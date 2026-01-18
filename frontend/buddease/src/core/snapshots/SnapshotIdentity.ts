@@ -3,7 +3,7 @@ import type { Task } from "@/core/components/models/tasks/Task";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { ProjectPhaseTypeEnum, StatusType } from "@/core/models/data/StatusType";
+import type { ProjectPhaseTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import type { PhaseDefault } from '@/core/typings/phaseTypes';
 import type { AllTypes } from "@/core/typings/PropTypes";
 import type { User } from "@/core/users/User";

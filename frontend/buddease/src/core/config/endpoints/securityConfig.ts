@@ -1,4 +1,4 @@
-securityConfig.ts
+// securityConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { SecurityEndpoints } from '@/core/typings/categories/SecurityEndpoints';
 

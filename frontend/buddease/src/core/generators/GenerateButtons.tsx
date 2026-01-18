@@ -1,5 +1,4 @@
 // GenerateButtons.tsx
-// ButtonGenerator.tsx
 import type { Label } from '@/core/branding/BrandingSettings';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

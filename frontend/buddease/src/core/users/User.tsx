@@ -7,7 +7,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import { fetchUserAreaDimensions } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 // import type type { UserPreferences } from "@/core/config/UserPreferences";
 // import type type { UserSettings } from "@/core/config/UserSettings";
 import type { Attachment } from '@/core/documents/attachment/Attachment';

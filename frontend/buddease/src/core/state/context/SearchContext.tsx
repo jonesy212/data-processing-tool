@@ -1,5 +1,6 @@
-SearchContext.tsx
-import React, { ReactNode, createContext, useContext, useState } from 'react';
+// SearchContext.tsx
+import type { ReactNode, createContext, useContext, useState } from 'react';
+import React from 'react';
 
 interface SearchContextProps {
   searchQuery: string;

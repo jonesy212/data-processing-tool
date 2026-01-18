@@ -1,4 +1,4 @@
-BlogPost.tsx
+// BlogPost.tsx
 import React from 'react';
 
 export interface  BlogPost {

@@ -1,4 +1,4 @@
-CustomDragObject.tsx
+// CustomDragObject.tsx
 class CustomDragObject {
     private element: HTMLElement;
     private initialX: number;

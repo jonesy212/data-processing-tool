@@ -1,4 +1,4 @@
-YourApp.tsx
+// YourApp.tsx
 import BasicStopwatchComponent from '@/core/components/stopwatches/BasicStopwatchComponent';
 import CountdownTimerComponent from '@/core/components/stopwatches/CountdownTimerComponent';
 import createDynamicHook from "@/core/hooks/phaseHooks/DynamicPromptPhaseHook";

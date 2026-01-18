@@ -1,4 +1,4 @@
-MyAppWrapper.tsx
+// MyAppWrapper.tsx
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
 import CaptionManagementPageComponent from "@/core/features/videos/CaptionManagementComponent";
 import { generateUtilityFunctions } from "@/core/generators/GenerateUtilityFunctions";

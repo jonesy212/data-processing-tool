@@ -1,3 +1,4 @@
+// StyleSheetComponent.tsx
 components/styles/StyleSheetComponent.tsx
 "use client";
 

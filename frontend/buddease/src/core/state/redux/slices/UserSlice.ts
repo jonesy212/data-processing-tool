@@ -7,7 +7,7 @@ import { NotificationSettings } from "@/core/features/support/NotificationSettin
 import { ProjectFeedback } from "@/core/features/support/ProjectFeedback";
 import { NFT } from "@/core/models/cypto/NFT";
 import { Project } from "@/core/models/projects/Project";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { ProfileAccessControl } from "@/core/pages/profile/Profile";
 import { BlockchainPermissions } from "@/core/permissions/BlockchainPermissions";
 import { PrivacySettings } from "@/core/settings/PrivacySettings";
@@ -15,7 +15,7 @@ import { SecuritySettings } from '@/core/settings/SecuritySettings';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { Resource } from "@/core/state/redux/slices/CollaborationSlice";
 import { Deadline } from "@/core/state/redux/slices/ProjectSlice";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { AllTypes } from '@/core/typings/PropTypes';
 import { BaseResponseType } from '@/core/typings/baseResponseTypes';
 import { BlockchainAsset } from "@/core/typings/cryptoTypes/BlockchainAsset";

@@ -1,4 +1,4 @@
-ApiMarkers.ts
+// ApiMarkers.ts
 import { endpoints } from '@/core/api/ApiEndpoints';
 import axios from 'axios';
 // Define the base URL for the markers API

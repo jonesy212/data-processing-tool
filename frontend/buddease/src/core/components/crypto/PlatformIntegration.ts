@@ -1,4 +1,4 @@
-PlatformIntegration.ts
+// PlatformIntegration.ts
 
 // Define an interface for platform integration modules
 export interface PlatformIntegration {

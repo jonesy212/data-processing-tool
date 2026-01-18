@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import type { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
-import { TagEntity } from '@/core/typings/entities/TagEntity';
+import type { TagEntity } from '@/core/typings/entities/TagEntity';
 import { AllTypes } from '@/core/typings/PropTypes';
 import React from 'react';
 

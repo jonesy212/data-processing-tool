@@ -1,4 +1,4 @@
-useCache.ts
+// useCache.ts
 'use client';
 
 import { CacheManager } from '@/core/libraries/cache/client/CacheManager';

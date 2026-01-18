@@ -1,5 +1,4 @@
-DashboardManager.ts
-DashboardManager.tsx
+// DashboardManager.tsx
 import { CommunicationHub, DashboardOverview, ProjectWorkspace } from '@/core/dashboards/DashboardComponent';
 import AppTreeExplorer from '@/core/services/AppTreeExplorer';
 import React, { useState } from 'react';

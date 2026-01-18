@@ -3,7 +3,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useSecurityAudit } from "@/core/hooks/useSecurityAudit";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { UserConfigData } from '@/core/models/data/dataStoreMethods';
 
 const createMeta = <

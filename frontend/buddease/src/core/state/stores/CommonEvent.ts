@@ -4,7 +4,7 @@ import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
-import { useMetadata } from '@/core/config/useMetadata';
+import type { useMetadata } from '@/core/config/useMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { Category } from '@/core/libraries/categories/generateCategoryProperties';

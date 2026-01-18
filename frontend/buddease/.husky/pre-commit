@@ -2,3 +2,10 @@
 . "$(dirname "$0")/_/husky.sh"
 
 bash scripts/pre-commit.sh
+
+# Run header fixer before commit
+pnpm fix:headers:dry-run
+if [ $? -ne 0 ]; then
+  echo "❌ Header issues found. Run: pnpm fix:headers"
+  exit 1
+fi

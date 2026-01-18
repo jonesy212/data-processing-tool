@@ -1,4 +1,4 @@
-HeadersConfig.tsx
+// HeadersConfig.tsx
 import csrfToken from '@/core/api/csrfToken';
 
 export interface HeadersConfig {

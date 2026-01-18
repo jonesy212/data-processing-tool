@@ -1,0 +1,1 @@
+scripts/typescript/misc/strategic-verify.ts

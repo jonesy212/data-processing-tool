@@ -1,4 +1,4 @@
-traverseBackend.ts
+// traverseBackend.ts
 import * as apiFile from '@/api/ApiFiles';
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import { frontend } from '@/core/config/appStructure/FrontendStructure';
@@ -32,7 +32,6 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
       result.push(...directoryResult);
     } else {
       // Logic to parse file and update backendStructure accordingly
-      // Example: if (file.endsWith('.js')) { /* update backendStructure */ }
       const content = await fetchFileContent(filePath);
       const structureId = UniqueIDGenerator.generateAppStructureID.toString()
       const appStructureItem: AppStructureItem = {

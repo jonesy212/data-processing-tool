@@ -1,4 +1,4 @@
-BaseMetaInfo.ts
+// BaseMetaInfo.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { AppVersionImpl } from '@/core/pages/_app';

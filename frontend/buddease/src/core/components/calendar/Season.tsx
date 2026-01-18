@@ -1,4 +1,4 @@
-Season.tsx
+// Season.tsx
 enum Season {
     Spring,
     Summer,

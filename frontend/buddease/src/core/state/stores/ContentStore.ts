@@ -1,7 +1,7 @@
-ContentStore.ts
+// ContentStore.ts
 import { ContentItem } from "@/core/components/models/content/ContentItem";
 import { DetailsItemCommon } from "@/core/generators/ListGenerator";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 

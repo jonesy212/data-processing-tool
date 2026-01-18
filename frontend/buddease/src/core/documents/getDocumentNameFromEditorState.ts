@@ -1,4 +1,4 @@
-getDocumentNameFromEditorState.ts
+// getDocumentNameFromEditorState.ts
 
 // Example function to get the document name
 const getDocumentNameFromEditorState = (editorState) => {

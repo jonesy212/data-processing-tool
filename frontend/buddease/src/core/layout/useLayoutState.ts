@@ -1,4 +1,4 @@
-useLayoutState.ts
+// useLayoutState.ts
 app/layout/useLayoutState.ts
 import { useState, useCallback } from "react";
 

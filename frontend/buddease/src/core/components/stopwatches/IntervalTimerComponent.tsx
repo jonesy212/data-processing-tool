@@ -1,4 +1,4 @@
-IntervalTimerComponent.tsx
+// IntervalTimerComponent.tsx
 import React, { useEffect, useState } from 'react';
 
 const IntervalTimerComponent: React.FC = () => {

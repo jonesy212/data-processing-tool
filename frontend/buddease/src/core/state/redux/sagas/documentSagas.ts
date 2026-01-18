@@ -3,8 +3,9 @@ import { DocumentStatus } from "@/core/components/documents/types";
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { DocumentActions } from "@/core/tokens/DocumentActions";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
+import internalApiService from '@/core/api/ApiClient';
 
 const BASE_URL = "http://your-backend-url/api"; // Replace with your actual backend URL
 
@@ -12,7 +13,7 @@ const updateDocumentTitle = async (
   title: string
 ): Promise<AxiosResponse<DocumentData>> => {
   try {
-    const response = await axios.post(
+    const response = await internalApiService.post(
       `${BASE_URL}/documents/update_title`,
       { title },
       {
@@ -57,7 +58,7 @@ const deleteDocument = async (
   id: number
 ): Promise<AxiosResponse<DocumentData>> => {
   try {
-    const response = await axios.post(
+    const response = await internalApiService.post(
       `${BASE_URL}/documents/delete`,
       { id },
       {
@@ -75,7 +76,7 @@ const addDocument = async (
   title: string
 ): Promise<AxiosResponse<DocumentData>> => {
   try {
-    const response = await axios.post(
+    const response = await internalApiService.post(
       `${BASE_URL}/documents/add`,
       { id, title },
       {
@@ -94,7 +95,7 @@ const dataAnalysis = async (payload: {
   status: string;
 }): Promise<AxiosResponse<DocumentData>> => {
   try {
-    const response = await axios.post(
+    const response = await internalApiService.post(
       `${BASE_URL}/documents/analysis`,
       payload,
       {

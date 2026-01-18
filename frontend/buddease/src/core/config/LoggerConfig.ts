@@ -1,4 +1,4 @@
-LoggerConfig.ts
+// LoggerConfig.ts
 import {
     AnalyticsLogger,
     BugLogger,

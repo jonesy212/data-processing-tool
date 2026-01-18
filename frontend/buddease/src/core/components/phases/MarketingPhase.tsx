@@ -1,4 +1,4 @@
-MarketingPhase.tsx
+// MarketingPhase.tsx
 import React from 'react';
 
 const MarketingPhase: React.FC = () => {

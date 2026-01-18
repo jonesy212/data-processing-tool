@@ -1,3 +1,4 @@
+// AquaConfig.tsx
 import { endpoints } from '@/core/api/endpointConfigurations';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { useEffect, useState } from 'react';

@@ -1,4 +1,4 @@
-OnboardingQuestionnaireData.ts
+// OnboardingQuestionnaireData.ts
 
 onboardingQuestionnaireData.ts
 import { Question } from "@/core/pages/onboarding/Question";

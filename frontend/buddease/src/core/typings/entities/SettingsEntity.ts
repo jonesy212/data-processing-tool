@@ -1,5 +1,5 @@
-// SettingsEntity
 // SettingsEntity.ts
+// SettingsEntity
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import type { DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

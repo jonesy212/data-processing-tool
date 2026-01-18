@@ -1,4 +1,4 @@
-calculateMetrics.ts
+// calculateMetrics.ts
 
 const calculateMetrics = (analyticsData: any): void => {
   // Example logic to calculate metrics based on analytics data

@@ -1,4 +1,4 @@
-Shop.tsx
+// Shop.tsx
 import ShoppingCenterConfig from '@/core/shoppingCenter/ShoppingCenterConfig'; // Import the ShoppingCenterConfig interface
 import React from 'react';
 

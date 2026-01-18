@@ -1,4 +1,4 @@
-ExamplePriceService.ts
+// ExamplePriceService.ts
 // Example usage in your trade execution
 import { getMarketPrice, priceService } from '@/core/api/service/PriceApiService';
 

@@ -1,10 +1,10 @@
-CommunityProjectsPage.tsx
+// CommunityProjectsPage.tsx
 app/pages/community/CommunityProjectsPage.tsx
 import { Team } from '@/core/components/teams/Team';
 import ListGenerator from '@/core/generators/ListGenerator';
 import { CommunityData } from '@/core/models/CommunityData';
 import FeedbackForm from '@/core/pages/forms/FeedbackForm';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import React, { useState } from 'react';
 
 interface CommunityProjectsPageProps {

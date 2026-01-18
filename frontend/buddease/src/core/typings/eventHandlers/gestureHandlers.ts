@@ -1,4 +1,4 @@
-gestureHandlers.ts
+// gestureHandlers.ts
 
 const handleGestureStart = (event: React.TouchEvent<HTMLDivElement>) => {
   // Logic for gesture start event

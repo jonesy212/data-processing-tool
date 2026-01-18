@@ -1,4 +1,4 @@
-determineFileCategory.tsx
+// determineFileCategory.tsx
 import * as snapshotApi from '@/core/api/SnapshotApi';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { FileCategory } from "@/core/documents/FileType";

@@ -1,11 +1,11 @@
-AuthSlice.ts
+// AuthSlice.ts
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserPreferences } from "@/core/config/UserPreferences";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NFT } from "@/core/models/cypto/NFT";
 import { AuthenticationProvider } from '@/core/server/auth/AuthService';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { AuthStore } from "@/core/state/stores/AuthStore";
 import type { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';

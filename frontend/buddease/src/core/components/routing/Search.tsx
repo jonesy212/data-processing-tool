@@ -1,8 +1,8 @@
-Search.tsx
+// Search.tsx
 import { searchDocuments } from "@/core/api/ApiDocument"; // Assuming SearchResult is the type of each item in searchResults
 import { userId } from "@/core/api/ApiUser";
 import { sanitizeInput } from "@/core/components/crypto/ClientSanitization";
-import { Entity } from "@/core/config/BaseConfig";
+import type { Entity } from "@/core/config/BaseConfig";
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { SearchLogger } from '@/core/logging/Logger';
 import LoadingSpinner from "@/core/models/tracker/LoadingSpinner";

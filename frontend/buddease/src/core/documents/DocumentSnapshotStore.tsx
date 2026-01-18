@@ -1,5 +1,5 @@
 // DocumentSnapshotStore.tsx
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotItem } from "@/core/snapshots/SnapshotList";

@@ -42,7 +42,6 @@ class PaginationStore {
       // Perform asynchronous data fetching here
       // Example:
       // const response = await fetch(`api/data?page=${this.currentPage}&size=${this.pageSize}`);
-      // const data = await response.json();
       // Update total items and total pages based on response
       // this.setTotalItems(data.totalItems);
       // this.setTotalPages(Math.ceil(data.totalItems / this.pageSize));
@@ -63,11 +62,11 @@ export default paginationStore;
 
 
 
-import paginationStore from "./PaginationStore";
+//  Example usage:
+// import paginationStore from "./PaginationStore";
 
- Example usage:
-paginationStore.setCurrentPage(1);
-paginationStore.setPageSize(20);
-await paginationStore.fetchData();
-console.log("Total items:", paginationStore.totalItems);
-console.log("Total pages:", paginationStore.totalPages);
+// paginationStore.setCurrentPage(1);
+// paginationStore.setPageSize(20);
+// await paginationStore.fetchData();
+// console.log("Total items:", paginationStore.totalItems);
+// console.log("Total pages:", paginationStore.totalPages);

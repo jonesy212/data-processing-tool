@@ -1,5 +1,5 @@
 // BugFilter.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { Member } from '@/core/models/members/Member';
 import { eventService } from "@/core/services/EventService";
 import {

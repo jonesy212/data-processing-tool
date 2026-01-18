@@ -1,44 +1,44 @@
 // TaskManagerComponent.tsx
 import { ProjectActions } from "@/core/actions/ProjectActions";
-import TaskAssignmentSnapshot from "@/core/actions/TaskAssignmentSnapshot";
+import type TaskAssignmentSnapshot from "@/core/actions/TaskAssignmentSnapshot";
 import { UIActions } from "@/core/actions/UIActions";
 import { checkTodoCompletion, updateTodo } from "@/core/api/ApiTodo";
 import { handleTaskApiErrorAndNotify } from "@/core/api/TasksApi";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import updateUI from "@/core/documents/editing/updateUI";
 import { brandingSettings } from '@/core/libraries/theme/BrandingService';
-import ContentRenderer from "@/core/libraries/ui/ContentRenderer";
-import ReusableButton from "@/core/libraries/ui/buttons/ReusableButton";
-import { Data } from '@/core/models/data/Data';
+import type ContentRenderer from "@/core/libraries/ui/ContentRenderer";
+import type ReusableButton from "@/core/libraries/ui/buttons/ReusableButton";
+import type { Data } from '@/core/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
-import { Member } from '@/core/models/members/Member';
-import { Phase } from "@/core/models/phases/Phase";
-import { Project, ProjectDetails } from "@/core/models/projects/Project";
-import { Task } from "@/core/models/tasks/Task";
-import { Progress } from "@/core/models/tracker/ProgressBar";
-import { ExtendedRouter } from "@/core/pages/MyAppWrapper";
-import { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
-import TaskProgress from "@/core/projects/projectManagement/TaskProgress";
-import TeamProgress from "@/core/projects/projectManagement/TeamProgress";
-import TodoProgress from "@/core/projects/projectManagement/TodoProgress";
+import type { Member } from '@/core/models/members/Member';
+import type { Phase } from "@/core/models/phases/Phase";
+import type { Project, ProjectDetails } from "@/core/models/projects/Project";
+import type { Task } from "@/core/models/tasks/Task";
+import type { Progress } from "@/core/models/tracker/ProgressBar";
+import type { ExtendedRouter } from "@/core/pages/MyAppWrapper";
+import type { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
+import type TaskProgress from "@/core/projects/projectManagement/TaskProgress";
+import type TeamProgress from "@/core/projects/projectManagement/TeamProgress";
+import type TodoProgress from "@/core/projects/projectManagement/TodoProgress";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import { rootStores } from "@/core/state/stores/RootStores";
 import { useTaskManagerStore } from "@/core/state/stores/TaskStore";
 import useTrackerStore from "@/core/state/stores/TrackerStore";
-import { Todo } from "@/core/todos/Todo";
+import type { Todo } from "@/core/todos/Todo";
 import { todoService } from "@/core/todos/TodoService";
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { TaskEntity } from "@/core/typings/entities/TaskEntity";
+import type { TaskEntity } from "@/core/typings/entities/TaskEntity";
 import { createMilestone } from "@/core/typings/milestoneTypes";
-import { VideoData } from '@/core/typings/videoTypes/Video';
-import { AxiosError } from "axios";
+import type { VideoData } from '@/core/typings/videoTypes/Video';
+import type { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 interface TaskAssignmentProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -54,7 +54,7 @@ interface TaskAssignmentProps<
 }
 
 const TaskManagerComponent = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

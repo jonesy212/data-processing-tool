@@ -1,4 +1,4 @@
-NavigationManager.tsx
+// NavigationManager.tsx
 import VoiceControlledNavigation from '@/core/components/intelligence/VoiceControlledNavigation';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Step, useStepNavigation } from '@/core/hooks/useStepNavigation';

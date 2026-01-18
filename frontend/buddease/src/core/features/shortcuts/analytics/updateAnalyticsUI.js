@@ -1,4 +1,4 @@
-// updateAnalyticsUI.ts
+// updateAnalyticsUI.js
 
 // Example function to update UI with analytics insights
 const updateAnalyticsUI = (analyticsData) => {

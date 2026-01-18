@@ -1,5 +1,5 @@
-cryptoDocumentManager.ts
-frontend/app/security/CryptoDocumentManager.ts
+// cryptoDocumentManager.ts
+// frontend/app/security/CryptoDocumentManager.ts
 
 import { CryptoDocument } from "@/core/documents/cryptoDocument";
 import { encryptStringClient } from "@/core/security/clientEncrypt";

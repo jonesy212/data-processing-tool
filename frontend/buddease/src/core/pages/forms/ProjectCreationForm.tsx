@@ -1,8 +1,8 @@
-ProjectCreationForm.tsx
-import { ClientProjectEntity, ProjectType } from '@/core/models/projects/Project';
+// ProjectCreationForm.tsx
+import type { ClientProjectEntity, ProjectType } from '@/core/models/projects/Project';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { AllStatus } from '@/core/state/stores/DetailsListStore';
+import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 

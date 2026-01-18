@@ -1,7 +1,7 @@
 // NotificationStore.tsx
 import { apiNotificationMessages } from "@/core/api/ApiData";
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 import { NOTIFICATION_TYPES } from '@/core/features/support/NotificationTypes';
 import {
     NotificationType,
@@ -13,12 +13,12 @@ import { NotificationPosition } from '@/core/models/data/StatusType';
 import { LogData } from '@/core/models/LogData';
 import { NotificationChannelHelper } from '@/core/notifications/NotificationChannelHelper';
 import { BasicNotificationChannels, NotificationChannels } from '@/core/notifications/NotificationChannels';
-import { NotificationContextProps } from '@/core/state/context/NotificationContext';
+import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
 
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import NotificationData from '@/core/state/redux/slices/NofiticationsSlice';
 import type { AppStructuredMetadata, AppUnifiedMetadata } from "@/core/typings/entities/AppMetadataEntity";
 import {

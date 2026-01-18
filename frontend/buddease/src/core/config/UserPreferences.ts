@@ -1,4 +1,4 @@
-UserPreferences.ts
+// UserPreferences.ts
 import { apiService } from "@/core/api/ApiDetails";
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
@@ -7,7 +7,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import FileData from "@/core/models/data/FileData";
-import { CommonTrackerProps } from "@/core/models/tracker/Tracker";
+import type { CommonTrackerProps } from "@/core/models/tracker/Tracker";
 import { PrivacySettings } from "@/core/settings/PrivacySettings";
 import { refreshUI } from '@/core/snapshots/refreshUI';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';

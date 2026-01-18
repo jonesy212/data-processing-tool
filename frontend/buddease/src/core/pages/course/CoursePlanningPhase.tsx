@@ -1,4 +1,4 @@
-CoursePlanningPhase.tsx
+// CoursePlanningPhase.tsx
 import { CourseDevelopmentPhase } from '@/core/pages/course/CourseDevelopmentPage';
 import React, { useState } from 'react';
 

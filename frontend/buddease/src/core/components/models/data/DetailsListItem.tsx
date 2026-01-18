@@ -1,5 +1,5 @@
 // DetailsListItem.tsx
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -7,7 +7,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 // Define a new type for DetailsItem with all properties of Data, but make them optional
 type DetailsItemAll<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -16,7 +16,7 @@ type DetailsItemAll<
 > = DetailsItem<Partial<AllProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
 
 interface DetailsListItemProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -29,7 +29,7 @@ interface DetailsListItemProps<
 }
 
 const DetailsListItem = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

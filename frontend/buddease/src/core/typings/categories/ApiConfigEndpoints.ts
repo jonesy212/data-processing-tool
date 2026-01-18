@@ -1,5 +1,5 @@
-ApiConfigEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ApiConfigEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ApiConfigEndpoints extends EndpointCategoryConfig {
   getUserApiConfig: EndpointConfig;

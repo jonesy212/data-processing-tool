@@ -6,7 +6,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { Category, SnapshotCategoryMethods } from '@/core/libraries/categories/generateCategoryProperties';
 import { Content } from "@/core/models/content/AddContent";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import { createCompleteSnapshot } from '@/core/snapshots/createSnapshot';

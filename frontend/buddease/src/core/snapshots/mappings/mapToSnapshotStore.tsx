@@ -5,7 +5,7 @@ import {
     DefaultMeta
 } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CriteriaType } from '@/core/pages/searches';
+import type { CriteriaType } from '@/core/pages/searches';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 

@@ -27,7 +27,7 @@ import {
 import { useDrag } from "@/core/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/core/libraries/animations/DraggableAnimation/useText";
 import { Content } from "@/core/models/content/AddContent";
-import { SharedRelationshipData } from '@/core/models/data/Data';
+import type { SharedRelationshipData } from '@/core/models/data/Data';
 import { K } from '@/core/models/data/dataStoreMethods';
 import FileData from "@/core/models/data/FileData";
 import { ContentItem } from "@/core/state/stores/ContentStore";

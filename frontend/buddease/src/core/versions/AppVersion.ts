@@ -1,10 +1,10 @@
-AppVersion.ts
+// AppVersion.ts
 import getAppPath from '@/core/config/appStructure/appPath';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import BackendStructure from '@/core/server/database/BackendStructure';
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import { VersionData } from "@/core/versions/VersionData";
 import { getCurrentAppInfo } from '@/core/versions/VersionGenerator';

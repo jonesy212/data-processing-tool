@@ -52,7 +52,7 @@ Can include:
 
 ```ts
 interface RootCategories<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
 > {
   categoryIds?: string[];

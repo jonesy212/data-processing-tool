@@ -1,4 +1,4 @@
-FullscreenButtonComponent.tsx
+// FullscreenButtonComponent.tsx
 platform/web/FullscreenButtonComponent.tsx
 import ToggleSwitch from "@/core/libraries/menu/ToggleSwitch";
 import { SharedButton } from '@/platform/shared/SharedButton';

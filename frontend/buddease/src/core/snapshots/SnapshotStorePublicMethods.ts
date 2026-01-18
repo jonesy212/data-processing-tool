@@ -6,7 +6,7 @@ import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 
 interface SnapshotStorePublicMethods<

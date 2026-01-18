@@ -1,4 +1,4 @@
-VerifyEmailPhase.tsx
+// VerifyEmailPhase.tsx
 import { useState } from 'react';
 
 // Define enum for email verification phases

@@ -1,6 +1,6 @@
-generateComponent.ts
+// generateComponent.ts
 import generateComponent from '@/core/api/generateComponent';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
   req: NextApiRequest,

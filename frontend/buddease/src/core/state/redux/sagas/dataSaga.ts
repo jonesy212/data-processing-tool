@@ -1,4 +1,4 @@
-dataSaga.ts
+// dataSaga.ts
 import { DataActions } from "@/core/actions/DataActions";
 import {
     deleteDataFrame,
@@ -6,7 +6,7 @@ import {
     setDataFrame,
     updateDataFrame,
 } from "@/core/api/DataframeApi";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import {
     addData,
     removeData,
@@ -15,14 +15,16 @@ import {
     updateDataStatus,
     updateDataTitle,
 } from "@/core/slices/DataSlice";
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
+import internalApiService from '@/core/api/ApiClient';
 
 const BASE_URL = "http://your-backend-url/api"; // Replace with your actual backend URL
 
 const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
   try {
-    const response = await axios.post(
+    const response = await internalApiService.post(
       `${BASE_URL}/data/update_title`,
       { title },
       {
@@ -100,7 +102,7 @@ function* handleUpdateDataTitle(
 
     // Replace this with your API call using axios
     const response: AxiosResponse<Data> = yield call(() =>
-      axios.post("api/data", payload, {
+      internalApiService.post("api/data", payload, {
         headers: {
           "Content-Type": "application/json",
         },

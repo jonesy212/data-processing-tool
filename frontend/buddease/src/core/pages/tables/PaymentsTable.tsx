@@ -1,4 +1,4 @@
-PaymentsTable.tsx
+// PaymentsTable.tsx
 import TableGenerator from '@/core/generators/GenerateTable';
 
 const PaymentsTable = () => {

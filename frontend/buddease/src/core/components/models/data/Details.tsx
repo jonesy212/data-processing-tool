@@ -1,5 +1,4 @@
 // Details.tsx
-// components/Details.tsx
 
 import { Label } from '@/core/branding/BrandingSettings';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -7,16 +6,16 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/core/documents/RelatedProps';
 import ListGenerator from "@/core/generators/ListGenerator";
 import { FakeData } from "@/core/intelligence/FakeDataGenerator";
-import { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
+import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
 import { Comment } from "@/core/models/comments/Comments";
 import { CommonData, Customizations } from "@/core/models/CommonData";
-import { Data } from "@/core/models/data/Data";
+import type { Data } from "@/core/models/data/Data";
 import { Phase } from '@/core/models/phases/Phase';
 import { Participant } from "@/core/pages/management/ParticipantManagementPage";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
 import { CommonEvent } from "@/core/state/stores/CommonEvent";
-import { DetailsItemExtended } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItemExtended } from "@/core/state/stores/DetailsListStore";
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import type { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/core/typings/entities/EventEntity';
 import { observer } from "mobx-react-lite";

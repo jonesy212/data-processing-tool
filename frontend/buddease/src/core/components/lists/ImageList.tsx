@@ -1,4 +1,4 @@
-ImageList.tsx
+// ImageList.tsx
 import ClickableList from '@/core/actions/ClickableList';
 import React from 'react';
 

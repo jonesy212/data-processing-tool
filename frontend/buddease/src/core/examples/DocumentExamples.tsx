@@ -1,4 +1,4 @@
-DocumentExamples.ts
+// DocumentExamples.tsx
 
 import React from 'react';
 

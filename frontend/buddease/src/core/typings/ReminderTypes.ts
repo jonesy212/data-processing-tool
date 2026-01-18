@@ -1,4 +1,4 @@
-// src/core/models/reminders/ReminderTypes.ts
+// ReminderTypes.ts
 
 import type { Reminder, ReminderType } from '@/core/settings/Reminder';
 import type {  } from '@/core/typings/ReminderTypes'

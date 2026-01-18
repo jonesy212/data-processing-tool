@@ -4,7 +4,7 @@ import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-import { SnapshotStoreOptions } from "@/core/hooks/useSnapshotManager";
+import type { SnapshotStoreOptions } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { SnapshotData, SnapshotsArray } from "@/core/snapshots/SnapshotData";
 import { SnapshotSubscriberManagement } from "@/core/snapshots/SnapshotSubscriberManagement";

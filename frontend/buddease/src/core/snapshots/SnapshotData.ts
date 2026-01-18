@@ -1,16 +1,16 @@
 // SnapshotData.ts
 import { SnapshotCategory } from "@/core/api/getSnapshotEndpoint";
 import { Order } from "@/core/components/crypto/Orders";
-import type { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/core/documents/RelatedProps";
+import type { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/core/documents/RelatedProps";
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category, SnapshotCategoryMethods } from '@/core/libraries/categories/generateCategoryProperties';
-import { ChildRelationship, Data, SharedConfigType, SharedRelationshipData } from '@/core/models/data/Data';
-import { PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
+import type { ChildRelationship, Data, SharedConfigType, SharedRelationshipData } from '@/core/models/data/Data';
+import type { PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
@@ -184,7 +184,7 @@ type OriginalSnapshotData<T extends BaseDataEntity, K extends T = T> = SnapshotD
 
 // Core shared properties
 interface SnapshotCoreBase<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -243,7 +243,7 @@ interface SnapshotCoreBase<
 
 // Extended base for relationships
 interface SnapshotRelationshipBase<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -266,7 +266,7 @@ interface SnapshotRelationshipBase<
 
 
 interface SnapshotRelationshipMethods<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -315,7 +315,7 @@ interface SnapshotRelationships<
 }
 
 interface SnapshotCoreBaseWithoutMethods<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -332,7 +332,7 @@ interface SnapshotCoreBaseWithoutMethods<
 }
 
 interface SnapshotData<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -398,7 +398,7 @@ interface SnapshotData<
 
 
 interface SnapshotHierarchyMethods<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -476,7 +476,7 @@ interface SnapshotHierarchyMethods<
 
 
 interface HierarchyExport<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

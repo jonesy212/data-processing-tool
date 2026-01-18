@@ -1,3 +1,4 @@
+// useRoleAccess.ts
 hooks/useRoleAccess.ts
 
 import type { Attachment, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/documents/attachment/Attachment";

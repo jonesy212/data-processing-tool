@@ -1,11 +1,11 @@
 // SubscriptionComponent.tsx
 import { getSubscriberId } from "@/core/api/subscriberApi";
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import useRealtimeData, {
     RealtimeUpdateCallback,
 } from "@/core/hooks/commHooks/useRealtimeData";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { K, T } from "@/core/models/data/dataStoreMethods";
 import {
     SubscriberTypeEnum,

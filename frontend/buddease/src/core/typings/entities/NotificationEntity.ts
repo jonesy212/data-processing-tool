@@ -10,7 +10,7 @@ import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { NotificationContextProps } from '@/core/state/context/NotificationContext';
+import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 // 1. Base entity
 type NotificationEntity = BaseDataEntity;

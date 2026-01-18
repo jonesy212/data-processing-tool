@@ -1,4 +1,4 @@
-MarkerActions.ts
+// MarkerActions.ts
 marker/MarkerActions.ts
 import { Marker } from "@/core/models/data/Marker";
 import { createAction } from "@reduxjs/toolkit";

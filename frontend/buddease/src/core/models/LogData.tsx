@@ -1,11 +1,11 @@
 // LogData.tsx
 import { NestedEndpoints } from '@/core/api/ApiEndpoints';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import CustomFile from "@/core/documents/File";
 import { Highlight } from "@/core/documents/NoteData";
-import { BaseData } from "@/core/models/data/Data";
+import type { BaseData } from "@/core/models/data/Data";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 ;
 

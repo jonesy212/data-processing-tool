@@ -1,5 +1,4 @@
-closeEmojiPicker.ts
-closeEmojiPicker.js
+// closeEmojiPicker.ts
 
 /**
  * Closes the emoji picker.

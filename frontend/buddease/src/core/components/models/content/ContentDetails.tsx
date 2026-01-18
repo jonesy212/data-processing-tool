@@ -1,8 +1,7 @@
 // ContentDetails.tsx
-// ContentDetails.ts
-import { CalendarEventViewingDetailsProps } from "@/core/components/calendar/CalendarEventViewingDetails";
+import type { CalendarEventViewingDetailsProps } from "@/core/components/calendar/CalendarEventViewingDetails";
 import ListGenerator from "@/core/generators/ListGenerator";
-import { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
+import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
 import React from "react";
 
 interface ContentDetails {

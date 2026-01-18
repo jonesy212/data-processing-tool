@@ -2,7 +2,7 @@
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { Attendee } from "@/core/components/calendar/Attendee";
 import type { DayOfWeekProps } from "@/core/components/calendar/DayOfWeek";
-import { Month } from "@/core/components/calendar/Month";
+import type { Month } from "@/core/components/calendar/Month";
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
@@ -113,7 +113,6 @@ class ExtendedCalendarEvent<
   }
 }
 
-// CalendarEventTimingOptimization.tsx
 interface CalendarEventTimingOptimization<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,

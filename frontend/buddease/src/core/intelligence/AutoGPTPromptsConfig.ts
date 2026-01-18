@@ -1,4 +1,4 @@
-AutoGPTPromptsConfig.ts
+// AutoGPTPromptsConfig.ts
 src/app/prompts/AutoGPTPromptsConfig.ts
 import { Prompt } from "@/core/prompts/PromptPage";
 

@@ -1,4 +1,4 @@
-calculateKPMBasedOnEditorChanges.tsx
+// calculateKPMBasedOnEditorChanges.tsx
 import { useEffect, useState } from "react";
 
 // Function to calculate KPM based on editor changes

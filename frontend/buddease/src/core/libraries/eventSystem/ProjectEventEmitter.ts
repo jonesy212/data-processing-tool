@@ -1,4 +1,4 @@
-ProjectEventEmitter.ts
+// ProjectEventEmitter.ts
 import { BrandingSettings, brandingSettings } from "@/core/libraries/theme/BrandingService";
 import { brandingSettings } from "@/core/libraries/theme/BrandingService";
 interface ProjectEventData {

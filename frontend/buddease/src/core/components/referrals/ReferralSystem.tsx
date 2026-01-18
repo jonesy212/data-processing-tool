@@ -1,4 +1,4 @@
-ReferralSystem.tsx
+// ReferralSystem.tsx
 import React, { useState } from 'react';
 
 // Referral System Component

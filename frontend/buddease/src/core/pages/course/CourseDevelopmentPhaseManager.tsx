@@ -1,5 +1,5 @@
-CourseDevelopmentPhaseManager.tsx
-import { Data } from '@/core/models/data/Data';
+// CourseDevelopmentPhaseManager.tsx
+import type { Data } from '@/core/models/data/Data';
 import generateTimeBasedCode from '@/core/models/realtime/TimeBasedCodeGenerator';
 import CourseLearningPhase from '@/core/pages/course/CourseLearningPhase';
 import CoursePlanningPhase from '@/core/pages/course/CoursePlanningPhase';

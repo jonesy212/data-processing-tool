@@ -1,4 +1,4 @@
-SecurityActions.ts
+// SecurityActions.ts
 import { SecurityEvent } from "@/core/state/redux/slices/SecurityEventSlice";
 import { createAction } from "@reduxjs/toolkit";
 

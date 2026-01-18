@@ -1,4 +1,4 @@
-monetizationConfig.ts
+// monetizationConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { MonetizationEndpoints } from '@/core/typings/categories/MonetizationEndpoints';
 

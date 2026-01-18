@@ -1,4 +1,4 @@
-clearChatSearchHistory.ts
+// clearChatSearchHistory.ts
 
 /**
  * Clears chat search history.

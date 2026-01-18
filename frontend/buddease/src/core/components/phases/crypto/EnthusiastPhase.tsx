@@ -1,4 +1,4 @@
-EnthusiastPhase.tsx
+// EnthusiastPhase.tsx
 import CallsConferences from '@/core/components/phases/crypto/CallsConferences';
 import DoYourOwnResearch from '@/core/components/phases/crypto/DoYourOwnResearch';
 import EnthusiastProfile from '@/core/components/phases/crypto/enthusiastProfile';

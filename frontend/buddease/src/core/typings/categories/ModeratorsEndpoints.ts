@@ -1,5 +1,5 @@
-ModeratorsEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ModeratorsEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ModeratorsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

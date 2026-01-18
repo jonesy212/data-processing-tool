@@ -1,5 +1,6 @@
-Sidebar.tsx
-import React, { ReactNode } from 'react';
+// Sidebar.tsx
+import type { ReactNode } from 'react';
+import React from 'react';
 
 interface SidebarProps {
   children?: ReactNode;

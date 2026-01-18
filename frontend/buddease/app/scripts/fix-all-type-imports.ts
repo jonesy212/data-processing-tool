@@ -1,7 +1,9 @@
 #!/usr/bin/env tsx
+// fix-all-type-imports.ts
 // Fixed Type-Only Import Fixer - NO COMMENTS BUG
 import type { FixResult, TypeImportError } from '@/app/scripts/import-utils'
 import fs from 'fs';
+import { classifier } from './import-classifier'; // Adjust the import path as needed
 import path from 'path';
 import { execSync } from 'child_process';
 import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies'
@@ -895,26 +897,9 @@ function generateNamespaceToTypeLine(originalLine: string): string {
 }
 
 function isLikelyTypeName(name: string): boolean {
-    // Heuristics for identifying likely type names
-    const typePatterns = [
-        /^[A-Z]/,                     // Starts with capital letter
-        /(Type|Interface|Props|Config|Options|Settings)$/, // Common suffixes
-        /^T[A-Z]/,                    // Generic type convention (T, TKey, TValue)
-    ];
-    
-    const valuePatterns = [
-        /^[a-z]/,                     // Starts with lowercase
-        /^(get|set|is|has|create|update|delete)/, // Common function prefixes
-        /^use[A-Z]/,                  // React hook convention
-    ];
-    
-    const looksLikeType = typePatterns.some(pattern => pattern.test(name));
-    const looksLikeValue = valuePatterns.some(pattern => pattern.test(name));
-    
-    // If it looks like a type and doesn't look like a value, it's probably a type
-    return looksLikeType && !looksLikeValue;
+    // Now it's much simpler - just use the classifier
+    return classifier.shouldBeTypeImport(name);
 }
-
 
 async function parseImportError(errorLine: string): Promise<ImportFix | null> {
     // Extract file and line

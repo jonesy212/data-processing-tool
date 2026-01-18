@@ -1,4 +1,4 @@
-handleNotificationPreferences.ts
+// handleNotificationPreferences.ts
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
 import { CustomEventListener } from "@/core/typings/eventHandlers/eventTypes";
 import { GestureHandlerGestureEvent } from "react-native-gesture-handler";

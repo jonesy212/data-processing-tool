@@ -1,6 +1,7 @@
-import { AppTree } from "@/core/generators/generateAppTree";
+// fileCategoryUtils.ts
+import type { AppTree } from "@/core/generators/generateAppTree";
 import { getFileContent } from '@/core/server/fsOperations';
-import { getFileFromTree } from './appUtils';
+import { getFileFromTree } from '@/core/branding/appUtils';
 
 // Define file category types
 export type FileCategory = 

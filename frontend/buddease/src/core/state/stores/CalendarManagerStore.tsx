@@ -1,5 +1,4 @@
 // CalendarManagerStore.tsx
-// CalendarEvent.tsx
 
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { snapshotApi } from '@/core/api/SnapshotApi';
@@ -12,7 +11,7 @@ import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages"
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import createSubscriber from '@/core/models/cypto/exchangeIntegration';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import {
     PriorityTypeEnum,
     StatusType,
@@ -24,10 +23,10 @@ import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { getSnapshotDelegate } from '@/core/snapshots/getSnapshotDelegate';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import ScheduleEventModal from "@/core/ts/ScheduleEventModal";
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { SnapshotEntity, SnapshotK } from "@/core/typings/entities/SnapshotEntity";
+import type { SnapshotEntity, SnapshotK } from "@/core/typings/entities/SnapshotEntity";
 import { VideoData } from '@/core/typings/videoTypes/Video';
 
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
@@ -49,7 +48,7 @@ import {
     SnapshotOperation,
     SnapshotOperationType,
 } from "@/core/actions/SnapshotActions";
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
+import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import { combinedEvents } from "@/core/events/Event";
 import {
     createSnapshotStore,
@@ -78,16 +77,16 @@ import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/core/libraries/categories/CategoryManager";
 import { dataStoreMethods, K, T } from '@/core/models/data/dataStoreMethods';
 import { allCategories } from "@/core/models/data/DataStructureCategories";
-import { getCurrentSnapshotConfigOptions } from "@/core/snapshots/getCurrentSnapshotConfigOptions";
-import { SnapshotConfigProps } from "@/core/snapshots/SnapshotConfigProps";
+import type { getCurrentSnapshotConfigOptions } from "@/core/snapshots/getCurrentSnapshotConfigOptions";
+import type { SnapshotConfigProps } from "@/core/snapshots/SnapshotConfigProps";
 import SnapshotManagerOptions from "@/core/snapshots/SnapshotManagerOptions";
 import { configureSnapshot } from '@/core/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { FilterState } from "@/core/state/redux/slices/FilterSlice";
-import { EventRecord } from "@/core/state/stores/DataStore";
+import type { FilterState } from "@/core/state/redux/slices/FilterSlice";
+import type { EventRecord } from "@/core/state/stores/DataStore";
 import { Document, DocumentStore } from "@/core/state/stores/DocumentStore";
-import { MobXRootState } from "@/core/state/stores/RootStores";
+import type { MobXRootState } from "@/core/state/stores/RootStores";
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 const dispatch = useDispatch()

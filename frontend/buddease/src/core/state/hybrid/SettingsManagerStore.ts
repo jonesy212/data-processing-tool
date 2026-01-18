@@ -1,5 +1,4 @@
 // SettingsManagerStore.ts
-// SettingsStore.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

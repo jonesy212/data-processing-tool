@@ -1,4 +1,4 @@
-SecurityMeasures.ts
+// SecurityMeasures.ts
 security/SecurityMeasures
 import { createHeaders } from "@/core/api/ApiClient";
 import { SecurityMeasure, SecurityMeasureHeader, SecurityMeasureLogger, SecurityMeasureType } from '@/core/typings/securityMeasureTypes';

@@ -1,5 +1,4 @@
 // PaletteManager.tsx
-// components/PaletteManager.tsx
 import { Palette } from "@/core/components/styling/Palette";
 import React, { useState } from "react";
 

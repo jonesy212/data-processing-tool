@@ -1,25 +1,24 @@
 // EventService.tsx
-// EventService.ts
 import { EventActions } from '@/core/actions/EventActions';
 import { UIActions } from '@/core/actions/UIActions';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { createMetaState } from '@/core/config/MetadataStateManager';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { useMeta } from '@/core/config/useMeta';
-import { useMetadata } from '@/core/config/useMetadata';
+import type { useMetadata } from '@/core/config/useMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import { CustomEventExtension } from '@/core/events/BaseCustomEvent';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { Member } from '@/core/models/members/Member';
 import { Progress } from '@/core/models/tracker/ProgressBar';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import { DataAnalysisResult } from '@/core/projects/DataAnalysisPhase/DataAnalysisResult';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { implementThen } from '@/core/state/stores/CommonEvent';
 import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';

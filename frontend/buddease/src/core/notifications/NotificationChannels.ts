@@ -1,6 +1,6 @@
 // NotificationChannels.ts
 import { CalendarIntegrationSettings, ScreenShareSettings, VideoSettings, VoiceSettings } from '@/core/components/communications/chat/CalendarIntegrationSettings';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserPreferences } from '@/core/config/UserPreferences';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseNotificationSettings } from "@/core/features/support/NotificationSettings";
@@ -93,7 +93,7 @@ interface BasicNotificationChannels {
 }
 
 interface NotificationChannels<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

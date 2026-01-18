@@ -1,4 +1,4 @@
-CriteriaEnums.ts
+// CriteriaEnums.ts
 enum CommunicationTypeEnum {
     AUDIO = "Audio",            // Communication through voice calls
     VIDEO = "Video",            // Communication through video conferencing

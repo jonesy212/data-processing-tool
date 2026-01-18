@@ -1,5 +1,6 @@
-ProjectManagementSimulator.ts
-import express, { Request, Response } from 'express';
+// ProjectManagementSimulator.ts
+import type { Request, Response } from 'express';
+import express from 'express';
 const router = express.Router();
 
 router.get('/simulateProject', (req: Request, res: Response) => {

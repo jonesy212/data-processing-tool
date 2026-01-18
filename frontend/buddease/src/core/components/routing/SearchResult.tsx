@@ -1,9 +1,9 @@
 // SearchResult.tsx
 import { searchDocumentAPI } from '@/core/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/core/components/models/data/SearchResultItem';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import ListGenerator from '@/core/generators/ListGenerator';
 import FolderData from '@/core/models/data/FolderData';
@@ -14,7 +14,7 @@ import { React } from 'react';
 
 // Define the SearchResultWithQuery interface that extends SearchResult
 interface SearchResultWithQuery<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -28,7 +28,7 @@ interface SearchResultWithQuery<
 
 // Define the SearchResultProps interface for SearchResultComponent
 interface SearchResultProps<  
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -40,7 +40,7 @@ interface SearchResultProps<
 
 
 interface SearchResult<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

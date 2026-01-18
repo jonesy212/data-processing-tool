@@ -1,4 +1,4 @@
-TeamManager.tsx
+// TeamManager.tsx
 import { TeamFull, createDefaultTeam } from '@/core/typings/teamTypes';
 import React, { useState } from 'react'; // Import useState
 

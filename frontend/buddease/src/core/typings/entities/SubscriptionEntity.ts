@@ -2,7 +2,7 @@
 import { SubscriptionPayload } from '@/core/actions/SubscriptionActions';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { createLatestVersion } from '@/core/versions/createLatestVersion';
 
 // ------------------------------

@@ -1,4 +1,4 @@
-TransactionFactory.ts
+// TransactionFactory.ts
 import { Transaction } from "@/core/payment/Transaction";
 import { CustomTransaction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
 import { AccessList } from "ethers";
@@ -69,7 +69,6 @@ export function createCustomTransaction(
 }
 
 // Fix your CustomTransaction interface to use proper types
-// In SmartContractInteraction.ts or in an override:
 export type FixedCustomTransaction = Omit<CustomTransaction, 'accessList'> & {
   accessList?: AccessList;
 };

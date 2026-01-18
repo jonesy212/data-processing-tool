@@ -1,6 +1,6 @@
-VideoActions.ts
-import { VideoOptions } from "@/core/cards/modal/ChatSettingsModal";
-import { Video } from '@/core/typings/videoTypes/Video';
+// VideoActions.ts
+import type { VideoOptions } from "@/core/cards/modal/ChatSettingsModal";
+import type { Video } from '@/core/typings/videoTypes/Video';
 import { createAction } from "@reduxjs/toolkit";
 
 export const VideoActions = {

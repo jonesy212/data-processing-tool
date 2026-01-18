@@ -1,11 +1,12 @@
-MultiPlatformDirectoryValidator.ts - Dynamic Mapping Version
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// MultiPlatformDirectoryValidator.ts
+
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { fromDatabase, toDatabase } from '@/core/server/repository/mappers';
 import AppTreeService from "@/core/services/AppTreeService";
-import { FileTreeNode, FileTreeService } from '@/core/services/FileTreeService';
+import type { FileTreeNode, FileTreeService } from '@/core/services/FileTreeService';
 import { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
-import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
+import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';
 import path from 'path';
 
@@ -169,7 +170,6 @@ export class MultiPlatformDirectoryValidator extends BaseAnalyzer {
   }
 
   private detectFrameworkPatterns(patterns: ProjectPatterns): void {
-    // Detect Next.js
     if (patterns.typeLocations.has('centralized-types') || 
         Array.from(patterns.componentLocations.values()).some(loc => loc.includes('app/'))) {
       patterns.frameworkPatterns.add('nextjs');
@@ -407,7 +407,6 @@ export class MultiPlatformDirectoryValidator extends BaseAnalyzer {
       critical.push({ path: 'public', priority: 'medium' as CorrectionSeverity });
     }
     
-    // Add package.json for all projects
     critical.push({ path: 'package.json', priority: 'high' as CorrectionSeverity });
     
     return critical;

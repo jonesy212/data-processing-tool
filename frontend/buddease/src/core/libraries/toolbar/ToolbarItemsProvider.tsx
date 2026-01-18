@@ -1,5 +1,6 @@
-ToolbarItemsProvider.tsx
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+// ToolbarItemsProvider.tsx
+import type { createContext, useContext, useState, ReactNode } from 'react';
+import React from 'react';
 
 // Define the type for toolbar items
 interface ToolbarItem {

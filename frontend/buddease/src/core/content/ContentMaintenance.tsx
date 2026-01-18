@@ -1,5 +1,4 @@
-ContentMaintenance.tsx
-// ContentMaintenance.tsximport React from 'react';
+// ContentMaintenance.tsx
 import React from "react";
 
 const ContentItemSelection: React.FC<any> = (props) => {

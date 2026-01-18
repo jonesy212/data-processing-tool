@@ -1,4 +1,4 @@
-BackendStructure.ts
+// BackendStructure.ts
 app/server/database/BackendStructure.ts
 import getAppPath from "@/core/config/appStructure/appPath";
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
@@ -11,7 +11,7 @@ import { hashString } from "@/core/generators/HashUtils";
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import Logger from "@/core/logging/Logger";
 import { sanitizeDatabaseSchema } from '@/core/server/database/sanitizeDatabase';
-import { SecureField, SecureMetadata } from '@/core/server/security/SecureField';
+import type { SecureField, SecureMetadata } from '@/core/server/security/SecureField';
 import SecureFieldManager from '@/core/server/security/SecureFieldManager';
 import SecurityAudit from "@/core/server/security/SecurityAudit";
 import { DatabaseSchema, ServiceSchema } from '@/core/typings/database';

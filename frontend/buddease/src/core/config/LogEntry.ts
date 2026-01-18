@@ -1,4 +1,4 @@
-LogEntry.ts
+// LogEntry.ts
 
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 type LogCategory = string; // Or specific categories like 'api', 'auth', 'ui', etc.

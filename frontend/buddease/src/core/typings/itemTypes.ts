@@ -1,4 +1,4 @@
-itemTypes.ts
+// itemTypes.ts
 ItemTypes.ts;
 export const ItemTypes = {
   TODO_ITEM: 'todoItem',

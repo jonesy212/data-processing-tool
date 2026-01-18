@@ -9,12 +9,12 @@ import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import { useSecureStoreId } from '@/core/hooks/useSecureStoreId';
 import { SnapshotManager, useSnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { allCategories } from '@/core/models/data/DataStructureCategories';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { isSnapshotStore } from '@/core/typings/YourSpecificSnapshotType';
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
@@ -23,14 +23,14 @@ import { useDispatch } from 'react-redux';
 
 import * as snapshotApi from '@/core/api/SnapshotApi';
 import { getSubscribersAPI } from "@/core/api/subscriberApi";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import useSecureSnapshotId from '@/core/hooks/useSecureSnapshotId';
 import { getCategoryProperties } from '@/core/libraries/categories/CategoryManager';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { T } from '@/core/models/data/dataStoreMethods';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
@@ -38,7 +38,7 @@ import { createSnapshotItem, SnapshotItem } from "@/core/snapshots/SnapshotList"
 import SnapshotManagerOptions from '@/core/snapshots/SnapshotManagerOptions';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { data, SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
+import type { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
 import { useSnapshotStore } from "@/core/snapshots/useSnapshotStore";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import useSnapshotSlice from '@/core/state/redux/slices/SnapshotSlice';
@@ -89,7 +89,7 @@ class SnapshotFetchError extends Error {
 const snapshotSubscribers: Map<string, Set<Subscriber<SubscriberEntity, SubscriberK, SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields>>> = new Map();
 
 export const subscribeToSnapshots = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -127,7 +127,7 @@ export const subscribeToSnapshots = <
 
 
 export const subscribeToSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -157,7 +157,7 @@ export const subscribeToSnapshot = <
 
 // Create a function to initialize the snapshot store
 const initializeSnapshotStore = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -272,7 +272,7 @@ const initializeSnapshotStore = async <
 };
 
 async function createSnapshotStore<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -685,7 +685,7 @@ async function createSnapshotStore<
 }
 
 export const createSnapshotSuccess = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -770,7 +770,7 @@ export const createSnapshotSuccess = async  <
 
 
 export const onSnapshot = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -818,7 +818,7 @@ export const onSnapshot = async  <
 
 
 export const onSnapshots = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -865,7 +865,7 @@ const defaultGetDelegate = (snapshotStoreConfig: SnapshotStoreConfig<any, any, a
 
 
 export const delegate = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -890,7 +890,7 @@ export const delegate = async <
 
 
 export const getDelegate = async<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -925,7 +925,7 @@ export const getDelegate = async<
 
 
 export const determinePrefix = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -948,7 +948,7 @@ export const determinePrefix = async <
 
 
 export const handleSnapshotSuccess = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -998,7 +998,7 @@ export const handleSnapshotSuccess = <
 
 
 export const updateSnapshots = async<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1049,7 +1049,7 @@ export const updateSnapshots = async<
 
 
 export const updateSnapshotSuccess = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1095,7 +1095,7 @@ export const updateSnapshotSuccess = async <
 
 
 export const updateSnapshotFailure = async<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1138,7 +1138,7 @@ export const updateSnapshotFailure = async<
 
 
 export const setSnapshotManager = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1153,7 +1153,7 @@ export const setSnapshotManager = async <
 
 
 export const createSnapshotFailure = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1199,7 +1199,7 @@ export const createSnapshotFailure = async <
 };
 
 export const addSnapshotSuccess = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1281,7 +1281,7 @@ export const addSnapshotSuccess = async <
 };
 
 const updateSnapshot = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1577,7 +1577,7 @@ export const getAllSnapshots = async <
 
 
 const batchFetchSnapshots = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1668,7 +1668,7 @@ const batchFetchSnapshots = async <
 };
 
 export const batchTakeSnapshot = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1689,7 +1689,7 @@ export const batchTakeSnapshot = async  <
 
 // Handler for batch updating snapshots
 const batchUpdateSnapshots = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1707,7 +1707,7 @@ const batchUpdateSnapshots = async  <
 };
 
 export const batchUpdateSnapshotsSuccess =  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1722,7 +1722,7 @@ export const batchUpdateSnapshotsSuccess =  <
 
 // Handler for batch taking snapshots request
 export const batchTakeSnapshotsRequest = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1739,7 +1739,7 @@ export const batchTakeSnapshotsRequest = async  <
 };
 
 export const batchUpdateSnapshotsRequest = async  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1757,7 +1757,7 @@ export const batchUpdateSnapshotsRequest = async  <
 
 // Define batchFetchSnapshotsRequest function
 export async function batchFetchSnapshotsRequest <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,11 +1,11 @@
-Member.ts
+// Member.ts
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
 import { Team } from '@/core/components/teams/Team';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { UserRole } from "@/core/models/UserRole";
 import { UserRoleEnum } from '@/core/models/UserRoles';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { Persona } from "@/core/pages/personas/Persona";
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import {

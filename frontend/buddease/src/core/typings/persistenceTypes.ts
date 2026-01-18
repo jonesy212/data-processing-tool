@@ -2,6 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
+import type { BackupType } from '@/core/error-analyzer/phases/PhaseBackupSystem'
 
 // Core Persistence Interfaces
 export interface PersistenceAdapter {
@@ -71,13 +72,15 @@ export interface BackupMetadata<T = any> {
   itemCount: number;
   version: string;
   entityName?: string;
-  milestoneId?: string; // Add this
   milestoneName?: string; // Optionally add this too
   operation?: string; // And this
   tags?: string[]; // And this
   user?: string; // And this
   milestoneId?: string
-  
+  filePath?: string;
+  backupType: BackupType; // Use the type here
+  operation?: 'create' | 'update' | 'delete' | 'restore';
+  customData?: T;
   // Allow additional properties with index signature
   [key: string]: any;
 }

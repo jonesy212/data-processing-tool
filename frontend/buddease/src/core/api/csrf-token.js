@@ -1,4 +1,4 @@
-// pages/api/csrf-token.js
+// csrf-token.js
 import { getCsrfToken } from 'next-auth/react';
 
 export default async function handler(req, res) {

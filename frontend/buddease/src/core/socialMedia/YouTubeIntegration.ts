@@ -1,4 +1,4 @@
-YouTubeIntegration.ts
+// YouTubeIntegration.ts
 
 interface YouTubeUserDetails {
   channelId: string;

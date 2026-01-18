@@ -1,12 +1,12 @@
 // MemberEntity.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Member } from "@/core/models/members/Member";
 import { CustomPhaseHooks, Phase, PhaseData } from '@/core/models/phases/Phase';
 import { Project } from '@/core/models/projects/Project';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import type { UserRole } from "@/core/models/UserRole";
 import UserRoles from "@/core/models/UserRoles";
 import { Persona } from "@/core/pages/personas/Persona";
@@ -15,7 +15,7 @@ import { Product } from '@/core/products/Product';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
@@ -113,7 +113,7 @@ type MemberApplyFieldFilters<
 
 // Define the MemberData interface extending Member
 interface MemberData<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

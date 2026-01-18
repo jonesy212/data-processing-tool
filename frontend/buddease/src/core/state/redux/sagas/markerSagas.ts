@@ -1,9 +1,10 @@
-markerSagas.ts
+// markerSagas.ts
 import { markerService } from '@/core/components/marker/MarkerService';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { Marker } from '@/core/models/data/Marker';
 import { MarkerActions } from '@/core/state/redux/actions/MarkerActions';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { Effect, call, put, takeLatest } from 'redux-saga/effects';
 
 

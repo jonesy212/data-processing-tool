@@ -1,4 +1,4 @@
-ThemeStore.ts
+// ThemeStore.ts
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import ThemeValidator, { isValidBorderRadius, isValidBorderStyle, isValidBorderWidth, isValidBoxShadow, isValidBrandIcon, isValidBrandName, isValidColor, isValidFontFamily, isValidFontSize, isValidLogoUrl, isValidMargin, isValidPadding, isValidThemeColor } from "@/core/server/security/validateTheme";
 import {

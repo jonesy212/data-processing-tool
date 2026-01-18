@@ -1,4 +1,4 @@
-NavigationMenu.tsx
+// NavigationMenu.tsx
 import React from "react";
 
 interface NavigationMenuProps {

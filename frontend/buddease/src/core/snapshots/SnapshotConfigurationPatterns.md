@@ -71,7 +71,7 @@ Recommended Approach
 typescript
 // Keep SnapshotConfigParams as is for configuration
 type SnapshotConfigParams<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
@@ -110,7 +110,7 @@ All your old factories, createSnapshotOptions, and SimulatedDataSource implement
 ``` typescript 
 // Keep UpdateSnapshotParams as interface but use consistent generics
 interface UpdateSnapshotParams<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   Excluded extends keyof T = DefaultExcludedFields<T>

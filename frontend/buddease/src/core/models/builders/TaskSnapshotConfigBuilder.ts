@@ -5,7 +5,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { EventStore } from '@/core/events/EventStore';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { StoreMethods } from '@/core/models/tasks/StoreMethods';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigBuilder, SnapshotLifecycle } from '@/core/snapshots/SnapshotConfigBuilder';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';

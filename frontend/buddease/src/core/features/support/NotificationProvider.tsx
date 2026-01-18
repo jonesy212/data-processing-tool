@@ -9,7 +9,7 @@ import { NotificationType, NotificationTypeEnum } from '@/core/features/support/
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { logData } from '@/core/services/NotificationService';
-import { NotificationContextProps } from '@/core/state/context/NotificationContext';
+import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
 import { notificationStoreInstance } from '@/core/state/stores/NotificationStore';
 import {
     NotificationAttachment,

@@ -1,5 +1,5 @@
-WebEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// WebEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface WebEndpoints extends EndpointCategoryConfig {
   send: EndpointConfig;

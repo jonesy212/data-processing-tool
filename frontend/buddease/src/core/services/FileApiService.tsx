@@ -1,8 +1,8 @@
-FileApiService.tsx
+// FileApiService.tsx
 import internalApiService, { ClientNotificationMessages, clientNotificationMessages } from "@/core/api/ApiClient";
 import { handleApiError } from "@/core/api/ApiLogs";
 import { endpoints } from "@/core/api/endpointConfigurations";
-import { FileType } from '@/core/documents/attachment/Attachment';
+import type { FileType } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";

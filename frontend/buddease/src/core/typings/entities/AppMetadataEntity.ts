@@ -1,4 +1,4 @@
-AppMetadataEntity.ts
+// AppMetadataEntity.ts
 MetadataEntity.ts
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";

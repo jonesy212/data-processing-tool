@@ -1,4 +1,4 @@
-Permission.ts
+// Permission.ts
 
 // Base interface WITHOUT index signature
 interface BasePermissions {
@@ -16,7 +16,7 @@ interface BasePermissions {
   delete?: boolean;
 }
 
-Extended interface WITH index signature
+// Extended interface WITH index signature
 interface Permission extends BasePermissions {
   [key: string]: any; // Flexible additional properties
 }
@@ -71,7 +71,7 @@ interface TaskPermissions extends BasePermissions {
 }
 
 
-Member-specific Permissions
+// Member-specific Permissions
 interface MemberPermission extends Permission {
   scope: 'member';
   resourceType: 'profile' | 'data' | 'settings' | 'tasks';
@@ -83,17 +83,48 @@ interface MemberPermission extends Permission {
 }
 
 
-
+// Team-specific Permissions
 interface TeamPermission extends Permission {
-  // Additional team-specific permissions
-  canManageMembers?: boolean;
-  canManageTeam?: boolean;
-  canInviteMembers?: boolean;
-  canRemoveMembers?: boolean;
-  canCreateProjects?: boolean;
-  canDeleteProjects?: boolean;
-  canAssignTasks?: boolean;
-  canViewAnalytics?: boolean;
+  scope: 'team';
+  resourceType: 'team' | 'team_member' | 'team_data' | 'team_settings' | 'team_crypto' | 'team_projects';
+  teamId: string;
+  
+  // Permissions grouped by feature area
+  teamManagement: {
+    canManageTeam?: boolean;
+    canEditTeamSettings?: boolean;
+    canViewTeamAnalytics?: boolean;
+  };
+  
+  memberManagement: {
+    canManageMembers?: boolean;
+    canInviteMembers?: boolean;
+    canRemoveMembers?: boolean;
+    canManageTeamMembers?: boolean;
+  };
+  
+  projectManagement: {
+    canCreateProjects?: boolean;
+    canDeleteProjects?: boolean;
+    canAssignTasks?: boolean;
+    canViewAnalytics?: boolean;
+    canCreatePhases?: boolean;
+    canAdvancePhase?: boolean;
+  };
+  
+  collaboration: {
+    canUseAudio?: boolean;
+    canUseVideo?: boolean;
+    canUseTextChat?: boolean;
+    canInitiateRealTime?: boolean;
+  };
+  
+  crypto: {
+    canManageCryptoPortfolio?: boolean;
+    canExecuteTrades?: boolean;
+    canViewMarketData?: boolean;
+    canAccessCommunityForum?: boolean;
+  };
 }
 
 interface ProjectManagementPermissions extends BasePermissions {

@@ -1,6 +1,6 @@
-getCurrentAppType.ts
+// getCurrentAppType.ts
 import { AppConfig, getAppConfig } from "@/core/config/AppConfig";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 
 const getCurrentAppType = (state: RootState): string => {
   // Retrieve the app configuration

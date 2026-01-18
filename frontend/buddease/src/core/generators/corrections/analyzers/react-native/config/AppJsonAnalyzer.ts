@@ -1,5 +1,5 @@
-AppJsonAnalyzer.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// AppJsonAnalyzer.ts
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import fs from 'fs';
 import path from 'path';
@@ -35,7 +35,6 @@ export class AppJsonAnalyzer extends ConfigFileAnalyzer {
 
       const config = JSON.parse(configContent);
       
-      // Analyze app.json content
       if (!config.name) {
         corrections.push(this.createCorrection(
           'app-json-missing-name',
@@ -62,7 +61,6 @@ export class AppJsonAnalyzer extends ConfigFileAnalyzer {
         ));
       }
 
-      // Additional app.json validations
       if (config.expo) {
         const expoCorrections = this.analyzeExpoConfig(config.expo, configPath);
         corrections.push(...expoCorrections);

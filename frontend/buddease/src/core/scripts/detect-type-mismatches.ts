@@ -1,4 +1,4 @@
-// src/app/scripts/detect-type-mismatches.ts
+// detect-type-mismatches.ts
 import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -6,7 +6,6 @@ import path from 'path';
 async function detectTypeMismatches() {
   console.log('🔍 Detecting type import mismatches...\n');
 
-  // Read tsconfig.json with better error handling
   const tsconfigPath = path.join(process.cwd(), 'tsconfig.json');
   let hasVerbatimSyntax = false;
   let tsconfigError = '';
@@ -77,7 +76,6 @@ async function detectTypeMismatches() {
         console.error('   - Todo<T, K, ...> types');
         console.error('\n🔧 Quick fix: Disable some type checks temporarily:');
         console.error(`
-  // Add to tsconfig.json
   "compilerOptions": {
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -113,7 +111,6 @@ async function detectTypeMismatches() {
       // Group by file for analysis
       const errorsByFile = new Map<string, string[]>();
       allErrors.forEach(error => {
-        // Match file paths in errors (e.g., src/app/file.ts:10:5)
         const match = error.match(/(src\/[^:]+\.(?:ts|tsx|js|jsx)):/);
         if (match) {
           const file = match[1];

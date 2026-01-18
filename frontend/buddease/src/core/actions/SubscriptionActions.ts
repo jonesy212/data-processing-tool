@@ -1,25 +1,25 @@
 // SubscriptionActions.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Content } from '@/core/models/content/AddContent';
-import { BaseData } from '@/core/models/data/Data';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { Content } from '@/core/models/content/AddContent';
+import type { BaseData } from '@/core/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/core/models/data/StatusType";
-import { Project } from '@/core/models/projects/Project';
+import type { Project } from '@/core/models/projects/Project';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
+import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
-import { AppSubscription } from '@/core/typings/entities/SubscriptionEntity';
+import type { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import type { AppSubscription } from '@/core/typings/entities/SubscriptionEntity';
 import { category } from '@/utils/snapshotUtils';
-import { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
-import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
-import { LiveEvent } from "@refinedev/core";
-;
+import type { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
+import type { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
+import type { LiveEvent } from "@refinedev/core";
+
 
 interface SubscriptionPayload<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -132,15 +132,13 @@ type SubscriptionKType<T extends BaseData<any>> = T & CustomSnapshotData<T, any>
 
 
 export const SubscriptionActions = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
-  // S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >() => {
-  // Define payload types that match the generic structure
   type UnsubscribePayload = {
     subscriberId: string;
     unsubscribeDetails: {
@@ -155,27 +153,19 @@ export const SubscriptionActions = <
   };
 
   const actions = {
-    // Action to add a new subscriber
+    // If you really want SubscriptionPayload
     subscribe: createAction<SubscriptionPayload<AppSubscription>>("subscribe"),
 
-    // Action to remove a subscriber with proper payload
     unsubscribe: createAction<UnsubscribePayload>("unsubscribe"),
-
-    // Action to fetch initial subscriptions
     fetchInitialSubscriptions: createAction("fetchInitialSubscriptions"),
-
-    // Action to handle successful subscription
     subscriptionSuccess: createAction<string>("subscriptionSuccess"),
-
-    // Action to handle failed subscription
     subscriptionFailure: createAction<string>("subscriptionFailure"),
-
-    // Action to handle live events
     liveEventReceived: createAction<LiveEvent>("liveEventReceived"),
   };
 
+  // Cast to the correct type if needed
   return actions as {
-    subscribe: ActionCreatorWithPayload<AppSubscription>;
+    subscribe: ActionCreatorWithPayload<SubscriptionPayload<AppSubscription>>;
     unsubscribe: ActionCreatorWithPayload<UnsubscribePayload>;
     fetchInitialSubscriptions: ActionCreatorWithoutPayload;
     subscriptionSuccess: ActionCreatorWithPayload<string>;
@@ -186,7 +176,7 @@ export const SubscriptionActions = <
 
 
 export const createSubscriptionPayload = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

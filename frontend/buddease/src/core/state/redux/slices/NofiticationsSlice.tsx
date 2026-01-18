@@ -1,8 +1,7 @@
 // NofiticationsSlice.tsx
-// NotificationSlice.tsx
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';

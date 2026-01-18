@@ -1,4 +1,4 @@
-ChatMessage.tsx
+// ChatMessage.tsx
 import { ChatMessageActions } from '@/core/actions/ChatMessageActions';
 import { ChatApi } from '@/core/api/ChatApi';
 import { FileUploadModalProps } from '@/core/cards/modal/FileUploadModal';
@@ -21,7 +21,8 @@ import { openChatSettingsPanel } from '@/utils/ChatSettingsPanelUtils';
 import { initializeGeolocationService } from '@/utils/GeolocationServiceUtils';
 import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { EditorState } from 'draft-js';
 import React, { useEffect, useState } from 'react';
 import {

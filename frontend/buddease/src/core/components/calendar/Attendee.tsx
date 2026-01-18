@@ -2,10 +2,10 @@
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { Team } from '@/core/components/teams/Team';
 import type { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/core/config/BaseConfig';
-import { transformProjectToUnifiedMetadata } from '@/core/config/MetaDataOptions';
+import type { transformProjectToUnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { projectMetadata, StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
+import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
 import type { Member } from '@/core/models/members/Member';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

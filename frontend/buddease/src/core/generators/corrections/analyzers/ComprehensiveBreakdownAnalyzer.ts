@@ -1,5 +1,5 @@
-ComprehensiveBreakdownAnalyzer.ts
-import { Correction, CorrectionReport } from '@/core/generators/corrections/CorrectionGenerator';
+// ComprehensiveBreakdownAnalyzer.ts
+import type { Correction, CorrectionReport } from '@/core/generators/corrections/CorrectionGenerator';
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';
 import path from 'path';
 

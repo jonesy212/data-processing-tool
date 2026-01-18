@@ -1,3 +1,4 @@
+// DetailsService.ts
 VersionGenerator.tsx
 api/ApiDetails.ts
 import internalApiService from '@/core/api/ApiClient';
@@ -7,7 +8,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import { AxiosError } from 'axios';
 
 const API_BASE_URL = "/api/details";

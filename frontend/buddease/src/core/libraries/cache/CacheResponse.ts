@@ -1,10 +1,10 @@
-CacheResponse.ts
+// CacheResponse.ts
 import { EventAttendance } from '@/core/components/calendar/AttendancePrediction';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SupportedData } from '@/core/models/CommonData';
 
-type CacheReadOptions<T extends BaseDataEntity = BaseDataRoot> = {
+type CacheReadOptions<T extends BaseDataEntity = BaseDataEntity> = {
   filePath: string;
   apiKey: string;
   token: string;

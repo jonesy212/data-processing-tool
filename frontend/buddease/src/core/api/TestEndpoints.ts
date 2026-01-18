@@ -1,4 +1,4 @@
-TestEndpoints.ts
+// TestEndpoints.ts
 import { endpoints } from "@/core/api/endpointConfigurations";
 
 const singleTaskEndpoint = (taskId: number): string => `https://nofomoe/api/tasks/${taskId}`;

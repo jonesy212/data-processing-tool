@@ -1,12 +1,12 @@
-ApiStateGovCities.ts
+// ApiStateGovCities.ts
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { useDetailsContext } from "@/core/models/data/DetailsContext";
 import { useNotification } from "@/core/state/context/NotificationContext";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 
 const API_BASE_URL = endpoints.stateGovCities.list;
 

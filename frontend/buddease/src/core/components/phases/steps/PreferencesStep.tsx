@@ -1,4 +1,4 @@
-PreferencesStep.tsx
+// PreferencesStep.tsx
 import React, { useState } from "react";
 
 // Generic Preferences Step Component

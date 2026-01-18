@@ -1,4 +1,4 @@
-VersionChecker.ts
+// VersionChecker.ts
 export class VersionChecker {
   extractMajorVersion(version: string): number {
     const match = version.match(/[0-9]+/);

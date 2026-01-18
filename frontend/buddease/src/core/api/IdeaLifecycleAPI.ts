@@ -1,5 +1,4 @@
 // IdeaLifecycleAPI.ts
-// services/IdeaLifecycleAPI.ts
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import type { Milestone } from "@/core/typings/milestoneTypes";

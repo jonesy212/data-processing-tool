@@ -1,4 +1,4 @@
-ProgressBar.tsx
+// ProgressBar.tsx
   import { UIActions } from "@/core/actions/UIActions";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";

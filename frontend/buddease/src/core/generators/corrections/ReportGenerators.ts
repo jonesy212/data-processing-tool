@@ -1,8 +1,8 @@
-ReportGenerators.ts
-import { SecurityIssue } from '@/core/generators/corrections/SecurityAuditor';
-import { Correction, CorrectionReport, } from '@/core/generators/corrections/CorrectionGenerator';
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
-import { TypeHierarchy } from '@/core/generators/corrections/TypeRelationshipMapper';
+// ReportGenerators.ts
+import type { SecurityIssue } from '@/core/generators/corrections/SecurityAuditor';
+import type { Correction, CorrectionReport, } from '@/core/generators/corrections/CorrectionGenerator';
+import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import type { TypeHierarchy } from '@/core/generators/corrections/TypeRelationshipMapper';
 import { FileHeaderManager } from '@/utils/fileHeaderManager';
 
 import fs from 'fs';
@@ -1367,7 +1367,6 @@ Verify the referenced item exists and is properly exported`; // ← Remove extra
         }
     }
 
-    // Make sure this helper method is in your ReportGenerators class
     private static createSummary(corrections: Correction[]): {
         totalErrors: number;
         critical: number;

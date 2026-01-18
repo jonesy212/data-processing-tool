@@ -1,4 +1,4 @@
-AnnouncementManager.ts
+// AnnouncementManager.ts
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 

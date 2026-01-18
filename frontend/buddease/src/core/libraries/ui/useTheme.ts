@@ -1,4 +1,4 @@
-useTheme.ts
+// useTheme.ts
 import { useEnhancedTheme } from '@/core/platform/styles/EnhancedThemeContextType';
 
 // Hook for backward compatibility with your existing code

@@ -1,10 +1,10 @@
-MultimediaContentCustomization.tsx
-MultimediaContentCustomization.ts
+// MultimediaContentCustomization.tsx
 import { getDataFrameInfo } from "@/core/api/DataDashboardApi";
-import { ChildComponentProps } from "@/core/hooks/ChildComponent";
+import type { ChildComponentProps } from "@/core/hooks/ChildComponent";
 import { brandingSettings } from "@/core/libraries/theme/BrandingService";
 import ReusableButton from "@/core/libraries/ui/buttons/ReusableButton";
-import useDeviceDimensions, { DeviceDimensions } from "@/core/models/display/DeviceDimensions";
+import type { DeviceDimensions } from '@/core/models/display/DeviceDimensions';
+import useDeviceDimensions from '@/core/models/display/DeviceDimensions';
 import React from "react";
 
 interface MultimediaContent extends ChildComponentProps{

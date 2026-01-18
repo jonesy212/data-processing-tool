@@ -1,5 +1,6 @@
-processData.tsx
-import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
+// processData.tsx
+import type { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
+import dataProcessingService from '@/core/api/service/DataProcessingService';
 
 Usage
 async function processData() {

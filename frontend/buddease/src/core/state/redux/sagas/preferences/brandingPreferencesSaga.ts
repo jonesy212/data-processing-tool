@@ -1,7 +1,7 @@
-brandingPreferencesSaga.ts
+// brandingPreferencesSaga.ts
 // Import necessary dependencies and constants
-import { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
-import { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
+import type { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
+import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
 import { UserBrandingPreferencesActions } from '@/core/config/UserPreferencesActions';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { themeService } from '@/core/libraries/theme/ThemeService';

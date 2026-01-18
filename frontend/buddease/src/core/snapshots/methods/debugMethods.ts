@@ -1,6 +1,6 @@
-debugMethods.ts
+// debugMethods.ts
 
-import { Config } from '@/core/api/ConfigManager';
+import type { Config } from '@/core/api/ConfigManager';
 
 interface DebugEntry {
   id: string;

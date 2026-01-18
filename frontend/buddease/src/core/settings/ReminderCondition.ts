@@ -1,4 +1,4 @@
-ReminderCondition.ts
+// ReminderCondition.ts
 import type { CustomAction } from '@/core/settings/CustomAction';
 import CustomActionEngine from '@/core/settings/CustomActionEngine';
 import ReminderConditionEngine from '@/core/settings/ReminderConditionEngine';

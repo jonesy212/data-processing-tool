@@ -1,4 +1,5 @@
-// platform/shared/SharedButton.tsx
+// SharedButton.tsx
+
 import React from "react";
 import { Label } from '@/app/branding/BrandingSettings';
 

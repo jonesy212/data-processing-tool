@@ -3,16 +3,21 @@ import { UIActions } from '@/core/actions/UIActions';
 import internalApiService from '@/core/api/ApiClient';
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { UserSettings } from '@/core/config/UserSettings';
-import safeParseData, { DataWithComment } from '@/core/dataIntegration/SafeParseData';
+import type{ UserSettings } from '@/core/config/UserSettings';
+import  type { DataWithComment } from '@/core/dataIntegration/SafeParseData';
+import safeParseData, from '@/core/dataIntegration/SafeParseData';
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import ErrorHandler from '@/core/shared/ErrorHandler';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
-import { UserData } from '@/core/users/User';
-import { AxiosError, AxiosResponse } from 'axios';
+import type { UserData } from '@/core/users/User';
+import { AxiosError } from 'axios';
+import type { AxiosResponse } from 'axios';
+import type { Component, ErrorInfo, ReactNode } from '@/core/shared/ErrorHandler';
+import React from '@/core/shared/ErrorHandler';
+
 
 // Define the API base URL for UI
 const UI_API_BASE_URL = endpoints.ui;

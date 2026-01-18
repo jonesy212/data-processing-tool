@@ -1,4 +1,4 @@
-ChatCard.tsx
+// ChatCard.tsx
 components/ChatCard.tsx
 import React from 'react';
 

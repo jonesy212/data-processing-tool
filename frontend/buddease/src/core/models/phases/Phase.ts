@@ -4,7 +4,7 @@ import { addPhase } from "@/core/api/ApiPhases";
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import type { Label } from '@/core/branding/BrandingSettings';
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from '@/core/config/useMetadata';
+import type { useMetadata } from '@/core/config/useMetadata';
 import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';

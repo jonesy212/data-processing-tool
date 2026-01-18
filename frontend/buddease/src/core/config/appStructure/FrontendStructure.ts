@@ -1,4 +1,4 @@
-FrontendStructure.ts
+// FrontendStructure.ts
 import axiosInstance from '@/core/api/csrfToken';
 import getAppPath from "@/core/config/appStructure/appPath";
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";

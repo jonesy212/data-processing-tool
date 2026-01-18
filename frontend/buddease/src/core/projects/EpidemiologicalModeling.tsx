@@ -1,4 +1,4 @@
-EpidemiologicalModeling.tsx
+// EpidemiologicalModeling.tsx
 import React from 'react';
 
 interface EpidemiologicalModelingProps {}

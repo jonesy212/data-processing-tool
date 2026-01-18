@@ -1,4 +1,4 @@
-// src/app/error-analyzer/utils/ASTParserUtils.ts
+// ASTParserUtils.ts
 
 import * as ts from 'typescript';
 import fs from 'fs';

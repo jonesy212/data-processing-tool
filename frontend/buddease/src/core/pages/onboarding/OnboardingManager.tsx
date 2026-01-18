@@ -1,4 +1,4 @@
-OnboardingManager.tsx
+// OnboardingManager.tsx
 import ProfileSetupPhase from '@/core/components/phases/onboarding/ProfileSetupPhase';
 import { OnboardingPhase } from '@/core/pages/onboarding/OnboardingPhase';
 import RegistrationPhase from '@/core/pages/onboarding/RegistrationPhase';

@@ -1,4 +1,4 @@
-ProfilePage.tsx
+// ProfilePage.tsx
 pages/ProfilePage.tsx
 
 import React from 'react';

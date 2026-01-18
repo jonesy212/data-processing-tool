@@ -1,10 +1,10 @@
-BlogAndContentEditor.tsx
+// BlogAndContentEditor.tsx
 import { DetailsItemCommon } from "@/core/generators/ListGenerator";
 import { EditorState } from "draft-js";
 
 import Toolbar from "@/core/components/documents/Toolbar";
-import { ToolbarOptions } from "@/core/components/documents/ToolbarOptions";
-import { Data } from "@/core/models/data/Data";
+import type { ToolbarOptions } from "@/core/components/documents/ToolbarOptions";
+import type { Data } from "@/core/models/data/Data";
 import ContentType from "@/core/typings/contentTypes";
 import React, { useState } from "react";
 

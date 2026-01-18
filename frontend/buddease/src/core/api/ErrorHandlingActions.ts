@@ -1,4 +1,4 @@
-ErrorHandlingActions.ts
+// ErrorHandlingActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const ErrorHandlingActions = {

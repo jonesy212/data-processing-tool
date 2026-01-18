@@ -1,5 +1,5 @@
-CourseDevelopmentPage.tsx
-import { Data } from '@/core/models/data/Data';
+// CourseDevelopmentPage.tsx
+import type { Data } from '@/core/models/data/Data';
 import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator";
 import SnapshotStore, {
     Snapshot,

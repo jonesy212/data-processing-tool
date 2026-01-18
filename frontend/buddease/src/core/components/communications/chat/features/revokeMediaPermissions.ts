@@ -1,4 +1,4 @@
-revokeMediaPermissions.ts
+// revokeMediaPermissions.ts
 
 /**
  * Revokes media permissions.

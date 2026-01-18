@@ -1,8 +1,7 @@
 // ProjectActions.ts
-// projects/ProjectActions.ts
 import { Phase } from '@/core/models/phases/Phase';
 import { Project, ProjectDetails } from "@/core/models/projects/Project";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Product } from "@/core/products/Product";
 import Milestone from "@/core/typings/milestoneTypes";
 import { User } from "@/core/users/User";

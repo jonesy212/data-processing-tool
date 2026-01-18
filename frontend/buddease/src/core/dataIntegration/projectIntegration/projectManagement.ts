@@ -3,9 +3,9 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
 import { ProjectConversionResult, ProjectConverter } from "@/core/dataIntegration/projectIntegration/projectConverter";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { ProjectData } from '@/core/models/projects/Project';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
 import {
     ProjectAttachment,

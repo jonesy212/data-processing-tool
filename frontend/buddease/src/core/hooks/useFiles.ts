@@ -1,4 +1,4 @@
-useFiles.ts
+// useFiles.ts
 import { useState } from "react";
 
 // Define the useFiles hook

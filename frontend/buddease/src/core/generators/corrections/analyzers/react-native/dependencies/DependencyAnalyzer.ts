@@ -1,7 +1,7 @@
-DependencyAnalyzer.ts
+// DependencyAnalyzer.ts
 
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -24,7 +24,6 @@ export class DependencyAnalyzer extends BaseAnalyzer {
     
     console.log('📦 Analyzing dependencies...');
 
-    // Analyze package.json dependencies
     const packageErrors = this.analyzePackageDependencies();
     corrections.push(...packageErrors);
 

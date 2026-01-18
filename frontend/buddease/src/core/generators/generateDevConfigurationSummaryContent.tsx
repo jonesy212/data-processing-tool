@@ -1,5 +1,4 @@
 // generateDevConfigurationSummaryContent.tsx
-// generateExecutiveSummaryContent.tsx
 
 import { DocumentOptions } from "@/core/documents/DocumentOptions";
 

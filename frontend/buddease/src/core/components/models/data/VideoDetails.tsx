@@ -1,4 +1,4 @@
-VideoDetails.tsx
+// VideoDetails.tsx
 import { VideoData } from "@/core/typings/videoTypes/Video";
 import * as React from 'react';
 

@@ -8,15 +8,15 @@ import {
 import type { Attachment } from "@/core/documents/attachment/Attachment";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
 import useStorageManager from "@/core/hooks/useStorageManager";
-import { BaseData } from "@/core/models/data/Data";
-import { Task } from "@/core/models/tasks/Task";
+import type { BaseData } from "@/core/models/data/Data";
+import type { Task } from "@/core/models/tasks/Task";
 import { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotContainer } from "@/core/snapshots/SnapshotContainer";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import {
     deleteSnapshot,
     updateSnapshot,

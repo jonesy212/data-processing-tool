@@ -1,4 +1,4 @@
-BlockchainPermissions.ts
+// BlockchainPermissions.ts
 export interface BlockchainPermissions {
   canTransferTokens: boolean;
   canViewBlockchainTransactions: boolean;

@@ -1,4 +1,4 @@
-SecurityEventSlice.ts
+// SecurityEventSlice.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { StatusUpdate, SubscriptionCriteria } from '@/core/generators/SubscriptionCriteria';
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';

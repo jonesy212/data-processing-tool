@@ -1,4 +1,4 @@
-AccessControlEntry.ts
+// AccessControlEntry.ts
 import { PermissionLevel, VisibilityLevel } from './PermissionEnums';
 
 export interface AccessControlEntry {

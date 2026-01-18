@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// scripts/verify-namespace-imports.ts
+// verify-namespace-imports.ts
 
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -58,7 +58,7 @@ function verifyNamespaceImports() {
   }
 }
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) { 
   const success = verifyNamespaceImports();
   process.exit(success ? 0 : 1);
 }

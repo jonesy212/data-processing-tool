@@ -1,0 +1,2587 @@
+{
+  "timestamp": "2026-01-16T21:11:53.547Z",
+  "totalScripts": 136,
+  "byType": {
+    "binary": [
+      {
+        "path": ".eslintrc.js",
+        "name": ".eslintrc.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 7680,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/fix-type-imports-with-backup.ts",
+        "name": "fix-type-imports-with-backup.ts",
+        "type": "binary",
+        "category": "type-imports",
+        "language": "ts",
+        "size": 37055,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/quick-type-check.ts",
+        "name": "quick-type-check.ts",
+        "type": "binary",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 7800,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/sync-configs-with-backup.js",
+        "name": "sync-configs-with-backup.js",
+        "type": "binary",
+        "category": "backup",
+        "language": "js",
+        "size": 5449,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/unified-type-import-fixer.ts",
+        "name": "unified-type-import-fixer.ts",
+        "type": "binary",
+        "category": "type-imports",
+        "language": "ts",
+        "size": 15987,
+        "isExecutable": false
+      },
+      {
+        "path": "babel.config.js",
+        "name": "babel.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 5221,
+        "isExecutable": false
+      },
+      {
+        "path": "check-imports.cjs",
+        "name": "check-imports.cjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "cjs",
+        "size": 2709,
+        "isExecutable": false
+      },
+      {
+        "path": "check-imports.mjs",
+        "name": "check-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 746,
+        "isExecutable": false
+      },
+      {
+        "path": "check-structure.mjs",
+        "name": "check-structure.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 2040,
+        "isExecutable": false
+      },
+      {
+        "path": "css-loader.mjs",
+        "name": "css-loader.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 480,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-babel.js",
+        "name": "debug-babel.js",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "js",
+        "size": 3939,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-esm-imports.mjs",
+        "name": "debug-esm-imports.mjs",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "mjs",
+        "size": 3298,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-import.cjs",
+        "name": "debug-import.cjs",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "cjs",
+        "size": 1580,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-tsx.mjs",
+        "name": "debug-tsx.mjs",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "mjs",
+        "size": 929,
+        "isExecutable": false
+      },
+      {
+        "path": "deep-import-search.mjs",
+        "name": "deep-import-search.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 1439,
+        "isExecutable": false
+      },
+      {
+        "path": "diagnose.mjs",
+        "name": "diagnose.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 3591,
+        "isExecutable": false
+      },
+      {
+        "path": "find-bad-app-import.mjs",
+        "name": "find-bad-app-import.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 1479,
+        "isExecutable": false
+      },
+      {
+        "path": "find-css-imports.mjs",
+        "name": "find-css-imports.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 3539,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-all-state-imports.mjs",
+        "name": "fix-all-state-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 1157,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-backup-log.js",
+        "name": "fix-backup-log.js",
+        "type": "binary",
+        "category": "import-management",
+        "language": "js",
+        "size": 473,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-imports.js",
+        "name": "fix-imports.js",
+        "type": "binary",
+        "category": "import-management",
+        "language": "js",
+        "size": 1057,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-snapshot-imports.mjs",
+        "name": "fix-snapshot-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 1458,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-state-imports.mjs",
+        "name": "fix-state-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 1658,
+        "isExecutable": false
+      },
+      {
+        "path": "jest.config.js",
+        "name": "jest.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 2401,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/configs/base.js",
+        "name": "base.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 3324,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/configs/react-native.js",
+        "name": "react-native.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 704,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/configs/react.js",
+        "name": "react.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 528,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/import-path-aliases.js",
+        "name": "import-path-aliases.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 1581,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/lint-staged.config.js",
+        "name": "lint-staged.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 254,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/no-console-in-production.js",
+        "name": "no-console-in-production.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 759,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/no-crypto-random.js",
+        "name": "no-crypto-random.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 972,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/setup-lint.js",
+        "name": "setup-lint.js",
+        "type": "binary",
+        "category": "infrastructure",
+        "language": "js",
+        "size": 1608,
+        "isExecutable": false
+      },
+      {
+        "path": "metro.config.js",
+        "name": "metro.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 3682,
+        "isExecutable": false
+      },
+      {
+        "path": "mock-draft-js.mjs",
+        "name": "mock-draft-js.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 902,
+        "isExecutable": false
+      },
+      {
+        "path": "next.config.mjs",
+        "name": "next.config.mjs",
+        "type": "binary",
+        "category": "config",
+        "language": "mjs",
+        "size": 2762,
+        "isExecutable": false
+      },
+      {
+        "path": "restore-original-imports.mjs",
+        "name": "restore-original-imports.mjs",
+        "type": "binary",
+        "category": "backup",
+        "language": "mjs",
+        "size": 2182,
+        "isExecutable": false
+      },
+      {
+        "path": "rollup.config.mjs",
+        "name": "rollup.config.mjs",
+        "type": "binary",
+        "category": "config",
+        "language": "mjs",
+        "size": 470,
+        "isExecutable": false
+      },
+      {
+        "path": "run-corrections.cjs",
+        "name": "run-corrections.cjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "cjs",
+        "size": 1020,
+        "isExecutable": false
+      },
+      {
+        "path": "run-scan.mjs",
+        "name": "run-scan.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 115,
+        "isExecutable": false
+      },
+      {
+        "path": "run-with-paths.mjs",
+        "name": "run-with-paths.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 3287,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/fix-all-headers.ts",
+        "name": "fix-all-headers.ts",
+        "type": "binary",
+        "category": "import-management",
+        "language": "ts",
+        "size": 10305,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/smart-organizer/SmartScriptOrganizer.ts",
+        "name": "SmartScriptOrganizer.ts",
+        "type": "binary",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 70120,
+        "isExecutable": false
+      },
+      {
+        "path": "simple-import-scanner.cjs",
+        "name": "simple-import-scanner.cjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "cjs",
+        "size": 2663,
+        "isExecutable": true
+      },
+      {
+        "path": "simple-import-scanner.js",
+        "name": "simple-import-scanner.js",
+        "type": "binary",
+        "category": "import-management",
+        "language": "js",
+        "size": 2635,
+        "isExecutable": true
+      },
+      {
+        "path": "src/core/configs/react-native.config.js",
+        "name": "react-native.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 2533,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/documents/editing/spellCheck.js",
+        "name": "spellCheck.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 494,
+        "isExecutable": false
+      },
+      {
+        "path": "standalone-import-scanner.ts",
+        "name": "standalone-import-scanner.ts",
+        "type": "binary",
+        "category": "import-management",
+        "language": "ts",
+        "size": 4779,
+        "isExecutable": true
+      },
+      {
+        "path": "test-analyzer.ts",
+        "name": "test-analyzer.ts",
+        "type": "binary",
+        "category": "testing",
+        "language": "ts",
+        "size": 163,
+        "isExecutable": false
+      },
+      {
+        "path": "test-correctiongen.js",
+        "name": "test-correctiongen.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 141,
+        "isExecutable": false
+      },
+      {
+        "path": "test-fix.js",
+        "name": "test-fix.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 521,
+        "isExecutable": false
+      },
+      {
+        "path": "test-imports.js",
+        "name": "test-imports.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 600,
+        "isExecutable": false
+      },
+      {
+        "path": "test-imports.mjs",
+        "name": "test-imports.mjs",
+        "type": "binary",
+        "category": "testing",
+        "language": "mjs",
+        "size": 1677,
+        "isExecutable": false
+      },
+      {
+        "path": "test-importsummary.js",
+        "name": "test-importsummary.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 139,
+        "isExecutable": false
+      },
+      {
+        "path": "test-path-resolution.mjs",
+        "name": "test-path-resolution.mjs",
+        "type": "binary",
+        "category": "testing",
+        "language": "mjs",
+        "size": 861,
+        "isExecutable": false
+      },
+      {
+        "path": "test-tsc.js",
+        "name": "test-tsc.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 972,
+        "isExecutable": false
+      },
+      {
+        "path": "trace-imports.mjs",
+        "name": "trace-imports.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 1804,
+        "isExecutable": false
+      },
+      {
+        "path": "type-import-fixer-with-backup.ts",
+        "name": "type-import-fixer-with-backup.ts",
+        "type": "binary",
+        "category": "type-imports",
+        "language": "ts",
+        "size": 7777,
+        "isExecutable": false
+      },
+      {
+        "path": "vitest.config.js",
+        "name": "vitest.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 4070,
+        "isExecutable": false
+      },
+      {
+        "path": "webpack.config.js",
+        "name": "webpack.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 5595,
+        "isExecutable": false
+      }
+    ],
+    "shell": [
+      {
+        "path": ".husky/_/husky.sh",
+        "name": "husky.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 160,
+        "isExecutable": false
+      },
+      {
+        "path": ".vscode/create-vscode-config.sh",
+        "name": "create-vscode-config.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 12907,
+        "isExecutable": false
+      },
+      {
+        "path": ".vscode/templates/cleanup-snippets.sh",
+        "name": "cleanup-snippets.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 921,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/compare-comments-backup.sh",
+        "name": "compare-comments-backup.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 10844,
+        "isExecutable": false
+      },
+      {
+        "path": "backup-helpers.sh",
+        "name": "backup-helpers.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 3399,
+        "isExecutable": false
+      },
+      {
+        "path": "backup-type-imports.sh",
+        "name": "backup-type-imports.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 3989,
+        "isExecutable": false
+      },
+      {
+        "path": "bug-status.sh",
+        "name": "bug-status.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1161,
+        "isExecutable": true
+      },
+      {
+        "path": "capture-type-errors.sh",
+        "name": "capture-type-errors.sh",
+        "type": "shell",
+        "category": "build",
+        "language": "sh",
+        "size": 724,
+        "isExecutable": false
+      },
+      {
+        "path": "check-comment-integrity.sh",
+        "name": "check-comment-integrity.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 4342,
+        "isExecutable": false
+      },
+      {
+        "path": "consolidate-backup-dirs.sh",
+        "name": "consolidate-backup-dirs.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1970,
+        "isExecutable": false
+      },
+      {
+        "path": "create-vscode-config.sh",
+        "name": "create-vscode-config.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 12820,
+        "isExecutable": false
+      },
+      {
+        "path": "diagnose-snippets.sh",
+        "name": "diagnose-snippets.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1289,
+        "isExecutable": true
+      },
+      {
+        "path": "emergency-rollback.sh",
+        "name": "emergency-rollback.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 2274,
+        "isExecutable": true
+      },
+      {
+        "path": "find-real-ts1434-video.sh",
+        "name": "find-real-ts1434-video.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 516,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-all-type-imports.sh",
+        "name": "fix-all-type-imports.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1761,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-chat-sidebar.sh",
+        "name": "fix-chat-sidebar.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1348,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-generate-tree-comments.sh",
+        "name": "fix-generate-tree-comments.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 1333,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-tsconfig-exclude.sh",
+        "name": "fix-tsconfig-exclude.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 2006,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-tsconfig-excludes.sh",
+        "name": "fix-tsconfig-excludes.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 1174,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-video-sagas-mac.sh",
+        "name": "fix-video-sagas-mac.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1803,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-video-sagas.sh",
+        "name": "fix-video-sagas.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1124,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-with-error-patterns.sh",
+        "name": "fix-with-error-patterns.sh",
+        "type": "shell",
+        "category": "test",
+        "language": "sh",
+        "size": 3333,
+        "isExecutable": true
+      },
+      {
+        "path": "fixed-bug-report.sh",
+        "name": "fixed-bug-report.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 12496,
+        "isExecutable": true
+      },
+      {
+        "path": "generate-bug-report.sh",
+        "name": "generate-bug-report.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 3450,
+        "isExecutable": true
+      },
+      {
+        "path": "init-app.sh",
+        "name": "init-app.sh",
+        "type": "shell",
+        "category": "setup",
+        "language": "sh",
+        "size": 891,
+        "isExecutable": false
+      },
+      {
+        "path": "interactive-fixer.sh",
+        "name": "interactive-fixer.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 3535,
+        "isExecutable": true
+      },
+      {
+        "path": "migrate-type-fixes.sh",
+        "name": "migrate-type-fixes.sh",
+        "type": "shell",
+        "category": "build",
+        "language": "sh",
+        "size": 770,
+        "isExecutable": false
+      },
+      {
+        "path": "monitor-tsconfig.sh",
+        "name": "monitor-tsconfig.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 6065,
+        "isExecutable": true
+      },
+      {
+        "path": "quick-smart-backup-setup.sh",
+        "name": "quick-smart-backup-setup.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 3455,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/check-snapshot-imports.sh",
+        "name": "check-snapshot-imports.sh",
+        "type": "shell",
+        "category": "build",
+        "language": "sh",
+        "size": 1760,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/header-test.sh",
+        "name": "header-test.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 2688,
+        "isExecutable": true
+      },
+      {
+        "path": "scripts/migration-workflow/one-command-migration.sh",
+        "name": "one-command-migration.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1326,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/pre-commit.sh",
+        "name": "pre-commit.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 2665,
+        "isExecutable": true
+      },
+      {
+        "path": "scripts/repair-symlinks.sh",
+        "name": "repair-symlinks.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 241,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/shell/setup/unify-scripts.sh",
+        "name": "unify-scripts.sh",
+        "type": "shell",
+        "category": "infrastructure",
+        "language": "sh",
+        "size": 474,
+        "isExecutable": false
+      },
+      {
+        "path": "setup-smart-backup.sh",
+        "name": "setup-smart-backup.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1622,
+        "isExecutable": true
+      },
+      {
+        "path": "smart-fix-comments.sh",
+        "name": "smart-fix-comments.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 12308,
+        "isExecutable": false
+      },
+      {
+        "path": "smart-rollback.sh",
+        "name": "smart-rollback.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 4498,
+        "isExecutable": true
+      },
+      {
+        "path": "sync_shared_code.sh",
+        "name": "sync_shared_code.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 725,
+        "isExecutable": false
+      },
+      {
+        "path": "test-video-sagas-fix.sh",
+        "name": "test-video-sagas-fix.sh",
+        "type": "shell",
+        "category": "test",
+        "language": "sh",
+        "size": 1233,
+        "isExecutable": true
+      },
+      {
+        "path": "test-video-sagas-specific.sh",
+        "name": "test-video-sagas-specific.sh",
+        "type": "shell",
+        "category": "test",
+        "language": "sh",
+        "size": 2275,
+        "isExecutable": true
+      },
+      {
+        "path": "track-progress.sh",
+        "name": "track-progress.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 2143,
+        "isExecutable": true
+      },
+      {
+        "path": "update-tsconfig-exclude.sh",
+        "name": "update-tsconfig-exclude.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 1491,
+        "isExecutable": true
+      },
+      {
+        "path": "verify-remaining-issues.sh",
+        "name": "verify-remaining-issues.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1421,
+        "isExecutable": true
+      }
+    ],
+    "typescript": [
+      {
+        "path": "DiagnoseSnippet.tsx",
+        "name": "DiagnoseSnippet.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 87,
+        "isExecutable": false
+      },
+      {
+        "path": "SnippetTest.tsx",
+        "name": "SnippetTest.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 38,
+        "isExecutable": false
+      },
+      {
+        "path": "TestSnippet.tsx",
+        "name": "TestSnippet.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 20,
+        "isExecutable": false
+      },
+      {
+        "path": "TestSnippetHelp.tsx",
+        "name": "TestSnippetHelp.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 126,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/CodeQualityScript.ts",
+        "name": "CodeQualityScript.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 27148,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/CodeScaffoldingScript.ts",
+        "name": "CodeScaffoldingScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 16747,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/ConfigurationGenerationScript.ts",
+        "name": "ConfigurationGenerationScript.ts",
+        "type": "typescript",
+        "category": "code-generation",
+        "language": "ts",
+        "size": 13867,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/DatabaseSetupScript.ts",
+        "name": "DatabaseSetupScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 9745,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/DependencyInstallationScript.ts",
+        "name": "DependencyInstallationScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 4550,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/QualityChecksScript.ts",
+        "name": "QualityChecksScript.ts",
+        "type": "typescript",
+        "category": "code-generation",
+        "language": "ts",
+        "size": 4544,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/generateComponentsScript.ts",
+        "name": "generateComponentsScript.ts",
+        "type": "typescript",
+        "category": "code-generation",
+        "language": "ts",
+        "size": 2996,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/integration/TrackingIntegration.ts",
+        "name": "TrackingIntegration.ts",
+        "type": "typescript",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 34539,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/milestone/MilestoneTracker.ts",
+        "name": "MilestoneTracker.ts",
+        "type": "typescript",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 12742,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/safe-fixer.ts",
+        "name": "safe-fixer.ts",
+        "type": "typescript",
+        "category": "backup-recovery",
+        "language": "ts",
+        "size": 10392,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/safety/PermanentBackupManager.ts",
+        "name": "PermanentBackupManager.ts",
+        "type": "typescript",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 22932,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/smart-rollback.ts",
+        "name": "smart-rollback.ts",
+        "type": "typescript",
+        "category": "backup-recovery",
+        "language": "ts",
+        "size": 4468,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/test-headers-fix.ts",
+        "name": "test-headers-fix.ts",
+        "type": "typescript",
+        "category": "testing",
+        "language": "ts",
+        "size": 2346,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-babel.ts",
+        "name": "debug-babel.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 745,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-roadmaps.ts",
+        "name": "debug-roadmaps.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 2702,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-typescript-errors.ts",
+        "name": "debug-typescript-errors.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 8232,
+        "isExecutable": false
+      },
+      {
+        "path": "find-draft-js-imports.ts",
+        "name": "find-draft-js-imports.ts",
+        "type": "typescript",
+        "category": "import-management",
+        "language": "ts",
+        "size": 3467,
+        "isExecutable": false
+      },
+      {
+        "path": "run-report-tests.ts",
+        "name": "run-report-tests.ts",
+        "type": "typescript",
+        "category": "testing",
+        "language": "ts",
+        "size": 1106,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/import-authority/snapshot-authority.ts",
+        "name": "snapshot-authority.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 333,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/config/DynamicFormConfig.ts",
+        "name": "DynamicFormConfig.ts",
+        "type": "typescript",
+        "category": "config",
+        "language": "ts",
+        "size": 435,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/config/appStructure/BackendStructureComponent.tsx",
+        "name": "BackendStructureComponent.tsx",
+        "type": "typescript",
+        "category": "config",
+        "language": "tsx",
+        "size": 2206,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/config/endpoints/appDetailsConfig.ts",
+        "name": "appDetailsConfig.ts",
+        "type": "typescript",
+        "category": "config",
+        "language": "ts",
+        "size": 462,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/scripts/ApiSynchronizationScript.ts",
+        "name": "ApiSynchronizationScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 18993,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/scripts/ApplicationSetupScript.ts",
+        "name": "ApplicationSetupScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 2342,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/state/redux/slices/DataBackup.ts",
+        "name": "DataBackup.ts",
+        "type": "typescript",
+        "category": "backup-recovery",
+        "language": "ts",
+        "size": 264,
+        "isExecutable": false
+      },
+      {
+        "path": "src/utils/web3/CallButton.tsx",
+        "name": "CallButton.tsx",
+        "type": "typescript",
+        "category": "utils",
+        "language": "tsx",
+        "size": 268,
+        "isExecutable": false
+      },
+      {
+        "path": "src/utils/web3/DIDProfile.tsx",
+        "name": "DIDProfile.tsx",
+        "type": "typescript",
+        "category": "utils",
+        "language": "tsx",
+        "size": 456,
+        "isExecutable": false
+      },
+      {
+        "path": "test-reports-now.ts",
+        "name": "test-reports-now.ts",
+        "type": "typescript",
+        "category": "testing",
+        "language": "ts",
+        "size": 3469,
+        "isExecutable": false
+      },
+      {
+        "path": "vite.config.ts",
+        "name": "vite.config.ts",
+        "type": "typescript",
+        "category": "config",
+        "language": "ts",
+        "size": 3691,
+        "isExecutable": false
+      }
+    ]
+  },
+  "byCategory": {
+    "config": [
+      {
+        "path": ".eslintrc.js",
+        "name": ".eslintrc.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 7680,
+        "isExecutable": false
+      },
+      {
+        "path": ".vscode/create-vscode-config.sh",
+        "name": "create-vscode-config.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 12907,
+        "isExecutable": false
+      },
+      {
+        "path": "babel.config.js",
+        "name": "babel.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 5221,
+        "isExecutable": false
+      },
+      {
+        "path": "create-vscode-config.sh",
+        "name": "create-vscode-config.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 12820,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-tsconfig-exclude.sh",
+        "name": "fix-tsconfig-exclude.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 2006,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-tsconfig-excludes.sh",
+        "name": "fix-tsconfig-excludes.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 1174,
+        "isExecutable": false
+      },
+      {
+        "path": "jest.config.js",
+        "name": "jest.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 2401,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/lint-staged.config.js",
+        "name": "lint-staged.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 254,
+        "isExecutable": false
+      },
+      {
+        "path": "metro.config.js",
+        "name": "metro.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 3682,
+        "isExecutable": false
+      },
+      {
+        "path": "monitor-tsconfig.sh",
+        "name": "monitor-tsconfig.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 6065,
+        "isExecutable": true
+      },
+      {
+        "path": "next.config.mjs",
+        "name": "next.config.mjs",
+        "type": "binary",
+        "category": "config",
+        "language": "mjs",
+        "size": 2762,
+        "isExecutable": false
+      },
+      {
+        "path": "rollup.config.mjs",
+        "name": "rollup.config.mjs",
+        "type": "binary",
+        "category": "config",
+        "language": "mjs",
+        "size": 470,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/config/DynamicFormConfig.ts",
+        "name": "DynamicFormConfig.ts",
+        "type": "typescript",
+        "category": "config",
+        "language": "ts",
+        "size": 435,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/config/appStructure/BackendStructureComponent.tsx",
+        "name": "BackendStructureComponent.tsx",
+        "type": "typescript",
+        "category": "config",
+        "language": "tsx",
+        "size": 2206,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/config/endpoints/appDetailsConfig.ts",
+        "name": "appDetailsConfig.ts",
+        "type": "typescript",
+        "category": "config",
+        "language": "ts",
+        "size": 462,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/configs/react-native.config.js",
+        "name": "react-native.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 2533,
+        "isExecutable": false
+      },
+      {
+        "path": "update-tsconfig-exclude.sh",
+        "name": "update-tsconfig-exclude.sh",
+        "type": "shell",
+        "category": "config",
+        "language": "sh",
+        "size": 1491,
+        "isExecutable": true
+      },
+      {
+        "path": "vite.config.ts",
+        "name": "vite.config.ts",
+        "type": "typescript",
+        "category": "config",
+        "language": "ts",
+        "size": 3691,
+        "isExecutable": false
+      },
+      {
+        "path": "vitest.config.js",
+        "name": "vitest.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 4070,
+        "isExecutable": false
+      },
+      {
+        "path": "webpack.config.js",
+        "name": "webpack.config.js",
+        "type": "binary",
+        "category": "config",
+        "language": "js",
+        "size": 5595,
+        "isExecutable": false
+      }
+    ],
+    "git": [
+      {
+        "path": ".husky/_/husky.sh",
+        "name": "husky.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 160,
+        "isExecutable": false
+      },
+      {
+        "path": "emergency-rollback.sh",
+        "name": "emergency-rollback.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 2274,
+        "isExecutable": true
+      },
+      {
+        "path": "scripts/pre-commit.sh",
+        "name": "pre-commit.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 2665,
+        "isExecutable": true
+      },
+      {
+        "path": "sync_shared_code.sh",
+        "name": "sync_shared_code.sh",
+        "type": "shell",
+        "category": "git",
+        "language": "sh",
+        "size": 725,
+        "isExecutable": false
+      }
+    ],
+    "file-management": [
+      {
+        "path": ".vscode/templates/cleanup-snippets.sh",
+        "name": "cleanup-snippets.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 921,
+        "isExecutable": false
+      },
+      {
+        "path": "check-comment-integrity.sh",
+        "name": "check-comment-integrity.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 4342,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-generate-tree-comments.sh",
+        "name": "fix-generate-tree-comments.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 1333,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/repair-symlinks.sh",
+        "name": "repair-symlinks.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 241,
+        "isExecutable": false
+      },
+      {
+        "path": "smart-fix-comments.sh",
+        "name": "smart-fix-comments.sh",
+        "type": "shell",
+        "category": "file-management",
+        "language": "sh",
+        "size": 12308,
+        "isExecutable": false
+      }
+    ],
+    "testing": [
+      {
+        "path": "DiagnoseSnippet.tsx",
+        "name": "DiagnoseSnippet.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 87,
+        "isExecutable": false
+      },
+      {
+        "path": "SnippetTest.tsx",
+        "name": "SnippetTest.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 38,
+        "isExecutable": false
+      },
+      {
+        "path": "TestSnippet.tsx",
+        "name": "TestSnippet.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 20,
+        "isExecutable": false
+      },
+      {
+        "path": "TestSnippetHelp.tsx",
+        "name": "TestSnippetHelp.tsx",
+        "type": "typescript",
+        "category": "testing",
+        "language": "tsx",
+        "size": 126,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/test-headers-fix.ts",
+        "name": "test-headers-fix.ts",
+        "type": "typescript",
+        "category": "testing",
+        "language": "ts",
+        "size": 2346,
+        "isExecutable": false
+      },
+      {
+        "path": "run-report-tests.ts",
+        "name": "run-report-tests.ts",
+        "type": "typescript",
+        "category": "testing",
+        "language": "ts",
+        "size": 1106,
+        "isExecutable": false
+      },
+      {
+        "path": "test-analyzer.ts",
+        "name": "test-analyzer.ts",
+        "type": "binary",
+        "category": "testing",
+        "language": "ts",
+        "size": 163,
+        "isExecutable": false
+      },
+      {
+        "path": "test-correctiongen.js",
+        "name": "test-correctiongen.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 141,
+        "isExecutable": false
+      },
+      {
+        "path": "test-fix.js",
+        "name": "test-fix.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 521,
+        "isExecutable": false
+      },
+      {
+        "path": "test-imports.js",
+        "name": "test-imports.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 600,
+        "isExecutable": false
+      },
+      {
+        "path": "test-imports.mjs",
+        "name": "test-imports.mjs",
+        "type": "binary",
+        "category": "testing",
+        "language": "mjs",
+        "size": 1677,
+        "isExecutable": false
+      },
+      {
+        "path": "test-importsummary.js",
+        "name": "test-importsummary.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 139,
+        "isExecutable": false
+      },
+      {
+        "path": "test-path-resolution.mjs",
+        "name": "test-path-resolution.mjs",
+        "type": "binary",
+        "category": "testing",
+        "language": "mjs",
+        "size": 861,
+        "isExecutable": false
+      },
+      {
+        "path": "test-reports-now.ts",
+        "name": "test-reports-now.ts",
+        "type": "typescript",
+        "category": "testing",
+        "language": "ts",
+        "size": 3469,
+        "isExecutable": false
+      },
+      {
+        "path": "test-tsc.js",
+        "name": "test-tsc.js",
+        "type": "binary",
+        "category": "testing",
+        "language": "js",
+        "size": 972,
+        "isExecutable": false
+      }
+    ],
+    "code-quality": [
+      {
+        "path": "app/scripts/CodeQualityScript.ts",
+        "name": "CodeQualityScript.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 27148,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-babel.js",
+        "name": "debug-babel.js",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "js",
+        "size": 3939,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-babel.ts",
+        "name": "debug-babel.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 745,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-esm-imports.mjs",
+        "name": "debug-esm-imports.mjs",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "mjs",
+        "size": 3298,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-import.cjs",
+        "name": "debug-import.cjs",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "cjs",
+        "size": 1580,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-roadmaps.ts",
+        "name": "debug-roadmaps.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 2702,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-tsx.mjs",
+        "name": "debug-tsx.mjs",
+        "type": "binary",
+        "category": "code-quality",
+        "language": "mjs",
+        "size": 929,
+        "isExecutable": false
+      },
+      {
+        "path": "debug-typescript-errors.ts",
+        "name": "debug-typescript-errors.ts",
+        "type": "typescript",
+        "category": "code-quality",
+        "language": "ts",
+        "size": 8232,
+        "isExecutable": false
+      }
+    ],
+    "infrastructure": [
+      {
+        "path": "app/scripts/CodeScaffoldingScript.ts",
+        "name": "CodeScaffoldingScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 16747,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/DatabaseSetupScript.ts",
+        "name": "DatabaseSetupScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 9745,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/DependencyInstallationScript.ts",
+        "name": "DependencyInstallationScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 4550,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/setup-lint.js",
+        "name": "setup-lint.js",
+        "type": "binary",
+        "category": "infrastructure",
+        "language": "js",
+        "size": 1608,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/import-authority/snapshot-authority.ts",
+        "name": "snapshot-authority.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 333,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/shell/setup/unify-scripts.sh",
+        "name": "unify-scripts.sh",
+        "type": "shell",
+        "category": "infrastructure",
+        "language": "sh",
+        "size": 474,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/smart-organizer/SmartScriptOrganizer.ts",
+        "name": "SmartScriptOrganizer.ts",
+        "type": "binary",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 70120,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/scripts/ApiSynchronizationScript.ts",
+        "name": "ApiSynchronizationScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 18993,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/scripts/ApplicationSetupScript.ts",
+        "name": "ApplicationSetupScript.ts",
+        "type": "typescript",
+        "category": "infrastructure",
+        "language": "ts",
+        "size": 2342,
+        "isExecutable": false
+      }
+    ],
+    "code-generation": [
+      {
+        "path": "app/scripts/ConfigurationGenerationScript.ts",
+        "name": "ConfigurationGenerationScript.ts",
+        "type": "typescript",
+        "category": "code-generation",
+        "language": "ts",
+        "size": 13867,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/QualityChecksScript.ts",
+        "name": "QualityChecksScript.ts",
+        "type": "typescript",
+        "category": "code-generation",
+        "language": "ts",
+        "size": 4544,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/generateComponentsScript.ts",
+        "name": "generateComponentsScript.ts",
+        "type": "typescript",
+        "category": "code-generation",
+        "language": "ts",
+        "size": 2996,
+        "isExecutable": false
+      }
+    ],
+    "backup": [
+      {
+        "path": "app/scripts/compare-comments-backup.sh",
+        "name": "compare-comments-backup.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 10844,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/sync-configs-with-backup.js",
+        "name": "sync-configs-with-backup.js",
+        "type": "binary",
+        "category": "backup",
+        "language": "js",
+        "size": 5449,
+        "isExecutable": false
+      },
+      {
+        "path": "backup-helpers.sh",
+        "name": "backup-helpers.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 3399,
+        "isExecutable": false
+      },
+      {
+        "path": "backup-type-imports.sh",
+        "name": "backup-type-imports.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 3989,
+        "isExecutable": false
+      },
+      {
+        "path": "consolidate-backup-dirs.sh",
+        "name": "consolidate-backup-dirs.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1970,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-all-type-imports.sh",
+        "name": "fix-all-type-imports.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1761,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-video-sagas-mac.sh",
+        "name": "fix-video-sagas-mac.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1803,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-video-sagas.sh",
+        "name": "fix-video-sagas.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1124,
+        "isExecutable": true
+      },
+      {
+        "path": "quick-smart-backup-setup.sh",
+        "name": "quick-smart-backup-setup.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 3455,
+        "isExecutable": false
+      },
+      {
+        "path": "restore-original-imports.mjs",
+        "name": "restore-original-imports.mjs",
+        "type": "binary",
+        "category": "backup",
+        "language": "mjs",
+        "size": 2182,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/migration-workflow/one-command-migration.sh",
+        "name": "one-command-migration.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1326,
+        "isExecutable": false
+      },
+      {
+        "path": "setup-smart-backup.sh",
+        "name": "setup-smart-backup.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 1622,
+        "isExecutable": true
+      },
+      {
+        "path": "smart-rollback.sh",
+        "name": "smart-rollback.sh",
+        "type": "shell",
+        "category": "backup",
+        "language": "sh",
+        "size": 4498,
+        "isExecutable": true
+      }
+    ],
+    "type-imports": [
+      {
+        "path": "app/scripts/fix-type-imports-with-backup.ts",
+        "name": "fix-type-imports-with-backup.ts",
+        "type": "binary",
+        "category": "type-imports",
+        "language": "ts",
+        "size": 37055,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/unified-type-import-fixer.ts",
+        "name": "unified-type-import-fixer.ts",
+        "type": "binary",
+        "category": "type-imports",
+        "language": "ts",
+        "size": 15987,
+        "isExecutable": false
+      },
+      {
+        "path": "type-import-fixer-with-backup.ts",
+        "name": "type-import-fixer-with-backup.ts",
+        "type": "binary",
+        "category": "type-imports",
+        "language": "ts",
+        "size": 7777,
+        "isExecutable": false
+      }
+    ],
+    "typescript-misc": [
+      {
+        "path": "app/scripts/integration/TrackingIntegration.ts",
+        "name": "TrackingIntegration.ts",
+        "type": "typescript",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 34539,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/milestone/MilestoneTracker.ts",
+        "name": "MilestoneTracker.ts",
+        "type": "typescript",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 12742,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/quick-type-check.ts",
+        "name": "quick-type-check.ts",
+        "type": "binary",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 7800,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/safety/PermanentBackupManager.ts",
+        "name": "PermanentBackupManager.ts",
+        "type": "typescript",
+        "category": "typescript-misc",
+        "language": "ts",
+        "size": 22932,
+        "isExecutable": false
+      }
+    ],
+    "backup-recovery": [
+      {
+        "path": "app/scripts/safe-fixer.ts",
+        "name": "safe-fixer.ts",
+        "type": "typescript",
+        "category": "backup-recovery",
+        "language": "ts",
+        "size": 10392,
+        "isExecutable": false
+      },
+      {
+        "path": "app/scripts/smart-rollback.ts",
+        "name": "smart-rollback.ts",
+        "type": "typescript",
+        "category": "backup-recovery",
+        "language": "ts",
+        "size": 4468,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/state/redux/slices/DataBackup.ts",
+        "name": "DataBackup.ts",
+        "type": "typescript",
+        "category": "backup-recovery",
+        "language": "ts",
+        "size": 264,
+        "isExecutable": false
+      }
+    ],
+    "dev": [
+      {
+        "path": "bug-status.sh",
+        "name": "bug-status.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1161,
+        "isExecutable": true
+      },
+      {
+        "path": "diagnose-snippets.sh",
+        "name": "diagnose-snippets.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1289,
+        "isExecutable": true
+      },
+      {
+        "path": "find-real-ts1434-video.sh",
+        "name": "find-real-ts1434-video.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 516,
+        "isExecutable": true
+      },
+      {
+        "path": "fix-chat-sidebar.sh",
+        "name": "fix-chat-sidebar.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1348,
+        "isExecutable": true
+      },
+      {
+        "path": "fixed-bug-report.sh",
+        "name": "fixed-bug-report.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 12496,
+        "isExecutable": true
+      },
+      {
+        "path": "generate-bug-report.sh",
+        "name": "generate-bug-report.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 3450,
+        "isExecutable": true
+      },
+      {
+        "path": "interactive-fixer.sh",
+        "name": "interactive-fixer.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 3535,
+        "isExecutable": true
+      },
+      {
+        "path": "scripts/header-test.sh",
+        "name": "header-test.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 2688,
+        "isExecutable": true
+      },
+      {
+        "path": "track-progress.sh",
+        "name": "track-progress.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 2143,
+        "isExecutable": true
+      },
+      {
+        "path": "verify-remaining-issues.sh",
+        "name": "verify-remaining-issues.sh",
+        "type": "shell",
+        "category": "dev",
+        "language": "sh",
+        "size": 1421,
+        "isExecutable": true
+      }
+    ],
+    "build": [
+      {
+        "path": "capture-type-errors.sh",
+        "name": "capture-type-errors.sh",
+        "type": "shell",
+        "category": "build",
+        "language": "sh",
+        "size": 724,
+        "isExecutable": false
+      },
+      {
+        "path": "migrate-type-fixes.sh",
+        "name": "migrate-type-fixes.sh",
+        "type": "shell",
+        "category": "build",
+        "language": "sh",
+        "size": 770,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/check-snapshot-imports.sh",
+        "name": "check-snapshot-imports.sh",
+        "type": "shell",
+        "category": "build",
+        "language": "sh",
+        "size": 1760,
+        "isExecutable": false
+      }
+    ],
+    "import-management": [
+      {
+        "path": "check-imports.cjs",
+        "name": "check-imports.cjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "cjs",
+        "size": 2709,
+        "isExecutable": false
+      },
+      {
+        "path": "check-imports.mjs",
+        "name": "check-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 746,
+        "isExecutable": false
+      },
+      {
+        "path": "check-structure.mjs",
+        "name": "check-structure.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 2040,
+        "isExecutable": false
+      },
+      {
+        "path": "find-draft-js-imports.ts",
+        "name": "find-draft-js-imports.ts",
+        "type": "typescript",
+        "category": "import-management",
+        "language": "ts",
+        "size": 3467,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-all-state-imports.mjs",
+        "name": "fix-all-state-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 1157,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-backup-log.js",
+        "name": "fix-backup-log.js",
+        "type": "binary",
+        "category": "import-management",
+        "language": "js",
+        "size": 473,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-imports.js",
+        "name": "fix-imports.js",
+        "type": "binary",
+        "category": "import-management",
+        "language": "js",
+        "size": 1057,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-snapshot-imports.mjs",
+        "name": "fix-snapshot-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 1458,
+        "isExecutable": false
+      },
+      {
+        "path": "fix-state-imports.mjs",
+        "name": "fix-state-imports.mjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "mjs",
+        "size": 1658,
+        "isExecutable": false
+      },
+      {
+        "path": "scripts/fix-all-headers.ts",
+        "name": "fix-all-headers.ts",
+        "type": "binary",
+        "category": "import-management",
+        "language": "ts",
+        "size": 10305,
+        "isExecutable": false
+      },
+      {
+        "path": "simple-import-scanner.cjs",
+        "name": "simple-import-scanner.cjs",
+        "type": "binary",
+        "category": "import-management",
+        "language": "cjs",
+        "size": 2663,
+        "isExecutable": true
+      },
+      {
+        "path": "simple-import-scanner.js",
+        "name": "simple-import-scanner.js",
+        "type": "binary",
+        "category": "import-management",
+        "language": "js",
+        "size": 2635,
+        "isExecutable": true
+      },
+      {
+        "path": "standalone-import-scanner.ts",
+        "name": "standalone-import-scanner.ts",
+        "type": "binary",
+        "category": "import-management",
+        "language": "ts",
+        "size": 4779,
+        "isExecutable": true
+      }
+    ],
+    "binary-misc": [
+      {
+        "path": "css-loader.mjs",
+        "name": "css-loader.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 480,
+        "isExecutable": false
+      },
+      {
+        "path": "deep-import-search.mjs",
+        "name": "deep-import-search.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 1439,
+        "isExecutable": false
+      },
+      {
+        "path": "diagnose.mjs",
+        "name": "diagnose.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 3591,
+        "isExecutable": false
+      },
+      {
+        "path": "find-bad-app-import.mjs",
+        "name": "find-bad-app-import.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 1479,
+        "isExecutable": false
+      },
+      {
+        "path": "find-css-imports.mjs",
+        "name": "find-css-imports.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 3539,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/configs/base.js",
+        "name": "base.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 3324,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/configs/react-native.js",
+        "name": "react-native.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 704,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/configs/react.js",
+        "name": "react.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 528,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/import-path-aliases.js",
+        "name": "import-path-aliases.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 1581,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/no-console-in-production.js",
+        "name": "no-console-in-production.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 759,
+        "isExecutable": false
+      },
+      {
+        "path": "lint/rules/no-crypto-random.js",
+        "name": "no-crypto-random.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 972,
+        "isExecutable": false
+      },
+      {
+        "path": "mock-draft-js.mjs",
+        "name": "mock-draft-js.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 902,
+        "isExecutable": false
+      },
+      {
+        "path": "run-corrections.cjs",
+        "name": "run-corrections.cjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "cjs",
+        "size": 1020,
+        "isExecutable": false
+      },
+      {
+        "path": "run-scan.mjs",
+        "name": "run-scan.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 115,
+        "isExecutable": false
+      },
+      {
+        "path": "run-with-paths.mjs",
+        "name": "run-with-paths.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 3287,
+        "isExecutable": false
+      },
+      {
+        "path": "src/core/documents/editing/spellCheck.js",
+        "name": "spellCheck.js",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "js",
+        "size": 494,
+        "isExecutable": false
+      },
+      {
+        "path": "trace-imports.mjs",
+        "name": "trace-imports.mjs",
+        "type": "binary",
+        "category": "binary-misc",
+        "language": "mjs",
+        "size": 1804,
+        "isExecutable": false
+      }
+    ],
+    "test": [
+      {
+        "path": "fix-with-error-patterns.sh",
+        "name": "fix-with-error-patterns.sh",
+        "type": "shell",
+        "category": "test",
+        "language": "sh",
+        "size": 3333,
+        "isExecutable": true
+      },
+      {
+        "path": "test-video-sagas-fix.sh",
+        "name": "test-video-sagas-fix.sh",
+        "type": "shell",
+        "category": "test",
+        "language": "sh",
+        "size": 1233,
+        "isExecutable": true
+      },
+      {
+        "path": "test-video-sagas-specific.sh",
+        "name": "test-video-sagas-specific.sh",
+        "type": "shell",
+        "category": "test",
+        "language": "sh",
+        "size": 2275,
+        "isExecutable": true
+      }
+    ],
+    "setup": [
+      {
+        "path": "init-app.sh",
+        "name": "init-app.sh",
+        "type": "shell",
+        "category": "setup",
+        "language": "sh",
+        "size": 891,
+        "isExecutable": false
+      }
+    ],
+    "utils": [
+      {
+        "path": "src/utils/web3/CallButton.tsx",
+        "name": "CallButton.tsx",
+        "type": "typescript",
+        "category": "utils",
+        "language": "tsx",
+        "size": 268,
+        "isExecutable": false
+      },
+      {
+        "path": "src/utils/web3/DIDProfile.tsx",
+        "name": "DIDProfile.tsx",
+        "type": "typescript",
+        "category": "utils",
+        "language": "tsx",
+        "size": 456,
+        "isExecutable": false
+      }
+    ]
+  },
+  "largestFiles": [
+    {
+      "path": "scripts/smart-organizer/SmartScriptOrganizer.ts",
+      "size": 70120,
+      "sizeKB": "68.5",
+      "category": "infrastructure"
+    },
+    {
+      "path": "app/scripts/fix-type-imports-with-backup.ts",
+      "size": 37055,
+      "sizeKB": "36.2",
+      "category": "type-imports"
+    },
+    {
+      "path": "app/scripts/integration/TrackingIntegration.ts",
+      "size": 34539,
+      "sizeKB": "33.7",
+      "category": "typescript-misc"
+    },
+    {
+      "path": "app/scripts/CodeQualityScript.ts",
+      "size": 27148,
+      "sizeKB": "26.5",
+      "category": "code-quality"
+    },
+    {
+      "path": "app/scripts/safety/PermanentBackupManager.ts",
+      "size": 22932,
+      "sizeKB": "22.4",
+      "category": "typescript-misc"
+    },
+    {
+      "path": "src/core/scripts/ApiSynchronizationScript.ts",
+      "size": 18993,
+      "sizeKB": "18.5",
+      "category": "infrastructure"
+    },
+    {
+      "path": "app/scripts/CodeScaffoldingScript.ts",
+      "size": 16747,
+      "sizeKB": "16.4",
+      "category": "infrastructure"
+    },
+    {
+      "path": "app/scripts/unified-type-import-fixer.ts",
+      "size": 15987,
+      "sizeKB": "15.6",
+      "category": "type-imports"
+    },
+    {
+      "path": "app/scripts/ConfigurationGenerationScript.ts",
+      "size": 13867,
+      "sizeKB": "13.5",
+      "category": "code-generation"
+    },
+    {
+      "path": ".vscode/create-vscode-config.sh",
+      "size": 12907,
+      "sizeKB": "12.6",
+      "category": "config"
+    }
+  ],
+  "executableScripts": [
+    "bug-status.sh",
+    "diagnose-snippets.sh",
+    "emergency-rollback.sh",
+    "find-real-ts1434-video.sh",
+    "fix-all-type-imports.sh",
+    "fix-chat-sidebar.sh",
+    "fix-video-sagas-mac.sh",
+    "fix-video-sagas.sh",
+    "fix-with-error-patterns.sh",
+    "fixed-bug-report.sh",
+    "generate-bug-report.sh",
+    "interactive-fixer.sh",
+    "monitor-tsconfig.sh",
+    "scripts/header-test.sh",
+    "scripts/pre-commit.sh",
+    "setup-smart-backup.sh",
+    "simple-import-scanner.cjs",
+    "simple-import-scanner.js",
+    "smart-rollback.sh",
+    "standalone-import-scanner.ts",
+    "test-video-sagas-fix.sh",
+    "test-video-sagas-specific.sh",
+    "track-progress.sh",
+    "update-tsconfig-exclude.sh",
+    "verify-remaining-issues.sh"
+  ]
+}

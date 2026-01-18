@@ -2,9 +2,9 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project } from "@/core/models/projects/Project";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { Todo } from "@/core/todos/Todo";
 
 export function isTask<

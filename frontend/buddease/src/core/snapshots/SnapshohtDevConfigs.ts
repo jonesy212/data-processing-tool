@@ -1,5 +1,4 @@
 // SnapshohtDevConfigs.ts
-// //SnapshohtDevConfigs.ts
 
 // import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 // import { SnapshotManager } from "@/core/hooks/useSnapshotManager";

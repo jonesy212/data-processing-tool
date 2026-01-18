@@ -1,4 +1,4 @@
-DesignComponent.tsx
+// DesignComponent.tsx
 import React from 'react';
 
 const DesignComponent: React.FC = () => {

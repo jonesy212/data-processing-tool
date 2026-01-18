@@ -1,5 +1,5 @@
-CommunicationEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// CommunicationEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface CommunicationEndpoints extends EndpointCategoryConfig {
   audioCall: EndpointConfig;

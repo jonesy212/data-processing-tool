@@ -8,7 +8,7 @@ import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { currentAppVersion } from '@/core/api/headers/authenticationHeaders';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -18,7 +18,7 @@ import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { getCategoryProperties } from '@/core/libraries/categories/CategoryManager';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { allCategories } from '@/core/models/data/DataStructureCategories';
 import { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
@@ -32,7 +32,7 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData, SnapshotItem } from '@/core/snapshots/SnapshotList';
 import { SnapshotStoreMethods } from '@/core/snapshots/SnapshotStoreMethods';
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
@@ -42,12 +42,12 @@ import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
 import { retrievedSnapshot } from "@/core/snapshots/RetrieveSnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
+import type { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
 import { SnapshotSubscriberManagement } from "@/core/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { BaseSnapshotProps } from "@/core/snapshots/createBaseSnapshot";
+import type { BaseSnapshotProps } from "@/core/snapshots/createBaseSnapshot";
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
-import { isSnapshotArrayState, isSnapshotsArray } from '@/core/snapshots/createSnapshotStoreOptions';
+import type { isSnapshotArrayState, isSnapshotsArray } from '@/core/snapshots/createSnapshotStoreOptions';
 import { defaultSubscribeToSnapshot } from '@/core/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/core/snapshots/defaultSubscribeToSnapshots';
 import { returnsSnapshotStore } from '@/core/snapshots/responsetUtils';
@@ -116,7 +116,7 @@ interface CommonDataStoreMethods<
 }
 
 function createDataStore<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -176,7 +176,7 @@ function createDataStore<
 }
 
 export interface DataStore<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -467,7 +467,7 @@ export interface DataStore<
 
 
 interface VersionedData <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -481,7 +481,7 @@ interface VersionedData <
 }
 
 const useVersionedData =  <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -503,7 +503,7 @@ const useVersionedData =  <
 
 
 interface CallbackItem<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -590,7 +590,7 @@ function createEventManager<
 
 
 interface EventRecord<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -607,7 +607,7 @@ interface EventRecord<
 
 
 class ConfigurableSnapshotStore<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -671,7 +671,7 @@ class ConfigurableSnapshotStore<
 }
 
 const useDataStore = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

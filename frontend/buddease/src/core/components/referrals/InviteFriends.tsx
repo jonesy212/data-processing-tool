@@ -1,4 +1,4 @@
-InviteFriends.tsx
+// InviteFriends.tsx
 import { useState } from 'react';
 
 // Invite Friends Component

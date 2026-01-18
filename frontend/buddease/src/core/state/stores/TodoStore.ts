@@ -1,11 +1,10 @@
 // TodoStore.ts
-// TodoManagerStore.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import useSecureStoreId from "@/core/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
@@ -15,7 +14,7 @@ import { generateSnapshotId } from '@/utils/snapshotUtils';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { AllStatus } from '@/core/state/stores/DetailsListStore';
+import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Todo } from "@/core/todos/Todo";
 import { todoService } from "@/core/todos/TodoService";

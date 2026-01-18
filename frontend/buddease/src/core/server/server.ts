@@ -1,7 +1,8 @@
-server.ts
+// server.ts
 import authService from '@/core/server/auth/AuthService';
 import { DatabasePool } from '@/core/server/database/DatabasePool';
-import express, { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import express from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 

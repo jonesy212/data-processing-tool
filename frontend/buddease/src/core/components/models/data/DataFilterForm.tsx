@@ -1,18 +1,18 @@
-// DataFilterForm.tsx - Fixed version
+// DataFilterForm.tsx
 import userService, { userId } from "@/core/api/ApiUser";
 import ListGenerator from "@/core/generators/ListGenerator";
 import processSnapshotList from "@/core/generators/processSnapshotList";
 import SnapshotListGenerator from "@/core/generators/SnapshotListGenerator";
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
-import { Data } from "@/core/models/data/Data";
+import type { Data } from "@/core/models/data/Data";
 import { Phase } from '@/core/models/phases/Phase';
 import { updateCallback } from "@/core/pages/blog/UpdateCallbackUtils";
 import { authToken } from "@/core/server/auth/authToken";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotList from "@/core/snapshots/SnapshotList";
 import snapshotStore from "@/core/snapshots/SnapshotStore";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
-import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
 import {
     DataAnalysisAction,
     DataAnalysisDispatch,

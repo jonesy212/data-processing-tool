@@ -1,3 +1,4 @@
+// cacheHeaders.js
 /**
  * Function to create cache headers.
  * @returns {Record<string, string>} - The cache headers.

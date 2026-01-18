@@ -1,9 +1,8 @@
 // CalendarEventActions.ts
-// CalendarActions.ts
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import type { CustomFile, File } from "@/core/documents/File";
+import type { CustomFile } from "@/core/documents/File";
 import type { Theme } from "@/core/libraries/ui/theme/Theme";
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import type { AppNotificationData } from '@/core/typings/entities/CommonEntities';
@@ -17,14 +16,7 @@ export const setEventColor = createAction<{ eventId: string; color: Theme }>(
 
 type DefaultCalendarEvent = CalendarEvent<AppCalendarEvent>;
 
-export const CalendarActions = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->() => ({
+export const CalendarActions = () => ({
   // Standard actions
   addEvent: createAction<DefaultCalendarEvent>("addEvent"),
   removeEvent: createAction<string>("removeEvent"),
@@ -154,7 +146,7 @@ export const CalendarActions = <
   
   attachFileToEvent: createAction<{
     eventId: string;
-    attachment: File<T> | string; // File object or URL
+    attachment: CustomFile<AppCalendarEvent> | string; // File object or URL
     // Additional parameters as needed
   }>("attachFileToEvent"),
 
@@ -192,7 +184,7 @@ export const CalendarActions = <
     // Additional parameters as needed
   }>("createEventTemplate"),
 
-  importEvents: createAction<File<T>>("importEvents"),
+  importEvents: createAction<CustomFile<AppCalendarEvent>>("importEvents"),
   exportEvents: createAction("pexportEvents"),
 
   viewEventHistory: createAction<string>("viewEventHistory"),
@@ -340,16 +332,6 @@ export const CalendarActions = <
     chatRoomId: string;
     
   }>('communication/discussCalendarEventInChatRoom'),
-
-
-
-
-
-
-
-
-
-
 
   // Bulk actions for batching services
   batchUpdateCalendarEventsRequest: createAction<{

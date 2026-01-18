@@ -1,7 +1,7 @@
 // CalendarActionPayload.ts
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
-import { BaseData } from '@/core/models/data/Data';
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
+import type { BaseData } from '@/core/models/data/Data';
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 
 // Define possible actions for the CalendarManager
 type CalendarActionType =

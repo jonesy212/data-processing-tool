@@ -1,4 +1,4 @@
-TeamBuildingSettings.ts
+// TeamBuildingSettings.ts
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
 
 interface TeamBuildingSettings extends Settings {

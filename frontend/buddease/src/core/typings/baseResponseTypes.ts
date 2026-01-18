@@ -1,4 +1,4 @@
-baseResponseTypes.ts
+// baseResponseTypes.ts
 import { ChatRoom } from '@/core/communications/ChatRoom';
 import { Sender } from '@/core/components/communications/CommunicationPage';
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

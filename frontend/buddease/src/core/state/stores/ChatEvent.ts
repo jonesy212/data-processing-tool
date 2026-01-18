@@ -1,4 +1,4 @@
-ChatEvent.ts
+// ChatEvent.ts
 class ChatEvent {
     eventId: string;
     eventName: string;

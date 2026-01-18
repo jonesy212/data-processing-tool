@@ -1,4 +1,4 @@
-ProtectedRoute.tsx
+// ProtectedRoute.tsx
 import { useAuth } from '@/core/state/context/AuthContext';
 import React from 'react';
 import { LazyRouteFunction, Navigate, NonIndexRouteObject, RouteProps as ReactRouteProps, Route } from 'react-router-dom';

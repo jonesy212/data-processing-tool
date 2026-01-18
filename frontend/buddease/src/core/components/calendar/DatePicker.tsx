@@ -1,7 +1,7 @@
-DatePicker.tsx
-DatePicker.ts
+// DatePicker.tsx
 import { Label } from "@/core/branding/BrandingSettings";
-import Calendar, { CommonCalendarProps } from "@/core/components/calendar/Calendar"; // Assuming Calendar is another component used for date selection
+import type { CommonCalendarProps } from '@/core/components/calendar/Calendar';
+import Calendar from '@/core/components/calendar/Calendar';
 import { Progress } from "@/core/models/tracker/ProgressBar";
 import React, { useState } from "react";
 

@@ -1,4 +1,4 @@
-ApiSlice.ts
+// ApiSlice.ts
 import ApiConfig from '@/core/api/ApiConfigService';
 import CommunicationAPI from "@/core/api/CommunicationAPI";
 import { Label } from '@/core/branding/BrandingSettings';
@@ -8,14 +8,14 @@ import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/Meta
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/core/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/core/interfaces/provider/CloudStorageProvider";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { Phase } from '@/core/models/phases/Phase';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { EncryptionSetting, Permission } from "@/core/permissions/Permission";
 import { AnalyticsTool } from "@/core/projects/DataAnalysisPhase/AnalyticsTool";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
 import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
@@ -643,7 +643,7 @@ export const {
 
 // Extend the method to mark tasks as complete
 function convertToWritableMetadata<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

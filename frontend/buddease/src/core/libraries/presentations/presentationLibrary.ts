@@ -1,10 +1,10 @@
-presentationLibrary.ts
-import { BaseMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+// presentationLibrary.ts
+import type { BaseMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import { Presentation, Slide } from "@/core/documents/editing/Presentation";
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { generatePresentationJSON } from "@/core/libraries/presentations/generatePresentationJSON";
-import { Data, DataDetails } from '@/core/models/data/Data';
+import type { Data, DataDetails } from '@/core/models/data/Data';
 
 
 enum PresentationType {

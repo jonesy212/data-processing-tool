@@ -1,4 +1,4 @@
-// src/core/error-analyzer/phases/DynamicPhaseSystem.ts
+// DynamicPhaseSystem.ts
 
 import { TypeScriptDiagnosticPhase } from '@/core/error-analyzer/phases/TypeScriptDiagnosticPhase';
 import { ASTParserUtils } from '@/core/error-analyzer/utils/ASTParserUtils';
@@ -9,19 +9,22 @@ import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBa
 import { PhaseBackupSystemImpl } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 import fs from 'fs';
 import path from 'path';
+
+import {
+  BasePatternAnalysis,
+  PatternOccurrence,
+  PatternDetectionResult,
+  PatternCompatibility, 
+  EntityPatternAnalysis
+} from '@/core/shared/pattern-types';
+
 // ========== TYPE DEFINITIONS ==========
 
 export interface EntityAnalysis {
   entityName: string;
   filePath: string;
   hasTypeContext: boolean;
-  patterns: Array<{
-    name: string;
-    description: string;
-    context: string;
-    line: number;
-    severity: 'low' | 'medium' | 'high';
-  }>;
+  patterns: PatternDetectionResult[]
   dependencies: string[];
   circularDependencies: string[][];
   importErrors: number;
@@ -47,18 +50,9 @@ export interface EntityAnalysis {
   };
 }
 
-export interface PatternAnalysis {
-  patternName: string;
-  entityCount: number;
-  totalUsages: number;
-  files: string[];
-  variations: Map<string, number>;
-  compatibilityMatrix: Map<string, string[]>;
-}
-
 export interface PhaseContext extends ExecutionContext {
   entityAnalysis: Map<string, EntityAnalysis>;
-  patternAnalysis: Map<string, PatternAnalysis>;
+  patternAnalysis: Map<string, EntityPatternAnalysis>;
   testResults: Map<string, any>;
   backupSystem: PhaseBackupSystem;
   config: Partial<PhaseSystemConfig>;
@@ -93,6 +87,7 @@ export interface PhaseExecutionResult {
 // ========== PATTERN DETECTION UTILITIES ==========
 
 export class PatternAnalyzer {
+  
   private typeIndicators = [
     ':',
     'interface',
@@ -160,13 +155,14 @@ async analyzeEntity(content: string, filePath: string): Promise<EntityAnalysis> 
     
     // Find patterns
     const patternMatches = codeDetector.detectPatterns(content, filePath);
-    const patterns = patternMatches.map(match => ({
-      name: match.pattern.name,
+    const patterns: PatternDetectionResult[] = patternMatches.map(match => ({
+      patternName: match.pattern.name,
       description: match.pattern.description,
       context: match.context,
       line: match.line,
-      severity: match.pattern.severity
+      severity: match.pattern.severity as 'low' | 'medium' | 'high'
     }));
+
 
     return {
       entityName: path.basename(filePath, '.ts'),
@@ -481,10 +477,10 @@ export class DynamicPhaseExecutor {
     return entities;
   }
 
-  private async analyzeAllEntities(ctx: PhaseContext): Promise<Map<string, PatternAnalysis>> {
+  private async analyzeAllEntities(ctx: PhaseContext): Promise<Map<string, EntityPatternAnalysis>> {
     console.log('🔍 Analyzing entity patterns...');
     
-    const patternMap = new Map<string, PatternAnalysis>();
+    const patternMap = new Map<string, EntityPatternAnalysis>();
     
     for (const [entityName, analysis] of ctx.entityAnalysis) {
       // Analyze patterns in this entity
@@ -541,10 +537,10 @@ export class DynamicPhaseExecutor {
     return inventoryPath;
   }
 
-  private async detectCommonPatterns(ctx: PhaseContext): Promise<PatternAnalysis[]> {
+  private async detectCommonPatterns(ctx: PhaseContext): Promise<EntityPatternAnalysis[]> {
     console.log('🎭 Detecting common patterns across entities...');
     
-    const commonPatterns: PatternAnalysis[] = [];
+    const commonPatterns: EntityPatternAnalysis[] = [];
     const threshold = Math.floor(ctx.entityAnalysis.size * 0.3); // 30% threshold
     
     for (const [patternName, analysis] of ctx.patternAnalysis) {
@@ -2028,7 +2024,7 @@ interface ${analysis.entityName}Interface<
     return new Map(this.context.entityAnalysis);
   }
 
-  getPatternAnalysis(): Map<string, PatternAnalysis> {
+  getPatternAnalysis(): Map<string, EntityPatternAnalysis> {
     return new Map(this.context.patternAnalysis);
   }
 

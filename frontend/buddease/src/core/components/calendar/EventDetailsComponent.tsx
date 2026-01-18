@@ -1,4 +1,4 @@
-EventDetailsComponent.tsx
+// EventDetailsComponent.tsx
 import { enhancePromptWithEntities } from "@/core/intelligence/EventEmitterIntegration";
 import ProjectEventEmitter from '@/core/libraries/eventSystem/ProjectEventEmitter';
 import React, { useEffect, useState } from "react";

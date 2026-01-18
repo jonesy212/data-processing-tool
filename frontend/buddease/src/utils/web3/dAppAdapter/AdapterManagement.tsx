@@ -1,6 +1,7 @@
+// AdapterManagement.tsx
 import { ShareProps } from '@/core/components/shared/Share';
 import { generateNewTask } from "@/core/generators/GenerateNewTask";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 
 class ManagementSystem {
   private static instance: ManagementSystem;

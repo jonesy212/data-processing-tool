@@ -1,4 +1,4 @@
-tradingConfig.ts
+// tradingConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { TradingEndpoints } from '@/core/typings/categories/TradingEndpoints';
 

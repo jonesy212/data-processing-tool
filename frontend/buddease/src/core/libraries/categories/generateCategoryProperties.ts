@@ -1,5 +1,5 @@
 // generateCategoryProperties.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { CategoryKeys } from "@/core/libraries/categories/CategoryManager";
@@ -28,7 +28,7 @@ type SnapshotCategoryMethods = {
 };
 
 interface CategoryPropertyBundle<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
 > {
   simple: string[];

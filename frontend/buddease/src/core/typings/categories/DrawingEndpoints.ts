@@ -1,5 +1,5 @@
-DrawingEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// DrawingEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DrawingEndpoints extends EndpointCategoryConfig {
   fetch: EndpointConfig;

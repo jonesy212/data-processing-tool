@@ -1,8 +1,8 @@
-ContentManagementPhase.tsx
+// ContentManagementPhase.tsx
 import BlogAndContentEditor from '@/core/components/models/content/BlogAndContentEditor';
 import ContentList from '@/core/components/models/content/ContentList';
 import { ListGeneratorProps } from '@/core/generators/ListGenerator';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import useContentManagementStore from '@/core/state/stores/ContentStore';
 import ContentType from '@/core/typings/contentTypes';
 import { EditorState } from 'draft-js';

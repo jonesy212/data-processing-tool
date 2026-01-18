@@ -1,11 +1,11 @@
-fetchExchangeData.ts
+// fetchExchangeData.ts
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { DexLogger, ExchangeLogger } from '@/core/logging/Logger';
 import { DataAnalysisDispatch } from "@/core/typings/phases/dataAnalysisTypes";
 import { processDEXData } from "@/utils/processDEXDataUtils";
 
 
-Usage in fetchDEXData function
+// Usage in fetchDEXData function
 export const fetchDEXData = async (
   dexData: any[],
   dispatch: DataAnalysisDispatch

@@ -4,14 +4,14 @@
 import * as snapshotApi from '@/api/SnapshotApi';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { default as findSnapshotStoresById, default as snapshotContainer } from '@/core/api/SnapshotApi';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import CalendarDetails from "@/core/components/models/data/CalendarDetails";
 import { CommonDetails } from "@/core/components/models/details/CommonDetails";
 import { Team, TeamDetails } from "@/core/components/teams/Team";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { createMeta } from "@/core/config/metadata/createMeta";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";

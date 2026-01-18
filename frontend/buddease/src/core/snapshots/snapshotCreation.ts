@@ -1,5 +1,4 @@
 // snapshotCreation.ts
-// In snapshotOperations/snapshotCreation.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';

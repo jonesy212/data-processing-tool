@@ -1,9 +1,9 @@
-DiscussionForumComponent.tsx
+// DiscussionForumComponent.tsx
 
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import ListGenerator from "@/core/generators/ListGenerator";
 import { Comment } from "@/core/models/comments/Comments";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React, { useState } from "react";
 // Define different types of posts
 

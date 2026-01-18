@@ -1,4 +1,4 @@
-RegistrationPhaseComponent.tsx
+// RegistrationPhaseComponent.tsx
 
 app/features/registration/components/RegistrationPhaseComponent.tsx
 import { GenericStepContainer } from '@/core/components/shared/steps/GenericStepContainer';

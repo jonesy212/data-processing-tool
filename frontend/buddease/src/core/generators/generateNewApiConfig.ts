@@ -1,4 +1,4 @@
-generateNewApiConfig.ts
+// generateNewApiConfig.ts
 import { CacheConfig } from "@/core/config/CacheConfig";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import dataLoader from "@/core/models/data/dataLoader";

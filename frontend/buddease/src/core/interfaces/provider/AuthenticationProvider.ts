@@ -1,4 +1,4 @@
-AuthenticationProvider.ts
+// AuthenticationProvider.ts
 interface AuthenticationProvider {
     name: string;
     type: string;

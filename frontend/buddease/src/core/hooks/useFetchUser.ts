@@ -1,4 +1,4 @@
-useFetchUser.ts
+// useFetchUser.ts
 import { UserActions } from '@/core/actions/UserActions';
 import { userService } from '@/core/api/ApiUser';
 import isValidAuthToken from '@/core/server/security/AuthValidation';

@@ -7,20 +7,20 @@ import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/core/documents/RelatedProps";
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import type { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { UnifiedConfigOption } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { UnifiedConfigOption } from '@/core/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import type { EventRecord, InitializedState } from '@/core/state/stores/DataStore';
 import { AuditRecord } from '@/core/subscribers/Subscriber';
 import { MultipleEventsCallbacks } from '@/core/subscribers/subscribeToSnapshotsImplementation';
-import { MemberEntity } from '@/core/typings/entities/MemberEntity';
+import type { MemberEntity } from '@/core/typings/entities/MemberEntity';
 import { ExtendedVersionData } from '@/core/versions/VersionData';
 
 interface SnapshotCore<

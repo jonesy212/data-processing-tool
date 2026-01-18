@@ -1,5 +1,4 @@
-SecureSocketLayer.ts
-SecureSocketLayer.ts
+// SecureSocketLayer.ts
 class SecureSocketLayer {
     constructor() {
       // Initialize SSL configuration

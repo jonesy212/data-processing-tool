@@ -1,3 +1,4 @@
+// GeolocationServiceUtils.ts
 import ChatSettings from "@/core/components/communications/chat/ChatSettingsPanel";
 import GeolocationService from "@/core/services/GeolocationService";
 

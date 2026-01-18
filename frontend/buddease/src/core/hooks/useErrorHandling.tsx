@@ -1,11 +1,11 @@
-useErrorHandling.tsx
+// useErrorHandling.tsx
 
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import safeParseData from "@/core/dataIntegration/SafeParseData";
 import { ParsedData } from "@/core/dataIntegration/parseData";
 import { FileLogger } from "@/core/logging/Logger";
 import ErrorHandler from '@/core/shared/ErrorHandler';
-import { AppEntity } from "@/core/typings/entities/AppEntity";
+import type { AppEntity } from "@/core/typings/entities/AppEntity";
 import { YourResponseType } from '@/core/typings/responseTypes';
 import { useState } from 'react';
 // Most practical solution

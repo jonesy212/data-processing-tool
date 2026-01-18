@@ -1,4 +1,4 @@
-themeConfig.ts
+// themeConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ThemeEndpoints } from '@/core/typings/categories/ThemeEndpoints';
 

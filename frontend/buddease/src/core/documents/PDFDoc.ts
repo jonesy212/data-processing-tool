@@ -1,4 +1,4 @@
-PDFDoc.ts
+// PDFDoc.ts
 import { PDFDocument as PdfLibDocument, rgb } from '@/core/documents/editing/PDFDocument';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

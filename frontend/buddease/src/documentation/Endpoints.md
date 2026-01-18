@@ -23,7 +23,7 @@ Step-by-- Step Guide
 ## File: src/app/config/endpoints/[category]Config.ts
 
 ```typescript
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface [Category]Endpoints extends EndpointCategoryConfig {
   // Basic CRUD operations

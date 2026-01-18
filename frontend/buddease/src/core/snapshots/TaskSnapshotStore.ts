@@ -1,9 +1,9 @@
-TaskSnapshotStore.ts
- TaskSnapshotStore.ts
+// TaskSnapshotStore.ts
 
-import { Task } from "@/core/models/tasks/Task";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import SnapshotStore, { Snapshot } from "@/core/snapshots/Snapshot";
+import type { Task } from "@/core/models/tasks/Task";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import SnapshotStore from '@/core/snapshots/Snapshot';
 
 //  Define the TaskSnapshotStore interface that extends SnapshotStore
 interface TaskSnapshotStore<Data> extends SnapshotStore<Data> {

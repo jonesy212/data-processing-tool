@@ -1,4 +1,4 @@
-ApiPreferencesEndpoints.ts
+// ApiPreferencesEndpoints.ts
 import { NestedEndpoints } from "@/core/api/ApiEndpoints";
 
 endpointPreferences.ts

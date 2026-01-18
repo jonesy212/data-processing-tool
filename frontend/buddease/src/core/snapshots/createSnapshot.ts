@@ -11,12 +11,12 @@ import { defaultSnapshotBuilder } from '@/core/snapshots/defaultSnapshotBuilder'
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/core/snapshots/methods/utilMethods';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
-import { SnapshotStoreOptions } from '@/core/snapshots/useSnapshotStore';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreOptions } from '@/core/snapshots/useSnapshotStore';
 import type { DataStore, InitializedState } from '@/core/state/stores/DataStore';
 import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/core/subscriptions/Subscription';

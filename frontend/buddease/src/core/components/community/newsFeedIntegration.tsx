@@ -1,4 +1,4 @@
-newsFeedIntegration.tsx
+// newsFeedIntegration.tsx
 // Example function to update state with news feed data
 
 import internalApiService from '@/core/api/ApiClient';

@@ -1,4 +1,4 @@
-ChartComponent.tsx
+// ChartComponent.tsx
 import type { ChartOptions } from '@/utils/chartUtils';
 import React from 'react';
 import { Bar, Line } from 'react-chartjs-2';

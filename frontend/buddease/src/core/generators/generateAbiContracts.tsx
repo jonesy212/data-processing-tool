@@ -1,4 +1,4 @@
-generateAbiContracts.tsx
+// generateAbiContracts.tsx
 // Exporting an empty object to make this file a module
 export {};
 

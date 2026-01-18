@@ -1,12 +1,13 @@
 // Profile.tsx
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '@/core/pages/personas/PersonaBuilder';
+import type { PersonaBuilder, PersonaData } from '@/core/pages/personas/PersonaBuilder';
+import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import UserDetails, { User } from '@/core/users/User';
 import React from 'react';
 
 interface ProfileProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

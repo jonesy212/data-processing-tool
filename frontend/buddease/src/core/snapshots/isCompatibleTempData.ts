@@ -4,15 +4,15 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { T } from '@/core/models/data/dataStoreMethods';
 import { TempData } from "@/core/models/data/TempData";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { ConfigureSnapshotStorePayload } from "@/core/snapshots/SnapshotConfig";
+import type { ConfigureSnapshotStorePayload } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";

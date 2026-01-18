@@ -1,4 +1,4 @@
-ChatWithFeedback.tsx
+// ChatWithFeedback.tsx
 import FeedbackService from "@/core/api/service/FeedbackService";
 import ChatRoom from '@/core/communications/ChatRoom'; // Import the ChatRoom component
 import ChatMessage from '@/core/components/communications/chat/ChatMessage';

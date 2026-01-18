@@ -1,7 +1,8 @@
-LazyIconProps.tsx
+// LazyIconProps.tsx
 LazyIcon.tsx
 import LazyLoadScript from "@/LazyLoadScript";
-import React, { ReactNode } from "react";
+import type { ReactNode } from 'react';
+import React from 'react';
 
 interface LazyIconProps {
   loadIcon: () => Promise<ReactNode>;

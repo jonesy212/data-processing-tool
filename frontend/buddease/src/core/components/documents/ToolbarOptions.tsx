@@ -1,5 +1,5 @@
-ToolbarOptions.tsx
-import { toolbarOptions } from "@/core/components/documents/Toolbar";
+// ToolbarOptions.tsx
+import type { toolbarOptions } from "@/core/components/documents/Toolbar";
 import CustomModifier from "@/core/documents/CustomModifier";
 import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';

@@ -1,4 +1,4 @@
-FeatureToggleManager.ts
+// FeatureToggleManager.ts
 import axiosInstance from '@/core/api/csrfToken';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';

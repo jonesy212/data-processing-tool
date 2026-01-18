@@ -1,4 +1,4 @@
-SnapshotList.test.tsx
+// SnapshotList.test.tsx
 import { SnapshotItem } from "@/core/snapshots/SnapshotList";
 
 it('should sort snapshots by name in ascending order', () => {

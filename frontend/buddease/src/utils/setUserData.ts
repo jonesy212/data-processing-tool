@@ -1,3 +1,4 @@
+// setUserData.ts
 import { UserManagerState } from "@/core/state/redux/slices/UserSlice";
 import useSettingManagerStore from "@/core/state/stores/SettingsStore";
 import { useDispatch } from "react-redux";

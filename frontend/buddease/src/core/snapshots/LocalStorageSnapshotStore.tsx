@@ -1,6 +1,6 @@
 // LocalStorageSnapshotStore.tsx
 import * as snapshotApi from '@/core/api/SnapshotApi';
-import { SnapshotContainerEntity } from '@/core/typings/entities/SnapshotContainerEntity';
+import type { SnapshotContainerEntity } from '@/core/typings/entities/SnapshotContainerEntity';
 import type { SnapshotAttachment, SnapshotEntity, SnapshotEntityData, SnapshotEntityStore, SnapshotEntityStoreConfig, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
 import { SnapshotStorage } from '@/utils/storage/SnapshotStorage';
 
@@ -18,7 +18,7 @@ import {
 
 import { Task, TaskData } from '@/core/components/models/tasks/Task';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import {
     PriorityTypeEnum,
     ProjectPhaseTypeEnum,
@@ -50,10 +50,9 @@ import { ChatRoom } from '@/core/communications/ChatRoom';
 import { Sender } from '@/core/components/communications/CommunicationPage';
 import {
     BaseDataEntity,
-    BaseDataRoot,
     BaseEntity,
     DefaultExcludedFields,
-    DefaultMeta,
+    DefaultMeta
 } from '@/core/config/BaseConfig';
 import { ModifiedDate } from '@/core/documents/DocType';
 import { SharedSnapshotProperties } from '@/core/documents/RelatedProps';
@@ -104,7 +103,7 @@ import { FC } from 'react';
 const SNAPSHOT_URL = endpoints.snapshots;
 
 type SnapshotUnion<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -271,7 +270,7 @@ const snapshotFunction = <
 
 // Type Guard for SnapshotWithCriteria
 function isSnapshotWithCriteria<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

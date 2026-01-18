@@ -1,4 +1,4 @@
-contentApiService.ts
+// contentApiService.ts
 import { contentApiService } from '@/core/api/service/ContentApiService';
 // Re-export the service methods as clean functions
 export const fetchContentById = contentApiService.fetchContentById.bind(contentApiService);

@@ -1,4 +1,4 @@
-ErrorStore.ts
+// ErrorStore.ts
 import { clearError, setError } from '@/core/state/redux/slices/ErrorSlice';
 import { makeAutoObservable } from "mobx";
 

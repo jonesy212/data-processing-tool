@@ -1,4 +1,4 @@
-MultimediaContentCustomization.tsx
+// MultimediaContentCustomization.tsx
 import ContentDetailsListItem from "@/core/components/models/content/ContentDetailsListItem";
 import { Task } from "@/core/components/models/tasks/Task";
 import { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
@@ -13,7 +13,8 @@ import { brandingSettings } from "@/core/libraries/theme/BrandingService";
 import ReusableButton from "@/core/libraries/ui/buttons/ReusableButton";
 import { isProject, isTask, isTodo } from "@/core/libraries/ui/ContentHelpers";
 import ContentRenderer from "@/core/libraries/ui/ContentRenderer";
-import useDeviceDimensions, { DeviceDimensions } from "@/core/models/display/DeviceDimensions";
+import type { DeviceDimensions } from '@/core/models/display/DeviceDimensions';
+import useDeviceDimensions from '@/core/models/display/DeviceDimensions';
 import { Project } from '@/core/models/projects/Project';
 import { ExtendedRouter } from "@/core/pages/MyAppWrapper";
 import { Todo } from "@/core/todos/Todo";

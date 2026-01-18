@@ -1,3 +1,4 @@
+// DynamicClassManager.tsx
 import { CustomDAppAdapter } from "@/utils/web3/dAppAdapter/DApp";
 import YourClass from "./YourClass";
 

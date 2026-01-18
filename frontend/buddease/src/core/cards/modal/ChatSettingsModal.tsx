@@ -1,4 +1,4 @@
-ChatSettingsModal.tsx
+// ChatSettingsModal.tsx
 import { CryptoPreferences } from '@/core/config/UserPreferences';
 import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
 import { GeneralNotificationTypes } from '@/core/notifications/NotificationChannels';

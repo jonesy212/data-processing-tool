@@ -1,6 +1,6 @@
-DetailsListActions.ts
-import { Data } from '@/core/models/data/Data';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+// DetailsListActions.ts
+import type { Data } from '@/core/models/data/Data';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import { createAction } from '@reduxjs/toolkit';
 
 const PREFIX = 'detailsList';

@@ -1,4 +1,4 @@
-GenerateComponentComponent.tsx
+// GenerateComponentComponent.tsx
 components/generator/GenerateComponentComponent.tsx
 "use client";
 
@@ -23,7 +23,6 @@ const GenerateComponentComponent: React.FC<GenerateComponentComponentProps> = ({
 
     setLoading(true);
     try {
-      // You can call an API endpoint that uses GenerateComponent.tsx logic
       const response = await fetch('/api/generate-component', {
         method: 'POST',
         headers: {

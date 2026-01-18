@@ -1,4 +1,4 @@
-UserActivityLogComponent.tsx
+// UserActivityLogComponent.tsx
 // Import necessary libraries
 import { useEffect, useState } from "react";
 

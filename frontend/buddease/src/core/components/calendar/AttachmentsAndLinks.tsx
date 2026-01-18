@@ -1,4 +1,4 @@
-AttachmentsAndLinks.tsx
+// AttachmentsAndLinks.tsx
 import React from 'react';
 
 interface AttachmentsAndLinksProps {

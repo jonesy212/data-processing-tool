@@ -22,7 +22,7 @@ import type {
     Snapshots, SnapshotsArray, SnapshotUnion
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotActionType } from '@/core/snapshots/SnapshotActionType';
+import type { SnapshotActionType } from '@/core/snapshots/SnapshotActionType';
 import type { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import type { SnapshotContainer, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData, SnapshotHierarchyMethods } from '@/core/snapshots/SnapshotData';

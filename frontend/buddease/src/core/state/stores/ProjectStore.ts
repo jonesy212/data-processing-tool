@@ -6,7 +6,7 @@ import { Progress } from "@/core/models/tracker/ProgressBar";
 import { NotificationChannels } from '@/core/notifications/NotificationChannels';
 import NotificationStore from "@/core/state/stores/NotificationStore"; // the advanced one
 import { SettingsStore } from '@/core/state/stores/SettingsStore';
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
+import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
 import { Milestone } from "@/core/typings/milestoneTypes";
 import { makeAutoObservable, reaction } from "mobx";
 import { v4 as uuid } from "uuid";

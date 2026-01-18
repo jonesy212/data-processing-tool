@@ -1,6 +1,6 @@
 // FilterStore.ts
 import { FilterActions } from "@/core/actions/FilterActions";
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/core/calendar/CalendarEventTimingOptimization";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -8,7 +8,7 @@ import HighlightEvent from "@/core/highlighting/screenFunctionality/HighlightEve
 import {
     clearFilteredEvents as clearFilteredEventsAction
 } from "@/core/state/redux/slices/FilteredEventsSlice";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector and useDispatch

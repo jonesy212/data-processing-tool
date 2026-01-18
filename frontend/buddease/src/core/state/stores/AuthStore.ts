@@ -8,7 +8,7 @@ import { hasTokenExpired } from "@/core/server/database/hasTokenExpired";
 import { verifyTokenScopes } from "@/core/server/database/JwtPayload";
 import { SecuritySettings } from '@/core/settings/SecuritySettings';
 import { SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 import * as jwt from 'jsonwebtoken'; // Assuming JWT is used for tokens
 import { makeAutoObservable } from "mobx";

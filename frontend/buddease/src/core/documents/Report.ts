@@ -1,6 +1,6 @@
 // Report.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import { BaseEntityProperties } from '@/core/documents/RelatedProps';
+import type { BaseEntityProperties } from '@/core/documents/RelatedProps';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { ProjectStructure } from '@/core/scripts/generateRoadmaps';

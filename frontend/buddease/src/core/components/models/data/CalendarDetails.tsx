@@ -1,12 +1,12 @@
 // CalendarDetails.tsx
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ListGenerator from '@/core/generators/ListGenerator';
-import { CollaborationOptions } from '@/core/interfaces/options/CollaborationOptions';
+import type { CollaborationOptions } from '@/core/interfaces/options/CollaborationOptions';
 import { CommonData, Customizations } from '@/core/models/CommonData';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { CommonEvent } from '@/core/state/stores/CommonEvent';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/core/typings/entities/CalendarEntity';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -14,7 +14,7 @@ import React from 'react';
 type CalendarDataAndEventDetails = Data | CommonEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 
 interface CalendarDetailsProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

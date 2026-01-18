@@ -1,4 +1,4 @@
-RootStoreComponent.tsx
+// RootStoreComponent.tsx
 import BrowserCheck from "@/core/BrowserCheck";
 import { RootStores } from "@/core/state/stores/RootStores";
 import { create } from "mobx-persist";

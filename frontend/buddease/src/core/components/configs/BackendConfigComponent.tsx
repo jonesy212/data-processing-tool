@@ -1,5 +1,5 @@
-BackendConfigComponent.tsx
-components/configs/BackendConfigComponent.tsx
+// BackendConfigComponent.tsx
+// components/configs/BackendConfigComponent.tsx
 import { BackendConfig } from '@/core/config/BackendConfig';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useDashboard } from '@/core/state/context/DashboardContext';

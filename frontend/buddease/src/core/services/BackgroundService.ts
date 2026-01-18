@@ -1,3 +1,4 @@
+// BackgroundService.ts
 app/services/BackgroundService.ts
 import DatabaseClient from '@/core/api/DatabaseClient';
 import { ChangeLogManager } from '@/core/logging/ChangeLogEntry';

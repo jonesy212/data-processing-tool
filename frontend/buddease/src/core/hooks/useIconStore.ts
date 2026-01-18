@@ -1,4 +1,4 @@
-useIconStore.ts
+// useIconStore.ts
 import { iconStore } from '@/core/state/stores/IconStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

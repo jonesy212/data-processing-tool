@@ -1,6 +1,7 @@
-FormControl.tsx
+// FormControl.tsx
 import { FormLogger } from '@/core/logging/Logger';
-import React, { RefObject } from 'react';
+import type { RefObject } from 'react';
+import React from 'react';
 
 interface FormControlProps {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-TrainingSession.tsx
+// TrainingSession.tsx
 
 // Define the TrainingSession class
 class TrainingSession {

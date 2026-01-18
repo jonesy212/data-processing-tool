@@ -1,9 +1,9 @@
 // DocumentGenerator.ts
 'use client';
 
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 
 export class ClientDocumentGenerator {

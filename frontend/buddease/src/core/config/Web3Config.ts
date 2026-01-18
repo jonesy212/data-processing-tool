@@ -1,4 +1,4 @@
-Web3Config.ts
+// Web3Config.ts
 
 class Web3Config {
     private timeout: number;

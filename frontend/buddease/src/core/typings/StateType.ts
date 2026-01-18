@@ -1,12 +1,12 @@
-StateType.ts
+// StateType.ts
 
 import { Project } from "@/core/models/projects/Project";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
-import { NotificationState } from "@/core/state/redux/slices/NotificationSlice";
-import { SettingsState } from "@/core/state/redux/slices/SettingsSlice";
-import { TaskState } from "@/core/state/redux/slices/TaskSlice";
-import { UserManagerState } from '@/core/state/redux/slices/UserSlice';
+import type { NotificationState } from "@/core/state/redux/slices/NotificationSlice";
+import type { SettingsState } from "@/core/state/redux/slices/SettingsSlice";
+import type { TaskState } from "@/core/state/redux/slices/TaskSlice";
+import type { UserManagerState } from '@/core/state/redux/slices/UserSlice';
 import { User } from "@/core/users/User";
 // Define the StateType interface
 interface StateType {

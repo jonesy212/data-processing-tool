@@ -1,3 +1,4 @@
+// SnapshotStoreContextType.ts
 // SnapshotStore Context Type
 import {
     BaseDataEntity,

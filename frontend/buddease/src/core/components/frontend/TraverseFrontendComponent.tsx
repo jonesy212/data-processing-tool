@@ -1,5 +1,5 @@
+// TraverseFrontendComponent.tsx
 "use client";
-// components/frontend/TraverseFrontendComponent.tsx
 
 import { analyzeFrontendStructure } from '@/core/generators/corrections/analyzers/frontendAnalyzer';
 import type { TreeNode } from '@/core/models/TreeNode';

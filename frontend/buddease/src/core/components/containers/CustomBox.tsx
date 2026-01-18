@@ -1,4 +1,4 @@
-CustomBox.tsx
+// CustomBox.tsx
 import DynamicComponent from "@/core/components/styling/DynamicComponents";
 import DynamicSpacingAndLayout from "@/core/components/styling/DynamicSpacingAndLayout";
 import DynamicTypography from "@/core/components/styling/DynamicTypography";
@@ -18,7 +18,8 @@ import { ExtendedRouter } from "@/core/pages/MyAppWrapper";
 import FormControl from "@/core/pages/forms/FormControl";
 import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 import { Router, useRouter } from "next/router";
-import React, { ReactNode, useRef } from "react";
+import type { ReactNode, useRef } from 'react';
+import React from 'react';
 
 interface CustomBoxProps extends ResizablePanelsProps {
   children: ReactNode[];

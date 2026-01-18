@@ -1,10 +1,12 @@
-AttendancePrediction.tsx
-import { Attendee } from "@/core/components/calendar/Attendee";
-import { BaseEvent } from '@/core/events/BaseEvent';
-import { AttendancePredictionResult } from "@/core/models/data/CalendarEventAttendancePrediction";
-import { K, T } from '@/core/models/data/dataStoreMethods';
-import { SharedSnapshotEvent } from "@/core/typings/appEventTypes";
+// AttendancePrediction.tsx
+import type { Attendee } from "@/core/components/calendar/Attendee";
+import type { BaseEvent } from '@/core/events/BaseEvent';
+import type { AttendancePredictionResult } from "@/core/models/data/CalendarEventAttendancePrediction";
+import type { K, T } from '@/core/models/data/dataStoreMethods';
+import type { SharedSnapshotEvent } from "@/core/typings/appEventTypes";
 import { useState } from 'react';
+
+
 
 interface EventAttendance extends BaseEvent, SharedSnapshotEvent<T, K> {
   eventId: string;

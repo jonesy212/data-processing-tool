@@ -1,4 +1,4 @@
-// DAppAdapter.ts
+// DAppAdapter.tsx
 import React, { useEffect, useState } from "react";
 import type { DAppPlugin } from '@/utils/web3/pluginSystem/plugins/PluginInterface';
 import type { Web3Provider } from '@/core/components/web3/Web3Provider'

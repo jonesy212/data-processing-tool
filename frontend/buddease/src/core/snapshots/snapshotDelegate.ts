@@ -6,7 +6,7 @@ import { isRealtimeDataItemArray } from '@/core/hooks/isRealtimeDataItemArray';
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { CreateSnapshotsPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";

@@ -1,4 +1,4 @@
-VideoEditorPersona.ts
+// VideoEditorPersona.ts
 
 // Define attributes and permissions for Video Editor persona
 interface VideoEditorPersona {

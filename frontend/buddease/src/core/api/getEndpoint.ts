@@ -1,4 +1,4 @@
-getEndpoint.ts
+// getEndpoint.ts
 
 // Function to recursively traverse the endpoints object
 export const getEndpoint = (endpointPath: string, obj: any): string | undefined => {

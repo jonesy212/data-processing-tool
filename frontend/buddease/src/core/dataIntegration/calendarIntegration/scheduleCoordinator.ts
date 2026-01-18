@@ -1,5 +1,5 @@
-scheduleCoordinator.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+// scheduleCoordinator.ts
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { CalendarEventManager } from '@/core/dataIntegration/calendarIntegration/calendarEventManager';
 import { ProjectLogger } from '@/core/dataIntegration/projectIntegration/ProjectLogger';

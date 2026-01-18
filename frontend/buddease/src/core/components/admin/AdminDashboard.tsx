@@ -1,16 +1,17 @@
-AdminDashboard.tsx
+// AdminDashboard.tsx
 import { useDynamicComponents } from "@/core/components/DynamicComponentsContext";
 import ConfigurationServiceComponent from "@/core/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
 import { AppConfig } from "@/core/config/AppConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import YourComponent, { YourComponentProps } from "@/core/hooks/YourComponent";
+import type { YourComponentProps } from '@/core/hooks/YourComponent';
+import YourComponent from '@/core/hooks/YourComponent';
 import { subscriptionServiceInstance } from "@/core/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import type { UserRole } from "@/core/models/UserRole";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import SecureFieldManager from '@/core/server/security/SecureFieldManager';
 import useNotificationManagerService from "@/core/services/NotificationService";
 import { useFeatureContext } from "@/core/state/context/FeatureContext";

@@ -1,6 +1,6 @@
-InterfaceImportFixRunner.ts
-import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports';
-import { previewInterfaceImportDiff } from '@/core/error-analyzer/utils/previewInterfaceImportDiff';
+// InterfaceImportFixRunner.ts
+import type { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports';
+import type { previewInterfaceImportDiff } from '@/core/error-analyzer/utils/previewInterfaceImportDiff';
 import { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 import fs from 'fs';
 import pLimit from 'p-limit';

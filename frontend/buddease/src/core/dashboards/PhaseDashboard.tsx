@@ -1,4 +1,4 @@
-PhaseDashboard.tsx
+// PhaseDashboard.tsx
 import React from 'react';
 
 import EmailSetupForm from "@/core/components/communications/email/EmailSetUpForm";

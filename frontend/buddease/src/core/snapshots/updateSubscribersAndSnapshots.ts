@@ -1,5 +1,4 @@
-updateSubscribersAndSnapshots.ts
- updateSubscribersAndSnapshots.ts
+// updateSubscribersAndSnapshots.ts
 
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
@@ -8,17 +7,17 @@ import { Subscription } from "@/core/subscriptions/Subscription";
 import { useParams } from "react-router-dom";
 import { ModifiedDate } from "@/core/documents/DocType";
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { BaseData } from '@/core/models/data/Data';
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
-import { NotificationTypeEnum, NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { BaseData } from '@/core/models/data/Data';
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
+import type { NotificationTypeEnum, NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/utils/trading/TradingUtils";
 import { userId } from "@/core/api/ApiUser";
 import { triggerIncentives } from "@/utils/web3/applicationUtils";
 import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/core/interfaces/payload/payloadTypes'
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { K, T } from "@/core/models/data/dataStoreMethods";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import * as snapshotApi from '@/core/api/SnapshotApi';
 //  Example of asynchronous function using async/await
 const updateSubscribersAndSnapshots = async (

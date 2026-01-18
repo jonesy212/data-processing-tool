@@ -1,5 +1,5 @@
-CategoryEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// CategoryEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface CategoryEndpoints extends EndpointCategoryConfig {
   // Basic CRUD operations

@@ -1,4 +1,4 @@
-StoreGenerator.tsx
+// StoreGenerator.tsx
 import * as ejs from 'ejs';
 import * as path from 'path';
 

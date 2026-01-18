@@ -1,18 +1,18 @@
 // MobXEntityStore.tsx
 
-import { GlobalStateActions } from '@/core/actions/GlobalStateActions';
+import type { GlobalStateActions } from '@/core/actions/GlobalStateActions';
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserSettings } from '@/core/config/UserSettings';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { DesignSystemConfig } from '@/core/libraries/ui/theme/MapProperties';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { DocumentSize } from "@/core/models/data/StatusType";
-import { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
+import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import Version from '@/core/versions/Version';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js

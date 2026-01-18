@@ -1,3 +1,4 @@
+// SortCriteria.tsx
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -20,7 +21,6 @@ export interface Sort {
 }
 
 
-// SortCriteria.tsx
 enum SortCriteria {
   Title = "title",
   Date = "date",

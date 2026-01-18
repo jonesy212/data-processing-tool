@@ -1,3 +1,4 @@
+// DatabaseContext.ts
 app/interfaces/provider/DatabaseContext.ts
 'use client';
 

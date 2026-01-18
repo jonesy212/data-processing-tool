@@ -1,6 +1,6 @@
-fileCategoryAnalyzers.ts
+// fileCategoryAnalyzers.ts
 src/app/analyzers/fileCategoryAnalyzers.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionCategory, CorrectionSeverity } from '@/core/typings/correctionTypes';
 
 /* ------------------------------------------------------------------ */

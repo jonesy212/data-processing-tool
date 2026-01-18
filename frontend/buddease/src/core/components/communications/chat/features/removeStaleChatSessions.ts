@@ -1,4 +1,4 @@
-removeStaleChatSessions.ts
+// removeStaleChatSessions.ts
 const removeStaleChatSessions = () => {
     // Implementation to remove stale chat sessions
   };

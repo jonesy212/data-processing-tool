@@ -1,4 +1,4 @@
-RegistrationPhase.tsx
+// RegistrationPhase.tsx
 import { endpoints } from '@/core/api/endpointConfigurations';
 import EmailSetupForm from "@/core/components/communications/email/EmailSetUpForm";
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
@@ -7,7 +7,7 @@ import { PhaseHookConfig } from "@/core/hooks/phaseHooks/PhaseHooks";
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions'; // Import sanitizeInput function
 import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
 import authService from "@/core/server/auth/AuthService";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { setError, setLoading } from "@/core/state/stores/UISlice";
 import { UserData } from "@/core/users/User";
 import axios from "axios";

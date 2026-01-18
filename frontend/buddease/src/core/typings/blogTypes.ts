@@ -1,8 +1,7 @@
 // blogTypes.ts
-// app/types/blog.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Content } from '@/core/models/content/AddContent';
-import { Data, SharedRelationshipData } from '@/core/models/data/Data';
+import type { Data, SharedRelationshipData } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';

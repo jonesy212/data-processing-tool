@@ -1,10 +1,10 @@
-generateNewRoute.tsx
+// generateNewRoute.tsx
 import ConditionalRouteComponent from '@/core/components/routing/ConditionalRouteComponent';
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import safeParseData from '@/core/dataIntegration/SafeParseData';
 import DynamicRouteComponent from '@/core/libraries/ui/components/DynamicRouteComponent';
 import { FileLogger } from '@/core/logging/Logger';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import DynamicErrorBoundary from '@/core/shared/DynamicErrorBoundary';
 import ErrorHandler from '@/core/shared/ErrorHandler';
 import { YourResponseType } from '@/core/typings/responseTypes';

@@ -1,4 +1,4 @@
-ShortcutKeys.tsx
+// ShortcutKeys.tsx
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { sanitizeData } from "@/core/models/cypto/SanitizationFunctions";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";

@@ -1,4 +1,4 @@
-moderatorsConfig.ts
+// moderatorsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ModeratorsEndpoints } from '@/core/typings/categories/ModeratorsEndpoints';
 

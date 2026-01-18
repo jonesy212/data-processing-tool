@@ -1,5 +1,5 @@
-SnapshotTypeDefs.ts
-import { ExtractEntityTypes } from '@/core/typings/BaseTypes';
+// SnapshotTypeDefs.ts
+import type { ExtractEntityTypes } from '@/core/typings/BaseTypes';
 
 
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { SnapshotBase } from '@/core/snapshots/SnapshotContainer'; // Your existing file
 
-import { SnapshotConfig as ExistingSnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig as ExistingSnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { isSnapshotsArray } from '@/core/snapshots/createSnapshotStoreOptions';
 

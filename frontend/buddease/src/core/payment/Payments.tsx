@@ -1,4 +1,4 @@
-Payments.tsx
+// Payments.tsx
 import { handleCryptoPaymentSelect } from '@/core/typings/eventHandlers/domEventHandlers';
 import React from 'react';
 

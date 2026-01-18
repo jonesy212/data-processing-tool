@@ -1,4 +1,4 @@
-lifecycles.ts
+// lifecycles.ts
 
 import {
     BaseDataEntity,

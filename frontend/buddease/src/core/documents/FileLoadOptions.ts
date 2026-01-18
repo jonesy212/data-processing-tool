@@ -1,4 +1,4 @@
-FileLoadOptions.ts
+// FileLoadOptions.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { isBrowser } from '@/utils/isBrowser';
 
@@ -42,7 +42,6 @@ const loadFile = async ({ filePath, isLocalFileUpload }: FileLoadOptions): Promi
       throw new Error(`No file found in localStorage at ${filePath}`);
     }
   } else {
-    // Handle server-side (Node.js) file loading
     try {
       // For server-side, use axiosInstance to fetch the file from a URL
       const response = await axiosInstance.get(filePath, { responseType: "blob" });

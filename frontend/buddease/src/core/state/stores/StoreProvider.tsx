@@ -1,5 +1,4 @@
 // StoreProvider.tsx
-// storeProvider.tsx
 
 import { RootStores, rootStores } from '@/core/state/stores/RootStores';
 import React, { createContext, useContext } from 'react';

@@ -3,17 +3,16 @@
 import { isInitializedSnapshot } from "@/core/api/ApiDataAnalysis";
 import getCurrentSnapshot from '@/core/api/SnapshotApi';
 import { getSubscribersAPI } from '@/core/api/subscriberApi';
-import type { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
 import type { SnapshotWithData } from '@/core/components/calendar/CalendarApp';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { baseConfig } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { baseConfig } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { createMeta } from "@/core/config/metadata/createMeta";
 import { useMeta } from '@/core/config/useMeta';
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useSecureStoreId from '@/core/hooks/useSecureStoreId';
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
@@ -41,15 +40,14 @@ import type {
 } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import type {SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { createSnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotContainer, SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import type { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';
-import type { SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/core/snapshots/SnapshotWithCriteria';
+import type { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
-import type { CustomSnapshotData, SnapshotStoreConfig} from '@/core/snapshots/SnapshotStoreConfig';
-import { createSnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
-import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/core/snapshots/SnapshotWithCriteria';
 import {
     createBasicSnapshot,
     createCompleteSnapshot
@@ -57,12 +55,11 @@ import {
 import { handleSnapshotOperation } from '@/core/snapshots/handleSnapshotOperation';
 import handleSnapshotStoreOperation from '@/core/snapshots/handleSnapshotStoreOperation';
 import { getCategory } from '@/core/snapshots/snapshotContainerUtils';
-import type { DataStore, InitializedState } from '@/core/state/stores/DataStore';
-import type { useDataStore } from '@/core/state/stores/DataStore';
+import type { DataStore, InitializedState, useDataStore } from '@/core/state/stores/DataStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { subscribeToSnapshotsImpl } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import type { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import { subscribeToSnapshotsImpl } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import type { Subscription } from '@/core/subscriptions/Subscription';
 import { getSubscription } from '@/core/subscriptions/subscriptionServiceInstance';
 import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
@@ -112,7 +109,7 @@ const compareSnapshots = <T extends Record<keyof T, any>>(
 
 
 function useMetaHandler<  
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -200,7 +197,7 @@ const yourGetSnapshotDataFunction = (
 
 
 const createSnapshotStoreOptions = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

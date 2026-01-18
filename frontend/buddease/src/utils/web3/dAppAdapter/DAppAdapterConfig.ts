@@ -1,7 +1,8 @@
+// DAppAdapterConfig.ts
 import ApiConfig from '@/core/api/ApiConfigService';
 import { ClientConfig } from "@/core/client/Client";
 import { Team } from "@/core/components/teams/Team";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CacheConfig } from '@/core/config/CacheConfig';
 import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
 import { LocalizationConfig } from '@/core/config/LocalizationConfig';
@@ -13,7 +14,7 @@ import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { ThemeConfig } from '@/core/libraries/ui/theme/ThemeConfig';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import { Project } from "@/core/models/projects/Project";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { TeamMember } from "@/core/models/teams/TeamMembers";
 import type { UserRole } from "@/core/models/UserRole";
 
@@ -409,7 +410,7 @@ export interface DappProps<
 
 
 export interface DAppAdapterConfig<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

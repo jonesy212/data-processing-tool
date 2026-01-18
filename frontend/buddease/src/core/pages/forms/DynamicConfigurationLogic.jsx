@@ -1,4 +1,4 @@
-// DynamicConfigurationLogic.tsx
+// DynamicConfigurationLogic.jsx
 import { useDynamicComponents } from "@/core/components/DynamicComponentsContext";
 import { useEffect } from "react";
 

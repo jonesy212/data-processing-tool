@@ -2,12 +2,12 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from '@/core/config/useMetadata';
+import type { useMetadata } from '@/core/config/useMetadata';
 import { DocumentOptions } from "@/core/documents/DocumentOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationData } from "@/core/hooks/useNotificationSystem";
-import { DataDetails } from '@/core/models/data/Data';
+import type { DataDetails } from '@/core/models/data/Data';
 import { AreaDimensions, FetchOptions, fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import { useNotification } from '@/core/state/context/NotificationContext';

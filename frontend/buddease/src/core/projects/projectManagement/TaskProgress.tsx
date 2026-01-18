@@ -1,9 +1,9 @@
-TaskProgress.tsx
+// TaskProgress.tsx
 TodoProgress.tsx
 import ListGenerator from "@/core/generators/ListGenerator";
-import { Data } from '@/core/models/data/Data';
-import { Task } from "@/core/models/tasks/Task";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Data } from '@/core/models/data/Data';
+import type { Task } from "@/core/models/tasks/Task";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React from "react";
 
 interface TaskProgressProps {

@@ -1,4 +1,4 @@
-// DatabaseMigrationService.ts
+// migrateUserData.ts
 import { LifecycleManager } from '@/app/hooks/phases/LifecycleManager';
 import { Phase } from "@/app/models/phases/Phase";
 import { DatabaseSchema } from '@/app/typings/database';

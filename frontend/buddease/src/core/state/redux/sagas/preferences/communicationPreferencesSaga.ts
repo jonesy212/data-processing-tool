@@ -1,4 +1,4 @@
-communicationPreferencesSaga.ts
+// communicationPreferencesSaga.ts
 import { UserCommunicationPreferencesActions } from '@/core/config/UserPreferencesActions';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { PayloadAction } from '@reduxjs/toolkit';

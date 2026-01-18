@@ -1,4 +1,4 @@
-design-tokens.ts
+// design-tokens.ts
 import { Theme } from '@/core/libraries/ui/theme/Theme';
 
 // Design tokens that users can customize

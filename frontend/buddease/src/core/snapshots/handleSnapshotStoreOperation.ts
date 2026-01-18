@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
+import type { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
 import SnapshotStore from "./SnapshotStore";
 
 // Ensure T and K are imported or defined if necessary

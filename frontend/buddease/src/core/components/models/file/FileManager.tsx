@@ -3,10 +3,10 @@
 import { fetchFolderContentsAPI } from '@/core/api/ApiFiles';
 import { Folder } from '@/core/models/data/Folder';
 import { refreshUIForFile } from '@/core/snapshots/refreshUI';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { FilteredEventsState, useFilterStore } from '@/core/state/stores/FilterStore';
-import { FilterAttachment, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/core/typings/entities/FilterEntity';
-import { AppFile, FileMetadata } from '@/core/typings/file/fileTypes';
+import type { FilterAttachment, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/core/typings/entities/FilterEntity';
+import type { AppFile, FileMetadata } from '@/core/typings/file/fileTypes';
 import { React } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

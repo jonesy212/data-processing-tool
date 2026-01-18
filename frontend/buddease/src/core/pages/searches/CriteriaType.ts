@@ -1,4 +1,4 @@
-CriteriaType.ts
+// CriteriaType.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/core/communications/LanguageEnum";
 import FormatEnum from "@/core/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";

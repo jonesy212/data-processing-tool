@@ -1,12 +1,12 @@
 // processSnapshotConfigs.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig, snapshotStoreConfigs } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig, snapshotStoreConfigs } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { decompress } from "@/utils/compression"; // hypothetical decompression utility
 
@@ -58,7 +58,7 @@ processSnapshotConfigs();
 
 // Properly typed handleTags function
 const handleTags = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -80,7 +80,7 @@ const handleTags = <
 
 // Properly typed processSnapshotRelationships function
 const processSnapshotRelationships = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -177,7 +177,7 @@ const initializeSnapshotStoreConfig = async <
   
 
 const processAllSnapshotConfigs = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -223,7 +223,7 @@ processAllSnapshotConfigs();
 
 
 const processAllSnapshotConfigsParallel = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -265,7 +265,7 @@ const processAllSnapshotConfigsParallel = async <
 
 
 export const initializeAllSnapshotStores = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

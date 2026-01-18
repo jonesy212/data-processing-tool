@@ -724,7 +724,6 @@ export default {
   isFunctionUsage,
   isClassUsage,
   isInterfaceUsage,
-  UsageAnalyzer
 };
 
 

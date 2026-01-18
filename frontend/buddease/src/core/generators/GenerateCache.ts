@@ -33,7 +33,7 @@ import {
     darkModeTogglePhaseHook,
     notificationBarPhaseHook,
 } from "@/core/hooks/userInterface/UIPhaseHooks";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { sanitizeCallback, sanitizeInitialData } from '@/core/server/security/DOMPurify';
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 import { VersionHistory } from "@/core/versions/VersionData";

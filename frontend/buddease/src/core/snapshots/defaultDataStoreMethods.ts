@@ -1,16 +1,16 @@
 // defaultDataStoreMethods.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CustomHydrateResult } from '@/core/config/DocumentBuilderConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { options } from '@/core/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
-import { NotificationPosition, StatusType, SubscriberTypeEnum } from '@/core/models/data/StatusType';
+import type { BaseData, Data } from '@/core/models/data/Data';
+import type { NotificationPosition, StatusType, SubscriberTypeEnum } from '@/core/models/data/StatusType';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import { category } from '@/core/snapshots/isValidFileCategory';
@@ -19,13 +19,13 @@ import { mapToSnapshotStore } from '@/core/snapshots/mappings/mapToSnapshotStore
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
+import type { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
 import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/core/subscriptions/Subscription';
 import {

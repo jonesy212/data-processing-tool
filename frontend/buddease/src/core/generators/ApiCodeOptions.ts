@@ -1,7 +1,7 @@
 // ApiCodeOptions.ts
-import type ApiMethod from "./ApiCodeGenerator";
+import type { ApiMethod } from "./ApiCodeGenerator";
 
-interface ApiCodeOptions {
+export interface ApiCodeOptions {
   authenticationToken?: string; // Optional authentication token
   headers?: Record<string, string>; // Additional headers
   timeout?: number; // Request timeout in milliseconds
@@ -14,4 +14,3 @@ interface ApiCodeOptions {
   // Add more options as needed
 }
 
-export default ApiCodeOptions;

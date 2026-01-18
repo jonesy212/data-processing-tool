@@ -1,5 +1,5 @@
 // SnapshotStoreContainer.ts
-import { snapshotStoreConfig, SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { snapshotStoreConfig, SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 
@@ -13,9 +13,9 @@ import { Category, generateCategoryProperties } from "@/core/libraries/categorie
 import { SimulatedDataSource } from '@/core/snapshots/createSnapshotOptions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreOptions } from "@/core/snapshots/SnapshotStoreOptions";
+import type { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreOptions } from "@/core/snapshots/SnapshotStoreOptions";
 import type { DataStore } from '@/core/state/stores/DataStore';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";

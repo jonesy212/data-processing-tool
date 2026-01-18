@@ -1,7 +1,7 @@
 // CalendarEvent.ts
 
 import type { CalendarStatus } from '@/core/models/data/StatusType'
-import { ReminderTypes } from '@/core/typings/ReminderTypes';
+import type { ReminderTypes } from '@/core/typings/ReminderTypes';
 import type { AttendeeStatus } from '@/core/models/data/StatusType'
 import type { Label } from '@/core/branding/BrandingSettings';
 import type { Team } from "@/core/components/teams/Team";
@@ -9,7 +9,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import type { CalendarEntity } from '@/core/typings/entities/CalendarEntity';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentOptions } from "@/core/documents/DocumentOptions";

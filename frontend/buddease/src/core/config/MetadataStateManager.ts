@@ -1,13 +1,12 @@
 // MetadataStateManager.ts
-// server/metadata/MetadataStateManager.ts
-import type { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { createMetadata } from '@/core/config/metadata/createMetadata';
+import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { createMetadata } from '@/core/config/metadata/createMetadata';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { MetadataEntriesType, StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/core/documents/RelatedProps';
-import { SharedRelationshipData } from '@/core/models/data/Data';
+import type { SharedRelationshipData } from '@/core/models/data/Data';
 import { Taggable, TagsRecord } from '@/core/models/tracker/Tag';
 import { Permission } from "@/core/permissions/Permission";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
@@ -24,7 +23,7 @@ const { latestVersion = createLatestVersion(), ...rest } = (data as Record<strin
 
 // Core server metadata interfaces
 interface CoreMetadata<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
 > extends SharedIdentifiers<T, K>{
   schema: Record<string, SchemaField>;
@@ -41,7 +40,7 @@ type MetaBase = {
 };
 
 interface WithValue<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -53,7 +52,7 @@ interface WithValue<
 
 // Server-side metadata state creation
 function createMetaState<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -153,7 +152,7 @@ function createMetaState<
 
 // Server metadata creation functions
 export const createMeta = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

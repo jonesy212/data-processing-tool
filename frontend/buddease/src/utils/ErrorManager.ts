@@ -1,4 +1,5 @@
-utils/ErrorManager.ts
+// ErrorManager.ts
+// utils/ErrorManager.ts
 
 import fs from 'fs'
 

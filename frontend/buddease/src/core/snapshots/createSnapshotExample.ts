@@ -1,14 +1,13 @@
 // createSnapshotExample.ts
-// import { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
+// import type { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
 
 // import type {  Snapshot } from '@/core/snapshots/Snapshot';
 
 // import { Data } from '@/core/models/data/Data';
 // import { K, T } from '@/core/models/data/dataStoreMethods';
 // import SnapshotStore from "./SnapshotStore";
-// import { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
+// import type { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
 
-// // createSnapshotExample.tsp
 
 // const createSnapshotExample = async (
 //   id: string,

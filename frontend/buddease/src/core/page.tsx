@@ -1,4 +1,4 @@
-page.tsx
+// page.tsx
 "use client";
 
 import ApiConfigService from "@/core/api/ApiConfigService";

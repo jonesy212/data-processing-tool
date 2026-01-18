@@ -1,4 +1,4 @@
-encryptString.ts
+// encryptString.ts
 // Import any necessary cryptographic libraries or utilities
 import crypto from 'crypto';
 

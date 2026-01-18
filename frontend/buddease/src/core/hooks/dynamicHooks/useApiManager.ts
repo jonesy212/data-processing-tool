@@ -1,5 +1,6 @@
-useApiManager.ts
-import ApiConfigService, { ApiConfig } from '@/core/api/ApiConfigService';
+// useApiManager.ts
+import type { ApiConfig } from '@/core/api/ApiConfigService';
+import ApiConfigService from '@/core/api/ApiConfigService';
 import { useApiManagerStore } from '@/core/api/ApiStore';
 
 import { useEffect } from 'react';

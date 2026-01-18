@@ -1,4 +1,4 @@
-BackendConfig.ts
+// BackendConfig.ts
 import { ApiConfig } from '@/core/api/ApiConfigService';
 import { CacheConfig } from "@/core/config/CacheConfig";
 import { RetryConfig } from "@/core/services/ConfigurationService";

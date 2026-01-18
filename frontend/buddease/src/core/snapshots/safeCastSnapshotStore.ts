@@ -1,14 +1,14 @@
 // safeCastSnapshotStore.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { SnapshotUnion, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import type { InitializedState } from '@/core/state/stores/DataStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
@@ -16,7 +16,7 @@ import SnapshotStore from './SnapshotStore';
 
 // A safe casting function to ensure type compatibility
 function safeCastSnapshotStore<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

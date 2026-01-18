@@ -1,4 +1,4 @@
-MultiFactorAuthentication.ts
+// MultiFactorAuthentication.ts
 class MultiFactorAuthentication {
     constructor() {
       // Initialize multi-factor authentication configuration

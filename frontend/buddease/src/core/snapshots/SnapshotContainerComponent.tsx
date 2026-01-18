@@ -1,9 +1,9 @@
-SnapshotContainerComponent.tsx
+// SnapshotContainerComponent.tsx
 import { constructTarget, Target } from '@/core/api/EndpointConstructor';
 import { fetchAllSnapshots } from '@/core/api/SnapshotApi';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import useErrorHandling from '@/core/hooks/userInterface/automation_process';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotList from '@/core/snapshots/SnapshotList'; // Use the existing SnapshotList class
 import { useNotification } from '@/core/state/context/NotificationContext';

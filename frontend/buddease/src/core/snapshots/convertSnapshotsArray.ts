@@ -3,7 +3,6 @@
 // import { Attachment } from '@/core/documents/attachment/Attachment';
 // import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-// // convertSnapshotsArray.ts
 
 // import { useSnapshotManager } from '@/core/hooks/useSnapshotManager';
 // import { BaseData, Data } from '@/core/models/data/Data';

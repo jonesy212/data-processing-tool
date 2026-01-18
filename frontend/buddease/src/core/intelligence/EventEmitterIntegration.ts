@@ -1,5 +1,4 @@
-EventEmitterIntegration.ts
-EventEmitterIntegration.tsx
+// EventEmitterIntegration.ts
 
 export const enhancePromptWithEntities = (prompt: string, entities: any, userContext: any): string => {
     // Your logic to enhance the prompt based on spaCy entities and userContext

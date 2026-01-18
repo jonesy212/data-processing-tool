@@ -1,5 +1,4 @@
   // NotificationEditingPhaseHook.tsx
-  // NotificationEditingPhaseHook.ts
 import useNotificationBar from '@/core/hooks/commHooks/useNotificationBar';
 import { createPhaseHook } from '@/core/hooks/phaseHooks/PhaseHooks';
 

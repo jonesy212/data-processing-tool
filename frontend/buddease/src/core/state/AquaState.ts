@@ -1,4 +1,4 @@
-// app/models/aqua/AquaState.ts
+// AquaState.ts
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 
 export interface AquaSession {

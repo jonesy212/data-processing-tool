@@ -1,3 +1,4 @@
+// InteractiveConfirmationService.ts
 confirmation/InteractiveConfirmationService.ts
 import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
 import { ConfirmationService } from '@/core/services/ConfirmationService';
@@ -87,7 +88,6 @@ export class InteractiveConfirmationService implements ConfirmationService {
   }
 
     async confirm(message: string): Promise<boolean> {
-      // Implement interactive confirmation (could use inquirer.js or similar)
       console.log(`\n🔄 Interactive: ${message}`);
       // For now, use console confirmation as fallback
       const consoleService = new ConsoleConfirmationService();

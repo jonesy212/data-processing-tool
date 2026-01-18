@@ -1,5 +1,4 @@
 // PhaseService.ts
-// PhaseService.ts - Client-side state management
 import { AppPhase } from '@/core/typings/entities/PhaseEntity';
 
 class PhaseService {

@@ -3,10 +3,10 @@ import { Task } from "@/core/components/models/tasks/Task";
 import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import type { UserRole } from "@/core/models/UserRole";
 import { CreationPhase } from "@/core/typings/appTypes";
-import { TaskEntity } from '@/core/typings/entities/TaskEntity';
+import type { TaskEntity } from '@/core/typings/entities/TaskEntity';
 
 // Define TaskUnion similar to SnapshotUnion
 type TaskUnion<  

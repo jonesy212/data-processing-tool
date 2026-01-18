@@ -1,4 +1,4 @@
-DocType.ts
+// DocType.ts
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { PDFData } from "@/core/documents/parsePDF";
 

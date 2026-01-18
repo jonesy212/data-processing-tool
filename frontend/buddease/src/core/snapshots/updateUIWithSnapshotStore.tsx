@@ -6,7 +6,6 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useDispatch } from 'react-redux';
 
 const dispatch = useDispatch()
-// updateUIWithSnapshotStore.ts
 const updateUIWithSnapshotStore = <  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

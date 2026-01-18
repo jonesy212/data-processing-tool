@@ -1,18 +1,17 @@
 // Project.tsx
-// projects/Project.ts (CLIENT-SIDE ONLY)
 import { ScheduledData } from "@/core/calendar/ScheduledData";
 import { Collaborator } from "@/core/collaborators/Collaborator";
 import { CommonDetails } from '@/core/components/models/details/CommonDetails';
 import { Team } from "@/core/components/teams/Team";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { sharedBaseData } from '@/core/config/metadata/MetadataHooks';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedTimestamps } from '@/core/documents/RelatedProps';
 import { ButtonGenerator } from "@/core/generators/GenerateButtons";
-import { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
+import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/core/models/CommonData";
 import { Exchange } from '@/core/models/cypto/Exchange';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { ExchangeData } from "@/core/models/data/ExchangeData";
 import { StatusType } from "@/core/models/data/StatusType";
 import { Member } from "@/core/models/members/Member";
@@ -20,14 +19,14 @@ import {
     CustomPhaseHooks, Phase,
     PhaseData,
 } from '@/core/models/phases/Phase';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Progress } from "@/core/models/tracker/ProgressBar";
 import { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
-import { UpdatedProjectDetailsProps } from "@/core/projects/UpdateProjectDetails";
+import type { UpdatedProjectDetailsProps } from "@/core/projects/UpdateProjectDetails";
 import { TeamService } from '@/core/services/teamService';
 import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
 import { implementThen } from '@/core/state/stores/CommonEvent';
-import { AllStatus } from '@/core/state/stores/DetailsListStore';
+import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/core/todos/Todo";
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
@@ -40,7 +39,8 @@ import {
 import { VideoData } from '@/core/typings/videoTypes/Video';
 import { Idea } from "@/core/users/Ideas";
 import { User } from "@/core/users/User";
-import React, { ReactNode, useEffect, useState } from "react";
+import type { ReactNode, useEffect, useState } from 'react';
+import React from 'react';
 
 
 
@@ -152,7 +152,7 @@ export type SimpleClientProject = Pick<Project,
 
 
 interface Project<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,4 +1,4 @@
-ControlPanel.tsx
+// ControlPanel.tsx
 import CustomizableTimersComponent from "@/core/components/stopwatches/CustomizableTimersComponent";
 import responsiveDesignStore from "@/core/components/styling/ResponsiveDesign";
 import { themeConfig } from "@/core/config/endpoints/themeConfig";

@@ -1,7 +1,7 @@
-GenerateUserLayout.ts
+// GenerateUserLayout.ts
 useLayoutGenerator.tsx
 import responsiveDesignStore from '@/core/components/styling/ResponsiveDesign';
-import { DocxGenerator, DocxGeneratorOptions } from '@/core/generators/docxGenerator';
+import type { DocxGenerator, DocxGeneratorOptions } from '@/core/generators/docxGenerator';
 import { useEffect, useState } from 'react';
 
 // Define DocumentGenerationResult type (replace with your actual type)

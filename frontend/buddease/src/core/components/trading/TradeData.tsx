@@ -1,11 +1,11 @@
-TradeData.tsx
+// TradeData.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import CommonDetails from '@/core/models/CommonData';
-import { Data, DataDetailsProps } from '@/core/models/data/Data';
+import type { Data, DataDetailsProps } from '@/core/models/data/Data';
 import { Tag } from '@/core/models/tracker/Tag';
 import { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
-import { DetailsItemExtended } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItemExtended } from '@/core/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import { PhaseDefault } from '@/core/typings/phaseTypes';
 import React from 'react';

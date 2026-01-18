@@ -1,3 +1,4 @@
+// AquaStore.ts
 components/state/stores/AquaStore.ts
 import { AquaSession } from '@/core/state/AquaState';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';

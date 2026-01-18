@@ -1,5 +1,5 @@
-UserManagementEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// UserManagementEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface UserManagementEndpoints extends EndpointCategoryConfig {
   registerUser: EndpointConfig;

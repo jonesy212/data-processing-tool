@@ -1,4 +1,4 @@
-Persona.tsx
+// Persona.tsx
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import PersonaTypeEnum from "./PersonaBuilder";
 

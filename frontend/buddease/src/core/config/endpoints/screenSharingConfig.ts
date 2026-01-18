@@ -1,4 +1,4 @@
-screenSharingConfig.ts
+// screenSharingConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ScreenSharingEndpoints } from '@/core/typings/categories/ScreenSharingEndpoints';
 

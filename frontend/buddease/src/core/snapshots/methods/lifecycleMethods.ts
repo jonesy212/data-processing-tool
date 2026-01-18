@@ -1,7 +1,7 @@
 // lifecycleMethods.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { Content } from '@/core/models/content/AddContent';
@@ -10,9 +10,9 @@ import { convertToSnapshotUnion } from "@/core/snapshots/ConvertSnapshotUnion";
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
@@ -23,7 +23,7 @@ import { isSnapshot } from '@/utils/snapshotUtils';
 import { snapshotApi } from '@/core/api/SnapshotApi';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { CreateSnapshotsPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { SnapshotWithCriteriaAsBase } from '@/core/snapshots/SnapshotStoreOptions';
 

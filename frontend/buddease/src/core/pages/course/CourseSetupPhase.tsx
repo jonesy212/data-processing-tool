@@ -1,5 +1,5 @@
-CourseSetupPhase.tsx
-import { Data } from '@/core/models/data/Data';
+// CourseSetupPhase.tsx
+import type { Data } from '@/core/models/data/Data';
 import SnapshotStore, {
     Snapshot,
 } from "@/core/snapshots/SnapshotStore";

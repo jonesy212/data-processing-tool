@@ -1,7 +1,7 @@
-MeetingSlice.ts
+// MeetingSlice.ts
 import { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { MeetingNotificationState } from "@/core/state/redux/slices/MeetingNotificationSlice";
+import type { MeetingNotificationState } from "@/core/state/redux/slices/MeetingNotificationSlice";
 import { User } from "@/core/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 

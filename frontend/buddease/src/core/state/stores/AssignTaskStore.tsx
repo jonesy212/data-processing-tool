@@ -2,10 +2,10 @@
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { AssignBaseStore, useAssignBaseStore } from '@/core/state/stores/AssignBaseStore';
-import { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
+import type { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
 import { makeAutoObservable } from "mobx";
 
 export interface AssignTaskStore extends AssignBaseStore {

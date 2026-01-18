@@ -1,4 +1,4 @@
-HighlightActions.ts
+// HighlightActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import HighlightEvent from "./HighlightEvent";
 

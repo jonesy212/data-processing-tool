@@ -7,7 +7,6 @@ import { HighlightColor } from "@/core/components/styling/Palette";
 import { Team } from "@/core/components/teams/Team";
 import {
     BaseDataEntity,
-    BaseDataRoot,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
@@ -16,7 +15,7 @@ import {
     UnifiedMetadata,
 } from "@/core/config/MetaDataOptions";
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import { ModuleType } from '@/core/config/UserPreferences';
 import userSettings from "@/core/config/UserSettings";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -29,16 +28,16 @@ import { NotificationSettings } from "@/core/features/support/NotificationSettin
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/core/hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "@/core/intelligence/FakeDataGenerator";
-import { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
+import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
 import { Category, CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
 import { Comment } from "@/core/models/comments/Comments";
 import { CommonData } from "@/core/models/CommonData";
 import { Content } from "@/core/models/content/AddContent";
 import { Member } from "@/core/models/members/Member";
 import { Phase } from "@/core/models/phases/Phase";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { TagsRecord } from '@/core/models/tracker/Tag';
-import { TrackerProps } from "@/core/models/tracker/Tracker";
+import type { TrackerProps } from "@/core/models/tracker/Tracker";
 import UserRoles from "@/core/models/UserRoles";
 import { Persona } from "@/core/pages/personas/Persona";
 import PersonaTypeEnum from "@/core/pages/personas/PersonaBuilder";
@@ -63,8 +62,9 @@ import { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
 import { AuthStore } from "@/core/state/stores/AuthStore";
 import BrowserCheckStore from "@/core/state/stores/BrowserCheckStore";
 import type { InitializedState } from '@/core/state/stores/DataStore';
-import { AllStatus, DetailsItem } from "@/core/state/stores/DetailsListStore";
-import TodoImpl, { Todo, UserAssignee } from "@/core/todos/Todo";
+import type { AllStatus, DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Todo, UserAssignee } from '@/core/todos/Todo';
+import TodoImpl from '@/core/todos/Todo';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import { CustomTransaction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
 import type { AppStructuredMetadata, AppUnifiedMetadata } from '@/core/typings/entities/AppMetadataEntity';
@@ -255,7 +255,7 @@ interface BaseData<
 }
 
 interface Data<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

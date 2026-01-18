@@ -1,4 +1,4 @@
-CorrectionWizard.tsx
+// CorrectionWizard.tsx
 import { CorrectionList } from '@/core/components/lists/CorrectionList';
 import { AnalysisStep } from '@/core/components/phases/steps/AnalysisStep';
 import { GenericStepContainer } from '@/core/components/shared/steps/GenericStepContainer';

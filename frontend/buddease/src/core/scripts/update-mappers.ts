@@ -1,4 +1,4 @@
-update-mappers.ts
+// update-mappers.ts
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';
 import fs from 'fs';
 import path from 'path';
@@ -35,7 +35,6 @@ async function updateMappersFromTree() {
     })
     .join('\n');
 
-  // Read existing mappers.ts
   let existingContent = '';
   if (fs.existsSync(mappersFile)) {
     existingContent = fs.readFileSync(mappersFile, 'utf-8');

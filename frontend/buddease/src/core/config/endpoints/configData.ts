@@ -1,4 +1,4 @@
-configData.ts
+// configData.ts
 import ApiConfig from "@/core/components/configs/ApiConfigComponent";
 import LazyLoadScriptConfig from '@/core/config/LazyLoadScriptConfig';
 import { userPreferences } from "@/core/config/UserPreferences";

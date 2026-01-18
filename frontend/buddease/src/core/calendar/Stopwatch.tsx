@@ -1,4 +1,4 @@
-// Stopwatch.js
+// Stopwatch.tsx
 
 import { useEffect, useState } from 'react';
 

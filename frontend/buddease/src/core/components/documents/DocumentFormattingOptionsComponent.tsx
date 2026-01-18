@@ -1,5 +1,5 @@
-DocumentFormattingOptionsComponent.tsx
-import { BaseFormattingOptions } from "@/core/components/documents/ToolbarOptions";
+// DocumentFormattingOptionsComponent.tsx
+import type { BaseFormattingOptions } from "@/core/components/documents/ToolbarOptions";
 import React, { useState } from "react";
 
 interface DocumentFormattingOptions extends BaseFormattingOptions {

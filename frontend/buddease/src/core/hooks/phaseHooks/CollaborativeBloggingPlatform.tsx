@@ -1,4 +1,4 @@
-CollaborativeBloggingPlatform.tsx
+// CollaborativeBloggingPlatform.tsx
 import BlogAndContentEditor from '@/core/components/models/content/BlogAndContentEditor';
 import { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
 import DynamicContent from '@/core/documents/DynamicContent';

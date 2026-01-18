@@ -2,8 +2,8 @@
 
 import { ModifiedDate } from "@/core/documents/DocType";
 import { K, Meta, T } from '@/core/models/data/dataStoreMethods';
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
-import { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
+import type { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
 import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { payload, Subscriber } from "@/core/subscribers/Subscriber";
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/utils/web3/applicationUtils";

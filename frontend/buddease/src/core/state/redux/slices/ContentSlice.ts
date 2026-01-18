@@ -3,7 +3,7 @@ import { endpoints } from '@/core/api/endpointConfigurations';
 import * as ApiTask from "@/core/api/TasksApi";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { TaskDetails } from '@/core/models/tasks/Task';
+import type { TaskDetails } from '@/core/models/tasks/Task';
 import {
     ContentAttachment,
     ContentEntity,
@@ -26,7 +26,7 @@ import useWebNotifications from "@/core/hooks/commHooks/useWebNotifications";
 import { ContentLogger } from "@/core/logging/Logger";
 import { SupportedData } from '@/core/models/CommonData';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
-import { BaseData, Data } from "@/core/models/data/Data";
+import type { BaseData, Data } from "@/core/models/data/Data";
 import {
     PriorityTypeEnum,
     StatusType,
@@ -39,7 +39,7 @@ import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { ProjectManagerStore } from '@/core/state/hybrid/ProjectManagerStore';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import { VideoData } from "@/core/typings/videoTypes/Video";

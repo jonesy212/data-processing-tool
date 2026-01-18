@@ -1,3 +1,4 @@
+// retrieveSnapshotData.ts
 import type { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
 import internalApiService from '@/core/api/ApiClient';
 import axiosInstance from '@/core/api/csrfToken';

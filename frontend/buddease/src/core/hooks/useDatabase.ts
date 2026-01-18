@@ -1,4 +1,4 @@
-useDatabase.ts
+// useDatabase.ts
 app/state/hooks/useDatabase.ts
 
 import { DatabaseContext } from "@/core/state/context/DatabaseContext";

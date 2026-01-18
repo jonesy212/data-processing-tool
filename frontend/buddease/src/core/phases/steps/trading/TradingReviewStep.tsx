@@ -1,4 +1,4 @@
-TradingReviewStep.tsx
+// TradingReviewStep.tsx
 import React from "react";
 
 import { TradeData } from "@/core/components/trading/TradeData";

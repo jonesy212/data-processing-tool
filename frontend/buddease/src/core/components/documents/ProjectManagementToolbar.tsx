@@ -4,16 +4,17 @@
   import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { showModalOrNotification } from '@/core/hooks/commHooks/idleTimeoutUtils';
 import useSecureStoreId from '@/core/hooks/useSecureStoreId';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { useCalendarManagerStore } from '@/core/state/stores/CalendarManagerStore';
 import { rootStores } from '@/core/state/stores/RootStores';
 import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
 import { useTeamManagerStore } from '@/core/state/stores/TeamStore';
-import useTodoManagerStore, { TodoManagerStoreProps } from '@/core/state/stores/TodoStore';
+import type { TodoManagerStoreProps } from '@/core/state/stores/TodoStore';
+import useTodoManagerStore from '@/core/state/stores/TodoStore';
 import useTrackerStore from '@/core/state/stores/TrackerStore';
 import TodoImpl, { Todo } from '@/core/todos/Todo';
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskMeta } from '@/core/typings/entities/TaskEntity';
-import { TaskEntityExtended } from '@/core/typings/taskTypes';
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import type { TaskEntityExtended } from '@/core/typings/taskTypes';
 import React from 'react';
 import ToolbarItem from './ToolbarItem';
 

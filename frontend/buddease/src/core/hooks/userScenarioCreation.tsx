@@ -1,12 +1,13 @@
 // userScenarioCreation.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
+import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import type { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
 import type { Phase } from '@/core/models/phases/Phase';
 import PhaseManager from '@/core/models/phases/PhaseManager';
-import PersonaTypeEnum, { PersonaBuilder } from '@/core/pages/personas/PersonaBuilder';
+import type { PersonaBuilder } from '@/core/pages/personas/PersonaBuilder';
+import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import useDocumentManagerSlice from '@/core/state/redux/slices/DocumentSlice';
 import type { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
 import { Version } from '@/core/versions/Version';

@@ -1,7 +1,7 @@
-Whiteboard.tsx
+// Whiteboard.tsx
 import { DrawingActions } from "@/core/actions/DrawingActions";
 import { setIsDrawing } from "@/core/state/redux/slices/DrawingSlice";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io, { Socket as SocketIOClientSocket } from "socket.io-client";

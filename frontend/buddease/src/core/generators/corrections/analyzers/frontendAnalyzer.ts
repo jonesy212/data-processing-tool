@@ -1,6 +1,7 @@
+// frontendAnalyzer.ts
 utils/frontendAnalyzer.ts
 
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import fs from 'fs';

@@ -1,19 +1,19 @@
 // responseTypes.ts
 import { NestedEndpoints } from '@/core/api/ApiEndpoints';
 import { SearchNotesResponse } from '@/core/api/ApiNote';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { Attendee } from '@/core/components/calendar/Attendee';
 import { Team } from '@/core/components/teams/Team';
-import { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DataWithComment } from '@/core/dataIntegration/SafeParseData';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
 import { Exchange } from '@/core/models/cypto/Exchange';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { ExchangeData } from '@/core/models/data/ExchangeData';
 import { Phase } from '@/core/models/phases/Phase';
 import { Project } from '@/core/models/projects/Project';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { DataAnalysisResult } from '@/core/projects/DataAnalysisPhase/DataAnalysisResult';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';

@@ -1,4 +1,4 @@
-generateHeaders.tsx
+// generateHeaders.tsx
 
 import { HeadersConfig } from "@/core/api/headers/HeadersConfig";
 

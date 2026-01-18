@@ -1,3 +1,4 @@
+// ChatSettingsPanelUtils.ts
 chatSettingsPanelUtils.ts
 import { useState } from 'react';
 

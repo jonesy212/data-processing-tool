@@ -1,10 +1,9 @@
-DataDashboard.tsx
-import DataFilterForm, {
-    DataFilterFormProps,
-} from "@/core/components/models/data/DataFilterForm";
-import { Data } from '@/core/models/data/Data';
-import axios from "axios";
+// DataDashboard.tsx
+import type { DataFilterFormProps } from "@/core/components/models/data/DataFilterForm";
+import DataFilterForm from "@/core/components/models/data/DataFilterForm";
+import type { Data } from '@/core/models/data/Data';
 import React, { useEffect, useState } from "react";
+import internalApiService from '@/core/api/ApiClient';
 
 const DataDashboard: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -208,6 +207,7 @@ const DataDashboard: React.FC = () => {
       <DataFilterForm
         onSubmit={fetchData as unknown as DataFilterFormProps["onSubmit"]}
         options={{}}
+        onSearch={}
       />
 
       {/* Buttons for selecting chart type */}

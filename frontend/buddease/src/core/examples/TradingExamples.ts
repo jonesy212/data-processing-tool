@@ -1,4 +1,4 @@
-TradingExamples.ts
+// TradingExamples.ts
 import {
   fetchNewsAPI,
   fetchMarketNewsAPI,

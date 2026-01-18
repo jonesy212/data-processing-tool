@@ -1,4 +1,4 @@
-ImplementationCounter.ts
+// ImplementationCounter.ts
 import fs from 'fs';
 import path from 'path';
 import * as ts from 'typescript';

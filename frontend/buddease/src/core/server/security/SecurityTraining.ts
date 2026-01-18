@@ -1,4 +1,4 @@
-SecurityTraining.ts
+// SecurityTraining.ts
 class SecurityTraining {
   constructor() {
     // Initialize security training configuration

@@ -1,8 +1,8 @@
-mappers.ts
-/app/server/repository/mappers.ts
+// mappers.ts
+// /app/server/repository/mappers.ts
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CacheData } from '@/core/generators/GenerateCache';
+import type { CacheData } from '@/core/generators/GenerateCache';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -120,8 +120,7 @@ export function mapForSync<T extends CacheData>(data: T, fields: (keyof T)[]): P
   return syncObj;
 }
 
-// ----------------------------
-Auto-update import map logic
+// ---------------------------- Auto-update import map logic ----------------------------  //
 function updateImportMap(baseDir: string = path.resolve(__dirname, '../../..')): ImportMap {
   const updatedMap: ImportMap = {};
 

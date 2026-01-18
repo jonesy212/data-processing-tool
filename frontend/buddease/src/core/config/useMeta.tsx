@@ -1,6 +1,6 @@
 // useMeta.tsx
 import { frontendStructure } from "@/core/config/appStructure/FrontendStructure";
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PhaseData } from "@/core/models/phases/Phase";
@@ -8,8 +8,9 @@ import { Taggable } from '@/core/models/tracker/Tag';
 import { backendStructure } from "@/core/server/database/BackendStructure";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { EventManager } from "@/core/state/stores/DataStore";
-import VersionImpl, { Version } from "@/core/versions/Version";
+import type { EventManager } from "@/core/state/stores/DataStore";
+import type { Version } from '@/core/versions/Version';
+import VersionImpl from '@/core/versions/Version';
 import { useMemo } from "react";
 
 function useMeta<

@@ -1,4 +1,4 @@
-DataDashboardApi.ts
+// DataDashboardApi.ts
 import internalApiService from '@/core/api/ApiClient';
 import { DeviceDimensions } from '@/core/models/display/DeviceDimensions';
 const BASE_URL = '/api/dataframe';

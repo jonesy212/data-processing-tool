@@ -1,4 +1,4 @@
-VideoUtils.ts
+// VideoUtils.ts
 
 class VideoUtils {
     static play(videoElement: HTMLVideoElement): void {

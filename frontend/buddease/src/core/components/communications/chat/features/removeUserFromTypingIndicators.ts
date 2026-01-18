@@ -1,1 +1,1 @@
-removeUserFromTypingIndicators.ts
+// removeUserFromTypingIndicators.ts

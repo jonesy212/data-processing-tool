@@ -1,9 +1,9 @@
-UserPresentationsStore.ts
+// UserPresentationsStore.ts
 
 import CalendarEventTimingOptimization, {
     ExtendedCalendarEvent,
 } from "@/core/calendar/CalendarEventTimingOptimization";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
@@ -41,7 +41,7 @@ type EventStoreSubset = Pick<
 const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
 export interface UserPresentation<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,6 +1,6 @@
-ThemeSlice.ts
+// ThemeSlice.ts
 import axiosInstance from '@/core/api/csrfToken';
-import { ThemeCustomizationProps } from "@/core/hooks/userInterface/ThemeCustomization";
+import type { ThemeCustomizationProps } from "@/core/hooks/userInterface/ThemeCustomization";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import { ThemeLogger } from '@/core/logging/Logger';
 import ThemeValidator from "@/core/server/security/validateTheme";

@@ -1,5 +1,5 @@
+// credentialUtils.ts
 
-credentialUtils.ts
 
 /**
  * Utility functions for creating and verifying verifiable credentials.

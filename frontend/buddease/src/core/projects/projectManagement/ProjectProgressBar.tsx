@@ -1,4 +1,4 @@
-ProjectProgressBar.tsx
+// ProjectProgressBar.tsx
 import ProgressBar, {
     Progress,
     ProgressPhase,

@@ -1,3 +1,4 @@
+// notificationsConfig.ts
 config/endpoints/notificationsConfig.ts
 
 export const notificationsConfig = {
@@ -34,5 +35,4 @@ export const notificationsConfig = {
   }
 };
 
-// Then register in your endpointManager.ts
 

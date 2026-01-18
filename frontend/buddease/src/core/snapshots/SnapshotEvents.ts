@@ -8,15 +8,15 @@ import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore"
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 import { BaseSnapshotEventHandlers, SnapshotEvents } from '@/core/typings/snapshotTypes';
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { EventRecord } from '@/core/state/stores/DataStore';
+import type { EventRecord } from '@/core/state/stores/DataStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
+import type { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 interface BaseEventCallbacks<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

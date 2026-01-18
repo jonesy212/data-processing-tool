@@ -1,4 +1,4 @@
-CryptoManager.tsx
+// CryptoManager.tsx
 import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/core/api/ApiDataAnalysis';
 import type { Collaborator } from '@/core/collaborators/Collaborator';
 import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/core/components/community/newsFeedIntegration';

@@ -1,5 +1,6 @@
+// StorageService.ts
 
-import { ArchiveMetadata } from '@/core/api/service/ArchiveService';
+import type { ArchiveMetadata } from '@/core/api/service/ArchiveService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

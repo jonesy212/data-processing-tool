@@ -1,37 +1,37 @@
 // SnapshotStoreProps.ts
-import { SnapshotOperation, SnapshotOperationType } from "@/core/actions/SnapshotActions";
+import type { SnapshotOperation, SnapshotOperationType } from "@/core/actions/SnapshotActions";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from "@/core/config/metadata/SchemaField";
-import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/core/documents/RelatedProps';
+import type { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/core/documents/RelatedProps';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { createBaseData, useSnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { Payload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
 import { displayToast } from '@/core/models/display/ShowToast';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import {
     Snapshots,
     SnapshotsArray,
     SnapshotUnion
 } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotEventBase } from '@/core/snapshots/SnapshotEvents';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { InitializedDelegate, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedDelegate, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
-import { BaseSnapshotProps } from '@/core/snapshots/createBaseSnapshot';
+import type { BaseSnapshotProps } from '@/core/snapshots/createBaseSnapshot';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { fetchSnapshotsForCategory } from '@/core/snapshots/fetchSnapshotsForCategory';
-import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
-import { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
+import type { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
+import type { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { createDataStore, DataStore, InitializedState } from '@/core/state/stores/DataStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';

@@ -1,4 +1,4 @@
-IdeaValidation.tsx
+// IdeaValidation.tsx
 import React from 'react';
 
 const IdeaValidation: React.FC = () => {

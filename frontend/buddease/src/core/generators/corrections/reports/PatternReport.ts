@@ -1,28 +1,25 @@
-PatternReport.ts
-reports/PatternReport.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// PatternReport.ts
+
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
 
-export interface BasePatternAnalysis {
-  patternName: string;
-  entityCount: number;
-  totalUsages: number;
-  files: string[];
-  variations: Map<string, number>;
-  compatibilityMatrix: Map<string, string[]>;
-}
+import {
+  BasePatternAnalysis,
+  PatternOccurrence,
+  PatternDetectionResult,
+  PatternCompatibility,
+  PatternTrend
+} from '@/core/shared/pattern-types';
 
 
-export interface PatternAnalysis {
-  patternType: string;
-  occurrences: number;
-  files: string[];
-  examples: string[];
-  complexityScore: number; // 1-10 scale
-  fixEffort: 'low' | 'medium' | 'high';
-  impact: 'performance' | 'maintainability' | 'readability' | 'security';
-}
+export type { BasePatternAnalysis, PatternOccurrence, PatternTrend };
+
+
+
+
+export type PatternOccurrence = CorrectionPatternAnalysis;
+
 
 export interface PatternTrend {
   pattern: string;
@@ -33,15 +30,15 @@ export interface PatternTrend {
 
 export class PatternReport {
   private issues: Correction[];
-  private patterns: Map<string, PatternAnalysis>;
+  private patterns: Map<string, PatternOccurrence>;
 
   constructor(issues: Correction[]) {
     this.issues = issues;
     this.patterns = this.analyzePatterns(issues);
   }
 
-  private analyzePatterns(issues: Correction[]): Map<string, PatternAnalysis> {
-    const patternMap = new Map<string, PatternAnalysis>();
+  private analyzePatterns(issues: Correction[]): Map<string, PatternOccurrence> {
+    const patternMap = new Map<string, PatternOccurrence>();
 
     issues.forEach(issue => {
       const patternType = this.categorizePattern(issue);
@@ -97,7 +94,7 @@ export class PatternReport {
     return 'other';
   }
 
-  private calculateComplexityScore(pattern: PatternAnalysis): number {
+  private calculateComplexityScore(pattern: PatternOccurrence): number {
     let score = 0;
     
     // Base score from occurrences
@@ -114,7 +111,7 @@ export class PatternReport {
     return Math.min(10, score);
   }
 
-  private determineFixEffort(pattern: PatternAnalysis): 'low' | 'medium' | 'high' {
+  private determineFixEffort(pattern: PatternOccurrence): 'low' | 'medium' | 'high' {
     const { patternType, occurrences, files } = pattern;
     
     // Low effort patterns
@@ -132,7 +129,7 @@ export class PatternReport {
     return 'low';
   }
 
-  private determineImpact(issue: Correction): PatternAnalysis['impact'] {
+  private determineImpact(issue: Correction): PatternOccurrence['impact'] {
     const { category, title } = issue;
     const titleLower = (title || '').toLowerCase();
   
@@ -304,7 +301,7 @@ export class PatternReport {
     return html;
   }
 
-  private generatePatternDetails(patterns: PatternAnalysis[]): string[] {
+  private generatePatternDetails(patterns: PatternOccurrence[]): string[] {
     return patterns.map(pattern => [
       `### ${this.formatPatternName(pattern.patternType)}`,
       '',
@@ -326,7 +323,7 @@ export class PatternReport {
     ]).flat();
   }
 
-  private generateRecommendations(patterns: PatternAnalysis[]): string[] {
+  private generateRecommendations(patterns: PatternOccurrence[]): string[] {
     const recommendations: string[] = [];
     
     const highPriority = patterns.filter(p => p.fixEffort === 'high' && p.complexityScore >= 7);
@@ -361,7 +358,7 @@ export class PatternReport {
     return recommendations;
   }
 
-  private generateTechnicalRecommendations(patterns: PatternAnalysis[]): string[] {
+  private generateTechnicalRecommendations(patterns: PatternOccurrence[]): string[] {
     const recs: string[] = [];
     
     patterns.forEach(pattern => {
@@ -390,7 +387,7 @@ export class PatternReport {
     return recs.length > 0 ? ['### 🛠️ Technical Recommendations', '', ...recs, ''] : [];
   }
 
-  private generateFixPriority(patterns: PatternAnalysis[]): string[] {
+  private generateFixPriority(patterns: PatternOccurrence[]): string[] {
     const priorityList = patterns
       .sort((a, b) => {
         // Sort by effort (low first) then by complexity (high first)
@@ -413,7 +410,7 @@ export class PatternReport {
     ];
   }
 
-  private generateHTMLPatternCards(patterns: PatternAnalysis[]): string {
+  private generateHTMLPatternCards(patterns: PatternOccurrence[]): string {
     return patterns.map(pattern => {
       const effortClass = `pattern-${pattern.fixEffort}`;
       
@@ -444,11 +441,11 @@ export class PatternReport {
       .join(' ');
   }
 
-  getPatternAnalysis(): Map<string, PatternAnalysis> {
+  getPatternAnalysis(): Map<string, PatternOccurrence> {
     return this.patterns;
   }
 
-  getTopPatterns(limit: number = 5): PatternAnalysis[] {
+  getTopPatterns(limit: number = 5): PatternOccurrence[] {
     return Array.from(this.patterns.values())
       .sort((a, b) => b.complexityScore - a.complexityScore)
       .slice(0, limit);

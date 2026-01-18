@@ -1,3 +1,4 @@
+// processSnapshotList.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import SnapshotList from '@/core/snapshots/SnapshotList';

@@ -1,4 +1,4 @@
-ChangePasswordForm.tsx
+// ChangePasswordForm.tsx
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { User } from "@/core/users/User";

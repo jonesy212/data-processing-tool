@@ -1,4 +1,4 @@
-// app/utils/eventHandlers/EventHandlerConfigManager.ts
+// EventHandlerConfigManager.ts
 import { debounce } from "@/core/pages/searches/Debounce";
 
 import { EventHandlerConfig } from "@/core/typings/eventHandlers/eventTypes";

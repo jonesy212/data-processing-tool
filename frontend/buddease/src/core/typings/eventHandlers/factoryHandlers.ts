@@ -1,4 +1,4 @@
-factoryHandlers.ts
+// factoryHandlers.ts
 import { AppMessage } from '@/core/typings/entities/MessageEntity';
 import { ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
 

@@ -1,3 +1,4 @@
+// DatabaseProvider.tsx
 'use client';
 
 import DatabaseClient from "@/core/api/DatabaseClient";

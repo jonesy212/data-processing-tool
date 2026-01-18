@@ -1,17 +1,17 @@
 // InitializedSnapshotTypes.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { InitializedSnapshot } from '@/core/snapshots/SnapshotStoreOptions';
-import { YourResponseType } from '@/core/typings/responseTypes';
-import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/core/typings/YourSpecificSnapshotType";
+import type { YourResponseType } from '@/core/typings/responseTypes';
+import type { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/core/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/utils/snapshotUtils';
 /**
  * Converts API response data to an InitializedSnapshot with proper typing
  */
 function convertResponseToSnapshot<  
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -31,7 +31,7 @@ function convertResponseToSnapshot<
  * Handles the first step of conversion to known types
  */
 function convertToIntermediateType<  
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -53,7 +53,7 @@ function convertToIntermediateType<
  * Transforms intermediate types into an InitializedSnapshot
  */
 function enrichAsInitializedSnapshot<  
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,5 +1,5 @@
-callbackRegistry.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+// callbackRegistry.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
@@ -7,7 +7,7 @@ import { EventFilter, EventHandler } from '@/core/typings/eventHandlers/eventTyp
 
 
 export interface RegisteredCallback<
-  Entity extends BaseDataEntity = BaseDataRoot,
+  Entity extends BaseDataEntity = BaseDataEntity,
   K extends Entity = Entity,
   Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
   AttachmentType extends Attachment = Attachment,
@@ -30,7 +30,7 @@ export class CallbackRegistry {
   private callbackById: Map<string, RegisteredCallback<any>> = new Map();
 
   register<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -107,7 +107,7 @@ export class CallbackRegistry {
   }
 
   getCallbacks<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -119,7 +119,7 @@ export class CallbackRegistry {
   }
 
   getCallback<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -140,7 +140,7 @@ export class CallbackRegistry {
 
   // Execute callbacks for an event
   async executeCallbacks<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -193,7 +193,7 @@ export class CallbackRegistry {
   }
 
   getCallbacksByStore<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -212,7 +212,7 @@ export class CallbackRegistry {
   }
 
   getCallbacksByStoreInstance<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -243,7 +243,7 @@ export class CallbackRegistry {
   }
 
   unregisterByStoreInstance<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,
@@ -263,7 +263,7 @@ export class CallbackRegistry {
 
   // Get all active callbacks for a specific store (both by name and instance)
   getAllCallbacksForStore<
-    Entity extends BaseDataEntity = BaseDataRoot,
+    Entity extends BaseDataEntity = BaseDataEntity,
     K extends Entity = Entity,
     Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
     AttachmentType extends Attachment = Attachment,

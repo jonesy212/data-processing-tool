@@ -1,5 +1,4 @@
 // persistSnapshot.ts
-// app/state/snapshots/persistSnapshot.ts
 import { handleApiError } from '@/core/api/ApiLogs';
 import DatabaseClient from "@/core/api/DatabaseClient";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";

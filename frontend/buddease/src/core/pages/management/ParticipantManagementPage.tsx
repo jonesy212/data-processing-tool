@@ -4,7 +4,7 @@ import { ToolbarActions } from "@/core/actions/ToolbarActions";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { MobXRootState } from "@/core/state/stores/RootStores";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";

@@ -1,4 +1,4 @@
-ProfessionalTraderCalls.tsx
+// ProfessionalTraderCalls.tsx
 import React, { useEffect, useState } from "react";
 
 // Importing tradingPlatforms and TradingPlatform types from the provided module

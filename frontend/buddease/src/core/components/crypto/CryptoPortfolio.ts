@@ -1,7 +1,7 @@
 // CryptoPortfolio.ts
 import { default as ExtendedCryptoNotificationMessages, default as internalApiService } from '@/core/api/ApiClient';
 import { getMarketPrice } from '@/core/api/service/PriceApiService';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { TradeLogger } from "@/core/logging/TradeLogger";
@@ -188,7 +188,7 @@ export const executeTrade = async (trade: TradeAction): Promise<void> => {
 // Example function to fetch snapshot and crypto data
 // Alternative implementation using SnapshotApi directly
 export const fetchSnapshotAndCryptoData = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,3 +1,4 @@
+// MyPromise.jsx
 export default class MyPromise {
     constructor(executor) {
       this._status = 'pending';

@@ -1,3 +1,4 @@
+// ComponentPatternDetector.ts
 import type {
     BaseDataEntity,
     DefaultExcludedFields,

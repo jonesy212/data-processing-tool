@@ -1,7 +1,7 @@
 // route.ts
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { readServerCache, writeServerCache } from '@/core/server/CacheManager';
 import Docxtemplater from "docxtemplater";
 import { NextRequest, NextResponse } from 'next/server';

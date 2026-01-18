@@ -1,5 +1,5 @@
-MonetizationEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// MonetizationEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface MonetizationEndpoints extends EndpointCategoryConfig {
   startClientProject: EndpointConfig;

@@ -1,3 +1,4 @@
+// CalendarProvider.jsx
 import { transformTasksToEvents, transformTodosToEvents } from '@/CalendarEvents';
 import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
 import React, { useEffect, useState } from 'react';

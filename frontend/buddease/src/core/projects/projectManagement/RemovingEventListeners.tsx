@@ -1,6 +1,5 @@
 // RemovingEventListeners.tsx
-// EventListenerComponent.tsx
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import React, { useEffect } from 'react';
 
 const EventListenerComponent: React.FC<{ documentOptions: DocumentOptions }> = ({ documentOptions }) => {

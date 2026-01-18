@@ -1,4 +1,4 @@
-TeamCollaborationTimerComponent.tsx
+// TeamCollaborationTimerComponent.tsx
 import React, { useEffect, useState } from "react";
 
 interface TeamCollaborationTimerProps {

@@ -1,4 +1,4 @@
-ThemeConfig.ts
+// ThemeConfig.ts
 import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
 import { AliasToken } from "antd/es/theme/internal";
 

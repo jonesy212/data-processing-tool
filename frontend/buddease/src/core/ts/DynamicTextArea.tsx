@@ -1,4 +1,4 @@
-DynamicTextArea.tsx
+// DynamicTextArea.tsx
 import React from "react";
 
 interface DynamicTextAreaProps {

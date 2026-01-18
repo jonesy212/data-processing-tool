@@ -1,4 +1,4 @@
-database.ts
+// database.ts
 import { DatabaseConfig } from '@/core/config/DatabaseConfig';
 
 export interface BackendDatabaseService {

@@ -1,4 +1,4 @@
-TaskComponent.tsx
+// TaskComponent.tsx
 
 import { FilterActions } from '@/core/actions/FilterActions';
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
@@ -9,7 +9,7 @@ import TaskForm from '@/core/components/models/tasks/TaskForm';
 import { NotificationPreferenceEnum } from '@/core/components/notifications/Notification';
 import { FileTypeEnum } from '@/core/documents/FileType';
 import { Filter } from '@/core/pages/searches/Filter';
-import { PaginationOptions, SearchOptions, SortingOption } from '@/core/pages/searches/SearchOptions';
+import type { PaginationOptions, SearchOptions, SortingOption } from '@/core/pages/searches/SearchOptions';
 import {
     addTask,
     completeTask,

@@ -1,4 +1,4 @@
-VideoConfiguration.ts
+// VideoConfiguration.ts
 VideoConfiguration.ts// VideoConfiguration.ts
 
 interface VideoConfiguration {

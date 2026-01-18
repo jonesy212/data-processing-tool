@@ -1,10 +1,11 @@
-import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/core/config/BaseConfig';
-import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig'
+// debugInfoUtils.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 export function addDebugInfo<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

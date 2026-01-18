@@ -1,4 +1,4 @@
-validateTheme.ts
+// validateTheme.ts
 import { Theme } from '@/core/libraries/ui/theme/Theme';
 import { isValidDID } from '@/utils/web3/didUtils';
 

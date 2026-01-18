@@ -1,5 +1,4 @@
 // CommunicationPage.tsx
-// Communication.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta, AppAttachment } from '@/core/typings/entities/AppEntity';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

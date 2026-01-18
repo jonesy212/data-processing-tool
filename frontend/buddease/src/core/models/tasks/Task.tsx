@@ -1,4 +1,4 @@
-Task.tsx
+// Task.tsx
 
 import type { ScheduledData } from "@/core/calendar/ScheduledData";
 import type { SharedDetails } from '@/core/components/models/data/Details';
@@ -7,7 +7,7 @@ import type { TaskMetadata } from '@/core/config/MetaDataOptions';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { SharedTimestamps } from '@/core/documents/RelatedProps';
 import type { Data } from '@/core/models/data/Data';
-import { taskMetadata } from '@/core/models/data/TaskMetadata';
+import type { taskMetadata } from '@/core/models/data/TaskMetadata';
 import type { Progress } from "@/core/models/tracker/ProgressBar";
 import type { TagsRecord } from '@/core/models/tracker/Tag';
 import type { PriorityValue } from '@/core/pages/searches/CriteriaType';

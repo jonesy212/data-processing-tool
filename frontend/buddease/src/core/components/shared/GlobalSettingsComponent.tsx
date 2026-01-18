@@ -1,4 +1,4 @@
-GlobalSettingsComponent.tsx
+// GlobalSettingsComponent.tsx
 // Example usage in a React component
 import {
     initializeGlobalState,
@@ -9,7 +9,7 @@ import {
     setTheme,
     toggleDarkMode
 } from '@/core/state/redux/slices/globalSlice';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

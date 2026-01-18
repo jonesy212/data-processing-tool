@@ -1,7 +1,9 @@
+// serviceWorker.ts
+// This gets compiled to JS during build process
+
 import type { FetchEvent } from "@/core/api/CustomFetchEvent";
 import type { ExtendableEvent } from "@/core/api/CustomFetchEvent";
 
-// service-worker.ts
 const CACHE_NAME = 'my-cache-v1';
 const urlsToCache: string[] = [
   '/',

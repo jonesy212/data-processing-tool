@@ -1,3 +1,4 @@
+// PhaseExecutor.ts
 src/core/error-analyzer/phases/PhaseExecutor.ts
 import {
     FileCategory // Move this from separate import

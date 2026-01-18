@@ -1,4 +1,4 @@
-OnboardingPage.tsx
+// OnboardingPage.tsx
 import OnboardingComponent from "@/core/components/onboarding/OnboardingComponent";
 import React from "react";
 

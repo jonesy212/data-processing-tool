@@ -1,4 +1,4 @@
-AppHeader.tsx
+// AppHeader.tsx
 // Example of applying branding in a React component using a Theme provider
 import { ThemeContext } from '@/core/libraries/ui/theme/Theme';
 import { useContext } from 'react';

@@ -1,4 +1,4 @@
-FeatureContext.tsx
+// FeatureContext.tsx
 import FeatureStore from "@/core/state/stores/FeatureStore";
 import { ReactNode, createContext, useContext } from "react";
 // Define the interface for the feature context value

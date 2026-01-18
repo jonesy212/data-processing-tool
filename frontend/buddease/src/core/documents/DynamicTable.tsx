@@ -1,5 +1,4 @@
-DynamicTable.tsx
-DynamicTable.ts
+// DynamicTable.tsx
 import { Table } from "antd";
 import React from "react";
 

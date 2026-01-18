@@ -1,6 +1,7 @@
+// IPFS.tsx
 // Import necessary libraries or modules
 import { getConfigsData } from '@/core/api/getConfigsApi';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { ipfsConfig } from '@/core/config/ipfsConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { documentOptions } from '@/core/hooks/userScenarioCreation';
@@ -78,7 +79,7 @@ if (currentUser) {
 
 
 export class ExtendedDAppAdapter<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

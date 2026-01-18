@@ -1,4 +1,4 @@
-idleTimeoutParams.ts
+// idleTimeoutParams.ts
 
 import { DynamicHookParams } from "@/core/hooks/DynamicHookParams";
 

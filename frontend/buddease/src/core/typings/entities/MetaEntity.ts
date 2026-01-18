@@ -11,7 +11,7 @@ import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { AppMetadata } from '@/core/typings/metadataTypes';
+import type { AppMetadata } from '@/core/typings/metadataTypes';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 // 1. Define your base metadata entity (adjust according to your actual base entity)

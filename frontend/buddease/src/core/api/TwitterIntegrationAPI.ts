@@ -1,4 +1,4 @@
-TwitterIntegrationAPI.ts
+// TwitterIntegrationAPI.ts
 
 // Import necessary modules and types
 import axiosInstance from '@/core/api/csrfToken';

@@ -1,5 +1,8 @@
 {
-  "extends": ["./tsconfig.base.json", "./tsconfig.excludes.json"],
+  "extends": [
+    "./tsconfig.base.json",
+    "./tsconfig.excludes.json"
+  ],
   "compilerOptions": {
     "module": "ESNext",
     "target": "ES2020",
@@ -7,6 +10,23 @@
   },
   "include": [
     "src/core/scripts/**/*",
-    "src/core/generators/**/*"
+    "src/core/generators/**/*",
+    "app/scripts/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".ts-backups",
+    ".comment-fix-backups",
+    ".type-import-backups",
+    ".import-fix-backups",
+    ".import-fix-backups-archived-1767827729479",
+    ".temp-fix-backups",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "platform/android/**/*",
+    "platform/ios/**/*"
   ]
 }

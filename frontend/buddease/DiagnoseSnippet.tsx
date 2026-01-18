@@ -1,0 +1,1 @@
+scripts/typescript/testing/DiagnoseSnippet.ts

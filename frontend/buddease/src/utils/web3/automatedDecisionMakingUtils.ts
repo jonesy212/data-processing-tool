@@ -1,3 +1,4 @@
+// automatedDecisionMakingUtils.ts
 import { MarketData } from "@/core/trading/TradingStrategy";
 
 // Function for automated decision making

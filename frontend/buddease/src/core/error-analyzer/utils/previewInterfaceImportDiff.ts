@@ -1,4 +1,4 @@
-previewInterfaceImportDiff
+// previewInterfaceImportDiff.ts
 import ts from 'typescript';
 
 function previewInterfaceImportDiff(

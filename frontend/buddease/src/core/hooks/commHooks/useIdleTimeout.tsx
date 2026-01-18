@@ -1,4 +1,4 @@
-useIdleTimeout.tsx
+// useIdleTimeout.tsx
 
 import { ExtendedRouter } from "@/core/pages/MyAppWrapper";
 import { useEffect } from "react";

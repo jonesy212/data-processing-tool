@@ -1,7 +1,6 @@
-chatUtils.tsx
-chatUtils.ts
-import { CollaborationActions } from '@/core/actions/CollaborationActions';
-import {
+// chatUtils.tsx
+import type { CollaborationActions } from '@/core/actions/CollaborationActions';
+import type {
     AudioOptions,
     ChatSettingsModal,
     NotificationPreferences,
@@ -9,26 +8,26 @@ import {
 } from '@/core/cards/modal/ChatSettingsModal';
 import { openNotificationPreferencesModal } from '@/core/cards/modal/openNotificationPreferencesModal';
 import openAudioOptionsMenu from '@/core/components/communications/chat/features/openAudioOptionsMenu';
-import { getUserPreferences } from '@/core/config/UserPreferences';
+import type { getUserPreferences } from '@/core/config/UserPreferences';
 import RichTextEditor from '@/core/documents/RichTextEditor';
-import { saveToLocalStorage } from '@/core/hooks/useLocalStorage';
-import { useSecureDocumentId } from '@/core/hooks/useSecureDocumentId';
-import { useSecureUserId } from '@/core/hooks/useSecureUserId';
-import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
+import type { saveToLocalStorage } from '@/core/hooks/useLocalStorage';
+import type { useSecureDocumentId } from '@/core/hooks/useSecureDocumentId';
+import type { useSecureUserId } from '@/core/hooks/useSecureUserId';
+import type { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
 import { showErrorMessage, showToast } from '@/core/models/display/ShowToast';
 import configureCollaborationPreferences from '@/core/pages/community/configureCollaborationPreferences';
 import { DocumentEditingPermissions } from '@/core/permissions/Permission';
 import { isValidNotificationPreferences } from '@/core/server/security/validationRulesCode';
-import { PrivacySettings } from '@/core/settings/PrivacySettings';
-import { SecuritySettings } from '@/core/settings/SecuritySettings';
+import type { PrivacySettings } from '@/core/settings/PrivacySettings';
+import type { SecuritySettings } from '@/core/settings/SecuritySettings';
 import { configureSecuritySettings } from '@/core/settings/configureSecuritySettings';
 import { saveSecuritySettings } from '@/core/settings/saveSecuritySettings';
-import {
+import type {
     NotificationContextProps,
     NotificationType,
 } from '@/core/state/context/NotificationContext';
-import { DocumentActions } from '@/core/tokens/DocumentActions';
-import { openPrivacySettingsMenu } from '@/utils/videos/openPrivacySettingsMenu';
+import type { DocumentActions } from '@/core/tokens/DocumentActions';
+import type { openPrivacySettingsMenu } from '@/utils/videos/openPrivacySettingsMenu';
 import { openVideoOptionsMenu } from '@/utils/videos/openVideoOptionsMenu';
 
 type SidebarController = {
@@ -359,7 +358,7 @@ export const openChatSettingsModal = async (): Promise<ChatSettingsModal> => {
     setPrivacySettings: async (
       videoId: string,
       initialSelectedSettings: PrivacySettings,
-      privacySettings: PrivacySettings
+      privacySettings: PrivacySettings<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => {
       try {
         // Provide a modal or form where users can set their privacy settings
@@ -371,7 +370,7 @@ export const openChatSettingsModal = async (): Promise<ChatSettingsModal> => {
     
         if (updatedSelectedSettings) {
           // Save the updated privacy settings to localStorage
-          saveToLocalStorage<PrivacySettings>(
+          saveToLocalStorage<PrivacySettings<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
             "privacySettings",
             updatedSelectedSettings
           );

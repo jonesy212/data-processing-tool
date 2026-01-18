@@ -1,5 +1,4 @@
-CryptoSectionToolbar.tsx
-CryptoSectionToolbar.ts
+// CryptoSectionToolbar.tsx
 import ToolbarItem from '@/core/components/documents/ToolbarItem';
 import { useCryptoStore } from '@/core/state/context/AppContext';
 import React from 'react';

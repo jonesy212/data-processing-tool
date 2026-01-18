@@ -1,13 +1,12 @@
 // SnapshotActions.tsx
-// snapshots/SnapshotActions.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { CreateSnapshotsPayload, Payload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
@@ -19,13 +18,13 @@ import { createLatestVersion } from "@/core/versions/createLatestVersion";
 
 import { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotItem } from "@/core/snapshots/SnapshotList";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
-import { AppEntity } from "@/core/typings/entities/AppEntity";
+import type { AppEntity } from "@/core/typings/entities/AppEntity";
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskSnapshotsArray, TaskSnapshotStore, TaskSnapshotWithCriteria } from '@/core/typings/entities/TaskEntity';
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
@@ -176,7 +175,7 @@ interface TaskWithSubtasksSnapshotActionsTypes<
 
 // Create action creators with generics
 const SnapshotActions = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -200,7 +199,7 @@ const SnapshotActions = <
 
 
 const SnapshotStoreActions = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

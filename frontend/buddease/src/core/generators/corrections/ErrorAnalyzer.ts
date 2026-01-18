@@ -1,6 +1,6 @@
-ErrorAnalyzer.ts
+// ErrorAnalyzer.ts
 
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { BuildAnalyzer } from '@/core/generators/corrections/analyzers/BuildAnalyzer';
 import { PatternAnalyzer } from '@/core/generators/corrections/analyzers/PatternAnalyzer';
@@ -256,7 +256,6 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
                 }
             }
 
-            // Check for Next.js 16 with React 19
             if (deps.next && deps.react) {
                 const nextVersion = this.extractMajorVersion(deps.next);
                 const reactVersion = this.extractMajorVersion(deps.react);
@@ -356,7 +355,6 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
                 ));
             }
 
-            // Check for Next.js plugin in multi-platform context
             if (tsConfig.compilerOptions?.plugins?.some((p: any) => p.name === 'next') && this.platformInfo.hasMobile) {
                 corrections.push(this.createCorrection(
                     'tsconfig-next-plugin-mobile',
@@ -833,7 +831,6 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
     private checkForCommonErrorsInRecentOutput(): Correction[] {
         const corrections: Correction[] = [];
 
-        // Check package.json for common dependency issues that match our patterns
         const packageJsonPath = path.resolve(process.cwd(), 'package.json');
         if (fs.existsSync(packageJsonPath)) {
             try {
@@ -854,7 +851,6 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
                     ));
                 }
             } catch (error) {
-                // Silent fail - package.json parse error would be caught elsewhere
             }
         }
 
@@ -1198,10 +1194,8 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
 
     private parseJavaScriptConfig(content: string): any {
         // Production-ready JavaScript config parsing with proper error handling
-        // Uses Node.js VM for safe execution or regex fallbacks
 
         try {
-            // Method 1: Try using Node.js VM for safe execution (most reliable)
             const vmResult = this.parseWithVM(content);
             if (vmResult !== null) {
                 return vmResult;
@@ -1223,7 +1217,6 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
     }
 
     private parseWithVM(content: string): any {
-        // Use Node.js VM for safe execution in production
         try {
             const vm = require('vm');
             const Module = require('module');

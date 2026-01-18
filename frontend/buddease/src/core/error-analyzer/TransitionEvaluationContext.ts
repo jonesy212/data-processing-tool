@@ -1,4 +1,4 @@
-// src/models/workflow/TransitionEvaluationContext.ts
+// TransitionEvaluationContext.ts
 import { ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
 
 export interface TransitionEvaluationContext {

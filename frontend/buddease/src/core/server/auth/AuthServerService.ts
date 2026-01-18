@@ -1,4 +1,4 @@
-AuthServerService.ts
+// AuthServerService.ts
 import { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import { ClientDatabaseService } from '@/core/config/DatabaseTypes';
 import { generateToken } from '@/core/generators/generateTokens';
@@ -112,7 +112,6 @@ class AuthServerService extends BaseAuthService {
 
   // Optional: Advanced crypto implementation
   private async verifyPasswordWithCrypto(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    // This is a more secure approach using Node.js crypto
     // You'll need to implement consistent hashing with salt
     const crypto = await import('crypto');
     

@@ -1,4 +1,4 @@
-CalendarEventROIAnalysis.ts
+// CalendarEventROIAnalysis.ts
 interface CalendarEventROIAnalysis {
     eventId: string; // ID of the event
     roi: number; // Return on Investment (ROI) calculated for the event

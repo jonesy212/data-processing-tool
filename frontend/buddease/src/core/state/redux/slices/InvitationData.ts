@@ -1,7 +1,6 @@
-InvitationData.ts
+// InvitationData.ts
 import { Member } from '@/core/models/members/Member';
 
-InvitationData.tsx
 interface InvitationData {
   recipientEmail: string;
   senderName: string;

@@ -1,4 +1,4 @@
-freelancersConfig.ts
+// freelancersConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { FreelancersEndpoints } from '@/core/typings/categories/FreelancersEndpoints';
 

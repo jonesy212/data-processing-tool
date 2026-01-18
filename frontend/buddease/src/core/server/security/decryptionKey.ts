@@ -1,4 +1,4 @@
-decryptionKey.ts
+// decryptionKey.ts
 import crypto from 'crypto';
 
 // Function to generate a decryption key

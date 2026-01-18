@@ -1,3 +1,4 @@
+// NotificationChannelManager.ts
 import { BasicChannels } from '@/core/notifications/NotificationChannelHelper';
 import type { Project } from '@/core/models/projects/Project';
 import type { NotificationChannels, NotificationEndpointConfig } from '@/core/notifications/NotificationChannels';

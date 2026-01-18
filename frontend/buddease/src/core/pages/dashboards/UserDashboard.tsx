@@ -1,4 +1,4 @@
-UserDashboard.tsx
+// UserDashboard.tsx
 import ProjectTimelineDashboard from '@/core/dashboards/ProjectTimelineDashboard';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { User } from '@/core/users/User';

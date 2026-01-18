@@ -1,5 +1,5 @@
-FileStructureValidator.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// FileStructureValidator.ts
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';
@@ -32,7 +32,6 @@ export class FileStructureValidator extends BaseAnalyzer {
       'tsconfig.json',
       'pnpm-lock.yaml',
       
-      // Next.js specific
       'next.config.cjs',
       'next-env.d.ts',
       'src/app/layout.tsx',
@@ -52,7 +51,6 @@ export class FileStructureValidator extends BaseAnalyzer {
       '.gitignore',
       '.babelrc',
       '.eslintrc.json',
-    //   'snowpack.config.js',
       'rollup.config.js',
       
       // Type definitions

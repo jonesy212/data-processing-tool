@@ -1,7 +1,7 @@
-ApiConfigManager.ts
+// ApiConfigManager.ts
 import ApiConfig from '@/core/api/ApiConfigService';
-import { Endpoints } from '@/core/api/ApiEndpoints';
-import { EndpointConfig, EndpointConfigurations, EndpointDefinition } from '@/core/config/EndpointConfig';
+import type { Endpoints } from '@/core/api/ApiEndpoints';
+import type { EndpointConfig, EndpointConfigurations, EndpointDefinition } from '@/core/config/EndpointConfig';
 import { buildUrl } from '@/utils/urlBuilder'; // Add this import
 
 class ApiConfigManager extends ApiConfig {

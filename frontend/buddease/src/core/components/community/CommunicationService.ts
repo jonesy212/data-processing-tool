@@ -1,4 +1,4 @@
-CommunicationService.ts
+// CommunicationService.ts
 
 // Define types for different communication channels
 type CommunicationChannel = 'audio' | 'video' | 'text';

@@ -1,6 +1,6 @@
+// dataTypesGuards.ts
 import type { RealtimeDataItem } from '@/core/typings/realtimeTypes'
 
-// dataTypeGuards.ts
 function isRealtimeDataItemArray(data: any[]): data is RealtimeDataItem[] {
     return data.every((item) => 
       item && 

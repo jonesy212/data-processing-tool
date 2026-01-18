@@ -1,4 +1,4 @@
-CalendarEventInvitationPersonalization.ts
+// CalendarEventInvitationPersonalization.ts
 import type { PersonalizedInvitation } from "@/core/models/data/EventPriorityClassification";
 import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 

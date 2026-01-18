@@ -1,21 +1,21 @@
 // MetaDataOptions.ts
-import { dynamicMeetingMetadata, MeetingMetadata } from '@/core/calendar/ScheduledData';
+import type { dynamicMeetingMetadata, MeetingMetadata } from '@/core/calendar/ScheduledData';
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
 import { Task } from '@/core/components/models/tasks/Task';
 import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
-import type { baseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
-import { CoreMetadata } from '@/core/config/MetadataStateManager';
+import type { CoreMetadata } from '@/core/config/MetadataStateManager';
 import type { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/core/config/StructuredMetadata';
 import { useMeta } from '@/core/config/useMeta';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseEntityProperties } from "@/core/documents/RelatedProps";
+import type { BaseEntityProperties } from "@/core/documents/RelatedProps";
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { ChangeLogEntry } from '@/core/logging/ChangeLogEntry';
-import { Data, SharedRelationshipData } from '@/core/models/data/Data';
+import type { Data, SharedRelationshipData } from '@/core/models/data/Data';
 import { StatusType } from '@/core/models/data/StatusType';
-import { taskMetadata } from '@/core/models/data/TaskMetadata';
+import type { taskMetadata } from '@/core/models/data/TaskMetadata';
 import { PhaseMeta } from '@/core/models/phases/Phase';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { PriorityValue } from '@/core/pages/searches/CriteriaType';
@@ -28,13 +28,13 @@ import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 
 import type { InitializedState } from "@/core/state/stores/DataStore";
-import { AllStatus } from '@/core/state/stores/DetailsListStore';
+import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import type { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
-import { FileMetadata } from '@/core/typings/file/fileTypes';
+import type { FileMetadata } from '@/core/typings/file/fileTypes';
 import { User } from '@/core/users/User';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/core/versions/createLatestVersion';
 import { Version, version, versionData, default as VersionImpl } from '@/core/versions/Version';
@@ -86,7 +86,7 @@ export interface AuditEntry<
 
 // Version-related properties
 interface VersionMetadata<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -279,7 +279,7 @@ interface TaskMetadata<
 }
 
 interface MediaMetadata<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
 > extends BaseMetaDataOptions<T, K> {
   title?: string;
@@ -354,7 +354,7 @@ interface UnifiedMetaDataOptions<
   timestamp?: string | number | Date;
   revisionNotes?: string;
   area: string | undefined;
-  projectId?: number;
+  projectId?: string | number;
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   overrides?: Partial<Omit<Meta, ExcludedFields>>;
   relatedKeys?: Array<keyof K>;
@@ -852,7 +852,7 @@ const mediaData: UnifiedMetadata<MyDataType> = {
 
 // `VideoMetadata` is a type, not just an object type
 function createVideoMetadata<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

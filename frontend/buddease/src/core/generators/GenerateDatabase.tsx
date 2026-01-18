@@ -1,4 +1,4 @@
-GenerateDatabase.tsx
+// GenerateDatabase.tsx
 import { databaseConnection } from '@/core/config/databaseConnection';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { databaseService } from "@/core/server/database/DatabaseOperations";
@@ -46,7 +46,6 @@ const DatabaseGenerator: React.FC = () => {
       const response = await axios.post("/api/setup-database", databaseConfig);
       console.log("Database setup successful:", response.data);
       
-      // Success notification using the same pattern as ApiNote.ts
       notify({
         id: `database_setup_success_${Date.now()}`,
         message: "Database setup successful",

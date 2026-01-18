@@ -2,9 +2,9 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DebugInfo, TempData } from "@/core/models/data/TempData";
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { UnifiedConfigOption } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { UnifiedConfigOption } from '@/core/snapshots/SnapshotStoreOptions';
 
 interface SnapshotConfiguration<
   T extends BaseDataEntity,

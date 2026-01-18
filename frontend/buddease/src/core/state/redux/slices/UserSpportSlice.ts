@@ -1,5 +1,5 @@
-UserSpportSlice.ts
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+// UserSpportSlice.ts
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserSupportFeedbackPreferencesState {

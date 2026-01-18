@@ -1,4 +1,4 @@
-DocumentPermissions.tsx
+// DocumentPermissions.tsx
 class DocumentPermissions {
   private readAccess: boolean;
   private writeAccess: boolean;

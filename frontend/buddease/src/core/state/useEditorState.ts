@@ -1,4 +1,4 @@
-useEditorState.ts
+// useEditorState.ts
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import BrowserCheckStore from '@/core/state/stores/BrowserCheckStore';
 import { EditorState } from 'draft-js';

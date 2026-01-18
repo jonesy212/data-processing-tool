@@ -1,11 +1,11 @@
-// CacheManager.ts
+// CacheWriteOptions.ts
 import getAppPath from "@/core/config/appStructure/appPath";
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserPreferences } from "@/core/config/UserPreferences";
 import { UserSettings } from "@/core/config/UserSettings";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { CustomPhaseHooks } from "@/core/models/phases/Phase";
 import BackendStructure from "@/core/server/database/BackendStructure";
 import { useNotification } from '@/core/state/context/NotificationContext';

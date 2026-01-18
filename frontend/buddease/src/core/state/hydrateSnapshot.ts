@@ -1,20 +1,20 @@
 // hydrateSnapshot.ts
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { StatusType } from "@/core/models/data/StatusType";
 import { TagsRecord } from '@/core/models/tracker/Tag';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
-import { AppMetadata } from '@/core/typings/metadataTypes';
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { AppMetadata } from '@/core/typings/metadataTypes';
 import { Version } from "@/core/versions/Version";
 import { ExtendedVersionData } from "@/core/versions/VersionData";
 import { runInAction, toJS } from "mobx";
 
 
 export interface SnapshotDataLocal<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

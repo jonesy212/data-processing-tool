@@ -1,4 +1,4 @@
-clearChatAnalyticsData.ts
+// clearChatAnalyticsData.ts
 
 /**
  * Clears chat analytics data.

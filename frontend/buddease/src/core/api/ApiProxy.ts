@@ -1,6 +1,8 @@
-ApiProxy.ts
-ApiProxy.ts/
-Typed proxy for ergonomic endpoint access
+// ApiProxy.ts
+import type { EndpointConfigurations } from '@/core/config/EndpointConfig';
+import { endpoints } from '@/core/api/endpointConfigurations';
+
+// Typed proxy for ergonomic endpoint access
 type EndpointFunction = (...params: any[]) => string;
 
 type ApiProxy<T extends EndpointConfigurations> = {

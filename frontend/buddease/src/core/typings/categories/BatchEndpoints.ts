@@ -1,5 +1,5 @@
-BatchEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// BatchEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface BatchEndpoints extends EndpointCategoryConfig {
   fetchVideos: EndpointConfig;

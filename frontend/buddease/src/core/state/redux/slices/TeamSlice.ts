@@ -1,9 +1,9 @@
-TeamSlice.ts
+// TeamSlice.ts
 import TeamData from "@/core/components/models/teams/TeamData";
 import { CollaborationPreferences } from "@/core/interfaces/settings/CollaborationPreferences";
 import { Project } from '@/core/models/projects/Project';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TeamManagerState {

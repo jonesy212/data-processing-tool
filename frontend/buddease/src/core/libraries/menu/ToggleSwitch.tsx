@@ -1,4 +1,4 @@
-ToggleSwitch.tsx
+// ToggleSwitch.tsx
 
 import React from "react";
 

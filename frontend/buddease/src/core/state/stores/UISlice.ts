@@ -1,7 +1,7 @@
-UISlice.ts
+// UISlice.ts
 import { UIActions } from "@/core/actions/UIActions";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { CollaborationState } from "@/core/state/redux/slices/CollaborationSlice";
+import type { CollaborationState } from "@/core/state/redux/slices/CollaborationSlice";
 import { setIsDrawing } from "@/core/state/redux/slices/DrawingSlice";
 import { resetMilestones, resetTrackers } from "@/core/state/redux/slices/TrackerSlice";
 import {

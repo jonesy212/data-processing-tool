@@ -1,6 +1,6 @@
-AuthorizationSlice.tsx
+// AuthorizationSlice.tsx
 authorizationSlice.ts
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 

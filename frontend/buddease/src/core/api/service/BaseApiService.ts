@@ -1,4 +1,4 @@
-BaseApiService.ts
+// BaseApiService.ts
 import { handleApiError } from "@/core/api/ApiLogs";
 import axiosInstance from '@/core/api/csrfToken';
 import { AxiosError, AxiosRequestConfig } from "axios";

@@ -1,4 +1,4 @@
-GoogleAnalyticsScript.tsx
+// GoogleAnalyticsScript.tsx
 import Script from 'next/script';
 import React from 'react';
 

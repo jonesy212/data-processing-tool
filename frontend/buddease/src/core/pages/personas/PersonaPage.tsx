@@ -1,5 +1,4 @@
-PersonaPage.tsx
-PersonaPage.ts
+// PersonaPage.tsx
 app/pages/personas/PersonaPage.tsx
 import { Persona } from '@/core/pages/personas/Persona';
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';

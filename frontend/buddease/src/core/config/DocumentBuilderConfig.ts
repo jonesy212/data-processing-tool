@@ -8,10 +8,10 @@ import type { MetadataEntry, StructuredMetadata } from '@/core/config/Structured
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import { ModifiedDate } from '@/core/documents/DocType';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { Section } from '@/core/documents/Section';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import {
     BorderStyle,
     DocumentSize,
@@ -20,7 +20,7 @@ import {
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import BackendStructure from '@/core/server/database/BackendStructure';
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
-import { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
+import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import type { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';

@@ -1,4 +1,4 @@
-DevelopmentPhase.tsx
+// DevelopmentPhase.tsx
 import { DevelopmentPhaseEnum } from "@/core/models/data/StatusType";
 import RegistrationPhaseComponent from "@/core/pages/onboarding/RegistrationPhaseComponent";
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";

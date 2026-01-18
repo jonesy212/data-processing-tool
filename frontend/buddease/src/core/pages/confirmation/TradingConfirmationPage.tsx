@@ -1,6 +1,7 @@
-TradingConfirmationPage.tsx
+// TradingConfirmationPage.tsx
 import { TradeData } from "@/core/components/trading/TradeData";
-import ConfirmationPage, { ConfirmationPageProps } from "@/core/pages/confirmation/ConfirmationPage";
+import type { ConfirmationPageProps } from '@/core/pages/confirmation/ConfirmationPage';
+import ConfirmationPage from '@/core/pages/confirmation/ConfirmationPage';
 import React from "react";
 
 interface TradingConfirmationPageProps extends ConfirmationPageProps {

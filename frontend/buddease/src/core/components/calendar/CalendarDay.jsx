@@ -1,4 +1,4 @@
-// DayView.jsx
+// CalendarDay.jsx
 import CalendarDay from '@/CalendarDay';
 import { TaskList } from '@/core/components/lists/TaskList';
 

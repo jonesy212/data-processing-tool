@@ -1,5 +1,4 @@
 // participantSlice.ts
-// useParticipantSlice.ts
  
 import type { Participant } from "@/core/pages/management/ParticipantManagementPage";
 import { createSlice } from "@reduxjs/toolkit";

@@ -1,5 +1,4 @@
 // DynamicIconsAndImages.tsx
-// components/DynamicIconsAndImages.tsx
 import LazyIcon from '@/core/components/LazyIconProps';
 import React from 'react';
 

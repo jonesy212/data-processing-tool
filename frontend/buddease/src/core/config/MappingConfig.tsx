@@ -1,4 +1,4 @@
-MappingConfig.tsx
+// MappingConfig.tsx
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CryptoData, ParsedData } from "@/core/dataIntegration/parseData";

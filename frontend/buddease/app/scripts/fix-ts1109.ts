@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// src/app/scripts/fix-ts1109.ts
+// fix-ts1109.ts
 // Fix TS1109: Expression expected errors
 
 import fs from 'fs';
@@ -124,7 +124,6 @@ async function fixTS1109(filePath: string) {
   }
 }
 
-// Common TeamManager.tsx template with proper structure
 function createTeamManagerTemplate() {
   return `// TeamManager.tsx
 import React, { useState } from 'react';

@@ -1,4 +1,4 @@
-CollaborationPreferences.ts
+// CollaborationPreferences.ts
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
 import { BrainstormingSettings } from "@/core/interfaces/settings/BrainstormingSettings";
 import { TeamBuildingSettings } from "@/core/interfaces/settings/TeamBuildingSettings";

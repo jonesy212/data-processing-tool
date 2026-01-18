@@ -1,4 +1,4 @@
-DataService.ts
+// DataService.ts
 import internalApiService from '@/core/api/ApiClient';
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -6,13 +6,13 @@ import DATA_NOTIFICATIONS from '@/core/features/support/DataNotifications';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from '@/core/models/data/StatusType';
 import { useAuth } from '@/core/state/context/AuthContext';
-import { NotificationContextProps } from '@/core/state/context/NotificationContext';
-import { DataState } from '@/core/state/DataState';
+import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
+import type { DataState } from '@/core/state/DataState';
 import { YourResponseType } from '@/core/typings/responseTypes';
 import { action, observable, runInAction } from 'mobx';
 
 class DataService<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,9 +1,8 @@
-// PhaseSlice.ts
+// phaseSlice.ts
 import { PhaseHookConfig } from '@/core/hooks/phaseHooks/PhaseHooks';
 import { WritableDraft } from './../ReducerGenerator';
-// phases/usePhaseSlice.ts
 import { CustomPhaseHooks, Phase } from '@/core/models/phases/Phase';
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
+import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Updated PhaseState to use your entity pattern

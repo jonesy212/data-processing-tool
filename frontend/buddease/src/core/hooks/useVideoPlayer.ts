@@ -1,4 +1,4 @@
-useVideoPlayer.ts
+// useVideoPlayer.ts
 app/features/video/hooks/useVideoPlayer.ts
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';

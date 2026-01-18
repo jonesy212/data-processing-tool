@@ -1,3 +1,4 @@
+// CircularDependencyResolver.ts
 //app/error-analyzer/CircularDependencyResolver.ts
 
 import type { FixPlan, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';

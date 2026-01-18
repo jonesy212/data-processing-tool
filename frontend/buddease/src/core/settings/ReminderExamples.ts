@@ -1,4 +1,5 @@
-import { ReminderTypes, createReminderTypeFromEnum } from '@/core/typings/ReminderTypes';
+// ReminderExamples.ts
+import type { ReminderTypes, createReminderTypeFromEnum } from '@/core/typings/ReminderTypes';
 import type { Reminder } from './Reminder';
 
 // Example 1: Simple usage with enum

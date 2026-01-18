@@ -1,6 +1,5 @@
 // RealtimeActions.ts
-// actions/RealtimeActions.ts
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { createAction } from "@reduxjs/toolkit";
 
 export const RealtimeActions = {

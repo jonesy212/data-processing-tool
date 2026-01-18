@@ -1,9 +1,8 @@
-// configs/alias-config.js
+// alias-config.js
 const path = require('path');
 const { resolve } = require('path');
 
 const ALIASES = {
-  // Core paths - exactly matching your tsconfig.json
   "@/*": "src/*",
   "@/api/*": "src/core/api/*",
   "@/analyzers/*": "src/core/generators/corrections/analyzers/*",

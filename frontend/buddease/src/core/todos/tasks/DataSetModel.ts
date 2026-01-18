@@ -6,7 +6,7 @@ import { ModifiedDate } from "@/core/documents/DocType";
 import { DocumentPath } from "@/core/documents/DocumentPath";
 import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { Content } from "@/core/models/content/AddContent";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";

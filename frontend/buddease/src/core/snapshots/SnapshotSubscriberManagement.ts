@@ -1,34 +1,34 @@
 // SnapshotSubscriberManagement.ts
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { NotificationPosition } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { EventManagement } from '@/core/snapshots/SnapshotEvents';
 import type { DataStore } from '@/core/state/stores/DataStore';
 import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Content } from '@/core/models/content/AddContent';
-import { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
+import type { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
 import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotLifecycleMethods } from '@/core/snapshots/SnapshotMethods';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { SubscriberCallbackType, Subscription } from '@/core/subscriptions/Subscription';
+import type { SubscriberCallbackType, Subscription } from '@/core/subscriptions/Subscription';
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 
 
@@ -48,7 +48,6 @@ interface SnapshotContext<
   category?: Category;
 }
 
-// OptionalSnapshotSubscriberHelpers.ts
 export interface OptionalSnapshotSubscriberHelpers<
   T extends BaseDataEntity,
   K extends T = T,
@@ -106,7 +105,7 @@ export interface OptionalSnapshotSubscriberHelpers<
 }
 
 interface SnapshotSubscriberManagement<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

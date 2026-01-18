@@ -1,6 +1,6 @@
 // snapshotTaskMap.ts
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
 ;
 
 //snapshotTaskMap.ts

@@ -1,4 +1,4 @@
-ChatSettingsPanel.tsx
+// ChatSettingsPanel.tsx
 import React from 'react';
 
 import ChatSettings from '@/core/hooks/userInterface/ChatSettings';

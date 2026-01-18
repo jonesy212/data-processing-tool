@@ -1,7 +1,7 @@
 // FileSharingComponent.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import CustomBox from "@/core/components/containers/CustomBox";
 import DynamicTypography from "@/core/components/styling/DynamicTypography";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -12,14 +12,15 @@ import InputLabel, { Input } from "@/core/hooks/userInterface/InputFields";
 import { brandingSettings } from "@/core/libraries/theme/BrandingService";
 import ReusableButton from "@/core/libraries/ui/buttons/ReusableButton";
 import { SupportedData } from "@/core/models/CommonData";
-import { DataDetailsComponent } from "@/core/models/data/Data";
+import type { DataDetailsComponent } from "@/core/models/data/Data";
 import { ExtendedRouter } from "@/core/pages/MyAppWrapper";
 import FormControl from "@/core/pages/forms/FormControl";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import MenuDivider from "antd/es/menu/MenuDivider";
 import { Router, useRouter } from "next/router";
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import type { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
  

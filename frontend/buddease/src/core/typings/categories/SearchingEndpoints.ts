@@ -1,5 +1,5 @@
-SearchingEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// SearchingEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface SearchingEndpoints extends EndpointCategoryConfig {
   searchMessages: EndpointConfig;

@@ -1,3 +1,4 @@
+// unifiedAnalyzer.ts
 utils/unifiedAnalyzer.ts
 import { ComprehensiveFrontendAnalyzer } from '@/core/generators/corrections/analyzers/ComprehensiveFrontendAnalyzer';
 

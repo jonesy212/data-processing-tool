@@ -2,10 +2,10 @@
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { SnapshotOperation } from "@/core/snapshots/index";
 import { Snapshots, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
@@ -14,7 +14,7 @@ import { Subscriber } from "@/core/subscribers/Subscriber";
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { DataStore } from '@/core/state/stores/DataStore';
 

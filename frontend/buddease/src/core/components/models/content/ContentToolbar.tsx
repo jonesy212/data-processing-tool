@@ -1,4 +1,4 @@
-ContentToolbar.tsx
+// ContentToolbar.tsx
 import ToolbarItem from "@/core/components/documents/ToolbarItem";
 import React from "react";
 

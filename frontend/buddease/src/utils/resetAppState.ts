@@ -1,4 +1,4 @@
-resetAppState.ts
+// resetAppState.ts
 
 import UserService from "@/core/api/ApiUser";
 import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";

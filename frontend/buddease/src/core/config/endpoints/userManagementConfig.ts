@@ -1,4 +1,4 @@
-userManagementConfig.ts
+// userManagementConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { UserManagementEndpoints } from '@/core/typings/categories/UserManagementEndpoints';
 

@@ -1,4 +1,4 @@
-UserPreferencesDashboard.tsx
+// UserPreferencesDashboard.tsx
 import userPreferences from '@/core/config/UserPreferences';
 import React from "react";
 

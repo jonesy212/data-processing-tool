@@ -1,6 +1,7 @@
-CalendarEventAttendancePrediction.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent'; // Assuming Attendee is imported from CalendarEvent
-import AttendancePrediction, { EventAttendance } from "@/core/components/calendar/AttendancePrediction";
+// CalendarEventAttendancePrediction.tsx
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent'; // Assuming Attendee is imported from CalendarEvent
+import type { EventAttendance } from '@/core/components/calendar/AttendancePrediction';
+import AttendancePrediction from '@/core/components/calendar/AttendancePrediction';
 
 // Define the interface for AttendancePredictionResult
 interface AttendancePredictionResult {

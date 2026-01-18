@@ -1,5 +1,4 @@
-SecurityMeasureLogger.tsx
-SecurityMeasureLogger.ts
+// SecurityMeasureLogger.tsx
 
 import { SecurityMeasure, SecurityMeasureType } from "@/core/typings/securityMeasureTypes";
 

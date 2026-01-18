@@ -1,4 +1,4 @@
-AuthorizationActions.ts
+// AuthorizationActions.ts
 // todo better manager authorization actions here
 
 // Import necessary actions from other action modules

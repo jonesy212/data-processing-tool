@@ -1,3 +1,4 @@
+// VideoSlice.ts
 
 video/VideoSlice.ts
 import type { DefaultMeta } from '@/core/config/BaseConfig';
@@ -6,7 +7,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Channel } from "@/core/interfaces/chat/Channel";
 import type { BaseDataEntity } from '@/core/snapshots/ValidationRule';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { ApiManagerState } from "@/core/state/redux/slices/ApiSlice";
+import type { ApiManagerState } from "@/core/state/redux/slices/ApiSlice";
 import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
 import { implementThen } from '@/core/state/stores/CommonEvent';
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';

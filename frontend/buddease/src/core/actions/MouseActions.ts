@@ -1,4 +1,4 @@
-MouseActions.ts
+// MouseActions.ts
 
 import { createAction } from "@reduxjs/toolkit";
 

@@ -1,5 +1,4 @@
 // ProfessionalTraderContentManagement.tsx
-// ProfessionalTraderContentManagement.tsx
 import React, { useState } from 'react';
 
 interface ProfessionalTraderContentManagementProps {

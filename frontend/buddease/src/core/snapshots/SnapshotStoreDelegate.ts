@@ -1,7 +1,6 @@
 // SnapshotStoreDelegate.ts
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 
-// // SnapshotStoreDelegate.ts
 // Assuming you have the correct configuration for T and K
 export const snapshotStoreDelegate: {
     useSimulatedDataSource: boolean;

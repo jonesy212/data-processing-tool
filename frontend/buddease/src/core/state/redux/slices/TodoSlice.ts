@@ -1,8 +1,8 @@
-TodoSlice.ts
+// TodoSlice.ts
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
-import { PaginationOptions } from '@/core/pages/searches/SearchOptions';
+import type { PaginationOptions } from '@/core/pages/searches/SearchOptions';
 import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
-import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@/core/state/redux/slices/EntitySlice';
+import type { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@/core/state/redux/slices/EntitySlice';
 import { Todo } from '@/core/todos/Todo';
 
 export interface TodoManagerState extends EntityState<WritableDraft<Todo>, string>  {

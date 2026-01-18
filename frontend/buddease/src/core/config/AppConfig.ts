@@ -1,4 +1,4 @@
-AppConfig.ts
+// AppConfig.ts
 
 import { ApiConfig } from '@/core/api/ApiConfigService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -6,7 +6,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from "@/core/hooks/useNotificationSystem";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import type { UserRole } from "@/core/models/UserRole";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { RetryConfig, configServiceInstance } from "@/core/services/ConfigurationService";
 import { User } from "@/core/users/User";
 import { AppVersion, currentAppName } from '@/core/versions/AppVersion';

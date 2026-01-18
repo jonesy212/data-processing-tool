@@ -1,4 +1,4 @@
-UnifiedSystemType.ts
+// UnifiedSystemType.ts
 import {
     ActivityActionEnum,
     ActivityTypeEnum, BookmarkStatus,

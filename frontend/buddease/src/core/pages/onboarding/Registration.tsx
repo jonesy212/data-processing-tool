@@ -1,4 +1,4 @@
-Registration.tsx
+// Registration.tsx
 import RegistrationPhase from '@/core/pages/onboarding/RegistrationPhase';
 import React from 'react';
 

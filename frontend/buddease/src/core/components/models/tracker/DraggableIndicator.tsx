@@ -1,4 +1,4 @@
-DraggableIndicator.tsx
+// DraggableIndicator.tsx
 import React from 'react';
 
 interface DraggableIndicatorProps {

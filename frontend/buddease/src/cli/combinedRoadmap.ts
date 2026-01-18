@@ -1,6 +1,5 @@
 // combinedRoadmap.ts
-import type { BaseDataEntity, BaseDataRoot } from '@/core/config/BaseConfig';
-// services/combinedRoadmap.ts
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { generateOutline } from '@/cli/roadmapOutline';
 import type { RoadmapAudience, RoadmapNode } from '@/core/typings/roadmap';
 import * as fs from 'fs';
@@ -28,7 +27,7 @@ function prompt(question: string): Promise<string> {
 /**
  * Handles combined roadmap preview and saving
  */
-export async function handleCombinedRoadmap<T extends BaseDataEntity = BaseDataRoot>(
+export async function handleCombinedRoadmap<T extends BaseDataEntity = BaseDataEntity>(
   outlines: Record<RoadmapAudience, RoadmapNode<T>[]>,
   audiences: RoadmapAudience[]
 ) {

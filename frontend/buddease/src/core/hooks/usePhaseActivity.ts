@@ -1,4 +1,4 @@
-usePhaseActivity.ts
+// usePhaseActivity.ts
 import { syncActivities } from "@/core/state/redux/slices/phaseActivitySlice";
 import { phaseActivityStore } from "@/core/state/stores/PhaseActivityStore";
 import { useEffect } from "react";

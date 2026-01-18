@@ -1,6 +1,7 @@
-RiskAssessmentPage.tsx
+// RiskAssessmentPage.tsx
 import { RiskAssessmentProps } from '@/core/components/phases/crypto/RiskAssessment';
-import ArbitrageRiskManager, { ArbitrageTrade, RiskManagementOptions } from '@/core/components/phases/crypto/riskManagement';
+import type { ArbitrageTrade, RiskManagementOptions } from '@/core/components/phases/crypto/riskManagement';
+import ArbitrageRiskManager from '@/core/components/phases/crypto/riskManagement';
 import React from 'react';
 
 const RiskAssessmentPage: React.FC<RiskAssessmentProps> = () => {

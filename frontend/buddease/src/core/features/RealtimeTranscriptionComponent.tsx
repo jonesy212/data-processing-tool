@@ -1,4 +1,4 @@
-RealtimeTranscriptionComponent.tsx
+// RealtimeTranscriptionComponent.tsx
 import * as apiDocument from '@/core/api/ApiDocument';
 import calculateKPMBasedOnEditorChanges from "@/core/components/strategy/calculateKPMBasedOnEditorChanges";
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";

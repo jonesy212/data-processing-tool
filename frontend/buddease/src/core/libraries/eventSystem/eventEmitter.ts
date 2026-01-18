@@ -1,6 +1,6 @@
-eventEmitter.ts
+// eventEmitter.ts
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import {
+import type {
     EventEmitterConfig,
     EventFilter,
     EventHandler,
@@ -8,7 +8,11 @@ import {
 } from '@/core/typings/eventHandlers/eventTypes';
 
 export class EventEmitter<T extends Record<string, any>> {
-  private listeners: Map<keyof T, EventListener<T[keyof T]>[]> = new Map();
+  private listeners: Map<keyof T, Array<{
+    id: string;
+    handler: (data: any) => any;
+    filter?: (data: any) => boolean;
+  }>> = new Map();
   private config: EventEmitterConfig;
   private isEmitting: Set<keyof T> = new Set();
 
@@ -28,12 +32,7 @@ export class EventEmitter<T extends Record<string, any>> {
     id?: string
   ): string {
     const listenerId = id || UniqueIDGenerator.generateId("listener");
-    const listener: EventListener<T[K]> = {
-      id: listenerId,
-      handler,
-      filter
-    };
-
+    
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
@@ -45,14 +44,20 @@ export class EventEmitter<T extends Record<string, any>> {
       console.warn(`Event ${String(event)} has reached maximum listeners (${this.config.maxListeners})`);
     }
 
-    eventListeners.push(listener);
+    eventListeners.push({
+      id: listenerId,
+      handler: handler as any,
+      filter: filter as any
+    });
+    
     return listenerId;
   }
 
   once<K extends keyof T>(
     event: K, 
     handler: EventHandler<T[K]>, 
-    filter?: EventFilter<T[K]>
+    filter?: EventFilter<T[K]>,
+    id?: string
   ): string {
     const listenerId = id || UniqueIDGenerator.generateId("listener");
 
@@ -165,5 +170,11 @@ export class EventEmitter<T extends Record<string, any>> {
     for (const { event, data } of events) {
       await this.emit(event, data);
     }
+  }
+
+  // Get all listeners for a specific event
+  getListeners<K extends keyof T>(event: K): Array<{ id: string }> {
+    const listeners = this.listeners.get(event) || [];
+    return listeners.map(listener => ({ id: listener.id }));
   }
 }

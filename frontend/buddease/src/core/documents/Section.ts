@@ -1,4 +1,4 @@
-Section.ts
+// Section.ts
 
 export interface Section {
   id: string;

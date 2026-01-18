@@ -1,11 +1,11 @@
 // convertSubscriptionPayloadToSubscriber.ts
 import { SubscriptionPayload } from "@/core/actions/SubscriptionActions";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ModifiedDate } from "@/core/documents/DocType";
 import { Payload } from '@/core/interfaces/payload/payloadTypes';
 import { determineCategory } from "@/core/libraries/categories/determineCategory";
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
 import { CustomPayload } from '@/core/snapshots/CustomPayload';
 import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { Subscriber } from '@/core/subscribers/Subscriber';
@@ -15,7 +15,7 @@ import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState }
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 
 const convertSubscriptionPayloadToSubscriber = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

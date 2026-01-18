@@ -1,6 +1,6 @@
-TypeRelationshipMapper.ts
-import ApiMethod, { InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+// TypeRelationshipMapper.ts
+import type { ApiMethod, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import path from 'path';
 
 interface TypeNode {
@@ -135,7 +135,7 @@ export class TypeRelationshipMapper {
     const dependencies: string[] = [];
     
     // Extract from parameters
-    method.parameters.forEach(param => {
+    method.parameters.forEach((param: string) => {
       const typeRefs = this.extractTypeReferences(param);
       dependencies.push(...typeRefs);
     });

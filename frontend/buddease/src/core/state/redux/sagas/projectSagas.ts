@@ -1,9 +1,10 @@
-projectSagas.ts
+// projectSagas.ts
 // Import necessary dependencies and actions
 import { ProjectActions } from "@/core/actions/ProjectActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Project } from '@/core/models/projects/Project';
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { call, put, takeLatest } from "redux-saga/effects";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint

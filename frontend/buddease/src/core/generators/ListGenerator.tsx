@@ -1,9 +1,9 @@
 // ListGenerator.tsx
 import DetailsListItem from '@/core/components/models/data/DetailsListItem';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Data } from '@/core/models/data/Data';
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import {
     DetailsAttachment,
     DetailsEntity,
@@ -16,7 +16,7 @@ import { ReactiveMouseEvent } from '@/core/typings/eventHandlers/eventTypes';
 
 // Define a mapped type to include all properties of Data
 export type AllProperties<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -27,7 +27,7 @@ export type AllProperties<
 
 // Define a new type for DetailsItem with optional properties
 type DetailsItemCommon<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -50,7 +50,7 @@ interface ListGeneratorProps<
 
 
 const ListGenerator = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

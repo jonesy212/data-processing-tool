@@ -1,3 +1,4 @@
+// EventUtils.ts
 import { EventAttendance } from '@/core/components/calendar/AttendancePrediction';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

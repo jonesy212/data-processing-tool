@@ -1,4 +1,4 @@
-VisualizationLogic.ts
+// VisualizationLogic.ts
 
 interface ProgressData {
     taskId: string;

@@ -1,5 +1,4 @@
-useDummyGenerator.tsx
-useDummyGenerator.ts
+// useDummyGenerator.tsx
 import { useState } from 'react';
 export interface DummyHookActions {
   toggleActivation: (options?: { accessToken?: string }) => void;

@@ -1,3 +1,4 @@
+// autoFixInterfaceImportsWithBackup.ts
 import { createBackup, restoreBackup } from '../../error-analyzer/phases/PhaseBackupSystem';
 
 async function autoFixInterfaceImportsWithBackup(projectRoot: string, files: string[]) {

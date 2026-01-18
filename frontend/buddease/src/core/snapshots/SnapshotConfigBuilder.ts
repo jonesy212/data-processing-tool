@@ -1,30 +1,25 @@
 // SnapshotConfigBuilder.ts
 
-import { ExcludedFields } from "@/core/components/routing/Fields";
-import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { createLatestVersion } from '@/core/versions/createLatestVersion';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { EventStore } from "@/core/events/EventStore";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import type { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { Data } from '@/core/models/data/Data';
 import type { StoreMethods } from "@/core/models/tasks/StoreMethods";
-import { criteria } from "@/core/pages/searches/FilterCriteria";
-import baseMeta from "@/core/server/database/baseMeta";
-import { generateId } from "@/core/snapshots/InitializedStateExample";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import type { InitializedData, SnapshotInstanceProps } from "@/core/snapshots/SnapshotStoreOptions";
-import { storeProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { storeProps } from "@/core/snapshots/SnapshotStoreProps";
 import type { SnapshotSubscriberManagement } from "@/core/snapshots/SnapshotSubscriberManagement";
 import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { initialState } from "@/core/state/redux/slices/FilteredEventsSlice";
 import type { SnapshotMeta } from "@/core/typings/entities/SnapshotEntity";
 import type { SnapshotEvents } from '@/core/typings/snapshotTypes';
+import { createLatestVersion } from '@/core/versions/createLatestVersion';
 
 import type { EventHandlers } from '@/core/libraries/eventSystem/eventHandlers';
 
@@ -34,7 +29,7 @@ interface SnapshotLifecycle<T extends BaseDataEntity> {
 }
 
 type SnapshotConfigParams<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -79,7 +74,7 @@ interface SimulatedDataSourceFromParams<
 
 // Master builder (factory companion)
 export interface SnapshotConfigBuilder<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

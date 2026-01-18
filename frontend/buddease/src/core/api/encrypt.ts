@@ -1,4 +1,4 @@
-encrypt.ts
+// encrypt.ts
 import { encryptString } from "@/core/server/security/encryptString";
 
 export default async function handler(req, res) {

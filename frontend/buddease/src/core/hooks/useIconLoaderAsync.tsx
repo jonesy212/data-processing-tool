@@ -1,7 +1,6 @@
-useIconLoaderAsync.tsx
-useIconLoaderAsync.ts
+// useIconLoaderAsync.tsx
 import { getFAIcon, loadFontAwesomeIcon } from "@/core/components/icons/fontAwesomeIconLoader";
-import { FontAwesomeIconOptions } from "@/core/components/icons/fontAwesomeIconOptions";
+import type { FontAwesomeIconOptions } from "@/core/components/icons/fontAwesomeIconOptions";
 import { IconLibrary, loadIconLibrary } from "@/core/components/icons/iconLibraryLoader";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useState } from "react";

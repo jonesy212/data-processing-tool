@@ -1,4 +1,4 @@
-NotificationTypes.ts
+// NotificationTypes.ts
 
 // Base types - System & Technical
 export const BaseNotificationTypes = {
@@ -36,7 +36,7 @@ export const TeamNotificationTypes = {
   ADD_PARTICIPANT: 'ADD_PARTICIPANT',
 } as const;
 
-Chat & Messaging
+// Chat & Messaging
 export const ChatNotificationTypes = {
   NEW_CHAT_MESSAGE: 'NewChatMessage',
   CHAT_MENTION: 'ChatMention',
@@ -47,12 +47,13 @@ export const ChatNotificationTypes = {
   MESSAGE_ID: 'Message'
 } as const;
 
-Operations & System Actions
+// Operations & System Actions
 export const OperationNotificationTypes = {
   OPERATION_SUCCESS: 'OperationSuccess',
   OPERATION_ERROR: 'OperationError',
   OPERATION_START: 'OperationStart',
   OPERATION_UPDATE: 'OperationUpdate',
+  OPERATION_INFO: 'OperationInfo',
   ASSIGNMENT_OPERATION: 'AssignmentOperation',
   ASSIGNMENT_OPERATION_SUCCESS: 'AssignmentOperationSuccess',
   CREATION_SUCCESS: 'CreationSuccess',
@@ -60,7 +61,7 @@ export const OperationNotificationTypes = {
   DISPLAY_SUCCESS: 'DisplaySuccess',
 } as const;
 
-Content & Media
+// Content & Media
 export const ContentNotificationTypes = {
   CONTENT_ID: 'ContentID',
   CONTENT_ITEM: 'ContentItem',
@@ -82,7 +83,7 @@ export const EventNotificationTypes = {
   EVENT: 'Event'
 }
 
-Calendar & Events
+// Calendar & Events
 export const CalendarNotificationTypes = {
   CALENDAR_EVENT: 'CalendarEvent',
   CALENDAR_ID: 'CalendarID',
@@ -93,7 +94,7 @@ export const CalendarNotificationTypes = {
   MEETING_ID: 'MeetingId',
 } as const;
 
-Payments & Commerce
+// Payments & Commerce
 export const PaymentNotificationTypes = {
   PAYMENT_RECEIVED: 'PaymentReceived',
   COUPON_CODE: 'CouponCode',
@@ -115,7 +116,7 @@ export const AppNotificationTypes = {
   BRAINSTORMING_SESSION_ID: 'BrainstormingSessionID',
 } as const;
 
-Analytics & Logging
+// Analytics & Logging
 export const AnalyticsNotificationTypes = {
   ANALYTICS_ID: 'AnalyticsID',
   LOGGING_ERROR: 'LoggingError',
@@ -125,7 +126,7 @@ export const AnalyticsNotificationTypes = {
   TASK_LOGGED: 'TaskLogged',
 } as const;
 
-Custom & Miscellaneous
+// Custom & Miscellaneous
 export const CustomNotificationTypes = {
   CUSTOM_NOTIFICATION_1: 'CustomNotification1',
   CUSTOM_NOTIFICATION_2: 'CustomNotification2',
@@ -141,7 +142,7 @@ export const CustomNotificationTypes = {
   __FILE_PATH__: 'filePath',
 } as const;
 
-Onboarding & Setup (for your phases)
+// Onboarding & Setup (for your phases)
 export const OnboardingNotificationTypes = {
   PROFILE_SETUP_START: 'ProfileSetupStart',
   PROFILE_SETUP_COMPLETE: 'ProfileSetupComplete',
@@ -161,7 +162,7 @@ export const OnboardingNotificationTypes = {
 
 
 
-Phase & Progress Notifications
+// Phase & Progress Notifications
 export const PhaseNotificationTypes = {
   // User Support Phases
   USER_SUPPORT_PLANNING_START: 'UserSupportPlanningStart',

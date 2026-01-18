@@ -1,4 +1,4 @@
-RegexHelpers.ts
+// RegexHelpers.ts
 
 export class RegexHelpers {
   private static readonly patterns = {

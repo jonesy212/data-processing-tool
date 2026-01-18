@@ -5,7 +5,7 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { Snapshot, } from "@/core/snapshots/Snapshot";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';

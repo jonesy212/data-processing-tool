@@ -1,7 +1,8 @@
-BinanceAPI.ts
+// BinanceAPI.ts
 
 // Import necessary modules
-import axios, { AxiosInstance } from 'axios';
+import type { AxiosInstance } from 'axios';
+import axios from 'axios';
 
 // Define BinanceAPI class
 class BinanceAPI {

@@ -1,4 +1,4 @@
-EscalationCondition.ts
+// EscalationCondition.ts
 export interface EscalationCondition {
   id: string;
   type:

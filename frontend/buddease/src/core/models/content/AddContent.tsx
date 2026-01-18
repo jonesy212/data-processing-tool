@@ -1,5 +1,6 @@
 // AddContent.tsx
-import ContentItemComponent, { ContentItem } from '@/core/components/models/content/ContentItem';
+import type { ContentItem } from '@/core/components/models/content/ContentItem';
+import ContentItemComponent from '@/core/components/models/content/ContentItem';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { StatusType } from '@/core/models/data/StatusType';
 import { Phase } from "@/core/models/phases/Phase";
@@ -11,7 +12,7 @@ import { createLatestVersion } from '@/core/versions/createLatestVersion';
 
 import ContentDetailsListItem from '@/core/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/core/components/models/content/ContentToolbar';
-import type { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UserRoles from '@/core/models/UserRoles';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
@@ -24,10 +25,11 @@ import {
     ContentK,
     ContentMeta
 } from '@/core/typings/entities/ContentEntity';
-import React, { FormEvent, useState } from 'react';
+import type { FormEvent, useState } from 'react';
+import React from 'react';
 
 interface Content<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

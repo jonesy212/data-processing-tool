@@ -1,4 +1,4 @@
-// app/scripts/test-error-analysis.ts  (refactored for clarity)
+// test-error-analysis.ts
 import { ErrorManager } from '@/utils/ErrorManager';
 import { DuplicateDetector } from '@/utils/DuplicateDetector';
 import chalk from 'chalk';

@@ -1,4 +1,4 @@
-VoiceNavigation.tsx
+// VoiceNavigation.tsx
 import React from 'react';
 import IntroJs from 'intro.js';
 
@@ -19,10 +19,8 @@ const VoiceControlledNavigation = () => {
       ],
     });
 
-    // Start the Intro.js tour when the component mounts
     intro.start();
 
-    // Clean up the Intro.js instance when the component unmounts
     return () => {
       intro.exit(true);
     };

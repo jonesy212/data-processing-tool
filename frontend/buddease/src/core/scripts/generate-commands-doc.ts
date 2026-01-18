@@ -1,4 +1,4 @@
-generate-commands-doc.ts
+// generate-commands-doc.ts
 import { StructureValidator } from '@/core/generators/corrections/StructureValidator';
 import fs from 'fs';
 import path from 'path';

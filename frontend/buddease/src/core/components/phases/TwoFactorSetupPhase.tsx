@@ -1,4 +1,4 @@
-TwoFactorSetupPhase.tsx
+// TwoFactorSetupPhase.tsx
 // TwoFactorSetupPhase component
 import axiosInstance from '@/core/api/csrfToken';
 import React from 'react';

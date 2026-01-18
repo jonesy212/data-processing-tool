@@ -1,5 +1,5 @@
-AuthEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// AuthEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface AuthEndpoints extends EndpointCategoryConfig {
   admin: EndpointConfig;

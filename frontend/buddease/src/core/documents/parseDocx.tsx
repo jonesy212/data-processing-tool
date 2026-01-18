@@ -1,4 +1,4 @@
-parseDocx.tsx
+// parseDocx.tsx
 import getAppPath from "@/core/config/appStructure/appPath";
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { DocData, YourDocxType } from "@/core/documents/DocType";

@@ -1,9 +1,9 @@
 // ServerDocumentGenerator.ts
 // This file should ONLY be imported by server components or API routes
 import { generateFinancialReportContent } from '@/core/components/documents/documentation/report/generateFinancialReportContent';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { BaseData } from '@/core/models/data/Data';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import type { BaseData } from '@/core/models/data/Data';
 import { ServerFileSystem } from '@/core/server/serverFileSystem';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import Docxtemplater from "docxtemplater";

@@ -1,5 +1,5 @@
-RegistrationEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// RegistrationEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface RegistrationEndpoints extends EndpointCategoryConfig {
   registerUser: EndpointConfig;

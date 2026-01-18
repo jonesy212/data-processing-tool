@@ -1,4 +1,4 @@
-SharedHeaders.ts
+// SharedHeaders.ts
 import { createHeaders } from '@/core/api/ApiClient';
 import HeadersConfig from '@/core/api/headers/HeadersConfig';
 

@@ -1,4 +1,4 @@
-GeolocationService.tsx
+// GeolocationService.tsx
 // Define the GeolocationService class
 class GeolocationService {
     watchId: any;

@@ -1,4 +1,4 @@
-promptGenerator.ts
+// promptGenerator.ts
 
 import { getAppContext } from '@/core/state/context/AppContextHelper';
 

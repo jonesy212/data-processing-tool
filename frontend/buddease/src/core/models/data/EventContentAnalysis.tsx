@@ -1,7 +1,7 @@
-EventContentAnalysis.tsx
+// EventContentAnalysis.tsx
 
 import axiosInstance from '@/core/api/csrfToken';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { processAutoGPTOutputWithSpaCy } from "@/core/intelligence/AutoGPTSpaCyIntegration";
 
 // Define a class or interface for content analysis

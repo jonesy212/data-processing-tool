@@ -1,8 +1,9 @@
-RootLayoutContent.tsx
+// RootLayoutContent.tsx
 app/layout/RootLayoutContent.tsx
 "use client";
 
-import React, { RefObject } from "react";
+import type { RefObject } from 'react';
+import React from 'react';
 
 // Define the props interface
 export interface RootLayoutContentProps {

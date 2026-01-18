@@ -1,9 +1,9 @@
-DetailsList.tsx
+// DetailsList.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import CommonDetails from "@/core/models/CommonData";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { Phase } from '@/core/models/phases/Phase';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 

@@ -1,4 +1,4 @@
-OnboardingPhase.tsx
+// OnboardingPhase.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import DetailsProps from "@/core/components/models/data/Details";
 import { CommonDetails } from '@/core/components/models/details/CommonDetails';

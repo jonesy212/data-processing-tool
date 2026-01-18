@@ -1,10 +1,10 @@
-useSnapshotVersioningSystem.ts
+// useSnapshotVersioningSystem.ts
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
-import { VersionMetadata } from '@/core/config/MetaDataOptions';
+import type { VersionMetadata } from '@/core/config/MetaDataOptions';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import React, { useCallback, useMemo, useState } from 'react';
 

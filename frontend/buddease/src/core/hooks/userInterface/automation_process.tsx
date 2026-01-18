@@ -1,10 +1,9 @@
 // automation_process.tsx
-// AutomatioProcess.ts
 import { ErrorHandlingActions } from '@/core/api/ErrorHandlingActions';
 import errorHandlingStore from '@/core/components/state/stores/ErrorHandlingStore';
 import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import RandomWalkSuggestions from '@/core/hooks/userInterface/RandomWalkSuggestions';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';

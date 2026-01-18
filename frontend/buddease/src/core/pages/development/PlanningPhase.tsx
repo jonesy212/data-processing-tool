@@ -1,4 +1,4 @@
-PlanningPhase.tsx
+// PlanningPhase.tsx
 import { PhaseUnion } from "@/core/components/phases/DevelopmentPhase";
 import React from "react";
 interface PhaseProps {

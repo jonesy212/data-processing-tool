@@ -1,4 +1,4 @@
-// src/app/scripts/diagnose-line-specific.js
+// diagnose-line-specific.js
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');

@@ -1,4 +1,4 @@
-generateDynamicData.tsx
+// generateDynamicData.tsx
 import { CommonData } from '@/core/models/CommonData';
 
 // Define a function to generate dynamic data based on CommonData

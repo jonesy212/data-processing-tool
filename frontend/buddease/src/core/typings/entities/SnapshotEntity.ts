@@ -1,17 +1,17 @@
 // SnapshotEntity.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { data, SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
@@ -144,7 +144,7 @@ type SnapshotEntityParams = SnapshotConfigParams<
 
 // Create comprehensive helper types
 type SnapshotFullType<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,4 +1,4 @@
-errorHandlingSagas.ts
+// errorHandlingSagas.ts
 import { ErrorHandlingActions } from '@/core/api/ErrorHandlingActions';
 import { put, takeEvery } from 'redux-saga/effects';
 

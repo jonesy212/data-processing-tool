@@ -1,4 +1,4 @@
-validationRulesCode.ts
+// validationRulesCode.ts
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
 
 export function generateValidationRulesCode(validationRules: string[]): string {

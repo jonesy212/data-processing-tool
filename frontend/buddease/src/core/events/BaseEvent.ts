@@ -1,4 +1,4 @@
-BaseEvent.ts
+// BaseEvent.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedSnapshotEvent } from "@/core/typings/appEventTypes";

@@ -1,4 +1,4 @@
-ProfessionalTraderCollaboration.tsx
+// ProfessionalTraderCollaboration.tsx
 import React, { useState } from 'react';
 
 interface ProfessionalTraderCollaborationProps {

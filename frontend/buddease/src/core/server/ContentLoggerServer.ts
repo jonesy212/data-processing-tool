@@ -1,4 +1,4 @@
-ContentLoggerServer.ts
+// ContentLoggerServer.ts
 import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
 import { saveToLocalStorage } from '@/core/hooks/useLocalStorage';
 
@@ -72,7 +72,6 @@ export class ContentLoggerServer extends Logger {
   
   private static writeToServerFile(logType: string, message: string, fileName: string) {
     try {
-      // Dynamic import for Node.js modules
       const fs = require('fs');
       const path = require('path');
       

@@ -1,6 +1,6 @@
-EndpointConfigManager.ts
+// EndpointConfigManager.ts
 // Automated endpoint configuration manager
-import { EndpointConfigurations } from '@/core/config/EndpointConfig';
+import type { EndpointConfigurations } from '@/core/config/EndpointConfig';
 
 class EndpointConfigManager {
   private configMap = new Map<string, any>();

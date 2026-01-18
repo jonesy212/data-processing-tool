@@ -1,4 +1,4 @@
-ipfsGenerator.ts
+// ipfsGenerator.ts
 
 interface IPFSConfig {
     repo: {

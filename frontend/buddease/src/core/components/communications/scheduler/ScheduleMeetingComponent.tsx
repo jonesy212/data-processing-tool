@@ -1,4 +1,4 @@
-ScheduleMeetingComponent.tsx
+// ScheduleMeetingComponent.tsx
 import React from 'react';
 
 const ScheduleMeetingComponent: React.FC = () => {

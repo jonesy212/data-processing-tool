@@ -1,11 +1,11 @@
 // CustomSnapshot.ts
-import type { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SharedSnapshotProperties } from "@/core/documents/RelatedProps";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
 import { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { InitializedState } from '@/core/state/stores/DataStore';
@@ -13,7 +13,7 @@ import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { ExtendedVersionData } from '@/core/versions/VersionData';
 
 interface CustomSnapshot<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -105,7 +105,7 @@ interface CustomSnapshot<
 
 
 const createCustomSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

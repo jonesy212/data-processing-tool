@@ -1,4 +1,4 @@
-IdeationSection.tsx
+// IdeationSection.tsx
 // IdeationSection component
 import React from 'react';
 

@@ -1,4 +1,4 @@
-// service-worker.js
+// serviceWorker.js
 const CACHE_NAME = 'my-cache-v1';
 const urlsToCache = [
   '/',

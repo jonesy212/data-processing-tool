@@ -5,7 +5,7 @@ import type {
   ContractTransaction,
   TransactionRequest, Wallet, ethers,
 } from "ethers";
-import type { ContractAbi, default as Web3 } from "web3";
+import { ContractAbi, default as Web3 } from "web3";
 import { Contract } from "web3-eth-contract";
 import type { EventLog } from "web3-eth-contract";
 
@@ -95,7 +95,6 @@ const listenForContractEvents = <Abi extends ContractAbi>(
 
 
 
-// Function to interact with a smart contract using ethers.js
 const interactWithContract = async (
   contract: Contract<ContractAbi>,
   methodName: string,
@@ -178,7 +177,6 @@ const signTransaction = async (
 };
 
 
-// Function to send a transaction using ethers.js
 const sendTransaction = async (
   wallet: Wallet,
   to: string,

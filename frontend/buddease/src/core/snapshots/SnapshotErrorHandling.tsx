@@ -1,12 +1,12 @@
 // SnapshotErrorHandling.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import { Payload } from '@/core/interfaces/payload/payloadTypes';
 import { createErrorNotificationContent, errorLogger } from '@/core/logging/Logger';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import React, { useState } from 'react';
 
 

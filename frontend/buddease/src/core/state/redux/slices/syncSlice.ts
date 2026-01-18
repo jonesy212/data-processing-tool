@@ -1,5 +1,4 @@
 // syncSlice.ts
-// app/state/slices/syncSlice.ts
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 

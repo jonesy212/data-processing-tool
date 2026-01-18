@@ -1,4 +1,4 @@
-encryptionUtils.ts
+// encryptionUtils.ts
 
 /**
  * Encrypts data using a specified encryption algorithm.

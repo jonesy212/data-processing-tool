@@ -1,3 +1,4 @@
+// RandomWalk.tsx
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { RandomWalkActions } from "@/core/hooks/userInterface/RandomWalkActions";

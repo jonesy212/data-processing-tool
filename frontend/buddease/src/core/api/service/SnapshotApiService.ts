@@ -498,7 +498,6 @@ class SnapshotApiService {
 
 
 
-// api/snapshotApi.ts
 const snapshotApi = new SnapshotApiService();
 
 // React-friendly functional wrappers

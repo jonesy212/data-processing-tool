@@ -1,5 +1,5 @@
-DataProvidersEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// DataProvidersEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DataProvidersEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

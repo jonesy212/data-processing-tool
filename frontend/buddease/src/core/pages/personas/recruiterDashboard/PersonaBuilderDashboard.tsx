@@ -1,4 +1,4 @@
-PersonaBuilderDashboard.tsx
+// PersonaBuilderDashboard.tsx
 import axios from "axios"; // Import Axios library
 import { useEffect, useState } from 'react';
 
@@ -10,9 +10,9 @@ import DetailsListItem from "@/core/components/models/data/DetailsListItem";
 import {
     SupportedData,
 } from "@/core/models/CommonData";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { PersonaData, PersonaTypeEnum } from "@/core/pages/personas/Persona";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import DataPreview from "@/core/users/DataPreview";
 import PersonaPanel from "./PersonaPanel";
 

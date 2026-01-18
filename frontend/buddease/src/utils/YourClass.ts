@@ -1,4 +1,4 @@
-YourClass.ts
+// YourClass.ts
 import ApiConfig from '@/core/api/ApiConfigService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

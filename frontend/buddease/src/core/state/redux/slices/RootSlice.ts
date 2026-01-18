@@ -1,39 +1,39 @@
+// RootSlice.ts
 
-RootSlice.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { PagingState } from '@/core/pages/Paging';
-import { CalendarManagerState } from '@/core/state/redux/slices//CalendarSlice';
-import { ApiManagerState } from '@/core/state/redux/slices/ApiSlice';
-import { BlogState } from '@/core/state/redux/slices/BlogSlice';
-import { CollaborationState } from '@/core/state/redux/slices/CollaborationSlice';
-import { DataSliceState } from '@/core/state/redux/slices/DataSlice';
-import { DocumentSliceState } from '@/core/state/redux/slices/DocumentSlice';
-import { DrawingState } from '@/core/state/redux/slices/DrawingSlice';
-import { EventState } from '@/core/state/redux/slices/EventSlice';
-import { NotificationState } from '@/core/state/redux/slices/NotificationSlice';
-import { ProjectOwnerState } from '@/core/state/redux/slices/ProjectOwnerSlice';
-import { ProjectState } from '@/core/state/redux/slices/ProjectSlice';
-import { RandomWalkState } from '@/core/state/redux/slices/RandomWalkManagerSlice';
-import { RealtimeDataState } from '@/core/state/redux/slices/RealtimeDataSlice';
-import { EntityId } from '@/core/state/redux/slices/RootSlice';
-import { SettingsState } from '@/core/state/redux/slices/SettingsSlice';
-import { TaskState } from '@/core/state/redux/slices/TaskSlice';
-import { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
-import { TrackerManagerState } from '@/core/state/redux/slices/TrackerSlice';
-import { VersionState } from '@/core/state/redux/slices/VersionSlice';
-import { VideoState } from '@/core/state/redux/slices/VideoSlice';
-import { ToolbarState } from '@/core/state/stores/ToolbarStore';
-import { UIState } from '@/core/state/stores/UISlice';
-import { TodoManagerState } from '@/core/todos/Todo';
-import { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
+import type { PagingState } from '@/core/pages/Paging';
+import type { CalendarManagerState } from '@/core/state/redux/slices//CalendarSlice';
+import type { ApiManagerState } from '@/core/state/redux/slices/ApiSlice';
+import type { BlogState } from '@/core/state/redux/slices/BlogSlice';
+import type { CollaborationState } from '@/core/state/redux/slices/CollaborationSlice';
+import type { DataSliceState } from '@/core/state/redux/slices/DataSlice';
+import type { DocumentSliceState } from '@/core/state/redux/slices/DocumentSlice';
+import type { DrawingState } from '@/core/state/redux/slices/DrawingSlice';
+import type { EventState } from '@/core/state/redux/slices/EventSlice';
+import type { NotificationState } from '@/core/state/redux/slices/NotificationSlice';
+import type { ProjectOwnerState } from '@/core/state/redux/slices/ProjectOwnerSlice';
+import type { ProjectState } from '@/core/state/redux/slices/ProjectSlice';
+import type { RandomWalkState } from '@/core/state/redux/slices/RandomWalkManagerSlice';
+import type { RealtimeDataState } from '@/core/state/redux/slices/RealtimeDataSlice';
+import type { EntityId } from '@/core/state/redux/slices/RootSlice';
+import type { SettingsState } from '@/core/state/redux/slices/SettingsSlice';
+import type { TaskState } from '@/core/state/redux/slices/TaskSlice';
+import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
+import type { TrackerManagerState } from '@/core/state/redux/slices/TrackerSlice';
+import type { VersionState } from '@/core/state/redux/slices/VersionSlice';
+import type { VideoState } from '@/core/state/redux/slices/VideoSlice';
+import type { ToolbarState } from '@/core/state/stores/ToolbarStore';
+import type { UIState } from '@/core/state/stores/UISlice';
+import type { TodoManagerState } from '@/core/todos/Todo';
+import type { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 
 // Import your AppTask / TaskCollection types (6-param)
-import { UserManagerState } from "@/core/state/redux/slices//UserSlice";
-import { AuthState } from '@/core/state/redux/slices/AuthSlice';
-import { FilteredEventsState } from "@/core/state/stores/FilterStore";
+import type { UserManagerState } from "@/core/state/redux/slices//UserSlice";
+import type { AuthState } from '@/core/state/redux/slices/AuthSlice';
+import type { FilteredEventsState } from "@/core/state/stores/FilterStore";
 import type { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/core/typings/entities/DrawingEntity';
 import { AppTask, TaskCollection } from "@/core/typings/entities/TaskEntity";
 /** Task payloads */
@@ -46,7 +46,7 @@ interface TaskManagerState {
 }
 
 export interface RootState<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

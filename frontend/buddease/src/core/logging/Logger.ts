@@ -89,7 +89,6 @@ class Logger {
   }
 
   static logSessionEvent(sessionID: string, event: string) {
-    // Assuming 'endpoints' is imported from apiEndpoints.ts
     fetch(endpoints.logs.logSession as unknown as Request, {
       // Cast to unknown first, then to Request
       method: "POST",
@@ -1478,7 +1477,6 @@ class ContentLogger extends Logger {
     
     console.log(`Logged to ${fileName}:`, entry);
     
-    // If running in Node.js/backend context, also write to actual file
     if (typeof window === 'undefined') {
       // This would be for server-side logging
       const fs = require('fs');

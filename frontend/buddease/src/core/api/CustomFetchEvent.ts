@@ -1,4 +1,4 @@
-CustomFetchEvent.ts
+// CustomFetchEvent.ts
 import { Promise } from "es6-promise";
 
 // Logic for FetchEvent interface

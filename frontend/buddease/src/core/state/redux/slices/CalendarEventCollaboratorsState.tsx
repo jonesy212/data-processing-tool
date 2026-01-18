@@ -1,4 +1,4 @@
-CalendarEventCollaboratorsState.tsx
+// CalendarEventCollaboratorsState.tsx
 import { CollaborationActions } from "@/core/actions/CollaborationActions";
 import CalendarEventCollaborator from "@/core/calendar/CalendarEventCollaborator";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';

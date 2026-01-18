@@ -1,4 +1,4 @@
-closeChatSettingsPanel.ts
+// closeChatSettingsPanel.ts
 import { ChatSettings } from "@/core/notifications/NotificationChannelManager";
 import { useRef } from "react";
 

@@ -1,7 +1,5 @@
 // SnapshotSlice.tsx
-// snapshots/SnapshotSlice.ts
 
-import type { BaseDataRoot } from '@/core/config/BaseConfig';
 import { SnapshotManager, useSnapshotManager } from "@/core/hooks/useSnapshotManager";
 import {
     createAndAddSnapshot,
@@ -10,7 +8,7 @@ import {
 
 import { CreateSnapshotsPayload, Payload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/core/pages/searches/CriteriaType";
@@ -18,17 +16,17 @@ import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataPro
 import { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
-import { createDefaultSnapshotData, SnapshotEntityDataInterface } from '@/core/typings/entities/SnapshotEntity';
+import type { createDefaultSnapshotData, SnapshotEntityDataInterface } from '@/core/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 ;
 
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Content } from "@/core/models/content/AddContent";
@@ -866,7 +864,7 @@ export const createMockSnapshot = <
 
 // Helper function to fetch the actual data source
 async function fetchRealDataSource<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

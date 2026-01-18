@@ -1,4 +1,4 @@
-reportsConfig.ts
+// reportsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ReportsEndpoints } from '@/core/typings/categories/ReportsEndpoints';
 

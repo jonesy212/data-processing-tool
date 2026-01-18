@@ -1,4 +1,4 @@
-idleTimeoutCondition.ts
+// idleTimeoutCondition.ts
 // Define the type for the idleTimeoutCondition function
 type IdleTimeoutConditionFunction = (lastUserInteractionTime: number | null) => boolean;
 

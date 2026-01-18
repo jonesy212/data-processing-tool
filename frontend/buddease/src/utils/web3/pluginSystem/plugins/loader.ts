@@ -1,3 +1,4 @@
+// loader.ts
 import { DAppPlugin } from "@/utils/web3/pluginSystem/plugins/PluginInterface";
 
 const loadPlugins = async (): Promise<DAppPlugin[]> => {

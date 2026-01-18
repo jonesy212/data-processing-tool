@@ -1,4 +1,4 @@
-UserJourneyManager.tsx
+// UserJourneyManager.tsx
 import { PhaseActions } from "@/core/actions/phases/PhaseActions";
 import EmailConfirmationPage from "@/core/components/communications/email/EmaiConfirmation";
 import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";

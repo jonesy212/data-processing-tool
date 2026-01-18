@@ -1,4 +1,4 @@
-// pages/api/chatWebSocket.js (Next.js API route)
+// chatWebSocket.js
 import { Server } from 'ws';
 
 // Define your API endpoints

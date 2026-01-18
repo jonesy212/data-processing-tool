@@ -1,4 +1,4 @@
-IconStore.ts
+// IconStore.ts
 import { BaseStoreWithCallbacks } from '@/core/libraries/eventSystem/BaseStoreWithCallbacks';
 import { makeAutoObservable } from 'mobx';
 

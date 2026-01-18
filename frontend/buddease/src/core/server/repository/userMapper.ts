@@ -1,4 +1,4 @@
-userMapper.ts
+// userMapper.ts
 import type { DefaultExcludedFields } from '@/core/config/BaseConfig';
 import { CacheData } from '@/core/generators/GenerateCache';
 

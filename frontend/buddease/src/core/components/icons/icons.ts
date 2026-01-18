@@ -1,4 +1,4 @@
-icons.ts
+// icons.ts
 
 import { createDynamicIconLoader } from "@/core/components/icons/IconLibraryManager";
 import { IconLoader } from "./IconLoader";

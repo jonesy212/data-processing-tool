@@ -1,4 +1,4 @@
-GenerateCacheLogic.ts
+// GenerateCacheLogic.ts
 utils/GenerateCacheLogic.ts
 import { CacheConfig } from '@/core/config/CacheConfig';
 import { CacheManager, synchronizeCacheWithServer, writeClientCache } from '@/core/libraries/cache/client/CacheManager';

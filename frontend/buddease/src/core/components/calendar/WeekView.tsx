@@ -1,8 +1,8 @@
+// WeekView.tsx
 CalendarWeek.tsx
-WeekView.jsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import CalendarWeek from '@/core/calendar/CalendarWeek';
-import { CommonCalendarProps } from '@/core/components/calendar/Calendar';
+import type { CommonCalendarProps } from '@/core/components/calendar/Calendar';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import React from 'react';

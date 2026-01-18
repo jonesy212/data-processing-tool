@@ -1,4 +1,4 @@
-ContentRoute.ts
+// ContentRoute.ts
 app/api/log-event/route.ts (or pages/api/log-event.ts if not using App Router)
 import { ContentLoggerServer } from '@/core/server/ContentLoggerServer'; // Adjust the import path as needed
 import { NextRequest, NextResponse } from 'next/server';

@@ -1,4 +1,4 @@
-BaseTypes.ts
+// BaseTypes.ts
 import type { BaseDataRoot } from '@/core/config/BaseConfig';
 BaseTypes.ts - Central type definitions that work with your entity system
 
@@ -16,7 +16,7 @@ export interface BaseSnapshotType {
 }
 
 // Simplified generic parameter structure for common use cases
-export interface BaseTypeParams<T extends BaseDataEntity = BaseDataRoot> {
+export interface BaseTypeParams<T extends BaseDataEntity = BaseDataEntity> {
   T: T;
   K: T;
   Meta: DefaultMeta<T, T>;

@@ -1,5 +1,4 @@
-NewBlogPostForm.tsx
-NewBlogPostForm.ts
+// NewBlogPostForm.tsx
 import { BlogActions } from '@/core/components/models/blogs/BlogAction';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';

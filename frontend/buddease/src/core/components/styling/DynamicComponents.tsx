@@ -1,4 +1,4 @@
-DynamicComponents.tsx
+// DynamicComponents.tsx
 components/DynamicComponent.tsx
 import React from "react";
 

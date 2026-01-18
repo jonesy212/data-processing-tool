@@ -1,7 +1,7 @@
-AppContext.ts
+// AppContext.tsx
 app/state/context/AppContext.tsx
 import { hydrateSnapshot, persistSnapshot } from '@/core/api/persistSnapshot/route'; // <- add your snapshot helpers
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { CryptoStore } from '@/core/state/stores/CryptoStore';
 import { PhaseStore } from '@/core/state/stores/PhaseStore';
 import { ProjectStore } from '@/core/state/stores/ProjectStore';

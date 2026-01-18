@@ -1,4 +1,4 @@
-useVideoLifecycle.ts
+// useVideoLifecycle.ts
 import { videoLifecycleConfig } from "@/core/config/VideoLifecycleConfig";
 import { useLifecycle } from "@/core/hooks/useLifecycle.ts";
 import { VideoLifecyclePhase } from "@/core/phases/VideoLifecyclePhase";

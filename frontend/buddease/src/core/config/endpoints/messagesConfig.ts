@@ -1,4 +1,4 @@
-messagesConfig.ts
+// messagesConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { MessagesEndpoints } from '@/core/typings/categories/MessagesEndpoints';
 

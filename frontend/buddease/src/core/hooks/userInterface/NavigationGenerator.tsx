@@ -1,4 +1,4 @@
-NavigationGenerator.tsx
+// NavigationGenerator.tsx
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import React, { useEffect, useState } from 'react';
 

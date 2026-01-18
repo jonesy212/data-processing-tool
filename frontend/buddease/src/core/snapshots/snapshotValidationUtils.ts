@@ -1,6 +1,6 @@
 // snapshotValidationUtils.ts
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { triggerOnSnapshot } from '@/core/snapshots/snapshotTrigger';
@@ -8,7 +8,7 @@ import { triggerOnSnapshot } from '@/core/snapshots/snapshotTrigger';
 
 // Helper functions
 const validateSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -50,7 +50,7 @@ const processSnapshotData = (data: any, category?: string): void => {
 };
 
 const handleDataUpdateSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -64,7 +64,7 @@ const handleDataUpdateSnapshot = <
 };
 
 const handleSystemEventSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -78,7 +78,7 @@ const handleSystemEventSnapshot = <
 };
 
 const handleUserActionSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -92,7 +92,7 @@ const handleUserActionSnapshot = <
 };
 
 const handleDefaultSnapshot = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -106,7 +106,7 @@ const handleDefaultSnapshot = <
 };
 
 const updateSnapshotMetrics = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -121,7 +121,7 @@ const updateSnapshotMetrics = <
 
 // Optional: Async version for complex operations
 export const triggerOnSnapshotAsync = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

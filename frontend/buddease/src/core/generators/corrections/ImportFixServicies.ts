@@ -1,4 +1,4 @@
-// ImportFixerService.ts
+// ImportFixServicies.ts
 import { applyAppSpecificRules } from '@/core/error-analyzer/rules/app-specific-rules';
 import type { ComplexFix, Correction, ImportCorrection } from '@/core/generators/corrections/CorrectionGenerator';
 import type { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
@@ -7,7 +7,7 @@ import { ConsoleConfirmationService } from '@/core/services/ConsoleConfirmationS
 import { FileConfirmationService } from '@/core/services/FileConfirmationService';
 import { InteractiveConfirmationService } from '@/core/services/InteractiveConfirmationService';
 import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
-
+import type { ImportFix } from '@/app/scripts/import-fixes'
 import fs from 'fs';
 import path from 'path';
 
@@ -22,42 +22,6 @@ interface ApplyFixesOptions {
 
 type DebugMode = 'none' | 'basic' | 'detailed' | 'verbose';
 
-
-export interface ImportFix {
-    filePath: string;           // File needing fix
-    originalLine: string;       // Original import line
-    newLine: string;           // Proposed fixed line
-    missingTypes: string[];    // Types missing type-only import
-    targetImportPath: string;  // Module being imported from
-    file?: string;
-    line?: number
-    typeName?: string
-    // Additional properties for better analysis
-    reason?: string;           // Why fix is needed
-    confidence?: 'high' | 'medium' | 'low'; // Fix confidence
-    confidenceScore: number;   // Numeric confidence (0-100)
-    
-    // New suggested properties:
-    fixType?: 'add-type-keyword' | 'split-import' | 'change-to-type' | 'namespace-to-type';
-    backupFilePath?: string;   // Where backup is stored
-    affectedExports?: string[]; // Exports that use these types
-    dependencies?: string[];   // Files that depend on this import
-    autoFixable?: boolean;     // Whether it can be auto-fixed
-    validationRules?: string[]; // Rules to validate fix
-    
-    // From previous suggestions:
-    lineNumber?: number;       // Line number in file
-    errorCode?: string;        // TS error code (e.g., 'TS1371')
-    fileDependencies?: string[]; // Files that import this one
-    rollbackStrategy?: 'full' | 'partial' | 'validate-first';
-    
-    // Metadata
-    createdAt?: Date;
-    appliedAt?: Date;
-    appliedBy?: string;
-    status?: 'pending' | 'applied' | 'rolled-back' | 'failed';
-    fixId?: string;           // Unique identifier for tracking
-}
 
 export interface ParsedImport {
     fullLine: string;
@@ -125,9 +89,6 @@ export function isTypeKeywordFix(fix: ImportFixVariant): fix is TypeKeywordFix {
 export function isSplitImportFix(fix: ImportFixVariant): fix is SplitImportFix {
     return fix.fixType === 'split-import';
 }
-
-
-
 
 
 
@@ -2253,7 +2214,6 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             
             // Group errors by file
             for (const errorLine of allErrors) {
-                // Find file path in error line (e.g., "src/app/actions/ActionScheduler.tsx:4:54")
                 const fileMatch = errorLine.match(/^(.*?\.(?:ts|tsx|js|jsx)):\d+/);
                 if (fileMatch) {
                     const filePath = path.resolve(process.cwd(), fileMatch[1]);
@@ -2440,7 +2400,6 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             console.log(`❌ ${testFile} not found`);
         }
         
-        // Test 3: Check tsconfig.json
         console.log('\n=== Test 3: tsconfig.json ===');
         const tsconfigPath = path.join(process.cwd(), 'tsconfig.json');
         if (fs.existsSync(tsconfigPath)) {
@@ -2487,7 +2446,6 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             return null; // Already correct
         }
         
-        // Moving from HeadersConfig.tsx to SharedHeaders.ts
         const isDefaultImport = currentImport.defaultImport === 'headersConfig';
         const isNamedImport = currentImport.namedImports.includes('headersConfig');
         

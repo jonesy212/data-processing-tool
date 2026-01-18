@@ -1,4 +1,4 @@
-projectSubscriptionPayload.ts
+// projectSubscriptionPayload.ts
 import { createSubscriptionPayload } from "@/core/actions/SubscriptionActions";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 
@@ -28,7 +28,7 @@ console.log(projectSubscriptionPayload);
 
 
 
-1. Create a subscription payload for project updates
+// 1. Create a subscription payload for project updates
 const subscription = createSubscriptionPayload({
     email: "user@example.com",
     category: "Project Updates",

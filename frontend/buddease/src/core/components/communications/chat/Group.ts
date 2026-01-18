@@ -1,8 +1,8 @@
-Group.ts
+// Group.ts
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { Member } from '@/core/models/members/Member';
 import { BlogPost } from '@/core/pages/blog/BlogPost';
 

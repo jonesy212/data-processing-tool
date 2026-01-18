@@ -1,4 +1,4 @@
-generatorsConfig.ts
+// generatorsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { GeneratorsEndpoints } from '@/core/typings/categories/GeneratorsEndpoints';
 

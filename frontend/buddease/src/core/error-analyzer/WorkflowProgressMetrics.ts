@@ -1,4 +1,4 @@
-// WorkflowTransition.ts
+// WorkflowProgressMetrics.ts
 import type { ProgressMetrics } from '@/core/error-analyzer/ProgressTracker';
 import type {
     TransitionAction,

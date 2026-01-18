@@ -1,6 +1,5 @@
-import axios from 'axios';
+// BatchProcessingAndCache.ts
 import { useState } from 'react';
-
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
 import type UserSettings from '@/core/config/UserSettings';
 import { DataVersions } from '@/core/configs/DataVersionsConfig';
@@ -8,6 +7,7 @@ import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages'
 import { CacheData } from '@/core/generators/GenerateCache';
 import useRealtimeData from '@/core/hooks/commHooks/useRealtimeData';
 import { writeCache } from '@/utils/ReadAndWriteCache';
+import internalApiService from '@/core/api/ApiClient';
 
 interface BatchProcessingResult {
   success: boolean;
@@ -21,7 +21,7 @@ interface BatchProcessingResult {
 export const processBatchOnServer = async (batchData: any[]): Promise<BatchProcessingResult> => {
   try {
     // Replace '/api/process-batch' with your actual API endpoint
-    const response = await axios.post('/api/process-batch', { batchData });
+    const response = await internalApiService.post('/api/process-batch', { batchData });
 
     if (response.status === 200) {
       const { success, message, data } = response.data as BatchProcessingResult;

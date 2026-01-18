@@ -1,4 +1,4 @@
-collaboratorApi.ts
+// collaboratorApi.ts
 
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

@@ -1,5 +1,4 @@
-onCancel.tsx
-onCancel.ts
+// onCancel.tsx
 import React from 'react';
 
 interface ButtonProps {

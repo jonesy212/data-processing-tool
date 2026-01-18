@@ -1,7 +1,7 @@
-RandomWalkSuggestions.tsx
+// RandomWalkSuggestions.tsx
 
 import { RandomWalkActions } from "@/core/hooks/userInterface/RandomWalkActions";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const RandomWalkSuggestions = () => {

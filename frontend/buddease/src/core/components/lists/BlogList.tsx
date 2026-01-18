@@ -4,12 +4,12 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ListGenerator from "@/core/generators/ListGenerator";
 import { Content } from '@/core/models/content/AddContent';
-import { Data, SharedRelationshipData } from '@/core/models/data/Data';
+import type { Data, SharedRelationshipData } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
 import { Phase } from '@/core/models/phases/Phase';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
-import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/core/typings/entities/BlogEntity';
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/core/typings/entities/BlogEntity';
 import React from "react";
 // Define a type representing the data structure for blog posts
 interface BlogData<

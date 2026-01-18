@@ -1,5 +1,6 @@
-LazyLoadScript.tsx
-import React, { ReactNode } from 'react';
+// LazyLoadScript.tsx
+import type { ReactNode } from 'react';
+import React from 'react';
 
 interface LazyLoadScriptProps {
   loadScript: () => Promise<ReactNode>;

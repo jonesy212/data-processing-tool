@@ -1,6 +1,6 @@
 // YourSpecificSnapshotType.ts
 import getSnapshotId, { snapshotApi } from "@/core/api/SnapshotApi";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
@@ -20,7 +20,7 @@ import type { CustomSnapshotData, SnapshotData } from "@/core/snapshots/Snapshot
 import { default as SnapshotStore } from "@/core/snapshots/SnapshotStore";
 import type { SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { createSnapshotStoreOptions } from '@/core/snapshots/createSnapshotStoreOptions';
+import type { createSnapshotStoreOptions } from '@/core/snapshots/createSnapshotStoreOptions';
 import type { DataStore, InitializedState } from "@/core/state/stores/DataStore";
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { useContext } from 'react';
@@ -43,7 +43,7 @@ import { generateSnapshotId, isSnapshot } from '@/utils/snapshotUtils';
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 
 class YourSpecificSnapshotType<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -238,7 +238,7 @@ console.log(specificSnapshot.data); // Output: 'updated snapshot data'
 
 // Example function to map SnapshotStoreConfig to DataStore
 const convertToDataStore = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -1390,7 +1390,7 @@ const convertSnapshotStoreToMap =  <
 
 
 function convertMapToSnapshotStore<  
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = UserK,
   Meta extends DefaultMeta<T, K> = UserMeta,
   AttachmentType extends Attachment = UserAttachment,
@@ -1426,7 +1426,7 @@ const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFiel
 
 // Convert Map<string, T> to Snapshot<BaseData, BaseData>
 function convertMapToSnapshot<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = UserK,
   Meta extends DefaultMeta<T, K> = UserMeta,
   AttachmentType extends Attachment = UserAttachment,
@@ -2231,10 +2231,10 @@ function isCoreSnapshot<
 
 
 export {
-  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-  convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
-  convertSnapshotStoreItemToT,
-  convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-  createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
+    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+    convertSnapshotStoreItemToT,
+    convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
+    createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
 };
 

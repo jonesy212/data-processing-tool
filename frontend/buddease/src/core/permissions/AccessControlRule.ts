@@ -1,4 +1,4 @@
-AccessControlRule.ts
+// AccessControlRule.ts
 import { AccessControlEntry } from '@/core/permissions/AccessControlEntry';
 
 // Since AccessControlEntry is for specific user/group permissions,

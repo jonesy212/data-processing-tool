@@ -1,5 +1,5 @@
-DocumentEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// DocumentEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DocumentEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

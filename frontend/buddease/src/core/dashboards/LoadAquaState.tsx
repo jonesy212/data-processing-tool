@@ -1,5 +1,4 @@
 // LoadAquaState.tsx
-// components/dashboards/LoadAquaState.tsx
 import type { AquaState } from '@/core/state/AquaState';
 import type { useAquaStore } from '@/core/state/stores/AquaStore';
 import type { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';

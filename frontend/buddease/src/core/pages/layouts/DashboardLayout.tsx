@@ -1,8 +1,8 @@
-DashboardLayout.tsx
+// DashboardLayout.tsx
 
 import CryptoSectionToolbar from '@/core/components/crypto/CryptoSectionToolbar';
 import ProjectManagementToolbar from '@/core/components/documents/ProjectManagementToolbar';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import CollaborationToolsToolbar from '@/core/pages/community/CollaborationToolsToolbar';
 import DashboardLoader from '@/core/pages/dashboards/DashboardLoader';
 import CommonLayout from '@/core/pages/layouts/CommonLayout';

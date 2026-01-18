@@ -1,4 +1,4 @@
-CommonInterfaces.ts
+// CommonInterfaces.ts
 // todo this can be use to try an better organize the types throughout the app
 type DummyCardItemType = { type: "file" | "folder" };
 type OrganizedCardItemType = { type: "file" | "folder" | "product" | "feedback" };

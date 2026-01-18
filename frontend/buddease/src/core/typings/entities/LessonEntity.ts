@@ -1,4 +1,4 @@
-LessonEntity.ts
+// LessonEntity.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import {
     BaseEntityProperties,

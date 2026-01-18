@@ -1,8 +1,7 @@
-TypeScriptAnalyzer.ts
-analyzers/TypeScriptAnalyzer.ts
+// TypeScriptAnalyzer.ts
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
-import { CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';
 import path from 'path';
 
@@ -144,7 +143,6 @@ export class TypeScriptAnalyzer extends BaseAnalyzer {
 
     for (const line of errorLines) {
       // Parse actual TypeScript compiler output format:
-      // Example: "src/app/api/ApiUser.ts(45,15): error TS2304: Cannot find name 'useParams'"
       const match = line.match(/(.+\.tsx?)\((\d+),(\d+)\):\s+(\w+)\s+TS(\d+):\s+(.+)/);
 
       if (match) {

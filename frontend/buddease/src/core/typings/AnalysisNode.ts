@@ -1,4 +1,4 @@
-AnalysisNode.ts
+// AnalysisNode.ts
 // Generic node representing analysis results
 
 export interface AnalysisNode<

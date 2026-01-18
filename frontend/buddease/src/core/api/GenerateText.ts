@@ -1,4 +1,4 @@
-GenerateText.ts
+// GenerateText.ts
 generateText.ts
 
 import { DocumentGenerator } from '@/core/server/ServerDocumentGenerator';

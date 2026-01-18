@@ -1,4 +1,4 @@
-DataPrivacyRule.ts
+// DataPrivacyRule.ts
 // Define the DataPrivacyRule class
 class DataPrivacyRule {
   private id: string;

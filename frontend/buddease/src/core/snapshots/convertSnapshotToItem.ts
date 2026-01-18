@@ -5,7 +5,6 @@
 // import { Attachment } from '@/core/documents/attachment/Attachment';
 // import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
-// // convertSnapshotToItem.ts
 // function convertSnapshotToItem<  T extends BaseDataEntity,
   // K extends T = T,
   // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

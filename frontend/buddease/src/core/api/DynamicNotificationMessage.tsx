@@ -1,4 +1,4 @@
-DynamicNotificationMessage.tsx
+// DynamicNotificationMessage.tsx
 // Define the type for dynamic notification message
 type DynamicNotificationMessage = string | ((errorType: string, details: string) => string);
 

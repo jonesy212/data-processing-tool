@@ -1,5 +1,5 @@
 // snapshotTrigger.ts
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 

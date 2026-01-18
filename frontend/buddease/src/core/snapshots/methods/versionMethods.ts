@@ -1,4 +1,4 @@
-versionMethods.ts
+// versionMethods.ts
 snapshotStore/methods/VersionMethods.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

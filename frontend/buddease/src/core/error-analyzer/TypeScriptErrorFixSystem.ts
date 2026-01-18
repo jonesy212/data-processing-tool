@@ -1,5 +1,8 @@
-src/app/error-analyzer/TypeScriptErrorFixSystem.ts
-import { ErrorFixManager, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+// TypeScriptErrorFixSystem.ts
+// src/app/error-analyzer/TypeScriptErrorFixSystem.ts
+import type { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
+import { ErrorFixManager } from '@/core/error-analyzer/ErrorFixManager';
 import { ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
 import { ReportGenerator } from '@/core/error-analyzer/ReportGenerator';
 import fs from 'fs';

@@ -1,7 +1,7 @@
 // authenticationHeaders.tsx
 import configData from "@/core/config/endpoints/configData";
-import { AppUserEntity, UserAttachment, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { AppUserEntity, UserAttachment, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { User } from "@/core/users/User";
 type Token = string | null;
 
 type AuthenticationHeaders = {

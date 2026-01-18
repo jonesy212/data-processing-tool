@@ -1,4 +1,4 @@
-urlGenerator.ts
+// urlGenerator.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { endpointConfigurations } from '@/core/api/endpointConfigurations';
 import { EndpointConfig, EndpointConfigurations } from '@/core/config/EndpointConfig';

@@ -1,7 +1,7 @@
-configConfig.ts
-src/config/endpoints/configConfig.ts
+// configConfig.ts
+// src/config/endpoints/configConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { EndpointConfigurations } from '@/core/config/EndpointConfig';
+import type { EndpointConfigurations } from '@/core/config/EndpointConfig';
 
 export const configConfig: EndpointConfigurations['config'] = {
   getSystemConfigs: { path: `${BASE_URL}/api/config/system`, method: "GET" },

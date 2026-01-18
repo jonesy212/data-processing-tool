@@ -1,5 +1,5 @@
+// ApiTradingInfo.tsx
 
-// ApiTradingInfo.ts - News and information trading APIs
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';

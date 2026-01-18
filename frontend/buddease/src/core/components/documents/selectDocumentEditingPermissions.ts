@@ -1,4 +1,4 @@
-selectDocumentEditingPermissions.ts
+// selectDocumentEditingPermissions.ts
 import { UserRoleEnum } from '@/core/models/UserRoles';
 import { DocumentEditingPermissions } from '@/core/permissions/Permission';
 import { DocumentPermissions } from '@/core/typings/entities/DocumentEntity';

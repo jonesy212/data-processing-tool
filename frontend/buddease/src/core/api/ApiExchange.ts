@@ -1,11 +1,11 @@
-ApiExchange.ts
+// ApiExchange.ts
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useSecureExchangeId from "@/core/hooks/useSecureExchangeId";
 import { Exchange } from "@/core/models/cypto/Exchange";
 import { ExchangeData } from "@/core/models/data/ExchangeData";
-import { AppEntity } from "@/core/typings/entities/AppEntity";
+import type { AppEntity } from "@/core/typings/entities/AppEntity";
 import { YourResponseType } from "@/core/typings/responseTypes";
 import { AxiosError } from "axios";
 import {

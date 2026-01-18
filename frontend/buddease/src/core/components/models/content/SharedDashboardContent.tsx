@@ -1,4 +1,4 @@
-SharedDashboardContent.tsx
+// SharedDashboardContent.tsx
 import React from 'react'
 
 interface SharedDashboardContentProps {

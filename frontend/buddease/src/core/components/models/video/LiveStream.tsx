@@ -1,4 +1,4 @@
-LiveStream.tsx
+// LiveStream.tsx
 import FileUploadModal from "@/core/cards/modal/FileUploadModal";
 import { ButtonGenerator } from "@/core/generators/GenerateButtons";
 import { ModalGenerator } from "@/core/generators/GenerateModal";

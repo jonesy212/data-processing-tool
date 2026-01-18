@@ -1,6 +1,5 @@
 // createMessage.ts
 import type { ChatRoom } from '@/core/communications/ChatRoom';
-import type { BaseDataRoot } from '@/core/config/BaseConfig';
 import type { Sender } from '@/core/components/communications/CommunicationPage';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UserPreferences } from "@/core/config/UserPreferences";
@@ -8,9 +7,9 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import type { Content } from '@/core/models/content/AddContent';
+import { UserRoleEnum } from '@/core/models/UserRoles';
 import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
-import { UserRoleEnum } from '@/core/models/UserRoles';
 
 type MessageProps<
   T extends BaseDataEntity,
@@ -29,7 +28,7 @@ type MessageProps<
 
 // The corrected createMessage function
 export const createMessage = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

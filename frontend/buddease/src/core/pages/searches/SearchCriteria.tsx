@@ -1,4 +1,4 @@
-// src/app/pages/searches/SearchCriteria.tsx
+// SearchCriteria.tsx
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,13 +26,13 @@ import { FeedbackPhaseEnum } from '@/core/components/phases/FeedbackPhase';
 import { TaskPhaseEnum } from '@/core/components/phases/TaskProcess';
 import { TenantManagementPhaseEnum } from '@/core/components/phases/TenantManagementPhase';
 import { Team } from '@/core/components/teams/Team';
-import { Entity } from '@/core/config/BaseConfig';
+import type { Entity } from '@/core/config/BaseConfig';
 import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { FileTypeEnum } from '@/core/documents/FileType';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { MessageType } from '@/core/generators/MessaageType';
 import { AnimationTypeEnum } from '@/core/libraries/animations/AnimationLibrary';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import {
     BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, DocumentSize, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
     TodoStatus
@@ -41,7 +41,7 @@ import { Project } from "@/core/models/projects/Project";
 import { Progress } from "@/core/models/tracker/ProgressBar";
 import { SecurityFeatureEnum } from '@/core/server/security/SecurityFeatureEnum';
 import { selectEventLoading } from '@/core/state/redux/slices/EventSlice';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import { User } from "@/core/users/User";

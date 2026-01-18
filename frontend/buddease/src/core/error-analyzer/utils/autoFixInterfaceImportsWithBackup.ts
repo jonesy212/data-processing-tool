@@ -1,4 +1,5 @@
-import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports';
+// autoFixInterfaceImportsWithBackup.ts
+import type { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports';
 import { restoreBackup } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
 
 

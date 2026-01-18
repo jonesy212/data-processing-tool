@@ -4,7 +4,7 @@ import { NotificationType, NotificationTypeEnum } from '@/core/features/support/
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { TeamMember } from "@/core/models/teams/TeamMembers";
 import { AssignBaseStore, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
-import { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
+import type { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
 import { makeAutoObservable } from "mobx";
 
 

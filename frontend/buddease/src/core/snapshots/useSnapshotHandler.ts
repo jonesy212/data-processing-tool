@@ -1,11 +1,10 @@
-useSnapshotHandler.ts
- useSnapshotHandler.ts
+// useSnapshotHandler.ts
 import { useState } from 'react';
 import { CustomSnapshotData } from '@/core/snapshots/SnapshotData';
 import type {  Snapshot } from '@/core/snapshots/Snapshot';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { BaseData } from '@/core/models/data/Data';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { BaseData } from '@/core/models/data/Data';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 const useSnapshotHandler = <T extends BaseDataEntity, K extends CustomSnapshotData>() => {
   const [snapshotStoreConfig, setSnapshotStoreConfig] = useState<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(undefined);

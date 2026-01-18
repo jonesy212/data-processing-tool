@@ -1,4 +1,4 @@
-GenerateUserPreferences.ts
+// GenerateUserPreferences.ts
 generators/userPreferences.ts
 
 export function* GenerateUserPreferences(): Generator<any, void, any> {

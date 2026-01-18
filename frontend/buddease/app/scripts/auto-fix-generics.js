@@ -1,4 +1,4 @@
-// src/app/scripts/auto-fix-generics.js
+// auto-fix-generics.js
 const fs = require('fs');
 const path = require('path');
 

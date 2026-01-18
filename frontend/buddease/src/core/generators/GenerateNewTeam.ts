@@ -1,4 +1,4 @@
-GenerateNewTeam.ts
+// GenerateNewTeam.ts
 
 import { Team } from "@/core/components/teams/Team";
 import { Project } from '@/core/models/projects/Project';

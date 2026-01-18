@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
+// cli.ts
 
-// src/app/error-analyzer/cli.ts
 
 import { APP_SPECIFIC_RULES, applyAppSpecificRules } from '@/core/error-analyzer/rules/app-specific-rules';
 import { TypeScriptErrorFixSystem } from '@/core/error-analyzer/TypeScriptErrorFixSystem';

@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ModifiedDate } from "@/core/documents/DocType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { fetchPortfolioUpdatesLastUpdated } from "@/utils/trading/TradingUtils";
 import { LiveEvent } from "@refinedev/core";

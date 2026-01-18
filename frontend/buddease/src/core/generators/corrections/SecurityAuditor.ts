@@ -1,8 +1,8 @@
-SecurityAuditor.ts
-import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// SecurityAuditor.ts
+import type { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { CorrectionMessageGenerator } from '@/core/generators/corrections/CorrectionMessageGenerator';
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import fs from 'fs';
 import path from 'path';
 
@@ -19,9 +19,7 @@ export class SecurityAuditor {
   }
 
   private checkSecurityUtilsAvailability(): boolean {
-    // Check if security utilities are available in Node.js context
     try {
-      // Try to require security utilities (Node.js style)
       const secureFieldManagerPath = path.resolve(process.cwd(), 'src/app/server/security/SecureFieldManager.ts');
       const securityAPIPath = path.resolve(process.cwd(), 'src/app/api/SecurityAPI.ts');
       

@@ -1,6 +1,6 @@
-GenericStepContainer.tsx
+// GenericStepContainer.tsx
 
-import { StepComponentProps } from '@/core/hooks/useStepNavigation';
+import type { StepComponentProps } from '@/core/hooks/useStepNavigation';
 import React from 'react';
 
 interface GenericStepContainerProps extends StepComponentProps {

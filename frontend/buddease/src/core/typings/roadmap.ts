@@ -1,5 +1,4 @@
 // roadmap.ts
-// types/roadmap.ts
 
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import type { Version } from '@/core/versions/Version';

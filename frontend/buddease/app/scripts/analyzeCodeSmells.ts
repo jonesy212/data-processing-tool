@@ -1,5 +1,4 @@
 // analyzeCodeSmells.ts
-// src/app/scripts/analyzeCodeSmells.ts
 import { CodeQualityScript } from '@/app/scripts/CodeQualityScript';
 import { PatternAnalyzer } from '@/core/generators/corrections/analyzers/PatternAnalyzer';
 

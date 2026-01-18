@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-src/core/error-analyzer/fix-strategy.ts
+// fix-strategy.ts
 
 import type { SharedErrorLocation, SharedPriority } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import { execSync } from 'child_process';
@@ -48,16 +48,16 @@ interface ErrorAnalysis {
 
 
 
-#TODO: Added optional shared interfaces at the bottom for future use:
+// #TODO: Added optional shared interfaces at the bottom for future use:
 
 // SharedWithRelatedInfo: For related error information
 
 // SharedWithDependencies: For dependency info
 
-SharedWithProperties: For property/method info
+// SharedWithProperties: For property/method info
 
 
-========== SHARED INTERFACES (if needed elsewhere) ==========
+// ========== SHARED INTERFACES (if needed elsewhere) ==========
 interface SharedWithRelatedInfo {
   relatedInformation?: Array<{
     startLineNumber: number;
@@ -850,7 +850,7 @@ Raw TypeScript errors in JSON format for reference.
   }
 }
 
-Main execution
+// Main execution
 async function main() {
   const analyzer = new EnhancedFixStrategy();
   const analysis = await analyzer.analyzeTypeScriptErrors();

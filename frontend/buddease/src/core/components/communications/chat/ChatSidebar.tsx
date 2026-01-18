@@ -1,4 +1,4 @@
-ChatSidebar.tsx
+// ChatSidebar.tsx
 import { setChatSidebarOpen } from '@/core/state/redux/slices/SidebarSlice';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux'; // Import useDispatch to dispatch actions

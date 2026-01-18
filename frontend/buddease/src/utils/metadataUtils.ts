@@ -1,4 +1,4 @@
-metadataUtils.ts
+// metadataUtils.ts
 import { contentApiService } from '@/core/api/service/ContentApiService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";

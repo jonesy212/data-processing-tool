@@ -1,5 +1,6 @@
-ErrorBoundaryProvider.tsx
-import React, { createContext, ReactNode } from 'react';
+// ErrorBoundaryProvider.tsx
+import type { createContext, ReactNode } from 'react';
+import React from 'react';
 
 // Define a specific type for the error handler
 interface ErrorHandlerType {

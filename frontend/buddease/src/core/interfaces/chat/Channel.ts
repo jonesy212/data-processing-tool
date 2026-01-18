@@ -1,4 +1,4 @@
-Channel.ts
+// Channel.ts
 
 export interface Channel {
     id: string;

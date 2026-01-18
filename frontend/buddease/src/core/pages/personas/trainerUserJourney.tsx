@@ -1,5 +1,4 @@
-trainerUserJourney.tsx
-trainerUserJourney.ts
+// trainerUserJourney.tsx
 // User Journey Process
 export const trainerUserJourney = async () => {
     try {

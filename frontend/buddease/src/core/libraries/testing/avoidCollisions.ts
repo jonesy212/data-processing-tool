@@ -1,4 +1,4 @@
-avoidCollisions.ts
+// avoidCollisions.ts
 import { COLLISION_ADJUSTMENT, COLLISION_THRESHOLD } from "@/utils/constants";
 import { Position, positionUtils } from "@/utils/positionUtils";
 

@@ -1,6 +1,6 @@
-src/app/error-analyzer/TypeRelationshipAnalyzer.ts
-import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
-import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+// TypeRelationshipAnalyzer.ts
+import type { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import fs from 'fs';
 
 export class TypeRelationshipAnalyzer {

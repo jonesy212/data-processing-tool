@@ -1,6 +1,6 @@
-TaskHhandler.tsx
+// TaskHhandler.ts
 
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 
 const handleTaskClick = (task: Task): void => {
     // Example: Select the task or navigate to task details

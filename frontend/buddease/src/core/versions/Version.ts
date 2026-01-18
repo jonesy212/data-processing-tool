@@ -22,13 +22,13 @@ import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/core/config/appStructure/FrontendStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { dataVersions } from "@/core/config/DocumentBuilderConfig";
-import { sharedMetadata } from "@/core/config/MetadataStateManager";
+import type { sharedMetadata } from "@/core/config/MetadataStateManager";
 import type { MetadataEntriesType, StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
 import { createBaseData } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData, Data, SharedRelationshipData } from '@/core/models/data/Data';
+import type { BaseData, Data, SharedRelationshipData } from '@/core/models/data/Data';
 import { Member } from "@/core/models/members/Member";
 import { Taggable, TagsRecord } from '@/core/models/tracker/Tag';
 import { Persona } from "@/core/pages/personas/Persona";
@@ -37,7 +37,7 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { HistoryEntry } from '@/core/state/stores/HistoryStore';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
 import { User } from "@/core/users/User";
-import { BumpVersionOptions } from "@/core/versions/BumpVersionOptions";
+import type { BumpVersionOptions } from "@/core/versions/BumpVersionOptions";
 import { VersionData, VersionHistory } from "@/core/versions/VersionData";
 import { fluenceApiKey } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 
@@ -995,7 +995,6 @@ static createVersion<
     return this.generateStructureHash();
   }
 
-  // Sync version if needed (Node.js only)
   private generateStructureHashSync(): string {
     if (typeof window !== 'undefined') {
       throw new Error('generateStructureHashSync is only available in Node.js');

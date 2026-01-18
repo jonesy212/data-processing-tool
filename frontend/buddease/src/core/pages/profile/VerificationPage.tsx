@@ -1,4 +1,4 @@
-VerificationPage.tsx
+// VerificationPage.tsx
 pages/VerificationPage.tsx
 
 import React from 'react';

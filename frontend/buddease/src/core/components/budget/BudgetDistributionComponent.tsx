@@ -1,4 +1,4 @@
-BudgetDistributionComponent.tsx
+// BudgetDistributionComponent.tsx
 import { usePresetPercentages } from "@/core/generators/presetPercentages";
 import React from 'react';
 

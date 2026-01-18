@@ -1,3 +1,5 @@
+// PluginInterface.tsx
+
 interface DAppPlugin {
   name: string;
   description?: string; // Added

@@ -1,4 +1,4 @@
-TextInput.tsx
+// TextInput.tsx
 
 import useText from '@/core/libraries/animations/DraggableAnimation/useText';
 import React from 'react';

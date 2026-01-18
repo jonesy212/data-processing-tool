@@ -1,5 +1,5 @@
-ListActions.ts
-import { SortingType } from "@/core/models/data/StatusType";
+// ListActions.ts
+import type { SortingType } from "@/core/models/data/StatusType";
 import { ListState } from '@/core/state/stores/ListItem';
 import { createAction } from '@reduxjs/toolkit';
 

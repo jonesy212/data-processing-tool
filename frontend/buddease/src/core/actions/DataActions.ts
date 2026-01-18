@@ -1,9 +1,14 @@
 // DataActions.ts
-// data/DataActions.ts
 import type { SnapshotForActions } from '@/core/actions/AppActionTypes';
 import type { AppSnapshot } from '@/core/typings/entities/AppEntity';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import type { DataProcessing } from '@/core/api/service/DataProcessingService'
+import type { DataProcessingResult } from "@/core/api/service/DataProcessingService";
+import internalApiService from '@/core/api/ApiClient';
+import { endpoints } from "@/core/api/endpointConfigurations";
+
+const API_BASE_URL = endpoints.dataProcessing;
 
 
 /**
@@ -51,10 +56,10 @@ export const DataActions = () => ({
           entity,
           new Map(),
           'mock-snapshot-id',
+          null,
+          null,
+          null,
           undefined,
-          null,
-          null,
-          null,
           false,
           undefined,
           undefined
@@ -72,7 +77,7 @@ export const DataActions = () => ({
     async (data: DataProcessing, thunkAPI) => {
       try {
         // This would call your actual API
-        const response = await axios.post(
+        const response = await internalApiService.post(
           `${API_BASE_URL}`,
           data
         );
@@ -87,7 +92,7 @@ export const DataActions = () => ({
     'data/processDataForAnalysis',
     async (data: DataProcessing, thunkAPI) => {
       try {
-        const response = await axios.post(
+        const response = await internalApiService.post(
           `${API_BASE_URL}/process`,
           data
         );

@@ -1,4 +1,4 @@
-domEventHandlers.ts
+// domEventHandlers.ts
 
 import { DragActions } from "@/core/actions/DragActions";
 import { SearchActions } from "@/core/actions/SearchActions";

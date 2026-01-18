@@ -1,4 +1,4 @@
-// scripts/fix-imports-debug.ts
+// fix-imports-debug.ts
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -189,7 +189,6 @@ async function runDiagnostic() {
     console.log(`${i + 1}. ${imp.file}:${imp.line} - ${imp.import} (${imp.reason})`);
   });
   
-  // 4. Check tsconfig.json
   console.log('\n=== 4. tsconfig.json Analysis ===');
   const tsconfigPath = path.join(PROJECT_ROOT, 'tsconfig.json');
   if (fs.existsSync(tsconfigPath)) {

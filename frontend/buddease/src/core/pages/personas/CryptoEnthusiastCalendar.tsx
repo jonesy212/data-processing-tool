@@ -1,4 +1,4 @@
-CryptoEnthusiastCalendar.tsx
+// CryptoEnthusiastCalendar.tsx
 import EventService from "@/core/services/EventService";
 import { CustomEvent } from "@/core/typings/eventHandlers/eventTypes";
 import React, { useState } from "react";

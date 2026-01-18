@@ -1,4 +1,4 @@
-configHelper.ts
+// configHelper.ts
 app/server/configHelper.ts
 import fs from 'fs';
 import path from 'path';

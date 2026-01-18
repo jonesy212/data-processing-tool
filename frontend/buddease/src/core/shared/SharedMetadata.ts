@@ -3,10 +3,10 @@ import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from '@/core/config/MetaDataOptions';
-import { CoreMetadata } from '@/core/config/MetadataStateManager';
+import type { CoreMetadata } from '@/core/config/MetadataStateManager';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { SharedRelationshipData } from '@/core/models/data/Data';
+import type { SharedRelationshipData } from '@/core/models/data/Data';
 import { Permission } from '@/core/permissions/Permission';
 import { RolePermissions } from '@/core/server/security/getPermissions';
 import { Version } from '@/core/versions/Version';

@@ -1,5 +1,4 @@
-createVisualizations.tsx
-createVisualizations.ts
+// createVisualizations.tsx
 import { VisualizationData } from "@/core/users/User";
 import { ChartData } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";

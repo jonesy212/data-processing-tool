@@ -1,4 +1,4 @@
-analyzeDuplicates.ts
+// analyzeDuplicates.ts
 scripts/analyzeDuplicates.ts
 import { ImportFixerService } from '@/core/generators/corrections/ImportFixServicies';
 import fs from 'fs';

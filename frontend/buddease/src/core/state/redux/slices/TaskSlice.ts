@@ -2,8 +2,8 @@
 import { updateTaskPositionAPI } from '@/core/api/TasksApi';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { TagEntity } from '@/core/typings/entities/TagEntity';
-import { UserEntity } from '@/core/typings/entities/UserEntity';
+import type { TagEntity } from '@/core/typings/entities/TagEntity';
+import type { UserEntity } from '@/core/typings/entities/UserEntity';
 
 import { ScheduledData } from "@/core/calendar/ScheduledData";
 import { Task } from "@/core/components/models/tasks/Task";
@@ -12,9 +12,9 @@ import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { Tag } from "@/core/models/tracker/Tag";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import { MobXRootState } from "@/core/state/stores/RootStores";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
 import {
     PayloadAction,
     ThunkAction,

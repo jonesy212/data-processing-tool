@@ -1,10 +1,10 @@
 // conductTestingAndOptimization.ts
-// testingAndOptimization.ts
 
 import type { Feedback } from "@/core/features/support/Feedback";
 import type {FeedbackReport} from "@/core/generators/FeedbackReportGenerator";
 import FeedbackReportGenerator from "@/core/generators/FeedbackReportGenerator";
-import TradingStrategy, { MarketData, TradingStrategyOptions } from "@/core/trading/TradingStrategy";
+import type { MarketData, TradingStrategyOptions } from '@/core/trading/TradingStrategy';
+import TradingStrategy from '@/core/trading/TradingStrategy';
 
 const calculateHistoricalVolatility = (prices: number[]): number => {
   // Calculate logarithmic returns

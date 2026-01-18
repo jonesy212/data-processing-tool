@@ -1,4 +1,4 @@
-TradingPreferencesStep.tsx
+// TradingPreferencesStep.tsx
 import React from "react";
 
 import PreferencesStep from "@/core/components/phases/steps/PreferencesStep";

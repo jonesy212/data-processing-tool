@@ -1,4 +1,4 @@
-attachmentTypeGroups.ts
+// attachmentTypeGroups.ts
 import type { AttachmentTypeEnum, NoteAttachment } from '@/core/documents/NoteData';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 

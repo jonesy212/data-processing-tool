@@ -1,4 +1,4 @@
-// scripts/sync-configs.js
+// sync-configs.js
 const fs = require('fs');
 const path = require('path');
 const { generateAliases } = require('@/configs/alias-config');

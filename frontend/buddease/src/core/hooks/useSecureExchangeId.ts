@@ -1,4 +1,4 @@
-useSecureExchangeId.ts
+// useSecureExchangeId.ts
 import { sanitizeData } from "@/core/models/cypto/SanitizationFunctions";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { useEffect, useState } from "react";

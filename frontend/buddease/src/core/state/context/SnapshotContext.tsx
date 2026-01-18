@@ -1,5 +1,5 @@
 // SnapshotContext.tsx
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useSecureStoreId from "@/core/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
@@ -8,7 +8,7 @@ import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { fetchSnapshot } from '@/core/snapshots/snapshotHandlers';
-import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import type { useDataStore } from '@/core/state/stores/DataStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { addToSnapshotList } from '@/utils/snapshotUtils';
@@ -74,7 +74,7 @@ export const SnapshotContext = createContext<
 >(undefined);
 
 export const SnapshotProvider = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -286,7 +286,6 @@ export const useSnapshot = <
 //             `Failed to fetch snapshot with ID: ${id}. Status: ${response.status}`
 //           );
 //         }
-//         return response.json(); // Parse the JSON response
 //       })
 //       .then((data) => {
         
@@ -533,7 +532,6 @@ export const useSnapshot = <
 //             `Failed to fetch snapshot store with ID: ${id}. Status: ${response.status}`
 //           );
 //         }
-//         return response.json(); // Parse the JSON response
 //       })
 //       .then((data) => {
 //         // Use type assertion to ensure the data fits the expected structure

@@ -2,7 +2,7 @@
 import { getAppSubscriberIdAPI } from '@/core/api/subscriberApi';
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import updateUI, { updateUIWithSearchResults } from "@/core/documents/editing/updateUI";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { ExchangeData } from "@/core/models/data/ExchangeData";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { updateUIWithSnapshotStore } from "@/core/snapshots/updateUIWithSnapshotStore";

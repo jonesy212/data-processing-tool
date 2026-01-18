@@ -1,4 +1,4 @@
-// MigrationSystem.ts
+// SchemaEvolutionManager.ts
 // Types for Entity Relationships & Constraints
 import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/core/components/database/SchemaEvolutionManager';
 import {

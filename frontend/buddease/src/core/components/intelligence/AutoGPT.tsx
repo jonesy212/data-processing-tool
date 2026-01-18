@@ -1,4 +1,4 @@
-AutoGPT.tsx
+// AutoGPT.tsx
 src/app/components/AutoGPTPrompt.tsx
 import useAutoGPT from '@/core/hooks/useAutoGPT';
 import React, { useState } from 'react';

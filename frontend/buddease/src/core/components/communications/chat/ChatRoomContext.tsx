@@ -1,4 +1,4 @@
-ChatRoomContext.tsx
+// ChatRoomContext.tsx
 import React, { createContext, useContext, useState } from 'react';
 
 // Define the context

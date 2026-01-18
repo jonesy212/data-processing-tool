@@ -1,5 +1,4 @@
 // FormatEnum.tsx
-// FormatEnum.ts
 
 import {
     fetchJsonDocumentByIdAPI,
@@ -7,7 +6,7 @@ import {
 } from "@/core/api/ApiDocument";
 import { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import {
     CustomDocxtemplater,

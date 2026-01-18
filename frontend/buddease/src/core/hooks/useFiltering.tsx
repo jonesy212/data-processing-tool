@@ -1,4 +1,4 @@
-useFiltering.tsx
+// useFiltering.tsx
 import { TaskActions } from "@/core/actions/TaskActions";
 import endpointConfigurations from "@/core/api/endpointConfigurations";
 import { Task } from "@/core/components/models/tasks/Task";
@@ -11,9 +11,9 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from "@/core/features/support/UnifiedNotificationTypes";
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
-import { SearchOptions } from "@/core/pages/searches/SearchOptions";
+import type { SearchOptions } from "@/core/pages/searches/SearchOptions";
 import { useNotification } from "@/core/state/context/NotificationContext";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { Dispatch, useCallback, useState } from "react";

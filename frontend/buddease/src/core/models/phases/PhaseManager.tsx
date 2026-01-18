@@ -3,7 +3,7 @@ import Stopwatch from "@/core/calendar/Stopwatch";
 import type { fetchUserAreaDimensions, UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import useAsyncHookLinker from "@/core/hooks/useAsyncHookLinker";
 import { Phase } from "@/core/models/phases/Phase";
 import { HierarchicalPhaseExecutor } from "@/core/models/phases/PhaseSystem"; // Your hierarchical system

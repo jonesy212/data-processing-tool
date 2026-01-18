@@ -1,5 +1,7 @@
+// AppCacheManagerExtended.tsx
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import AppCacheManagerBase, { ExtendedData } from '@/utils/cache/AppCacheManager';
+import type { ExtendedData } from '@/utils/cache/AppCacheManager';
+import AppCacheManagerBase from '@/utils/cache/AppCacheManager';
 
 class AppCacheManagerExtended extends AppCacheManagerBase<ExtendedData> {
   private notify: (

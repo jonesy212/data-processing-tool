@@ -1,8 +1,8 @@
-ApiEntity.ts
+// ApiEntity.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetaDataOptions } from '@/core/config/MetaDataOptions';
+import type { UnifiedMetaDataOptions } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 
 
 

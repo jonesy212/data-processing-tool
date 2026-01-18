@@ -1,4 +1,4 @@
-AppSettings.ts
+// AppSettings.ts
 export class AppSettings {
   private apiKey: string;
   private appId: string;

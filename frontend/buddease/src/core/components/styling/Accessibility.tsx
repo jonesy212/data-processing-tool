@@ -1,6 +1,7 @@
-Accessibility.tsx
+// Accessibility.tsx
 components/Accessibility.tsx
-import React, { ReactNode } from "react";
+import type { ReactNode } from 'react';
+import React from 'react';
 
 interface AccessibleComponentProps {
   label: string;

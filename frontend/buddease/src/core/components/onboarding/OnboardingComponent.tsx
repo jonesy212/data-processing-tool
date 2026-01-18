@@ -1,11 +1,10 @@
-OnboardingComponent.tsx
+// OnboardingComponent.tsx
 import OnboardingManager from '@/core/pages/onboarding/OnboardingManager';
 import introJs from 'intro.js';
 import React, { useEffect } from 'react';
 
 const OnboardingComponent: React.FC = () => {
   useEffect(() => {
-    // Initialize Intro.js on component mount
     const intro = introJs();
     intro.setOptions({
       steps: [
@@ -18,7 +17,6 @@ const OnboardingComponent: React.FC = () => {
     });
     intro.start();
 
-    // Clean up Intro.js on component unmount
     return () => {
       intro.exit(true);
     };

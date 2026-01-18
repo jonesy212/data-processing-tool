@@ -9,7 +9,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { CreateSnapshotsPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Data, DataDetails } from '@/core/models/data/Data';
+import type { Data, DataDetails } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { Tag } from '@/core/models/tracker/Tag';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';

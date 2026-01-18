@@ -1,5 +1,5 @@
-RealtimeEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// RealtimeEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 
 // Update RealtimeEndpoints to match the pattern

@@ -1,6 +1,6 @@
-import { EventData } from "@/core/state/stores/AssignEventStore";
-
 // isDataRecentEnough.ts
+import type { EventData } from "@/core/state/stores/AssignEventStore";
+
 const isDataRecentEnough = (
   dataItems: EventData[],
   threshold: number

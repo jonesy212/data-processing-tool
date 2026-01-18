@@ -3,23 +3,23 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { isSnapshot } from '@/utils/snapshotUtils';
 ;
 
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';

@@ -1,4 +1,4 @@
-projectManagerTypes.ts
+// projectManagerTypes.ts
 ProjectManagerTypes.ts
 import { Project } from '@/core/models/projects/Project';
 import { ProjectManagerBaseParams } from '@/core/typings/entities/ProjectManagerEntity';

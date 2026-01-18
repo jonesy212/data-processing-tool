@@ -1,4 +1,4 @@
-ChatRoomComponent.tsx
+// ChatRoomComponent.tsx
 ChatRoom.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import connectToChatWebSocket, { retryConfig } from "@/core/components/communications/WebSocket";

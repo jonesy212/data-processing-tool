@@ -1,4 +1,4 @@
-ApiContent.ts
+// ApiContent.ts
 import internalApiService from "@/core/api/ApiClient";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from '@/core/api/endpointConfigurations';

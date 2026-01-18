@@ -1,4 +1,4 @@
-DOMPurify.ts
+// DOMPurify.ts
 import DOMPurify from 'dompurify';
 
 /**

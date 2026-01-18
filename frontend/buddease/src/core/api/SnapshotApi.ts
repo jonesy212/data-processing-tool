@@ -55,7 +55,7 @@ import type { DataStore } from '@/core/state/stores/DataStore';
 // Operations and config
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
 
@@ -67,7 +67,7 @@ import { Subscription } from '@/core/subscriptions/Subscription';
 
 // Additional types
 import { Content } from "@/core/models/content/AddContent";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { PriorityTypeEnum, ProjectStateEnum } from "@/core/models/data/StatusType";
 import { Member } from '@/core/models/members/Member';
 import { ProjectType } from '@/core/models/projects/Project';
@@ -94,8 +94,6 @@ import { CreateOptions, FetchAllOptions } from '@/core/snapshots/SnapshotOptions
 import {
     createMockSnapshot,
     getSnapshot,
-    getSnapshots,
-    takeSnapshot,
     updateSnapshot,
     validateSnapshot
 } from '@/core/snapshots/snapshotOperations';
@@ -251,7 +249,7 @@ class SnapshotApi {
   fetchSnapshotById = fetchSnapshotById;
   addSnapshot = addSnapshot;
   saveSnapshotToDatabase = saveSnapshotToDatabase;
-  takeSnapshot = takeSnapshot;
+  takeSnapshotAPI = takeSnapshotAPI;
   
   async create<
     T extends BaseDataEntity,
@@ -264,7 +262,7 @@ class SnapshotApi {
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     options?: CreateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-    return takeSnapshot(
+    return takeSnapshotAPI(
       snapshot.content,
       new Date(),
       snapshot.projectType,
@@ -338,8 +336,8 @@ class SnapshotApi {
   >(
     options?: FetchAllOptions<T, K>
   ): Promise<Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-    // Implementation using getSnapshots operation
-    return getSnapshots(options?.criteria?.category || 'default', []);
+    // Implementation using getSnapshotsAPI operation
+    return getSnapshotsAPI(options?.criteria?.category || 'default', []);
   }
 
   // Utility Operations
@@ -758,7 +756,7 @@ const findSnapshotsBySubscriber = async <
         find: entry.find,
 
         updateSnapshots: entry.updateSnapshots ?? (() => null),
-        takeSnapshot: entry.takeSnapshot ?? (() => null),
+        takeSnapshotAPI: entry.takeSnapshotAPI ?? (() => null),
         validateSnapshot: entry.validateSnapshot ?? (() => false),
         handleActions: entry.handleActions ?? (() => null),
         setSnapshot: entry.setSnapshot ?? (() => null),
@@ -826,7 +824,7 @@ const findSnapshotsBySubscriber = async <
         getSnapshotCategory: entry.getSnapshotCategory,
         getSnapshotData: entry.getSnapshotData,
         deleteSnapshot: entry.deleteSnapshot,
-        getSnapshots: entry.getSnapshots,
+        getSnapshotsAPI: entry.getSnapshotsAPI,
         compareSnapshots: entry.compareSnapshots,
         compareSnapshotItems: entry.compareSnapshotItems,
         batchTakeSnapshot: entry.batchTakeSnapshot,
@@ -1195,7 +1193,7 @@ const saveSnapshotToDatabase = async (snapshotData: any): Promise<boolean> => {
   }
 };
 
-const getSnapshots = async (category: string) => {
+const getSnapshotsAPI = async (category: string) => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -1473,7 +1471,7 @@ const fetchSnapshotStoreData = async  <
   }
 };
 
-const takeSnapshot = <
+const takeSnapshotAPI = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -2179,7 +2177,7 @@ function createSnapshotContainer<
 
 
 export function extractCriteria<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2200,7 +2198,7 @@ export function extractCriteria<
 
 
 const getSnapshotCriteria = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2305,7 +2303,7 @@ const getSnapshotStoreId = async (
   }
 };
 export async function getSnapshotConfig<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2674,7 +2672,7 @@ const getSnapshotStore = <
 
 
 const findSnapshotStoresById = async<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2718,7 +2716,7 @@ const findSnapshotStoresById = async<
 
 
 const retrieveSnapshots = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2770,7 +2768,7 @@ const retrieveSnapshots = async <
 
 
 const mapSnapshotData = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2826,7 +2824,7 @@ const mapSnapshotData = async <
 
 
 const sortSnapshotData = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2866,7 +2864,7 @@ const sortSnapshotData = async <
 
 
 const categorizeSnapshotData = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2913,7 +2911,7 @@ const categorizeSnapshotData = async <
 };
 
 const searchSnapshotData = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -2970,7 +2968,7 @@ const searchSnapshotData = async <
 };
 
 const deleteSnapshot = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -3168,7 +3166,7 @@ export const snapshotApi = new SnapshotApi();
 export default snapshotApi;
 
 export {
-    createSnapshotContainer
+    createSnapshotContainer,
     getSnapshot,
     getSnapshotCriteria,
     getSnapshotId

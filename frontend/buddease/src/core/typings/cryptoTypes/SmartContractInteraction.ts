@@ -1,4 +1,4 @@
-SmartContractInteraction.ts
+// SmartContractInteraction.ts
 import { SubscriptionTypeEnum } from "@/core/models/data/StatusType";
 import { BaseTransaction, Transaction } from "@/core/payment/Transaction";
 import { AccessList, Signature } from "ethers";

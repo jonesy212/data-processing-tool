@@ -1,4 +1,4 @@
-CustomPDFPage.ts
+// CustomPDFPage.ts
 import { GlobalWorkerOptions } from "pdfjs-dist";
 
 import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";

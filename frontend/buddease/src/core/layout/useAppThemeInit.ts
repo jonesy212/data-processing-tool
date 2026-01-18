@@ -1,4 +1,4 @@
-useAppThemeInit.ts
+// useAppThemeInit.ts
 app/layout/useAppThemeInit.ts
 import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { useLayout } from "@/core/pages/layouts/LayoutContext";

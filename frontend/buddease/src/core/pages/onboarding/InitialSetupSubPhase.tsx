@@ -1,4 +1,4 @@
-InitialSetupSubPhase.tsx
+// InitialSetupSubPhase.tsx
 import { AppDevelopmentPhase } from '@/core/components/phases/AppDevelopmentPhase';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { sanitizeData, validateUserData } from '@/core/models/cypto/SanitizationFunctions';

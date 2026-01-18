@@ -1,5 +1,4 @@
 // AppVersion.test.ts
-// Test file: src/app/core/versioning/__tests__/AppVersion.test.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { AppVersionImpl } from '@/core/pages/_app';
 

@@ -1,5 +1,4 @@
 // ToolbarActions.ts
-// toolbar/ToolbarActions.ts
 import type { Theme } from "@/core/libraries/ui/theme/Theme";
 import type { ParticipantData } from "@/core/pages/management/ParticipantManagementPage";
 import type { User } from "@/core/users/User";

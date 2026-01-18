@@ -1,4 +1,4 @@
-BrainstormingSettings.ts
+// BrainstormingSettings.ts
 export interface BrainstormingSettings {
     enableBrainstorming: boolean;
     brainstormingMethod: 'traditional' | 'mindMapping' | 'nominalGroup' | 'custom'; // Preferred brainstorming method

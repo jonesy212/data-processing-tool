@@ -1,4 +1,4 @@
-registrationTypes.ts
+// registrationTypes.ts
 app/features/registration/types/registration.ts
 export interface RegistrationData {
   email: string;

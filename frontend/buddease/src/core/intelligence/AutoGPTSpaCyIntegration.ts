@@ -1,4 +1,4 @@
-AutoGPTSpaCyIntegration.ts
+// AutoGPTSpaCyIntegration.ts
 
 import { generatePrompt } from "@/core/prompts/promptGenerator";
 

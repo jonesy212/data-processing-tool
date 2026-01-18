@@ -1,4 +1,4 @@
-// utils/isBrowser.ts
+// isBrowser.ts
 
 /**
  * Utility to check if the code is running in a browser environment.

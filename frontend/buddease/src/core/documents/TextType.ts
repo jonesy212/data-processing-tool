@@ -1,4 +1,4 @@
-TextType.ts
+// TextType.ts
 import * as ApiDataAnalysis from "@/core/api/ApiDataAnalysis";
 import { TextProps } from "@/core/libraries/animations/DraggableAnimation/useText";
 import generateSecretKey from "@/utils/generateSecretKey";

@@ -1,5 +1,5 @@
 // payloadTypes.ts
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
+import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import {
     BaseDataEntity,
     DefaultExcludedFields,
@@ -8,11 +8,11 @@ import {
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { BaseData } from "@/core/models/data/Data";
+import type { BaseData } from "@/core/models/data/Data";
 import { StatusType } from "@/core/models/data/StatusType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 

@@ -4,8 +4,8 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { TransformMethods } from "@/core/snapshots/methods/transformMethods";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { InitializedState } from "@/core/state/stores/DataStore";
 ;
 

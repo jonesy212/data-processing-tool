@@ -1,12 +1,13 @@
-BlogPage.tsx
+// BlogPage.tsx
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { BlogActions } from "@/core/components/models/blogs/BlogAction";
 import createDynamicHook, { DynamicHookParams } from "@/core/hooks/dynamicHooks/dynamicHookGenerator";
 import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
-import BlogPostComponent, { BlogPost } from "@/core/pages/blog/BlogPost";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { BlogPost } from '@/core/pages/blog/BlogPost';
+import BlogPostComponent from '@/core/pages/blog/BlogPost';
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 
 // Define a typed version of useSelector using the root state type
 const useSelectorTyped = (selector: (state: RootState) => any) => useSelector(selector);

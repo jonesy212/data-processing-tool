@@ -1,10 +1,10 @@
 // Comments.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseEntityProperties, SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { BaseEntityProperties, SharedTimestamps } from '@/core/documents/RelatedProps';
 import { Content } from '@/core/models/content/AddContent';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 
 // Base comment shared by all comment types
@@ -46,7 +46,7 @@ type CommentType = 'Blog' | 'Chat' | 'Forum';
 
 // Main Comment interface extending BaseData
 interface Comment<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -88,7 +88,7 @@ interface ForumComment extends Comment<any> {
 }
 
 interface CustomComment<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

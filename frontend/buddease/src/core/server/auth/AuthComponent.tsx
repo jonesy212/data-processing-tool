@@ -1,10 +1,11 @@
-AuthComponent.tsx
-import { loadDashboardState } from '@/core/api/ApiDashboard';
+// AuthComponent.tsx
+import type { loadDashboardState } from '@/core/api/ApiDashboard';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { generateTransferToken } from '@/core/generators/GenerateTokens';
 import dynamicHooks from '@/core/hooks/dynamicHooks/dynamicHooks';
-import React, { FormEvent, useState } from "react";
+import type { FormEvent, useState } from 'react';
+import React from 'react';
 
 const API_BASE_URL = endpoints.auth.admin
 

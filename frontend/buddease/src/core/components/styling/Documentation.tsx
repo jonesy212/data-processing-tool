@@ -1,5 +1,4 @@
-Documentation.tsx
-Documentation.tsx
+// Documentation.tsx
 import React from 'react';
 
 Interface for documented components

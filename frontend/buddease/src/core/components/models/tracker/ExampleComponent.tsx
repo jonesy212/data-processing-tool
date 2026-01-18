@@ -1,14 +1,14 @@
-ExampleComponent.tsx
+// ExampleComponent.tsx
 import { useStore } from '@/core/hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 import ListGenerator, { DetailsItemCommon } from '@/core/generators/ListGenerator';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import FileData from '@/core/models/data/FileData';
 import FolderData from '@/core/models/data/FolderData';
-import { CommonTrackerProps, TrackerProps } from '@/core/models/tracker/Tracker';
+import type { CommonTrackerProps, TrackerProps } from '@/core/models/tracker/Tracker';
 import { UserData } from '@/core/users/User';
 
 const ExampleComponent: React.FC = observer(() => {

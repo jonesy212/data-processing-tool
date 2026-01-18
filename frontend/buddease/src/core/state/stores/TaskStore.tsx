@@ -1,5 +1,4 @@
 // TaskStore.tsx
-// TaskManagerStore.tsx
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 import { TaskActions } from '@/core/actions/TaskActions';
@@ -17,9 +16,9 @@ import { generateNewTask } from "@/core/generators/GenerateNewTask";
 import useApiManager from "@/core/hooks/dynamicHooks/useApiManager";
 import useSecureStoreId from "@/core/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { PriorityTypeEnum, TaskStatus } from "@/core/models/data/StatusType";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import FilterTasksRequest from "@/core/pages/searches/FilterTasksRequest";
 import { taskService } from "@/core/services/TaskService";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
@@ -31,7 +30,7 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 import { useApiManagerSlice } from "@/core/state/redux/slices/ApiSlice";
 import { useTaskManagerSlice } from "@/core/state/redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "@/core/state/stores/AssignTaskStore";
-import { AllStatus } from '@/core/state/stores/DetailsListStore';
+import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { Todo } from "@/core/todos/Todo";
 import { User } from "@/core/users/User";

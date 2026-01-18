@@ -1,7 +1,7 @@
 // SnapshotComponent.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
@@ -13,7 +13,7 @@ import {
     SnapshotStoreConfig
 } from "@/core/snapshots";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { isSnapshot } from "@/utils/snapshotUtils";
 import { useEffect, useState } from "react";

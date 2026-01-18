@@ -1,5 +1,4 @@
-Phases.tsx
-Phases.ts
+// Phases.tsx
 // Import the calendar phase
 import { calendarPhase } from "@/core/components/calendar/CalendarPhase";
 import { Lesson } from "@/core/documents/editing/CourseBuilder";

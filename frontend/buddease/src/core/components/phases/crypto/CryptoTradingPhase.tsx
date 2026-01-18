@@ -1,4 +1,4 @@
-CryptoTradingPhase.tsx
+// CryptoTradingPhase.tsx
 import RiskAssessment from '@/core/components/phases/crypto/RiskAssessment';
 import TraderTypesSelection from '@/core/components/phases/crypto/TraderTypesSelection';
 import VerificationProcess from '@/core/components/phases/crypto/VerificationProcess';

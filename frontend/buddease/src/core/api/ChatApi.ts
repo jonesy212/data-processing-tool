@@ -1,4 +1,4 @@
-ChatApi.ts
+// ChatApi.ts
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { ChatRoom } from '@/core/communications/ChatRoom';

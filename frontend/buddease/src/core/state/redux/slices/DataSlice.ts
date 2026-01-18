@@ -1,5 +1,5 @@
-DataSlice.ts
-import { Data } from '@/core/models/data/Data';
+// DataSlice.ts
+import type { Data } from '@/core/models/data/Data';
 import { DataStatus } from "@/core/models/data/StatusType";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { implementThen } from "@/core/state/stores/CommonEvent";

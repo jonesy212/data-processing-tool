@@ -1,5 +1,4 @@
 // LogEntity.ts
-// LogEntity.ts - Separate entity for logging
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { LogData } from '@/core/models/LogData';

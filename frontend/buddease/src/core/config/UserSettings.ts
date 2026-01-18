@@ -33,7 +33,7 @@ import { selectedSettings } from "@/core/settings/PrivacySettings";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { Settings } from '@/core/state/hybrid/SettingsManagerStore';
-import { resetState } from "@/core/state/redux/slices/AppSlice";
+import type { resetState } from "@/core/state/redux/slices/AppSlice";
 import type { CustomComment } from "@/core/state/redux/slices/BlogSlice";
 import type { ExtendedTodo } from "@/core/state/stores/AssignBaseStore";
 import type { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";

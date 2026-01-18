@@ -1,10 +1,10 @@
-PhaseStore.tsx
-import { Data } from '@/core/models/data/Data';
+// PhaseStore.tsx
+import type { Data } from '@/core/models/data/Data';
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";
-import { snapshotStore } from "@/core/snapshots/SnapshotStore";
+import snapshotStore from "@/core/snapshots/SnapshotStore";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { VideoData } from "@/core/typings/videoTypes/Video";
+import type { VideoData } from "@/core/typings/videoTypes/Video";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 
@@ -71,7 +71,7 @@ const usePhaseStore = (): PhaseStore => {
       analysisType: AnalysisTypeEnum.SNAPSHOT,
       analysisResults: [`Phase Results for ${dynamicConvention}`],
       phase: null,
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
     };
 
     snapshotStore.takeSnapshot(phaseSnapshot);

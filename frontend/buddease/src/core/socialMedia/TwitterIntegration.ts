@@ -1,4 +1,4 @@
-TwitterIntegration.ts
+// TwitterIntegration.ts
 
 import TwitterIntegrationAPI from "@/core/api/TwitterIntegrationAPI";
 import { User } from "@/core/users/User";

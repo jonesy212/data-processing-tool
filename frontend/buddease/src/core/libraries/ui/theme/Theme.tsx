@@ -1,8 +1,8 @@
+// Theme.tsx
 
-Theme.tsx
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
+import type { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
 import React, { SetStateAction } from "react";
 
 // Define the Theme interface

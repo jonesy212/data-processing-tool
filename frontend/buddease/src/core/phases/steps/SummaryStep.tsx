@@ -1,4 +1,4 @@
-SummaryStep.tsx
+// SummaryStep.tsx
 // Generic Summary Step Component
 import React from "react";
 

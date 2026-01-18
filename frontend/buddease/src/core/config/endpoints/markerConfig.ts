@@ -1,4 +1,4 @@
-markerConfig.ts
+// markerConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { MarkerEndpoints } from '@/core/typings/categories/MarkerEndpoints';
 

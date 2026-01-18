@@ -1,5 +1,4 @@
-VerifiableCredential.ts
-VerifiableCredential.ts
+// VerifiableCredential.ts
 
 import { signCredential, verifyCredential } from '@/utils/web3/credentialUtils';
 

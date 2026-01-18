@@ -1,5 +1,5 @@
-SnapshotsEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// SnapshotsEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface SnapshotsEndpoints extends EndpointCategoryConfig {
   create: EndpointConfig;

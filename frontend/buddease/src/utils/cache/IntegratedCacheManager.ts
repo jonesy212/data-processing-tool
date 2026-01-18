@@ -1,3 +1,4 @@
+// IntegratedCacheManager.ts
 import AppCacheManagerStore from "@/core/state/stores/AppCacheManagerStore";
 import { ExtendedData } from "@/utils/cache/AppCacheManager";
 import AppCacheManagerExtended from "@/utils/cache/AppCacheManagerExtended";

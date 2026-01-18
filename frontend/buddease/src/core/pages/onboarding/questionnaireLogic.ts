@@ -1,10 +1,11 @@
-// questionnaireLogic.ts (create a new file)
+// questionnaireLogic.ts
+
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
+import internalApiService from '@/core/api/ApiClient';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { OnboardingPhase } from '@/core/pages/personas/UserJourneyManager';
-import axios from 'axios';
 
 // Define a simplified UserData type for questionnaire submission
 // Since questionnaire data doesn't need all generic parameters
@@ -47,7 +48,7 @@ export const handleQuestionnaireSubmit = async <
     };
 
     // Send responses to server
-    const response = await axios.post('/api/questionnaire-submit', {
+    const response = await internalApiService.post('/api/questionnaire-submit', {
       userResponses,
       userId: userData.id,
       username: userData.username,
@@ -195,7 +196,7 @@ export const handleSimpleQuestionnaireSubmit = async (
     };
 
     // Send to server
-    const response = await axios.post('/api/questionnaire-submit', {
+    const response = await internalApiService.post('/api/questionnaire-submit', {
       userResponses,
       userId: userData.id,
       timestamp: new Date().toISOString()

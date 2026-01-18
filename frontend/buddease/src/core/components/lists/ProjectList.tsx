@@ -1,5 +1,5 @@
-ProjectList.tsx
-import { TaskDetails } from "@/core/models/tasks/Task";
+// ProjectList.tsx
+import type { TaskDetails } from "@/core/models/tasks/Task";
 import { ValidPriority } from '@/core/pages/searches/CriteriaType';
 import { useProjectManager } from "@/core/state/stores/hooks/useProjectManager";
 import { AppTask } from '@/core/typings/entities/TaskEntity';

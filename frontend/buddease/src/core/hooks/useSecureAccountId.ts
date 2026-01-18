@@ -1,4 +1,4 @@
-useSecureAccountId.ts
+// useSecureAccountId.ts
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
 import { TwitterIntegration } from '@/core/socialMedia/TwitterIntegration';
 import { useAuth } from '@/core/state/context/AuthContext';

@@ -1,4 +1,4 @@
-MeetingData.ts
+// MeetingData.ts
 // Define the interface for MeetingData
 export interface MeetingData {
     title: string;

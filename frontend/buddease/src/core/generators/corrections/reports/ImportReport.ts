@@ -1,5 +1,4 @@
 // ImportReport.ts
-// src/app/quality/reports/ImportReport.ts
 import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import type { ImportFix, ParsedImport } from '@/core/generators/corrections/ImportFixServicies';
 import fs from 'fs';

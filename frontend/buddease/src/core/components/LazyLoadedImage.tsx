@@ -1,4 +1,4 @@
-LazyLoadedImage.tsx
+// LazyLoadedImage.tsx
 import React, { useEffect, useRef } from 'react';
 
 interface LazyLoadedImageProps {

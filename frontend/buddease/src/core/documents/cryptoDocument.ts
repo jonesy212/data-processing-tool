@@ -1,4 +1,4 @@
-cryptoDocument.ts
+// cryptoDocument.ts
 export interface CryptoDocument {
     title: string;
     content: string;

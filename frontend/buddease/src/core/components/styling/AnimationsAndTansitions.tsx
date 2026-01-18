@@ -1,6 +1,7 @@
-AnimationsAndTansitions.tsx
+// AnimationsAndTansitions.tsx
 components/AnimationsAndTransitions.tsx
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 export interface AnimatedComponentProps {
   animationClass: string;

@@ -2,13 +2,13 @@
 
 // Base types for context
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
-import { SnapshotStoreOptions } from '@/core/snapshots/useSnapshotStore';
+import type { SnapshotStoreOptions } from '@/core/snapshots/useSnapshotStore';
 import type { useDataStore } from '@/core/state/stores/DataStore';
 import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
-import {
+import type {
     StorePropAttachment,
     StorePropEntity, StorePropEntityTemplate, StorePropExcludedFields,
     StorePropIncludedFields,

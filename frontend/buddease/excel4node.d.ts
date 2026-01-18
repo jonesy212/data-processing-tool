@@ -1,3 +1,4 @@
+// excel4node.d.ts
 declare module "excel4node" {
   export interface Workbook {
     createSheet(name: string): Worksheet;

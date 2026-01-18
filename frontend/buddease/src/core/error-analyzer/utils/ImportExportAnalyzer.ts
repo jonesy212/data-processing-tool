@@ -1,3 +1,4 @@
+// ImportExportAnalyzer.ts
 src/app/error-analyzer/utils/ImportExportAnalyzer.ts
 
 import * as ts from 'typescript';
@@ -329,7 +330,6 @@ export class ImportExportAnalyzer {
             const dir = path.dirname(currentFile);
             const resolved = path.resolve(dir, moduleSpecifier);
             
-            // Try with .ts extension first
             if (fs.existsSync(resolved + '.ts')) return resolved + '.ts';
             if (fs.existsSync(resolved + '.tsx')) return resolved + '.tsx';
             if (fs.existsSync(resolved)) return resolved;

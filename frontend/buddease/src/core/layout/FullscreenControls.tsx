@@ -1,5 +1,4 @@
-FullscreenControls.tsx
-FullscreenControls.tsx
+// FullscreenControls.tsx
 app/layout/FullscreenControls.tsx
 import React from "react";
 

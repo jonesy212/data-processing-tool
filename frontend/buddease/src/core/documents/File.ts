@@ -1,11 +1,11 @@
-File.ts
+// File.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { AllTypes } from "@/core/typings/PropTypes";
-import { AppFile } from '@/core/typings/file/fileTypes';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { AllTypes } from "@/core/typings/PropTypes";
+import type { AppFile } from '@/core/typings/file/fileTypes';
 
 // File interface representing a file
-interface CustomFile<T extends BaseDataEntity> extends AppFile {
+export interface CustomFile<T extends BaseDataEntity> extends AppFile {
   readonly name: string;                // The name of the file
   readonly size: number;                // The size of the file in bytes
   readonly type: string;                // The MIME type of the file
@@ -31,7 +31,6 @@ interface CustomFile<T extends BaseDataEntity> extends AppFile {
 }
 
 
-export default CustomFile;
 
 
 

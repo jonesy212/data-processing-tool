@@ -1,6 +1,6 @@
 // Reminder.ts
 import type { NotificationChannels, RetryPolicy } from '@/core/notifications/NotificationChannels';
-import { ReminderTypes, createReminderTypeFromEnum } from '@/core/typings/ReminderTypes';
+import type { ReminderTypes, createReminderTypeFromEnum } from '@/core/typings/ReminderTypes';
 import type { CustomAction } from '@/core/settings/CustomAction';
 import type { EscalationAction } from "@/core/settings/EscalationAction";
 import type { ReminderCondition } from '@/core/settings/ReminderConditionEngine';
@@ -311,7 +311,6 @@ interface WebhookSettings {
 
 
 
-// EscalationCondition.ts
 export interface EscalationCondition {
   id: string;
   type:

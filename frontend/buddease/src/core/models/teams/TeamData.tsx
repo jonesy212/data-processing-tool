@@ -1,16 +1,23 @@
 // TeamData.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
-import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
-import { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
-import BrandingSettings from '@/core/libraries/theme/BrandingService';
-import { CommonData } from '@/core/models/CommonData';
-import { BaseData } from '@/core/models/data/Data';
-import { Member } from '@/core/models/members/Member';
-import { Project } from '@/core/models/projects/Project';
-import { Progress } from '@/core/models/tracker/ProgressBar';
-import { User } from '@/core/users/User';
+import type { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
+import type { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
+import type { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
+import type { BrandingSettings } from '@/core/libraries/theme/BrandingService';
+import type { BrandingSettings } from '@/core/branding/BrandingSettings';
+
+import type { CommonData } from '@/core/models/CommonData';
+import type { BaseData } from '@/core/models/data/Data';
+import type { Member } from '@/core/models/members/Member';
+import type { Project } from '@/core/models/projects/Project';
+import type { Progress } from '@/core/models/tracker/ProgressBar';
+import type { User } from '@/core/users/User';
+import type { TeamEntity, TeamK,
+TeamMeta,
+TeamAttachment,
+TeamExcludedFields,
+TeamIncludedFields, } from '@/core/typings/entities/TeamEntity';
 
 interface TeamData<  
   T extends BaseDataEntity,
@@ -62,15 +69,57 @@ const collaborationPreferences: CollaborationPreferences = {
   branding: {} as BrandingSettings
 };
 
-const teamData: TeamData<StringData, string> = {
-  // Other team data properties
+
+
+function createTeamPermissions(teamId: string, userId: string, options?: Partial<TeamPermission>): TeamPermission {
+  return {
+    userId,
+    permissions: {}, // Fill with actual UserPermissions
+    permissionType: "write",
+    scope: "team",
+    resourceType: "team",
+    teamId,
+    canView: true,
+    canEdit: true,
+    canDelete: false,
+    read: true,
+    write: true,
+    delete: false,
+    canManageTeamMembers: true,
+    canEditTeamSettings: true,
+    canViewTeamAnalytics: true,
+    canAssignTasks: true,
+    ...options
+  };
+}
+
+const teamData: TeamData<
+  TeamEntity,
+  TeamK,
+  TeamMeta,
+  TeamAttachment,
+  TeamExcludedFields,
+  TeamIncludedFields
+> = {
+  // Only string works:
+  id: "team-123",  // Works - string
+  
+  // Other required fields from TeamEntity:
+  name: "Team Name",           // Required (string)
+  ownerId: "",                 // Required (string)
+  memberIds: [],              // Required (string[])
+  createdAt: new Date(),       // Required (Date)
+  updatedAt: new Date(),       // Required (Date)
+  isActive: false,            // Required (boolean)
+  members: [],                // Required (Members<...> - need proper type)
+  createdDate: new Date(),    // Required (Date)
+  Finterface TeamPermission : createTeamPermissions("team-123", "user-1"),
+
+  // Team-specific fields (from TeamData interface)
   collaborationPreferences: collaborationPreferences,
-  id: 0,
   teamName: "",
-  members: [],
   projects: [],
   creationDate: new Date(),
-  isActive: false,
   leader: null,
   progress: null,
   color: "",
@@ -87,7 +136,6 @@ const teamData: TeamData<StringData, string> = {
     collaborationPlatforms: []
   },
 };
-
 
 export { teamData };
 export type { TeamData };

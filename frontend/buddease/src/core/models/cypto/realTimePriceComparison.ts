@@ -1,5 +1,5 @@
 // realTimePriceComparison.ts
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { RealtimeUpdateCallback } from '@/core/hooks/commHooks/useRealtimeData';
 import useRealtimeDextData from '@/core/hooks/commHooks/useRealtimeDextData';
 import useRealtimeExchangeData from '@/core/hooks/commHooks/useRealtimeExchangeData';
@@ -14,13 +14,13 @@ import { useDispatch } from 'react-redux';
 import * as snapshotApi from '@/core/api/SnapshotApi';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { DEXEnum, ExchangeEnum } from '@/core/models/cypto/exchangeIntegration';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { processExchangeData } from '@/core/models/data/fetchExchangeData';
 import { StatusType } from "@/core/models/data/StatusType";
 import createSnapshotOptions from '@/core/snapshots/createSnapshotOptions';
 import { updateSnapshot } from '@/core/snapshots/snapshotHandlers';
-import { AppEntity, AppK } from '@/core/typings/entities/AppEntity';
+import type { AppEntity, AppK } from '@/core/typings/entities/AppEntity';
 import type { RealtimeDataAttachment, RealtimeDataEntity, RealtimeDataExcludedFields, RealtimeDataIncludedFields, RealtimeDataK, RealtimeDataMeta } from '@/core/typings/entities/RealtimeDataEntity';
 import { RealtimeData, RealtimeDataItem } from '@/core/typings/realtimeTypes';
 // Define the price comparison component or function

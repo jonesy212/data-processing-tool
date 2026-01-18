@@ -491,7 +491,6 @@ async function getTaskEntitiesFromAPI(): Promise<TaskEntity[]> {
   try {
     // Replace with actual API call to get tasks
     // const response = await fetch('/api/tasks');
-    // return await response.json();
     
     // For now, return mock data that matches TaskEntity structure
     return [

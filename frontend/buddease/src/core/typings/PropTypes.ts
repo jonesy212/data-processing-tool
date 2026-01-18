@@ -1,8 +1,6 @@
-PropTypes.ts
-PropTypes.tsx
+// PropTypes.ts
 import {
     BaseDataEntity,
-    BaseDataRoot,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
@@ -27,8 +25,8 @@ import {
     ProgressBarProps,
     ProgressPhase,
 } from "@/core/models/tracker/ProgressBar";
-import { SendStatus } from "@/core/state/redux/slices/NofiticationsSlice";
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { SendStatus } from "@/core/state/redux/slices/NofiticationsSlice";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import React from "react";
 
@@ -69,7 +67,7 @@ interface BaseProps {
 }
 
 interface NotificationProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

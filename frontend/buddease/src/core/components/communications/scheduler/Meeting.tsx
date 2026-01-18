@@ -1,5 +1,5 @@
-Meeting.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+// Meeting.tsx
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Todo } from "@/core/todos/Todo";

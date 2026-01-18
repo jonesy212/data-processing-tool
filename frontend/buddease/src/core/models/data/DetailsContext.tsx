@@ -3,10 +3,11 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import { DocumentContent } from '@/core/models/CommonData';
-import { Data } from '@/core/models/data/Data';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
-import { DocumentMetadata } from '@/core/state/stores/DocumentStore';
-import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
+import type { Data } from '@/core/models/data/Data';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DocumentMetadata } from '@/core/state/stores/DocumentStore';
+import type { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
+import React from 'react';
 
 // Define the shape of your context data
 

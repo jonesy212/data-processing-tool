@@ -1,12 +1,12 @@
-TeamComponent.tsx
+// TeamComponent.tsx
 src/components/Teams/TeamComponent.tsx
 
 import { Task } from "@/core/components/models/tasks/Task";
 import { Team as BackendTeam } from "@/core/components/teams/Team";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import TaskProgress from "@/core/projects/projectManagement/TaskProgress";
 import TodoProgress from "@/core/projects/projectManagement/TodoProgress";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { Todo } from "@/core/todos/Todo";
 import React, { useEffect, useState } from "react";
 

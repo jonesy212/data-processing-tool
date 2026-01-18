@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// src/app/scripts/run-phase-safely.ts
+// run-phase-safely.ts
 
 import { execSync, spawn } from 'child_process';
 

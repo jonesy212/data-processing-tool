@@ -1,4 +1,4 @@
-UXUIDesignerPersona.ts
+// UXUIDesignerPersona.ts
 // Define attributes and permissions for UX/UI Designer persona
 interface UXUIDesignerPersona {
     name: string;

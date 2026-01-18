@@ -1,4 +1,4 @@
-CalendarEventAttendeeAvailabilityAnalysis.tsx
+// CalendarEventAttendeeAvailabilityAnalysis.tsx
 import { AttendeeAvailability, AttendeeAvailabilityAnalysis } from "@/core/components/calendar/Attendee";
 
 interface CalendarEventAttendeeAvailabilityAnalysis extends AttendeeAvailabilityAnalysis {

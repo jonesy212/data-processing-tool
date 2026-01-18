@@ -1,5 +1,5 @@
-endpointManager.ts
-import { EndpointConfigurations } from '@/core/config/EndpointConfig';
+// endpointManager.ts
+import type { EndpointConfigurations } from '@/core/config/EndpointConfig';
 import { BasicChannels } from '@/core/notifications/NotificationChannelHelper';
 
 // Import ALL configs

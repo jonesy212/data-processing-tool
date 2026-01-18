@@ -1,4 +1,4 @@
-FeedbackAggregator.tsx
+// FeedbackAggregator.tsx
 import { Feedback } from '@/core/features/support/Feedback';
 import React, { useState } from 'react';
 

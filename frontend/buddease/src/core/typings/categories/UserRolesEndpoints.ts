@@ -1,5 +1,5 @@
-UserRolesEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// UserRolesEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface UserRolesEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

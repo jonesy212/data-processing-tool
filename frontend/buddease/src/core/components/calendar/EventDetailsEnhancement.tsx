@@ -1,11 +1,11 @@
-EventDetailsEnhancement.tsx
+// EventDetailsEnhancement.tsx
 // Assuming EventDetails is already defined as interface EventDetails
 
-import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps, EventDetails } from "@/core/components/calendar/CalendarEventViewingDetails";
+import type { CalendarEventViewingDetailsProps, EventDetails } from '@/core/components/calendar/CalendarEventViewingDetails';
+import CalendarEventViewingDetails from '@/core/components/calendar/CalendarEventViewingDetails';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
 
-EventDetailsEnhancement.ts
 interface EventDetailsEnhancement extends EventDetails {
   // Add additional properties specific to EventDetailsEnhancement if needed
   enhancementType: string;

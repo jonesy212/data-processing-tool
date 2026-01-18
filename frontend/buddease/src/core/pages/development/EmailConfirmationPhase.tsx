@@ -1,4 +1,4 @@
-EmailConfirmationPhase.tsx
+// EmailConfirmationPhase.tsx
 
 import { DevelopmentPhase } from "@/core/components/phases/DevelopmentPhase";
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";

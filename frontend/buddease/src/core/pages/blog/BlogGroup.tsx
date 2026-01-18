@@ -1,9 +1,9 @@
-BlogGroup.tsx
+// BlogGroup.tsx
 import Group from "@/core/components/communications/chat/Group";
 import GroupGenerator from "@/core/generators/GroupGenerator";
 import ListGenerator from "@/core/generators/ListGenerator";
 import { BlogPost } from "@/core/pages/blog/BlogPost";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React from "react";
 
 interface BlogGroupProps {

@@ -1,5 +1,4 @@
-Notification.tsx
-Notification.ts
+// Notification.tsx
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { ThemeConfigProps } from '@/core/hooks/userInterface/ThemeConfigContext';
 import { NotificationContext } from '@/core/state/context/NotificationContext';

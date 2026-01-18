@@ -1,4 +1,4 @@
-NavigationContext.ts
+// NavigationContext.tsx
 import { Step } from '@/core/hooks/useStepNavigation';
 import React, { createContext, useContext, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";

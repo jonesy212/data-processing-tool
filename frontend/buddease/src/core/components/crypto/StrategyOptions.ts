@@ -1,4 +1,4 @@
-StrategyOptions.ts
+// StrategyOptions.ts
 
 import TradingStrategy from "@/core/trading/TradingStrategy";
 

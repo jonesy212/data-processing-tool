@@ -1,10 +1,10 @@
-TextEditor.tsx
-import { ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
+// TextEditor.tsx
+import type { ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
 import {
     DocumentBuilderConfig,
     getDefaultDocumentBuilderConfig,
 } from "@/core/config/DocumentBuilderConfig";
-import { getToolbarOptions } from '@/core/documents/getToolbarOptions';
+import type { getToolbarOptions } from '@/core/documents/getToolbarOptions';
 import DynamicTextArea from "@/core/ts/DynamicTextArea";
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import { useEffect, useState } from "react";

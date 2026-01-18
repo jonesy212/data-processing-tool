@@ -1,4 +1,4 @@
-BrowserCheck.tsx
+// BrowserCheck.tsx
 components/BroswerCheck.tsx
 import React from 'react';
 

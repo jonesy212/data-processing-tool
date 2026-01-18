@@ -1,5 +1,4 @@
 // NotificationActions.ts
-// notification/NotificationActions.ts
 
 import type { AppNotificationData } from '@/core/typings/entities/CommonEntities';
 import { createAction } from "@reduxjs/toolkit";

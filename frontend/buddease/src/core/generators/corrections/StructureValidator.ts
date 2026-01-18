@@ -81,7 +81,6 @@ export class StructureValidator extends BaseAnalyzer {
       ]);
 
 
-      // Extract the actual package.json data from the analyzer
       const packageJsonData = packageJsonAnalyzer ?
         this.extractPackageJsonData(packageJsonAnalyzer) :
         null;
@@ -106,7 +105,6 @@ export class StructureValidator extends BaseAnalyzer {
   }
 
   private extractPackageJsonData(analyzer: PackageJsonAnalyzer): PackageJson {
-    // Assuming PackageJsonAnalyzer has a method or property to get the actual package.json data
     // This depends on your PackageJsonAnalyzer implementation
     return {
       name: analyzer.getName(), // or analyzer.name if it's a property
@@ -552,7 +550,6 @@ export class StructureValidator extends BaseAnalyzer {
   }
 
 
-  // For getting raw package.json data (like in generateCommandsDoc.ts)
   public async getPackageJsonData(): Promise<PackageJson | null> {
     try {
       const packageJsonPath = path.resolve(process.cwd(), 'package.json');
@@ -566,7 +563,6 @@ export class StructureValidator extends BaseAnalyzer {
     return null;
   }
 
-  // For running package.json analysis
   private async analyzePackageJson(): Promise<Correction[]> {
     const analyzer = new PackageJsonAnalyzer();
     return await analyzer.analyze();

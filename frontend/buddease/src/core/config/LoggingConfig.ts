@@ -1,4 +1,4 @@
-LoggingConfig.ts
+// LoggingConfig.ts
 export interface LoggingConfig {
   level: 'error' | 'warn' | 'info' | 'debug' | 'trace';
   transport: 'console' | 'remote' | 'both';

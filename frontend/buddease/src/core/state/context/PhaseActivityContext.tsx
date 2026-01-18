@@ -1,4 +1,4 @@
-PhaseActivityContext.ts
+// PhaseActivityContext.tsx
 import { usePhaseActivity } from '@/core/hooks/usePhaseActivity';
 import React, { createContext, useContext } from "react";
 

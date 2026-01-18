@@ -4,7 +4,7 @@
 import { FileTypeEnum } from "@/core/documents/FileType";
 import useFiltering from "@/core/hooks/useFiltering";
 import { CommonData } from "@/core/models/CommonData";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { Project } from "@/core/models/projects/Project";
 import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator";
 import dynamic from 'next/dynamic';
@@ -14,7 +14,7 @@ import {
     LanguageEnum
 } from "@/core/communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "@/core/components/notifications/Notification";
-import { SearchOptions } from "@/core/pages/searches/SearchOptions";
+import type { SearchOptions } from "@/core/pages/searches/SearchOptions";
 import { SortCriteria } from "@/core/settings/SortCriteria";
 import type { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/core/typings/teamTypes';
 

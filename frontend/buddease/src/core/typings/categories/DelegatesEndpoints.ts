@@ -1,5 +1,5 @@
-DelegatesEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// DelegatesEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DelegatesEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

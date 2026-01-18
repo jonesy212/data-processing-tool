@@ -1,4 +1,4 @@
-parallel-file-fixing.ts
+// parallel-file-fixing.ts
 import pLimit from 'p-limit';
 
 const limit = pLimit(4); // safe concurrency

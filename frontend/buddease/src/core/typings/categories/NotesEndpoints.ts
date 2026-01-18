@@ -1,5 +1,5 @@
-NotesEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// NotesEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface NotesEndpoints extends EndpointCategoryConfig {
   // Core CRUD operations

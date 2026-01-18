@@ -1,4 +1,4 @@
-// src/app/error-analyzer/types/FixStrategyTypes.ts
+// FixStrategyTypes.ts
 import type { FixPlan, StrategyCore } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 
 // Create a unified type that includes ALL fix types from both FixPlan and your new ones
@@ -20,7 +20,6 @@ export type FixStrategyTypeDef =
   | 'async_handling';    
 
 // Update BaseFixStrategy to use the unified type
-// In FixStrategyTypes.ts
 
 
 // Base fix strategy with additional properties

@@ -1,4 +1,4 @@
-ShippingOption.ts
+// ShippingOption.ts
 
 interface ShippingOption {
     name: string;

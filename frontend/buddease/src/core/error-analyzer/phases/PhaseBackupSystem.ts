@@ -1,12 +1,63 @@
 // PhaseBackupSystem.ts
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import pako from "pako";
-import type { BaseDataEntity, BaseDataRoot, DefaultMeta, Attachment, DefaultExcludedFields } from '@/core/config/BaseConfig';
-import type { Milestone } from '@/core/typings/milestoneTypes';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Phase } from "@/core/models/phases/Phase";
-import type { UnifiedMetadata } from '@/core/config/MetaDataOptions'
+import type { Milestone } from '@/core/typings/milestoneTypes';
+
+import crypto from 'crypto';
+import fs from 'fs';
+import pako from "pako";
+import path from 'path';
+
+
+export type BackupStatus = 'created' | 'active' | 'restored' | 'deleted' | 'corrupted' | 'rolled-back' | 'expired';
+export type BackupType = 'phase' | 'milestone' | 'entity' | 'restore-point' | 'configuration' | 'snapshot' | 'rollback';
+
+export function isValidBackupType(type: string): type is BackupType {
+  const validTypes: BackupType[] = ['phase', 'milestone', 'entity', 'restore-point', 'configuration', 'snapshot', 'rollback'];
+  return validTypes.includes(type as BackupType);
+}
+
+
+export function getDefaultBackupType(context?: {
+  phaseId?: string;
+  milestoneId?: string;
+  entityName?: string;
+}): BackupType {
+  if (context?.entityName) {
+    return 'entity';
+  }
+  if (context?.milestoneId) {
+    return 'milestone';
+  }
+  if (context?.phaseId) {
+    return 'phase';
+  }
+  return 'phase'; // Default fallback
+}
+
+
+export const BackupTypeDescriptions: Record<BackupType, string> = {
+  'phase': 'Complete phase state backup',
+  'milestone': 'Milestone-specific backup',
+  'entity': 'Entity data backup',
+  'restore-point': 'System restore point',
+  'configuration': 'Configuration files backup',
+  'snapshot': 'Point-in-time snapshot',
+  'rollback': 'Rollback backup for undo operations'
+};
+
+// Optional: Create backup type icons/emojis for UI
+export const BackupTypeIcons: Record<BackupType, string> = {
+  'phase': '🏗️',
+  'milestone': '📍',
+  'entity': '📦',
+  'restore-point': '🔙',
+  'configuration': '⚙️',
+  'snapshot': '📸',
+  'rollback': '↩️'
+};
 
 export interface CoreBackupMetadata {
   version: string;
@@ -15,23 +66,31 @@ export interface CoreBackupMetadata {
   tags: string[];
   reason?: string;
   parentOperationId?: string;
-  backupType: 'phase' | 'milestone' | 'entity' | 'restore-point';
+  backupType: BackupType
   operation: string;
   sourceFile?: string
+  filePath?: string;
 }
 
 // Extended backup metadata (optional)
-export interface ExtendedBackupMetadata<T extends BaseDataEntity = BaseDataRoot> 
+export interface ExtendedBackupMetadata<T extends BaseDataEntity = BaseDataEntity> 
   extends Partial<UnifiedMetadata<T, any, any, any, any, any>> {
   // Add backup-specific fields
   size?: number;
   compression?: 'none' | 'gzip' | 'zip' | 'pako/gzip';
   validationHash?: string;
   dependencies?: string[];
-}
+  // Add milestone properties
+  milestoneId?: string | number;
+  milestoneName?: string;
+  projectId?: string | number;
 
+  fileCount?:number
+  totalSize?:number
+  checksum?:number
+}
 // Complete backup metadata
-export type BackupMetadata<T = any> = CoreBackupMetadata & ExtendedBackupMetadata<T>;
+export type BackupMetadata<T extends BaseDataEntity = BaseDataEntity> = CoreBackupMetadata & ExtendedBackupMetadata<T>;
 
 export interface BackupRecord<T = any> {
   id: string;
@@ -43,7 +102,7 @@ export interface BackupRecord<T = any> {
   checksum: string;
   originalPath: string;
   metadata: BackupMetadata<T>;
-  status: 'active' | 'rolled-back' | 'expired';
+  status: BackupStatus;
 }
 
 export interface RestorePoint {
@@ -69,7 +128,7 @@ export interface ListBackupOptions {
   milestoneId?: string;
   startDate?: Date;
   endDate?: Date;
-  status?: 'active' | 'rolled-back' | 'expired';
+  status?: BackupStatus
   limit?: number;
   offset?: number;
 }
@@ -86,12 +145,12 @@ export interface PhaseBackupSystem {
   getBackupStats: () => Promise<BackupStats>;
 }
 
-export interface ir {
+export interface ListBackupOptions {
   phaseId?: string;
   milestoneId?: string;
   startDate?: Date;
   endDate?: Date;
-  status?: BackupRecord['status'];
+  status?: BackupStatus
   limit?: number;
   offset?: number;
 }
@@ -159,8 +218,8 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
 
   // ========== PHASE SPECIFIC BACKUP METHODS ==========
 
-  async backupPhase<T extends BaseDataEntity>(
-    phase: Phase<T>,
+  async backupPhase<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     operation: BackupRecord['operation'],
     reason?: string,
     tags: string[] = []
@@ -193,7 +252,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
         tags: [...tags, phase.id, operation, timestamp.toISOString().split('T')[0]],
         backupType: phase.milestone ? 'milestone' : 'phase',
         operation,
-              
+        filePath: phase.id, // Add filePath here too
       },
       status: 'active'
     };
@@ -201,7 +260,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     // Save record
     this.saveBackupRecord(record);
     
-    // Clean up old backups based on strategy
+    // Clean up old backups based on strategy - pass phase.id
     this.cleanupOldBackups(phase.id);
     
     console.log(`✅ Phase backup created: ${backupId} (${phase.name})`);
@@ -209,14 +268,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     return record;
   }
 
-  async backupMultiplePhases<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
+  async backupMultiplePhases<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
     phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     operation: BackupRecord['operation'],
     restorePointName: string,
@@ -262,10 +314,10 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
 
   // ========== RESTORE METHODS ==========
 
-  async restorePhase<T extends BaseDataEntity>(
+  async restorePhase<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
     backupId: string,
     validateChecksum: boolean = true
-  ): Promise<{ success: boolean; phase: Phase<T> | null; message: string }> {
+  ): Promise<{ success: boolean; phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; message: string }> {
     try {
       const record = this.getBackupRecord(backupId);
       if (!record) {
@@ -288,13 +340,13 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
       }
       
       // Parse phase data
-      const phase: Phase<T> = JSON.parse(backupContent);
+      const phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = JSON.parse(backupContent);
       
       // Create a restore backup before restoring (meta-backup)
       const currentPhase = this.findPhase(record.phaseId);
       if (currentPhase) {
         await this.backupPhase(
-          currentPhase as Phase<T>,
+          currentPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           'phase-modification',
           `Pre-restore backup for ${backupId}`,
           ['pre-restore', backupId]
@@ -366,55 +418,121 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     return { success: failed === 0, restored, failed };
   }
 
-  async createBackup(phaseId: string, milestoneId: string, description?: string): Promise<string> {
-    const phase = this.findPhase(phaseId);
-    if (!phase) {
-      throw new Error(`Phase not found: ${phaseId}`);
+
+  private generateChecksum(input: string): string {
+    try {
+      const crypto = require('crypto');
+      const hash = crypto.createHash('sha256');
+      hash.update(input);
+      return hash.digest('hex').substring(0, 16); // First 16 chars
+    } catch (error) {
+      // Fallback to simple hash
+      let hash = 0;
+      for (let i = 0; i < input.length; i++) {
+        hash = ((hash << 5) - hash) + input.charCodeAt(i);
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(16).substring(0, 16);
     }
+  }
+
+  /**
+ * Generate a checksum for backup ID to ensure uniqueness and integrity
+ */
+  private generateBackupIdChecksum(backupId: string): string {
+    // Combine backupId with timestamp and random salt for uniqueness
+    const salt = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const input = `${backupId}-${salt}`;
     
-    const operation = milestoneId ? `milestone-${milestoneId}` : 'phase-backup';
-    const backup = await this.backupPhase(
-      phase,
-      operation,
-      description,
-      ['manual', milestoneId ? `milestone-${milestoneId}` : 'phase-only']
-    );
+    try {
+      const crypto = require('crypto');
+      const hash = crypto.createHash('sha256');
+      hash.update(input);
+      return hash.digest('hex').substring(0, 32); // 32 chars for backup IDs
+    } catch (error) {
+      // Fallback: combine backupId with simple hash
+      let hash = 0;
+      for (let i = 0; i < input.length; i++) {
+        hash = ((hash << 5) - hash) + input.charCodeAt(i);
+        hash = hash & hash;
+      }
+      return `${backupId}-${Math.abs(hash).toString(36).slice(0, 8)}`;
+    }
+  }
+
+  async createBackup(
+    phaseId: string, 
+    milestoneId: string, 
+    description?: string,
+    backupType: BackupType = 'phase'
+  ): Promise<string> {
+    // Use .slice() instead of deprecated .substr()
+    const backupId = `backup-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    const backupPath = path.join(this.backupDir, backupId);
     
-    return backup.id;
+    const backupRecord: BackupRecord = {
+      id: backupId,
+      timestamp: new Date(),
+      phaseId,
+      milestoneId,
+      backupPath,
+      metadata: {
+        fileCount: 0,
+        totalSize: 0,
+        checksum: this.generateBackupIdChecksum(backupId),
+        description,
+        version: '1.0',
+        user: process.env.USER || 'system',
+        tags: [],
+        backupType,
+        operation: 'create',
+      },
+      status: 'created'
+    };
+    
+    // Save record
+    await this.saveBackupRecord(backupRecord);
+    
+    console.log(`✅ Created backup: ${backupId} for ${phaseId}/${milestoneId}`);
+    return backupId;
   }
 
 
   async restoreBackup(backupId: string, targetPath?: string): Promise<void> {
-    const record = this.getBackupRecord(backupId);
-    if (!record) {
-      throw new Error(`Backup not found: ${backupId}`);
+    const backup = this.getBackupRecord(backupId);
+    if (!backup) {
+        throw new Error(`Backup not found: ${backupId}`);
     }
 
-    const raw = fs.readFileSync(record.backupPath, 'utf8');
+    // Read and parse your JSON backup format
+    const raw = fs.readFileSync(backup.backupPath, 'utf8');
     const parsed = JSON.parse(raw);
 
     if (!parsed.filePath || !parsed.content) {
-      throw new Error(`Invalid backup format for ${backupId}`);
+        throw new Error(`Invalid backup format for ${backupId}`);
     }
 
-    // Use targetPath if provided, otherwise use original filePath
+    // Use targetPath if provided, otherwise original filePath
     const restorePath = targetPath || parsed.filePath;
     
     // Ensure directory exists
     const restoreDir = path.dirname(restorePath);
     if (!fs.existsSync(restoreDir)) {
-      fs.mkdirSync(restoreDir, { recursive: true });
+        fs.mkdirSync(restoreDir, { recursive: true });
     }
 
+    // Write the restored content
     fs.writeFileSync(restorePath, parsed.content, 'utf8');
 
-    this.updateBackupRecordStatus(backupId, 'rolled-back');
+    // Update status
+    backup.status = 'restored';
+    this.updateBackupRecordStatus(backupId, 'restored');
 
-    console.log(`♻️ Restored file from backup: ${parsed.filePath} → ${restorePath}`);
+    console.log(`♻️ Restored from backup ${backupId}: ${parsed.filePath} → ${restorePath}`);
     
-    // If targetPath is different, update the record
+    // Log alternate location if used
     if (targetPath && targetPath !== parsed.filePath) {
-      console.log(`   Note: Restored to alternate location: ${targetPath}`);
+        console.log(`   Note: Restored to alternate location: ${targetPath}`);
     }
   }
 
@@ -479,9 +597,9 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
 
   // ========== SAFE PHASE EXECUTION WITH BACKUP ==========
 
-  async executePhaseWithBackup<T extends BaseDataEntity>(
-    phase: Phase<T>,
-    executor: (phase: Phase<T>) => Promise<any>,
+  async executePhaseWithBackup<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    executor: (phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<any>,
     rollbackOnError: boolean = true
   ): Promise<{ success: boolean; result: any; backupId?: string; error?: string }> {
     // Create backup before execution
@@ -586,6 +704,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
           filePath,
           operation,
           tags,
+          backupType,
           reason: `Entity backup: ${operation}`
         },
         status: 'active'
@@ -605,8 +724,8 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
 
   // ========== MILESTONE BACKUP METHODS ==========
 
-  async backupMilestone<T extends BaseDataEntity>(
-    phase: Phase<T>,
+  async backupMilestone<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     milestone: Milestone,
     operation: 'complete' | 'update' | 'revert'
   ): Promise<BackupRecord> {
@@ -792,12 +911,12 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
 
   // ========== PRIVATE METHODS ==========
  // Public interface method (returns Promise<number>)
-  async cleanupOldBackups(): Promise<number> {
-    return this.internalCleanupOldBackups();
+  async cleanupOldBackups(phase?: Phase<any, any, any, any, any, any>): Promise<number> {
+    return this.internalCleanupOldBackups(phase?.id);
   }
 
   // Private implementation (renamed from cleanupOldBackups)
-  private async internalCleanupOldBackups(): Promise<number> {
+  private async internalCleanupOldBackups(phaseId?: string): Promise<number> {
     const records = this.getBackupRecords();
     let totalRemoved = 0;
     
@@ -813,15 +932,21 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
       }
     }
     
-    // Clean up each phase
-    for (const [phaseId, phaseBackups] of Object.entries(backupsByPhase)) {
-      const removed = await this.cleanupPhaseBackups(phaseId, phaseBackups);
+    // Clean up each phase (or specific phase if provided)
+    for (const [currentPhaseId, phaseBackups] of Object.entries(backupsByPhase)) {
+      // If phaseId is provided, only clean up that phase
+      if (phaseId && currentPhaseId !== phaseId) {
+        continue;
+      }
+      
+      const removed = await this.cleanupPhaseBackups(currentPhaseId, phaseBackups);
       totalRemoved += removed;
     }
     
-    console.log(`🧹 Cleaned up ${totalRemoved} old backups`);
+    console.log(`🧹 Cleaned up ${totalRemoved} old backups${phaseId ? ` for phase ${phaseId}` : ''}`);
     return totalRemoved;
   }
+
 
   // Helper method for cleaning up a specific phase
   private async cleanupPhaseBackups(phaseId: string, phaseBackups: BackupRecord[]): Promise<number> {
@@ -851,12 +976,6 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     
     return removedCount;
   }
-
-
-
-
-
-
 
   private findPhase(phaseId: string): any | null {
     // Check in-memory cache first
@@ -957,7 +1076,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     return exportPath;
   }
 
-  importBackups(source: string): { success: boolean; imported: number } {
+  async importBackups(source: string): Promise<{ success: boolean; imported: number }> {
     console.log(`📥 Importing backups from ${source}`);
     
     try {
@@ -985,7 +1104,6 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
       return JSON.parse(decompressed);
       
     } catch (error: unknown) {
-      // Fallback to Node.js zlib if pako fails
       try {
         return await this.decompressWithZlib(compressedData);
       } catch (zlibError: unknown) {
@@ -1316,7 +1434,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     const stats = fs.statSync(source);
     
     if (stats.isDirectory()) {
-      // Import from directory
+      // Import from directory (synchronous)
       importedCount = await this.importBackupsFromDirectory(source);
     } else if (stats.isFile() && source.endsWith('.zip')) {
       // Import from zip file
@@ -1335,7 +1453,7 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
   }
 
 
-  private importBackupsFromDirectory(dirPath: string): number {
+  private async importBackupsFromDirectory(dirPath: string): Promise<number> {
     let importedCount = 0;
     
     console.log(`📂 Importing backups from directory: ${dirPath}`);
@@ -1345,7 +1463,8 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     
     for (const file of backupFiles) {
       try {
-        if (this.importSingleBackup(file)) {
+        // Use await since importSingleBackup returns a Promise
+        if (await this.importSingleBackup(file)) {
           importedCount++;
         }
       } catch (error) {
@@ -1353,11 +1472,11 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
       }
     }
     
-    // Import restore points
+    // Import restore points (also need to make importRestorePoint async if it isn't)
     const restorePointFiles = this.findRestorePointFiles(dirPath);
     for (const file of restorePointFiles) {
       try {
-        if (this.importRestorePoint(file)) {
+        if (await this.importRestorePoint(file)) {
           console.log(`✅ Imported restore point from: ${file}`);
         }
       } catch (error) {
@@ -1367,8 +1486,8 @@ export class PhaseBackupSystemImpl implements PhaseBackupSystem {
     
     return importedCount;
   }
-
-  private importBackupsFromZip(zipPath: string): number {
+  
+  private importBackupsFromZip(zipPath: string): Promise<number> {
     console.log(`📦 Importing backups from zip: ${zipPath}`);
     
     // Create temp directory for extraction

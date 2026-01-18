@@ -1,4 +1,4 @@
-BlogManager.tsx
+// BlogManager.tsx
 import { AndroidBlogPosts } from '@/core/pages/blog/AIoSBlogPosts';
 import BlogOverview from '@/core/pages/blog/BlogOverview';
 import NewBlogPostForm from '@/core/pages/blog/NewBlogPostForm';

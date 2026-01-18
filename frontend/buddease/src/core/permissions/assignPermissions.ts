@@ -1,4 +1,4 @@
-assignPermissions.ts
+// assignPermissions.ts
 import * as documentApi from '@/core/api/ApiDocument';
 import * as userApi from '@/core/api/UsersApi';
 import { saveDocument } from "@/core/documents/editing/DocumentBuilder";

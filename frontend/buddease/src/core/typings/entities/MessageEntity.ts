@@ -1,8 +1,8 @@
-MessageEntity.ts
+// MessageEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from '@/core/generators/GenerateChatInterfaces';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from '@/core/generators/GenerateChatInterfaces';
 
 // Define the actual MessageEntity interface
 interface MessageEntity extends BaseDataEntity {
@@ -27,7 +27,7 @@ interface MessageEntity extends BaseDataEntity {
   expiresAt?: Date; // For ephemeral messages
 }
 
-Message-specific type parameters
+// Message-specific type parameters
 type MessageK = MessageEntity;
 type MessageMeta = DefaultMeta<MessageEntity, MessageK> & {
   priority?: 'low' | 'normal' | 'high' | 'urgent';

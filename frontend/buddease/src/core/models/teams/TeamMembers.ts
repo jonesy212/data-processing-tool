@@ -1,11 +1,11 @@
-TeamMembers.ts
+// TeamMembers.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Member } from "@/core/models/members/Member";
+import type { Member } from "@/core/models/members/Member";
 import type { UserRole } from "@/core/models/UserRole";
 import UserRoles from '@/core/models/UserRoles';
 import { Persona } from "@/core/pages/personas/Persona";
-import { BasePermissions, MemberPermission, Permission } from '@/core/permissions/Permission';
+import type { BasePermissions, MemberPermission, Permission } from '@/core/permissions/Permission';
 import type { MemberAttachment, MemberData, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/core/typings/entities/MemberEntity';
 
 // Team member settings
@@ -67,18 +67,6 @@ interface TeamMember<
 }
 
 
-Team-specific Permissions
-interface TeamPermission extends Permission {
-  scope: 'team';
-  resourceType: 'team' | 'team_member' | 'team_data' | 'team_settings';
-  teamId: string;
-  // Team-specific constraints
-  canManageTeamMembers?: boolean;
-  canEditTeamSettings?: boolean;
-  canViewTeamAnalytics?: boolean;
-  canAssignTasks?: boolean;
-}
-
 
 // Team Member Permissions (combines both)
 interface TeamMemberPermissions extends BasePermissions {
@@ -103,6 +91,7 @@ interface TeamMemberPermissions extends BasePermissions {
     timestamp: new Date(),
     auditTrail: [],
     deleted: false,
+    latestVersion: latestVersion,
     budget: {
       total: 0,
       used: 0,

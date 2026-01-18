@@ -1,4 +1,4 @@
-systemConfigs.ts
+// systemConfigs.ts
 import FrontendStructure from "@/core/config/appStructure/FrontendStructureComponent";
 import { BackendConfig } from "@/core/config/BackendConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

@@ -1,4 +1,4 @@
-LoginContainer.tsx
+// LoginContainer.tsx
 import Dashboard from "@/core/pages/dashboards/RecruiterSeekerDashboard";
 import LoginForm from "@/core/pages/forms/LoginForm";
 import { performLogin } from "@/core/pages/forms/utils/CommonLoginLogic";

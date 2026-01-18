@@ -1,4 +1,4 @@
-useToolbarActions.ts
+// useToolbarActions.ts
 app/communications/documents/hooks/useToolbarActions.ts
 import { ToolbarActions } from '@/core/actions/ToolbarActions';
 import { EditorState, RichUtils } from 'draft-js';

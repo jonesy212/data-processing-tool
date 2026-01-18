@@ -1,7 +1,7 @@
-TodoList.tsx
+// TodoList.tsx
 import { CommonDetails } from "@/core/components/models/details/CommonDetails";
 import { CommonData } from "@/core/models/CommonData";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";

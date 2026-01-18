@@ -1,4 +1,4 @@
-AssignEventStore.tsx
+// AssignEventStore.tsx
 // Import necessary types and interfaces
 import { fetchEventData } from "@/core/api/ApiEvent";
 import appTreeApiService from "@/core/api/appTreeApi";

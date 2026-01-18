@@ -1,9 +1,9 @@
-ThemeService.ts
+// ThemeService.ts
 
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
-import { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
-import { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
+import type { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
+import type { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
 import { useStore } from "@/core/hooks/useStore";
 import { themeChangeAction } from "@/core/libraries/actions/themeChangeAction";
 import { rootStores } from "@/core/state/stores/RootStores";

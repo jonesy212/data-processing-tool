@@ -1,4 +1,4 @@
-RealtimeUpdatesComponent.tsx
+// RealtimeUpdatesComponent.tsx
 
 import { initializeUserData } from '@/core/pages/onboarding/PersonaBuilderData';
 import { useAuth } from '@/core/state/context/AuthContext';

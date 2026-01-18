@@ -1,6 +1,5 @@
 // useStorageManager.ts
-// useStorageManager.ts
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { useCallback, useState } from "react";
 
 

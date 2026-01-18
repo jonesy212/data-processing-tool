@@ -3,11 +3,10 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import { SnapshotContainer, SnapshotData } from "@/core/snapshots/SnapshotContainer";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 
-// src/methods/containerMethods.ts
 export const ContainerMethodsImplementation = {
   getSnapshotContainer: function<
     T extends BaseDataEntity,

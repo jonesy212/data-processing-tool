@@ -1,4 +1,4 @@
-// src/app/error-analyzer/FixConfidenceCalculator.ts
+// FixConfidenceCalculator.ts
 
 import type { ConfidenceFactors, FixPlan, TSCompilerError } from '@/core/error-analyzer/index';
 import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';

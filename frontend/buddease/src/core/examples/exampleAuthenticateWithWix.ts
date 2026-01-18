@@ -1,4 +1,4 @@
-exampleAuthenticateWithWix.ts
+// exampleAuthenticateWithWix.ts
 
 // exampleAuthenticateWithWix usage
 const pageData: PageData = {

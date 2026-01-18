@@ -1,10 +1,10 @@
-useAsyncHookLinker.ts
+// useAsyncHookLinker.ts
 import { HookActions } from '@/core/actions/HookActions';
 AsyncHookLinkerConfig.tsx
 import { UIActions } from '@/core/actions/UIActions';
 import { PhaseHookConfig } from '@/core/hooks/phaseHooks/PhaseHooks';
 import { Progress } from '@/core/models/tracker/ProgressBar';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 

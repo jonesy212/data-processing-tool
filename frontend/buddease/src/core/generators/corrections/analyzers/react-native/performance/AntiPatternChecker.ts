@@ -1,5 +1,5 @@
-AntiPatternChecker.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+// AntiPatternChecker.ts
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import fs from 'fs';
 import path from 'path';
@@ -228,7 +228,6 @@ export class AntiPatternChecker extends BaseAnalyzer {
           ));
         }
       } catch {
-        // Ignore package.json parse errors
       }
     }
 

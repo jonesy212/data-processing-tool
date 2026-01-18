@@ -1,4 +1,4 @@
-useAuthToken.ts
+// useAuthToken.ts
 hooks/useAuthToken.ts
 import { useState, useEffect } from 'react';
 

@@ -1,4 +1,4 @@
-ProductLaunchDetails.tsx
+// ProductLaunchDetails.tsx
 import CommonDetails from "@/core/models/CommonData";
 import Project from "@/core/models/projects/Project";
 import React from "react";

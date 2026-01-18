@@ -7,7 +7,7 @@ import { updateCallback } from "@/core/hooks/commHooks/useUIRealtimeData";
 import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import useResizablePanels from "@/core/hooks/userInterface/useResizablePanels";
 import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 export type DynamicHookParams<

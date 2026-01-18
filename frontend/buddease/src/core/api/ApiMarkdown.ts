@@ -1,6 +1,6 @@
-ApiMarkdown.ts
-pages/api/documents/load-markdown.ts (or app/api/documents/load-markdown/route.ts)
-import { NextApiRequest, NextApiResponse } from 'next';
+// ApiMarkdown.ts
+// pages/api/documents/load-markdown.ts (or app/api/documents/load-markdown/route.ts)
+import type { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs/promises';
 
 export default async function ReadContentHandler(req: NextApiRequest, res: NextApiResponse) {

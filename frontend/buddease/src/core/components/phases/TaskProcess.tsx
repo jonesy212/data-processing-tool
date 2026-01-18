@@ -1,7 +1,8 @@
-TaskProcess.tsx
+// TaskProcess.tsx
 import TaskForm from "@/core/components/tasks/TaskForm";
-import TaskReportGenerator, { TaskReport } from "@/core/generators/TaskReportGenerator";
-import { Task } from "@/core/models/tasks/Task";
+import type { TaskReport } from '@/core/generators/TaskReportGenerator';
+import TaskReportGenerator from '@/core/generators/TaskReportGenerator';
+import type { Task } from "@/core/models/tasks/Task";
 import TaskService from "@/core/services/TaskService";
 import React, { useState } from "react";
 import TaskLoop from "./TaskLoop";

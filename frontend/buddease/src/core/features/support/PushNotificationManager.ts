@@ -1,4 +1,4 @@
-PushNotificationManager.ts
+// PushNotificationManager.ts
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 const { notify } = useNotification()

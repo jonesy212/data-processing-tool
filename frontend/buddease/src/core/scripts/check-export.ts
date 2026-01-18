@@ -1,3 +1,4 @@
+// check-export.ts
 src/app/scripts/check-export.ts
 import { execSync } from 'child_process';
 import fs from 'fs';

@@ -1,15 +1,14 @@
-Tracker.ts
-Tracker.ts
-import { HighlightColor } from "@/core/components/styling/Palette";
+// FileTracker.ts
+import type { HighlightColor } from "@/core/components/styling/Palette";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { detectMetadataChanges } from "@/core/config/metadata/detectMetadataChanges";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import FileData from "@/core/models/data/FileData";
-import FolderData from "@/core/models/data/FolderData";
-import { Phase } from '@/core/models/phases/Phase';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { FileData } from "@/core/models/data/FileData";
+import type { FolderData } from "@/core/models/data/FolderData";
+import type { Phase } from '@/core/models/phases/Phase';
 import { useAuth } from "@/core/state/context/AuthContext";
-import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
+import type { Stroke } from "@/core/state/redux/slices/DrawingSlice";
 import {
     fetchUsersSuccess,
     updateBio,
@@ -17,9 +16,10 @@ import {
     updateProfilePicture,
     updateQuota,
 } from "@/core/state/redux/slices/UserSlice";
-import { Payment } from "@/core/subscriptions/SubscriptionPlan";
-import { User } from "@/core/users/User";
+import type { Payment } from "@/core/subscriptions/SubscriptionPlan";
+import type { User } from "@/core/users/User";
 import path from "path";
+import { TrackingIntegration } from '@/scripts/integration/TrackingIntegration';
 
 export interface SharedFormattingOptions {
   borderColor?: string;
@@ -86,7 +86,7 @@ interface TrackerProps<
   // Additional properties specific to TrackerProps, if any
 }
 
-class Tracker<
+class FileTracker<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -119,6 +119,9 @@ class Tracker<
   // Shared formatting properties
   private userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
+  private integration: TrackingIntegration;
+  private migrationMode: 'legacy' | 'hybrid' | 'integration' = 'hybrid';
+
   constructor(
     id: string,
     name: string,
@@ -130,7 +133,7 @@ class Tracker<
     isFlippedY: boolean,
     x: number,
     y: number,
-    formattingOptions?: SharedFormattingOptions, // Optional formatting options
+    formattingOptions?: SharedFormattingOptions,
     userData?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     this.id = id;
@@ -143,30 +146,189 @@ class Tracker<
     this.isFlippedY = isFlippedY;
     this.x = x;
     this.y = y;
-    // Initialize formatting options
+    
     if (formattingOptions) {
       Object.assign(this, formattingOptions);
     }
+    
     this.userData = userData || {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    
+    // FIX: Pass proper user data to integration
+    this.integration = new TrackingIntegration({
+      userId: id,
+      userName: name,
+      userData: this.userData
+    });
+    
+    console.log('🔄 Tracker initialized with integration system');
   }
 
-  // Method to track changes for a file
+  // FIXED: Single updateUserProfile method with delegation
+  updateUserProfile(userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, dispatch: any): void {
+    // Show deprecation warning
+    this.showDeprecationWarning('updateUserProfile');
+    
+    // Delegate to integration first
+    this.integration.updateUserProfile(userData, dispatch);
+    
+    // Keep legacy logic for backward compatibility
+    const fullNameToDispatch = userData.fullName && userData.fullName.trim() !== ""
+      ? userData.fullName
+      : null;
+
+    if (fullNameToDispatch !== null && dispatch) {
+      dispatch(updateFullName(fullNameToDispatch));
+      dispatch(updateBio(userData.bio));
+      dispatch(updateProfilePicture(userData.profilePicture));
+    }
+  }
+
+  // FIXED: Single trackFolderChanges method
+  async trackFolderChanges(folder: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
+    this.showDeprecationWarning('trackFolderChanges');
+    
+    // Delegate to integration
+    await this.integration.trackFileChanges({
+      ...this.transformFolderForIntegration(folder),
+      type: 'folder'
+    });
+    
+    // Keep legacy implementation in hybrid mode
+    if (this.migrationMode !== 'integration') {
+      try {
+        const folderPathUrl = new URL(folder.folderPath, 'file://');
+        const response = await fetch(folderPathUrl.toString());
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch folder contents: ${response.status}`);
+        }
+
+        const folderContents = await response.json();
+
+        for (const file of folderContents) {
+          const filePath = path.join(folder.folderPath, file);
+          const fileResponse = await fetch(filePath, { method: "HEAD" });
+
+          if (fileResponse.ok) {
+            const isDirectory = fileResponse.headers
+              .get("content-type")
+              ?.startsWith("text/html");
+
+            if (!isDirectory) {
+              console.log(`[Legacy] Tracking changes for file: ${filePath}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error occurred while tracking folder changes:", error);
+      }
+    }
+  }
+
+  // Helper method to transform folder for integration
+  private transformFolderForIntegration(folder: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): any {
+    return {
+      id: folder.id || `folder-${Date.now()}`,
+      name: folder.name || folder.folderPath,
+      path: folder.folderPath,
+      type: 'folder',
+      itemCount: folder.itemCount || 0,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // FIXED: Single trackFileChanges method
   trackFileChanges(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
-    // Simulate tracking content changes
+    this.showDeprecationWarning('trackFileChanges');
+    
+    // Calculate legacy metrics before delegation
     const contentChanges = this.detectContentChanges(file);
-
-    // Simulate tracking metadata modifications
-    const metadataChanges = detectMetadataChanges(file);
-
-    // Simulate tracking access history
     const accessHistory = this.trackAccessHistory(file);
+    
+    // Delegate to integration with all data
+    this.integration.trackFileChanges({
+      ...this.transformFileForIntegration(file),
+      legacyContentChanges: contentChanges,
+      legacyAccessHistory: accessHistory,
+      migrationSource: 'tracker-wrapper'
+    });
+    
+    // Legacy logging (optional)
+    if (this.migrationMode !== 'integration' && process.env.NODE_ENV === 'development') {
+      console.log(`[Legacy] File: ${file.title}, Changes: ${contentChanges}`);
+    }
+  }
 
-    // Log the tracked changes
-    console.log(`Tracking changes for file: ${file.title}`);
-    console.log("Content changes:", contentChanges);
-    console.log("Metadata changes:", metadataChanges);
-    console.log("Access history:", accessHistory);
+  // Helper method to transform file for integration
+  private transformFileForIntegration(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): any {
+    return {
+      id: file.id,
+      title: file.title,
+      path: file.path || '',
+      type: 'file',
+      contentHash: this.calculateContentHash(file),
+      metadata: file.metadata || {},
+      previousContentLength: file.previousContent?.length || 0,
+      currentContentLength: file.currentContent?.length || 0,
+      timestamp: new Date().toISOString()
+    };
+  }
 
+  // Send notification method (FIXED)
+  sendNotification(
+    notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): void {
+    // Delegate to integration if it has notification support
+    if (this.integration['sendNotification']) {
+      this.integration['sendNotification'](notification, userData);
+    }
+    
+    // Legacy implementation
+    try {
+      const { dispatch } = useAuth();
+      if (dispatch) {
+        dispatch({
+          type: "LOGIN_WITH_ROLES",
+          payload: { user: userData, authToken: "YOUR_AUTH_TOKEN" },
+        });
+      }
+    } catch (error) {
+      console.warn('Could not send notification via AuthContext:', error);
+    }
+    
+    console.log("Sending notification:", notification);
+  }
+
+  // Handle user actions (FIXED)
+  handleUserActions(userSlice: any): void {
+    // Delegate to integration
+    if (this.integration['handleUserActions']) {
+      this.integration['handleUserActions'](userSlice);
+      return;
+    }
+    
+    // Legacy implementation
+    const { id, newData } = userSlice;
+    
+    if (newData?.fullName) {
+      updateFullName(newData.fullName);
+    }
+    if (newData?.bio) {
+      updateBio(newData.bio);
+    }
+    if (newData?.profilePicture) {
+      updateProfilePicture(newData.profilePicture);
+    }
+    if (newData?.notification) {
+      this.sendNotification(newData.notification, this.userData);
+    }
+    if (newData?.uploadQuota) {
+      updateQuota(newData.uploadQuota);
+    }
+    if (newData?.users) {
+      fetchUsersSuccess({ users: newData.users });
+    }
   }
 
   detectContentChanges(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
@@ -388,7 +550,17 @@ class Tracker<
  
     console.log(`Appearance updated to stroke: ${this.stroke.width}px, color: ${this.stroke.color}, fill color: ${this.fillColor}`);
   }
+
+    private calculateContentHash(file: any): string {
+    const content = JSON.stringify(file.currentContent || '');
+    return Buffer.from(content).toString('base64').slice(0, 32);
+  }
+
+  private determineMigrationMode(): 'legacy' | 'hybrid' | 'integration' {
+    // Check environment or configuration
+    return process.env.TRACKING_MIGRATION_MODE as any || 'hybrid';
+  }
 }
 
-export default Tracker;
+export default FileTracker;
 export type { CommonTrackerProps, TrackerProps };

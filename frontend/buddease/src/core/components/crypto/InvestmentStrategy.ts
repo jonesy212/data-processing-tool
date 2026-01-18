@@ -1,4 +1,4 @@
-InvestmentStrategy.ts
+// InvestmentStrategy.ts
 import { CryptoManagementCriteria } from '@/core/pages/searches/CriteriaOptions';
 
 export interface InvestmentStrategy {

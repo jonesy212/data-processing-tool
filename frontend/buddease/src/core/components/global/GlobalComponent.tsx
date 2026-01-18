@@ -1,4 +1,4 @@
-// components/global/GlobalComponent.tsx
+// GlobalComponent.tsx
 "use client";
 
 import type { RootState } from '@/core/state/redux/slices/RootSlice';

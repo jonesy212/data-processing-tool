@@ -4,14 +4,14 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseData } from "@/core/models/data/Data";
+import type { BaseData } from "@/core/models/data/Data";
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { useSnapshot } from "@/core/state/context/SnapshotContext";
 import type { EventManager } from "@/core/state/stores/DataStore";
-import { AppEntity, AppSnapshot } from '@/core/typings/entities/AppEntity';
+import type { AppEntity, AppSnapshot } from '@/core/typings/entities/AppEntity';
 import type { AppStructuredMetadata, AppUnifiedMetadata } from "@/core/typings/entities/AppMetadataEntity";
 import React from "react";
 import RootLayout from './RootLayout';

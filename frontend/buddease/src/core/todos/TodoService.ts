@@ -1,7 +1,7 @@
-TodoService.ts
+// TodoService.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { Todo } from "@/core/todos/Todo";
-import axios from "axios";
+import type { Todo } from "@/core/todos/Todo";
+import internalApiService from "internalApiService";
 
 const BASE_URL = endpoints.todos
 
@@ -9,7 +9,7 @@ export const todoService = {
 
   fetchTodoById: async (todoId: string): Promise<Todo> => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/todos/${todoId}`);
+      const response = await internalApiService.get(`${BASE_URL}/api/todos/${todoId}`);
       return response.data;
     } catch (error) {
       throw new Error('Failed to fetch todo');
@@ -18,7 +18,7 @@ export const todoService = {
 
   assignTodoToUser: async (todoId: string, userId: string) => { 
     try {
-      const response = await axios.post(`${BASE_URL}/api/todos/${todoId}/users/${userId}`);
+      const response = await internalApiService.post(`${BASE_URL}/api/todos/${todoId}/users/${userId}`);
       return response.data
     } catch (error) {
       throw new Error('Failed to assign todo to user');
@@ -27,7 +27,7 @@ export const todoService = {
 
   unassignTodoFromTeam: async (todoId: string, teamId: string) => { 
     try {
-      await axios.delete(`${BASE_URL}/api/todos/${todoId}/teams/${teamId}`);
+      await internalApiService.delete(`${BASE_URL}/api/todos/${todoId}/teams/${teamId}`);
       
     } catch (error) {
       throw new Error("Failed to unassign todo from team");
@@ -36,7 +36,7 @@ export const todoService = {
     
     fetchTodos: async (): Promise<Todo[]> => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/todos`);
+      const response = await internalApiService.get(`${BASE_URL}/api/todos`);
       return response.data;
     } catch (error) {
       throw new Error("Failed to fetch todos");
@@ -45,7 +45,7 @@ export const todoService = {
     
   fetchTodoDetails: async (todoId: string): Promise<Todo> => { 
     try {
-      const response = await axios.get(`${BASE_URL}/api/todos/${todoId}`);
+      const response = await internalApiService.get(`${BASE_URL}/api/todos/${todoId}`);
       return response.data;
     } catch (error) {
       throw new Error("Failed to fetch todo details");
@@ -54,7 +54,7 @@ export const todoService = {
 
   addTodo: async (newTodo: Todo): Promise<Todo> => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/todos`, newTodo, {
+      const response = await internalApiService.post(`${BASE_URL}/api/todos`, newTodo, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -67,7 +67,7 @@ export const todoService = {
 
   removeTodo: async (todoId: number): Promise<void> => {
     try {
-      await axios.delete(`${BASE_URL}/api/todos/${todoId}`);
+      await internalApiService.delete(`${BASE_URL}/api/todos/${todoId}`);
     } catch (error) {
       throw new Error("Failed to remove todo");
     }
@@ -75,7 +75,7 @@ export const todoService = {
 
   updateTodo: async (todoId: number, newTitle: string): Promise<Todo> => {
     try {
-      const response = await axios.put(
+      const response = await internalApiService.put(
         `${BASE_URL}/api/todos/${todoId}`,
         { title: newTitle },
         {
@@ -92,7 +92,7 @@ export const todoService = {
 
   completeAllTodos: async (): Promise<void> => {
     try {
-      await axios.post(`${BASE_URL}/api/todos/complete-all`);
+      await internalApiService.post(`${BASE_URL}/api/todos/complete-all`);
     } catch (error) {
       throw new Error("Failed to complete all todos");
     }
@@ -100,7 +100,7 @@ export const todoService = {
 
   toggleTodo: async (todoId: number): Promise<void> => {
     try {
-      const response = await axios.put(
+      const response = await internalApiService.put(
         `${BASE_URL}/api/todos/${todoId}/toggle`
       );
       return response.data;
@@ -113,7 +113,7 @@ export const todoService = {
   removeTodos: async (todoIds: number[]): Promise<void> => {
     try {
       // Assuming there is an endpoint to remove multiple todos
-      await axios.post(`${BASE_URL}/api/todos/remove-multiple`, { todoIds });
+      await internalApiService.post(`${BASE_URL}/api/todos/remove-multiple`, { todoIds });
     } catch (error) {
       throw new Error("Failed to remove todos");
     }
@@ -122,7 +122,7 @@ export const todoService = {
   toggleTodos: async (todoIds: number[]): Promise<void> => {
     try {
       // Assuming there is an endpoint to toggle multiple todos
-      await axios.post(`${BASE_URL}/api/todos/toggle-multiple`, { todoIds });
+      await internalApiService.post(`${BASE_URL}/api/todos/toggle-multiple`, { todoIds });
     } catch (error) {
       throw new Error("Failed to toggle todos");
     }

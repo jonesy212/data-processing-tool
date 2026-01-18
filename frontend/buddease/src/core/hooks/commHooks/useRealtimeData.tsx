@@ -1,10 +1,10 @@
 // useRealtimeData.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 import { useEffect, useState } from "react";

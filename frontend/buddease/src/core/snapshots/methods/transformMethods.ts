@@ -1,13 +1,12 @@
 // transformMethods.ts
-// transformMethods.tsx
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotCoreBase } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 
 // -------------------------------
@@ -29,7 +28,7 @@ interface SnapshotStoreConfigWithCore<
 export const TransformMethods = {
 
   transformSubscriber: function <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -120,7 +119,7 @@ export const TransformMethods = {
   },
 
   transformDelegate: async function <
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -166,7 +165,7 @@ export const TransformMethods = {
   },
 
   transformMappedData: function <
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -194,7 +193,7 @@ export const TransformMethods = {
   },
 
   transformConfigOption: function <
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,

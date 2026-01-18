@@ -1,0 +1,195 @@
+{
+  "extends": [
+    "./tsconfig.base.json",
+    "./tsconfig.excludes.json"
+  ],
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "ES2017",
+      "ES2015"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
+    "moduleResolution": "bundler",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "next",
+      "pako"
+    ],
+    "paths": {
+      "@/*": [
+        "./*",
+        "./src/*",
+        "./app/*" 
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/core/*": [
+        "./src/core/*"
+      ],
+      "@/components/*": [
+        "./src/core/components/*",
+        "./core/components/*"
+      ],
+      "@/hooks/*": [
+        "./src/core/hooks/*",
+        "./core/hooks/*"
+      ],
+      "@/api/*": [
+        "./src/core/api/*",
+        "./core/api/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ],
+      "@/models/*": [
+        "./src/core/models/*",
+        "./core/models/*"
+      ],
+      "@/state/*": [
+        "./src/core/state/*",
+        "./core/state/*"
+      ],
+      "@/services/*": [
+        "./src/core/services/*",
+        "./core/services/*"
+      ],
+      "@/layout/*": [
+        "./src/core/layout/*",
+        "./core/layout/*"
+      ],
+      "@/config/*": [
+        "./src/core/config/*",
+        "./core/config/*"
+      ],
+      "@/typings/*": [
+        "./src/core/typings/*",
+        "./core/typings/*"
+      ],
+      "@/tokens/*": [
+        "./src/core/tokens/*",
+        "./core/tokens/*"
+      ],
+      "@/documents/*": [
+        "./src/core/documents/*",
+        "./core/documents/*"
+      ],
+      "@/generators/*": [
+        "./src/core/generators/*",
+        "./core/generators/*"
+      ],
+      "@/pages/*": [
+        "./src/core/pages/*",
+        "./core/pages/*"
+      ],
+      "@/snapshots/*": [
+        "./src/core/snapshots/*",
+        "./core/snapshots/*"
+      ],
+      "@/repositories/*": [
+        "./src/core/repositories/*",
+        "./core/repositories/*"
+      ],
+      "@/features/*": [
+        "./src/core/features/*",
+        "./core/features/*"
+      ],
+      "@/users/*": [
+        "./src/core/users/*",
+        "./core/users/*"
+      ],
+      "@/todos/*": [
+        "./src/core/todos/*",
+        "./core/todos/*"
+      ],
+      "@/documentation": [
+        "./src/documentation"
+      ],
+      "@/cli/*": [
+        "./src/cli/*"
+      ]
+    },
+    "typeRoots": [
+      "node_modules/@types",
+      "./src",
+      "./src/core/config/declarations",
+      "./src/core/types"
+    ]
+  },
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ],
+    "esm": false,
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.d.ts",
+    ".next/types/**/*.ts",
+    "src/**/*",
+    "platform/**/*",
+    ".next/dev/types/**/*.ts",
+    "check-imports.mjs",
+    "debug-tsx.mjs",
+    "debug-esm-imports.mjs",
+    "css-loader.mjs",
+    "simple-import-scanner.cjs"
+  ],
+  "exclude": [
+    "node_modules",
+    ".ts-backups",
+    ".comment-fix-backups",
+    ".type-import-backups",
+    ".import-fix-backups",
+    ".import-fix-backups-archived-1767827729479",
+    ".temp-fix-backups",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "platform/android/**/*",
+    "platform/ios/**/*",
+    "**/*.md",
+    "**/*.mdx",
+    "docs/**/*", 
+    "documentation/**/*" 
+  ]
+}

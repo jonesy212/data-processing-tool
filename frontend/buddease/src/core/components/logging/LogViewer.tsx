@@ -1,4 +1,4 @@
-LogViewer.tsx
+// LogViewer.tsx
 import React from 'react';
 
 import Logger, {

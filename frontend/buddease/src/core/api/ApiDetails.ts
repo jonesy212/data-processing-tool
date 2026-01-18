@@ -1,5 +1,4 @@
-ApiDetails.ts
-ApiDetails.ts
+// ApiDetails.ts
 
 import { detailsApiService } from '@/core/api/service/DetailsService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -9,7 +8,7 @@ import ApiService from '@/core/api/service/ApiService';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useDetailsContext } from '@/core/models/data/DetailsContext';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 
 // Define notification messages for details API
 interface DetailsNotificationMessages {

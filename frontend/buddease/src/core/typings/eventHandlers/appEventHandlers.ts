@@ -1,4 +1,4 @@
-appEventHandlers.ts
+// appEventHandlers.ts
 
 
 const handleSettingsPanel: MouseEventHandler<HTMLButtonElement> = (

@@ -1,5 +1,6 @@
-ConfigurationService.ts
-import ApiConfigService, { ApiConfig } from '@/core/api/ApiConfigService';
+// ConfigurationService.ts
+import type { ApiConfig } from '@/core/api/ApiConfigService';
+import ApiConfigService from '@/core/api/ApiConfigService';
 import { getConfigsData } from '@/core/api/getConfigsApi';
 
 import { createSystemConfigs } from '@/core/api/systemConfigs';
@@ -7,7 +8,7 @@ import { UserConfigs } from '@/core/api/userConfigs';
 import {
     BackendConfig
 } from '@/core/config/BackendConfig';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CacheConfig } from "@/core/config/CacheConfig";
 import { EndpointCategory, EndpointConfigurations, EndpointKey } from '@/core/config/EndpointConfig';
 import {
@@ -23,7 +24,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project, isProjectInSpecialPhase } from '@/core/models/projects/Project';
 import StoreConfig from '@/core/shoppingCenter/ShoppingCenterConfig';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { EventRecord } from '@/core/state/stores/DataStore';
+import type { EventRecord } from '@/core/state/stores/DataStore';
 import { VersionHistory } from '@/core/versions/VersionData';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 
@@ -38,7 +39,7 @@ interface BaseRetryConfig {
 }
 
 interface BaseMetadataConfig<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -59,7 +60,7 @@ export interface RetryConfig {
 
 
 interface ConfigurationOptions<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

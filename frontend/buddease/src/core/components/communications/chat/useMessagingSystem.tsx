@@ -1,4 +1,4 @@
-useMessagingSystem.tsx
+// useMessagingSystem.tsx
 import { useEffect } from 'react';
 
 const useMessagingSystem = ({ onMessageReceived }: { onMessageReceived: (message: string) => void }) => {

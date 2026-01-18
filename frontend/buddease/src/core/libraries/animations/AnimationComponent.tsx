@@ -1,6 +1,7 @@
-AnimationComponent.tsx
-import { AnimatedComponentProps } from '@/core/components/styling/AnimationsAndTansitions';
-import createDynamicHook, { DynamicHookResult } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+// AnimationComponent.tsx
+import type { AnimatedComponentProps } from '@/core/components/styling/AnimationsAndTansitions';
+import type { DynamicHookResult } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import useIdleTimeout from '@/core/hooks/idleTimeoutHooks';
 import { useAuthToken } from '@/core/hooks/useAuthToken'; // Client-side hook
 import DraggableAnimation from '@/core/libraries/animations/DraggableAnimation';

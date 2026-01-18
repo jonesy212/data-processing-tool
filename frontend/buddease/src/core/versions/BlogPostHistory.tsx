@@ -1,4 +1,4 @@
-BlogPostHistory.tsx
+// BlogPostHistory.tsx
 
 import { BlogPost } from "@/core/pages/blog/BlogPost";
 import { HistoryEntry } from '@/core/state/stores/HistoryStore';

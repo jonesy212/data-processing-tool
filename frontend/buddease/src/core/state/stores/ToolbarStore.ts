@@ -1,10 +1,10 @@
-ToolbarStore.ts
+// ToolbarStore.ts
 import { action, makeAutoObservable } from 'mobx';
 
 import { Theme } from '@/core/libraries/ui/theme/Theme';
 import { ParticipantData } from '@/core/pages/management/ParticipantManagementPage';
 import featureStore from '@/core/state/featureStateManagement';
-import { AlignmentOptions, ToolbarState } from '@/core/state/redux/slices/toolbarSlice';
+import type { AlignmentOptions, ToolbarState } from '@/core/state/redux/slices/toolbarSlice';
 import { User } from '@/core/users/User';
 
 export class ToolbarStore {

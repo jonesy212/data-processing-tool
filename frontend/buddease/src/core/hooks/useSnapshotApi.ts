@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { CreateOptions, FetchAllOptions } from '@/core/snapshots/SnapshotOptions';
+import type { CreateOptions, FetchAllOptions } from '@/core/snapshots/SnapshotOptions';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { useCallback } from 'react';
 ;

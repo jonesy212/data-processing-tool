@@ -1,11 +1,12 @@
+// Provider.tsx
 'use client';
 
-import { NFT } from '@/core/models/cypto/NFT';
-import { DashboardConfig } from '@/core/typings/authTypes';
-import { User } from "@/core/users/User";
+import type { NFT } from '@/core/models/cypto/NFT';
+import type { DashboardConfig } from '@/core/typings/authTypes';
+import type { User } from "@/core/users/User";
 import React, { useEffect, useReducer, useRef } from 'react';
 
-import {
+import type {
     UserAttachment,
     UserEntity,
     UserExcludedFields,
@@ -14,9 +15,10 @@ import {
     UserMeta,
 } from '@/core/typings/entities/UserEntity';
 
-import { LanguageEnum } from "@/core/communications/LanguageEnum";
-import { AuthContext } from '@/core/state/context/AuthContext';
-import { authReducer, initialState } from '@/core/state/redux/slices/FilteredEventsSlice';
+import type { LanguageEnum } from "@/core/communications/LanguageEnum";
+import type { AuthContext } from '@/core/state/context/AuthContext';;
+import { initialState } from '@/core/state/redux/slices/FilteredEventsSlice';
+import { authReducer } from '@/src/core/state/context/AuthContext'
 import { useAuthStore } from "@/core/state/stores/AuthStore";
 
 export interface AuthProviderProps {

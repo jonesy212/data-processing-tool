@@ -1,4 +1,4 @@
-CalendarEventContentGeneration.ts
+// CalendarEventContentGeneration.ts
 interface CalendarEventContentGeneration {
     eventId: string; // ID of the event
     title: string; // Title of the event

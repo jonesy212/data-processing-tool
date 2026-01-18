@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { subscriptionServiceInstance } from "@/core/hooks/dynamicHooks/dynamicHooks";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { Subscription } from '@/core/subscriptions/Subscription';
 import { determineSubscriberType } from "@/core/subscriptions/SubscriptionLevel";

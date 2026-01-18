@@ -1,3 +1,4 @@
+// IndexFileFixer.ts
 src/app/error-analyzer/IndexFileFixer.ts
 import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
 import path from 'path';
@@ -78,7 +79,6 @@ export class IndexFileFixer {
       return relativePath; // root or direct child
     }
     
-    // Format: parent-folder/index.tsx (grandparent/parent-folder/index.tsx)
     const parent = parts[parts.length - 2];
     const grandparent = parts.length > 2 ? parts[parts.length - 3] : '';
     

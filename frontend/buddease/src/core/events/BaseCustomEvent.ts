@@ -1,4 +1,4 @@
-BaseCustomEvent.ts
+// BaseCustomEvent.ts
 CustomEvent.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { SharedSnapshotEvent } from "@/core/typings/appEventTypes";

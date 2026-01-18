@@ -1,4 +1,4 @@
-UserDataManagementPreferencesActions.ts
+// UserDataManagementPreferencesActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const DataManagementPreferencesActions = {

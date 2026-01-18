@@ -1,4 +1,4 @@
-ElementSelector.tsx
+// ElementSelector.tsx
 import { useState } from 'react';
 
 const ElementSelector = ({ onSelect }) => {

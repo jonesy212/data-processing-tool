@@ -2,7 +2,7 @@
 
 import type { MiddlewareContext, MiddlewareFunction } from '@/core/middleware/core/types';
 
-import { ConfigurationService } from '@/core/services/ConfigurationService';
+import type { ConfigurationService } from '@/core/services/ConfigurationService';
 
 export interface CacheMiddlewareConfig {
   enabled: boolean;

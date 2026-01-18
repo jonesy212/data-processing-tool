@@ -1,4 +1,4 @@
-HashGenerator.tsx
+// HashGenerator.tsx
 import crypto from 'crypto';
 
 export interface HashOptions {
@@ -16,7 +16,6 @@ class HashGenerator {
   };
 
 
-  // Simple hash fallback for SSR/Node.js environments
   private static simpleHash(data: string): string {
     let hash = 0;
     
@@ -33,7 +32,6 @@ class HashGenerator {
 
   // For SHA-256 (more secure) - Updated with proper SSR fallback
   static async generateSHA256Hash(data: string): Promise<string> {
-    // Node.js environment
     if (typeof window === 'undefined') {
       try {
         const hash = crypto.createHash('sha256');
@@ -67,7 +65,6 @@ class HashGenerator {
   // Basic hash generation (synchronous version)
   static generateHash(input: string, algorithm: string = "sha256"): string {
     try {
-      // Node.js environment
       if (typeof window === 'undefined') {
         const hash = crypto.createHash(algorithm);
         hash.update(input);
@@ -163,7 +160,6 @@ class HashGenerator {
     
     for (let i = 0; i < iterations; i++) {
       if (typeof window === 'undefined') {
-        // Node.js environment
         const hash = crypto.createHash(algorithm);
         hash.update(hashed);
         hashed = hash.digest(encoding);
@@ -223,7 +219,6 @@ class HashGenerator {
     const computedHash = await this.generateSaltedHashAsync(input, options);
     
     if (typeof window === 'undefined') {
-      // Node.js - use timingSafeEqual for security
       return crypto.timingSafeEqual(
         Buffer.from(computedHash),
         Buffer.from(hash)
@@ -250,7 +245,6 @@ class HashGenerator {
   // Async version using Web Crypto API (for browser compatibility)
   static async generateWebCryptoHash(input: string, algorithm: string = 'SHA-256'): Promise<string> {
     if (typeof window === 'undefined' || !window.crypto?.subtle) {
-      // Fallback to Node.js crypto
       return this.generateHash(input, algorithm.toLowerCase());
     }
 
@@ -290,7 +284,6 @@ static async hashStructure<T>(structure: T[]): Promise<string> {
   });
 }
 
-  // Sync version for Node.js only
   static hashStructureSync<T>(structure: T[]): string {
     if (typeof window !== 'undefined') {
       throw new Error('hashStructureSync is only available in Node.js environment');

@@ -1,0 +1,1 @@
+../../scripts/typescript/misc/isolated-test.ts

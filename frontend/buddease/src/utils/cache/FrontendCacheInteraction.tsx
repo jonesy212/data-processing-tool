@@ -1,4 +1,4 @@
-// FrontendCacheInteraction.js
+// FrontendCacheInteraction.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import { useState } from 'react';
 

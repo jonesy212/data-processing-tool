@@ -1,4 +1,4 @@
-RecruiterSeekerDashboard.tsx
+// RecruiterSeekerDashboard.tsx
 import React from 'react';
 
 interface RecruiterSeekerDashboardProps {

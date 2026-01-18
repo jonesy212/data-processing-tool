@@ -1,4 +1,4 @@
-UserSupportFeedbackPreferencesActions.ts
+// UserSupportFeedbackPreferencesActions.ts
 import { createSlice } from '@reduxjs/toolkit';
 
 interface UserSupportFeedbackPreferencesState {

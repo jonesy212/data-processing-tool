@@ -1,6 +1,6 @@
-IosPlistAnalyzer.ts
+// IosPlistAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
 
@@ -544,7 +544,6 @@ export class IosPlistAnalyzer extends ConfigFileAnalyzer {
 
   private appUsesBackgroundFeatures(): boolean {
     // Check if app might need background modes
-    // This could be enhanced by checking package.json for specific dependencies
     try {
       const packageJsonPath = path.resolve(process.cwd(), 'package.json');
       if (fs.existsSync(packageJsonPath)) {

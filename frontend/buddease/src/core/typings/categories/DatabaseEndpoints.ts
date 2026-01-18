@@ -1,5 +1,5 @@
-DatabaseEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// DatabaseEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DatabaseEndpoints extends EndpointCategoryConfig {
   backend: EndpointConfig;

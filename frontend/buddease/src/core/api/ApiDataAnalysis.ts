@@ -18,7 +18,7 @@ import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 import { isSnapshotStore, isYourResponseType } from "@/core/typings/YourSpecificSnapshotType";
-import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
+import type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
 import { YourResponseType } from '@/core/typings/responseTypes';
 import { isSnapshot } from "@/utils/snapshotUtils";
 import { AxiosError, AxiosResponse } from "axios";

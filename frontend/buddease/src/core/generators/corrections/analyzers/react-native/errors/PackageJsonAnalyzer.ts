@@ -1,6 +1,6 @@
-PackageJsonAnalyzer.ts
+// PackageJsonAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
 
@@ -38,7 +38,6 @@ export class PackageJsonAnalyzer extends ConfigFileAnalyzer {
       const deps = { ...this.packageData.dependencies, ...this.packageData.devDependencies };
       const scripts = this.packageData.scripts || {};
       
-      // React Native specific package.json analysis
       if (deps['react-native']) {
         if (!deps['react']) {
           corrections.push(this.createCorrection(

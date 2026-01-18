@@ -1,4 +1,4 @@
-// src/app/error-analyzer/ProgressTracker.ts
+// ProgressTracker.ts
 import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
 import type { TransitionEvaluationContext } from '@/core/error-analyzer/TransitionEvaluationContext';
 import type { WorkflowProgressMetrics } from '@/core/error-analyzer/WorkflowProgressMetrics';

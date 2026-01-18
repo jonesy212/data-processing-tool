@@ -1,4 +1,4 @@
-AnalysisStep.tsx
+// AnalysisStep.tsx
 
 import { CorrectionGenerator } from '@/core/generators/corrections/CorrectionGenerator';
 import React, { useEffect, useState } from 'react';

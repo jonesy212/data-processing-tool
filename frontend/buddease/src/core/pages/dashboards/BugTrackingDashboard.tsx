@@ -7,7 +7,7 @@ import { usePagination } from '@/core/hooks/userInterface/usePagination';
 import BugFilter from '@/core/pages/dashboards/BugFilter';
 import BugSort from '@/core/pages/dashboards/BugSort';
 import BugTable from '@/core/pages/dashboards/BugTable';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

@@ -5,10 +5,10 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import type { DataStore } from "@/core/state/stores/DataStore";
 import SnapshotStore from "./SnapshotStore";
 

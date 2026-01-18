@@ -1,4 +1,4 @@
-TeamManagementFeatureGenerator.ts
+// TeamManagementFeatureGenerator.ts
 import { generateApiCode } from '@/core/generators/ApiCodeGenerator';
 import ApiCodeOptions from '@/core/generators/ApiCodeOptions';
 
@@ -16,7 +16,6 @@ const generateTeamManagementFeature = (featureName: string, apiBaseUrl: string) 
 
   // Generate feature component code
   const featureComponentCode = `
-    // ${featureName}Component.tsx
     import React, { useState } from "react";
     import { teamManagementService } from "@/core/api/TeamManagementApi";
 

@@ -5,7 +5,7 @@ import { NotificationActions } from '@/core/actions/NotificationActions';
 import calendarApiService from '@/core/api/ApiCalendar';
 import { fetchEventData } from '@/core/api/ApiEvent';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import CalendarEventCategory from '@/core/calendar/CalendarEventCategory';
 import CalendarEventConflictDetectionResult from '@/core/calendar/CalendarEventConflictDetectionResult';
 import CalendarEventContentGeneration from '@/core/calendar/CalendarEventContentGeneration';
@@ -29,8 +29,9 @@ import { ChatRoom } from '@/core/communications/ChatRoom';
 import { AttendancePrediction } from '@/core/components/calendar/AttendancePrediction';
 import { event, ExtendedAttendeeAvailability, useAttendeeAvailabilityAnalysis } from '@/core/components/calendar/Attendee';
 import CalendarEventAgendaItem from '@/core/components/calendar/CalendarEventAgendaItem';
-import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps } from '@/core/components/calendar/CalendarEventViewingDetails';
-import { CalendarViewProps } from '@/core/components/calendar/CalendarView';
+import type { CalendarEventViewingDetailsProps } from '@/core/components/calendar/CalendarEventViewingDetails';
+import CalendarEventViewingDetails from '@/core/components/calendar/CalendarEventViewingDetails';
+import type { CalendarViewProps } from '@/core/components/calendar/CalendarView';
 import DefaultCalendarEventViewingDetails from '@/core/components/calendar/DefaultCalendarEventViewingDetails';
 import EventDetailsComponent from '@/core/components/calendar/EventDetailsComponent';
 import ChatMessage from '@/core/components/communications/chat/ChatMessage';
@@ -47,7 +48,7 @@ import useFileUpload from '@/core/hooks/commHooks/useFileUpload';
 import { TeamCollaborationAnalysis } from '@/core/interfaces/options/CollaborationOptions';
 import { Theme } from '@/core/libraries/ui/theme/Theme';
 import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from '@/core/models/data/EventContentAnalysis';
-import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/core/models/data/EventPriorityClassification';
+import type { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/core/models/data/EventPriorityClassification';
 import {
     CalendarStatus,
     PriorityTypeEnum,
@@ -57,20 +58,22 @@ import {
 import { showErrorMessage, showToast } from '@/core/models/display/ShowToast';
 import { LogData } from '@/core/models/LogData';
 import { Member } from '@/core/models/members/Member';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { Tag } from '@/core/models/tracker/Tag';
 import { initiateDataAnalysis } from '@/core/services/dataAnalysisOrchestrator';
 import ErrorHandler from '@/core/shared/ErrorHandler';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
-import NotificationData, { dispatchNotification, SendStatus } from '@/core/state/redux/slices/NofiticationsSlice';
+import type { dispatchNotification, SendStatus } from '@/core/state/redux/slices/NofiticationsSlice';
+import NotificationData from '@/core/state/redux/slices/NofiticationsSlice';
 import CalendarEventAlternative from '@/core/state/stores/CalendarEventAlternative';
-import { AppCalendarEvent } from '@/core/typings/meetingTypes';
+import type { AppCalendarEvent } from '@/core/typings/meetingTypes';
 import { CalendarMilestone, Milestone } from '@/core/typings/milestoneTypes';
 import { User } from '@/core/users/User';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
-import React, { ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import socketIOClient, { io } from 'socket.io-client';
 

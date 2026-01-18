@@ -1,4 +1,4 @@
-hasTypeContext.ts
+// hasTypeContext.ts
 // More type guards if you have additional usage types
 function isFunctionUsage(usage: any): usage is { 
   file: string; 

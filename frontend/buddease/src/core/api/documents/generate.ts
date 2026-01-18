@@ -1,7 +1,7 @@
 // generate.ts
 import { ServerDocumentGenerator } from '@/core/server/ServerDocumentGenerator';
 import { ServerFileSystem } from '@/core/server/serverFileSystem';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {

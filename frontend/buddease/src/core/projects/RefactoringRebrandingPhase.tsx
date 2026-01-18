@@ -1,4 +1,4 @@
-RefactoringRebrandingPhase.tsx
+// RefactoringRebrandingPhase.tsx
 import React from 'react';
 
 interface RefactoringRebrandingPhaseProps {

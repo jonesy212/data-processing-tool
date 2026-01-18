@@ -1,4 +1,4 @@
-TeamProgress.tsx
+// TeamProgress.tsx
 import TeamProgressBar from '@/core/projects/projectManagement/TeamProgressBar';
 
 const TeamProgress = () => {

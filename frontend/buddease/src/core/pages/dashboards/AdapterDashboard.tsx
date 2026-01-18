@@ -1,4 +1,4 @@
-AdapterDashboard.tsx
+// AdapterDashboard.tsx
 import AndroidIcon from "@/core/components/icons/AndroidIcon";
 import FallbackIcon from "@/core/components/icons/FallbackIcon";
 import WebIcon from "@/core/components/icons/WebIcon";
@@ -21,7 +21,8 @@ import DashboardLoader from "@/core/pages/dashboards/DashboardLoader";
 import CommonLayout from "@/core/pages/layouts/CommonLayout";
 import AdapterContent from "@/utils/web3/dAppAdapter/AdapterContent";
 import Image from 'next/image';
-import React, { ReactNode, useRef } from "react";
+import type { ReactNode, useRef } from 'react';
+import React from 'react';
 // Import specific icons for each platform
 
 const AdapterDashboard: React.FC = () => {

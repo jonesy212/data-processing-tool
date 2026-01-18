@@ -1,4 +1,4 @@
-parameterCustomization.ts
+// parameterCustomization.ts
 
 import { endpoints } from '@/core/api/endpointConfigurations';
 import ApiService from "@/core/api/service/ApiService";

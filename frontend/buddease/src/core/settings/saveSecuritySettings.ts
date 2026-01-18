@@ -1,4 +1,4 @@
-saveSecuritySettings.ts
+// saveSecuritySettings.ts
 
 import SecurityAPI from "@/core/api/SecurityAPI";
 import { showToast } from "@/core/models/display/ShowToast";

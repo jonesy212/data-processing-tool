@@ -1,6 +1,8 @@
+// BaseImportFix.ts
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import type { ImportFix as BaseImportFix } from '@/app/scripts/import-fixes'
 
 // Assuming ImportFix is defined as in Option 4 from previous answer
 export interface BaseImportFix {
@@ -132,7 +134,6 @@ async function enhanceSingleFix(fix: ImportFix): Promise<ImportFix> {
 }
 
 // Helper functions
-
 async function findFileDependencies(filePath: string): Promise<string[]> {
     const dependencies = new Set<string>();
     const content = fs.readFileSync(filePath, 'utf8');

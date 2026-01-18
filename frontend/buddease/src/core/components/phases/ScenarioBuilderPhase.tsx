@@ -1,8 +1,8 @@
-ScenarioBuilderPhase.tsx
+// ScenarioBuilderPhase.tsx
 import { useTeamBuildingPhase } from '@/core/hooks/phaseHooks/CollaborationPhaseHooks';
 import TeamBuildingPhase from '@/core/projects/TeamBuildingPhase';
 import React, { useEffect } from 'react';
-
+import { usePhaseStore } from '@/core/state/phaseStore'; 
 interface ScenarioBuilderPhaseProps {
   startPhase: () => void;
   endPhase: () => void;

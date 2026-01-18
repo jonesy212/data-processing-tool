@@ -1,4 +1,4 @@
-// pages/index.tsx
+// index.tsx
 import generateDynamicContent from '@/core/documents/DynamicContentGenerator';
 import type { UserRole } from "@/core/models/UserRole";
 import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator";
@@ -7,7 +7,7 @@ import PaymentForm from "@/core/payment/PaymentForm";
 import { authToken } from "@/core/server/auth/authToken";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { rootStores } from "@/core/state/stores/RootStores";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 import { create } from "mobx-persist";
 import { useRouter } from "next/router";

@@ -1,4 +1,4 @@
-PersonaPanel.tsx
+// PersonaPanel.tsx
 import DynamicContentProps from '@/core/cards/DummyCardLoader';
 import { PersonaData } from "@/core/pages/personas/Persona";
 import { PersonaTypeEnum } from '@/core/pages/personas/PersonaBuilder';

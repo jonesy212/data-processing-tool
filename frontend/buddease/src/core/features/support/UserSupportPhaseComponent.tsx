@@ -1,4 +1,4 @@
-UserSupportPhaseComponent.tsx
+// UserSupportPhaseComponent.tsx
 
 import { BasicInfoStep } from '@/core/components/shared/steps/BasicInfoStep';
 import { GenericStepContainer } from '@/core/components/shared/steps/GenericStepContainer';

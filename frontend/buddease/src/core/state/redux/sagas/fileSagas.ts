@@ -1,5 +1,6 @@
-fileSagas.ts
+// fileSagas.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
+import internalApiService from '@/core/api/ApiClient';
 import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/core/components/configs/DetermineFileType';
 import { fetchDataFrame, removeFile, updateDataFrame } from '@/core/api/DataframeApi';
 import { DataActions } from '@/core/actions/DataActions';
@@ -7,10 +8,11 @@ import { DataFrameActions } from '@/core/actions/DataFrameActions';
 import { FileActions } from '@/core/actions/FileActions';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { updateDataTitle } from '@/core/snapshots/methods/dataMethods';
 import { fetchDataFrameSuccess } from '@/core/state/redux/slices/DataFrameSlice';
-import axios, { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 const { handleError } = useErrorHandling();
@@ -29,7 +31,7 @@ const fileSagasConfig = {
 // Define UpdateDataTitle function
 const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
   try {
-    const response = await axios.post(
+    const response = await internalApiService.post(
       `${fileSagasConfig.BASE_URL}/data/update_title`,
       { title },
       {

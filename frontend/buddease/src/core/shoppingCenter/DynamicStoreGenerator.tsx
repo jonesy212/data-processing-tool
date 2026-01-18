@@ -1,4 +1,4 @@
-DynamicStoreGenerator.tsx
+// DynamicStoreGenerator.tsx
 import { generateStores } from '@/core/state/stores/StoreGenerator';
 import * as path from 'path';
 

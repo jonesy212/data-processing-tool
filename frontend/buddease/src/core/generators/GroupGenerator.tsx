@@ -1,4 +1,4 @@
-GroupGenerator.tsx
+// GroupGenerator.tsx
 import Group from "@/core/components/communications/chat/Group";
 import React from "react";
 

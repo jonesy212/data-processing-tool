@@ -1,4 +1,4 @@
-stopAnimatedEmoticons.ts
+// stopAnimatedEmoticons.ts
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { AnimationLogger, FileLogger } from '@/core/logging/Logger';
 import { useNotification } from '@/core/state/context/NotificationContext';

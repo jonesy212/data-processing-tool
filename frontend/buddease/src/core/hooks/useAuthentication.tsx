@@ -1,4 +1,4 @@
-useAuthentication.tsx
+// useAuthentication.tsx
 import { EventActions } from '@/core/actions/EventActions';
 import { useEffect, useState } from 'react';
 

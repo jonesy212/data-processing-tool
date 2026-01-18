@@ -2,7 +2,8 @@
 import { Config } from '@/core/api/ConfigManager';
 import { HeadersConfig } from '@/core/api/headers/HeadersConfig';
 import teamApiService from '@/core/api/TeamApi';
-import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
+import type { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
+import CalendarEventTimingOptimization from '@/core/calendar/CalendarEventTimingOptimization';
 import { Team } from '@/core/components/teams/Team';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-devCorrectionRoadmap.ts
+// devCorrectionRoadmap.ts
 
 import { CorrectionGenerator } from '@/core/generators/corrections/CorrectionGenerator';
 import { exec } from 'child_process';

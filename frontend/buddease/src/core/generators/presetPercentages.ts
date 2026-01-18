@@ -1,4 +1,4 @@
-presetPercentages.ts
+// presetPercentages.ts
 import { useState } from "react";
 
 // Define the function to generate preset percentages

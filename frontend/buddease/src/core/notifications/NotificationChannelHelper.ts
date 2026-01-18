@@ -1,4 +1,4 @@
-// NotificationChannelHelper.ts - Fixed Version
+// NotificationChannelHelper.ts
 import { NotificationChannels } from '@/core/notifications/NotificationChannels';
 
 type BasicChannels = 'email' | 'push' | 'sms' | 'inApp' | 'webhook';

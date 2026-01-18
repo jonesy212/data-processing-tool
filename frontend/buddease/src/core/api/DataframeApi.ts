@@ -1,4 +1,4 @@
-DataframeApi.ts
+// DataframeApi.ts
 import axiosInstance from "@/core/api/csrfToken";
 
 const API_BASE_URL = "/api/data-frame";

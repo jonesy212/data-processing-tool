@@ -1,4 +1,4 @@
-toolbarSagas.ts
+// toolbarSagas.ts
 import { ToolbarActions } from '@/core/actions/ToolbarActions';
 import useModalFunctions from '@/core/pages/dashboards/ModalFunctions';
 import { takeLatest } from "redux-saga/effects";

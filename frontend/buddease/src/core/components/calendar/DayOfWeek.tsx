@@ -1,9 +1,9 @@
 // DayOfWeek.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { CommonCalendarProps } from '@/core/components/calendar/Calendar';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CommonCalendarProps } from '@/core/components/calendar/Calendar';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import React from 'react';
 
 interface DayOfWeekProps<

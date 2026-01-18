@@ -382,6 +382,5 @@ export {
     loadDrawingFromDatabase, saveDocumentToDatabase,
     saveTodoToDatabase,
     saveTradeToDatabase,
-    updateDocumentInDatabase
 };
 

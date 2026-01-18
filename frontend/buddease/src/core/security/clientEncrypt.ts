@@ -1,4 +1,4 @@
-clientEncrypt.ts
+// clientEncrypt.ts
 frontend/security/clientEncrypt.ts
 export async function encryptStringClient(text: string, key: string): Promise<string> {
   const encoder = new TextEncoder();

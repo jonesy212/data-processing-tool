@@ -1,4 +1,4 @@
-TasksApi.ts
+// TasksApi.ts
 import { handleApiError } from '@/core/api/ApiLogs';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -8,7 +8,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { TaskHistoryEntry } from '@/core/interfaces/history/TaskHistoryEntry';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 import { historyManagerStore } from '@/core/state/stores/HistoryStore';

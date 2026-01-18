@@ -1,3 +1,4 @@
+// DynamicComponentWrapper.tsx
 import DynamicConfigActionType, {
     DynamicComponentsProvider,
     DynamicConfigType,
@@ -7,7 +8,8 @@ import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import DynamicSelectionControls, {
     Option,
 } from "@/core/libraries/animations/DynamicSelectionControls";
-import Logger, { ComponentLogger } from '@/core/logging/Logger';
+import type { ComponentLogger } from '@/core/logging/Logger';
+import Logger from '@/core/logging/Logger';
 import React from "react";
 
 interface DynamicComponentProps {

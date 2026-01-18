@@ -1,25 +1,17 @@
-// file: app/scripts/shared/import-utils.ts
+// import-utils.ts
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
+import type { 
+  FixResult, 
+  TypeImportError,
+  ImportFix,
+  ImportPattern
+} from '@/app/scripts/import-fixes';
+import { TYPE_PATTERNS, VALUE_PATTERNS, AMBIGUOUS_CASES } from '@/app/scripts/type-patterns'
+import { ImportClassifier } from '@/app/scripts/import-classifier';
 
-export interface FixResult {
-  file: string;
-  original: string;
-  fixed: string;
-  success: boolean;
-  line?: number;
-}
-
-export interface TypeImportError {
-  typeName: string;
-  file: string;
-  line?: number;
-  column?: number;
-  importStatement?: string;
-  errorMessage?: string;
-  originalLine: string;
-}
-
+const classifier = new ImportClassifier();
 
 export function createBackup(filePath: string): string {
   const backupPath = `${filePath}.backup-${Date.now()}`;
@@ -43,68 +35,459 @@ export function groupFixesByFile(fixes: FixResult[]): Map<string, FixResult[]> {
 export function sortFixesDescending(fixes: FixResult[]): FixResult[] {
   return [...fixes].sort((a, b) => (b.line || 0) - (a.line || 0));
 }
-export function shouldBeTypeImport(importName: string, importNames?: string[]): boolean {
-  const namesToCheck = importNames ? [importName, ...importNames] : [importName];
+
+export function shouldBeTypeImport(importName: string, allImports?: string[], sourcePath?: string): boolean {
+  return shouldBeTypeImportBasedOnNameAndContext(importName, sourcePath, allImports);
+}
+
+
+export function analyzeImportStatement(importStatement: string): {
+  typeImports: string[];
+  valueImports: string[];
+  shouldBeTypeOnly: boolean;
+} {
+  const result = {
+    typeImports: [] as string[],
+    valueImports: [] as string[],
+    shouldBeTypeOnly: false
+  };
   
-  for (const name of namesToCheck) {
-    const typePatterns = [
-      /Entity$/,
-      /Data$/,
-      /Config$/,
-      /Store$/,
-      /Props$/,
-      /Options$/,
-      /Manager$/,
-      /Type$/,
-      /Interface$/,
-      /State$/,
-      /Meta$/,
-      /Payload$/,
-      /Event$/,
-      /Category$/,
-      /Version$/,
-      /Snapshot$/,
-      /Attachment$/,
-      /Collection$/,
-      /Item$/,
-      /Field$/,
-      /^Base[A-Z]/,
-      /^Default[A-Z]/,
-      /^Snapshot[A-Z]/,
-      /^Version[A-Z]/,
-      /^Realtime[A-Z]/,
-      /^[A-Z][a-z]+$/, // PascalCase single words (likely types)
-      /^[A-Z][a-z]+[A-Z][a-z]+$/, // PascalCase multi-words (likely types)
-      /name$/i // Add this pattern - names are often types
-    ];
+  // Extract imports and source
+  const importMatch = importStatement.match(/import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/);
+  if (!importMatch) {
+    // Handle default imports or other formats
+    return result;
+  }
+  
+  const [, importsStr, sourcePath] = importMatch;
+  const imports = importsStr.split(',').map(i => i.trim()).filter(Boolean);
+  
+  // Classify each import
+  imports.forEach(importName => {
+    const isType = shouldBeTypeImportBasedOnNameAndContext(importName, sourcePath, imports);
+    if (isType) {
+      result.typeImports.push(importName);
+    } else {
+      result.valueImports.push(importName);
+    }
+  });
+  
+  // Determine if the whole statement should be type-only
+  if (result.typeImports.length > 0 && result.valueImports.length === 0) {
+    result.shouldBeTypeOnly = true;
+  }
+  
+  return result;
+}
+
+
+
+export async function resolveSourceFile(
+  sourcePath: string, 
+  baseDir: string = process.cwd()
+): Promise<string | null> {
+  // Handle absolute paths
+  if (path.isAbsolute(sourcePath) && fs.existsSync(sourcePath)) {
+    return sourcePath;
+  }
+
+  // Handle relative imports with .ts/.tsx extensions
+  const extensions = ['.ts', '.tsx', '.js', '.jsx', ''];
+  
+  for (const ext of extensions) {
+    const fullPath = path.resolve(baseDir, sourcePath + ext);
+    if (fs.existsSync(fullPath)) {
+      return fullPath;
+    }
+  }
+
+  // Handle index.ts/index.tsx imports
+  const indexVariations = [
+    path.join(sourcePath, 'index.ts'),
+    path.join(sourcePath, 'index.tsx'),
+    path.join(sourcePath, 'index.js'),
+    path.join(sourcePath, 'index.jsx')
+  ];
+  
+  for (const indexPath of indexVariations) {
+    const fullPath = path.resolve(baseDir, indexPath);
+    if (fs.existsSync(fullPath)) {
+      return fullPath;
+    }
+  }
+
+  // Handle path aliases (like @/components, ~/utils, etc.)
+  const aliasPatterns = [
+    // @/ alias
+    { pattern: /^@\//, replace: 'src/' },
+    // ~/ alias
+    { pattern: /^~\//, replace: '' },
+    // Custom aliases from tsconfig
+    { pattern: /^components\//, replace: 'src/components/' },
+    { pattern: /^utils\//, replace: 'src/utils/' },
+    { pattern: /^hooks\//, replace: 'src/hooks/' },
+    { pattern: /^types\//, replace: 'src/types/' },
+  ];
+
+  for (const alias of aliasPatterns) {
+    if (alias.pattern.test(sourcePath)) {
+      const resolvedPath = sourcePath.replace(alias.pattern, alias.replace);
+      const result = await resolveSourceFile(resolvedPath, baseDir);
+      if (result) return result;
+    }
+  }
+
+  // Handle package imports (node_modules)
+  if (!sourcePath.startsWith('.') && !sourcePath.startsWith('/')) {
+    // Try to resolve through node_modules
+    try {
+      const resolved = require.resolve(sourcePath, { paths: [baseDir] });
+      return resolved;
+    } catch {
+      // Not a node_modules package, continue
+    }
+  }
+
+  // Handle TypeScript path mapping from tsconfig.json
+  const tsconfigPath = path.resolve(baseDir, 'tsconfig.json');
+  if (fs.existsSync(tsconfigPath)) {
+    try {
+      const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'));
+      const paths = tsconfig.compilerOptions?.paths;
+      
+      if (paths) {
+        for (const [pattern, mappings] of Object.entries(paths)) {
+          // Convert pattern to regex (simplified)
+          const regexPattern = pattern
+            .replace(/\*/g, '([^\\/]+)')
+            .replace(/\./g, '\\.');
+          const regex = new RegExp(`^${regexPattern}$`);
+          
+          const match = sourcePath.match(regex);
+          if (match) {
+            for (const mapping of mappings as string[]) {
+              let resolvedMapping = mapping;
+              
+              // Replace * with capture groups
+              if (mapping.includes('*')) {
+                resolvedMapping = mapping.replace(/\*/g, match[1]);
+              }
+              
+              const result = await resolveSourceFile(resolvedMapping, baseDir);
+              if (result) return result;
+            }
+          }
+        }
+      }
+    } catch (error: unknown) {
+      console.warn('⚠️ Could not parse tsconfig.json:', error.message);
+    }
+  }
+
+  // Search recursively in the project
+  const searchExtensions = ['.ts', '.tsx', '.js', '.jsx'];
+  const searchDir = path.resolve(baseDir, 'src');
+  
+  if (fs.existsSync(searchDir)) {
+    try {
+      const foundFile = await findFileRecursively(searchDir, sourcePath, searchExtensions);
+      if (foundFile) return foundFile;
+    } catch (error) {
+      // Search failed, continue
+    }
+  }
+
+  return null;
+}
+
+async function findFileRecursively(
+  dir: string, 
+  sourcePath: string, 
+  extensions: string[]
+): Promise<string | null> {
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
     
-    const valuePatterns = [
-      /^use[A-Z]/, // React hooks
-      /^create[A-Z]/, // Factory functions
-      /^get[A-Z]/, // Getter functions
-      /^set[A-Z]/, // Setter functions
-      /^is[A-Z]/, // Checker functions
-      /^has[A-Z]/, // Checker functions
-      /^[a-z]/, // lowercase usually values
-      /Api$/, // APIs are usually runtime
-      /StoreClass$/, // Classes are runtime
-      /Service$/, // Services are runtime
-      /Utils$/, // Utils are runtime
-      /Helper$/ // Helpers are runtime
-    ];
+    // Skip node_modules and dot directories
+    if (entry.name === 'node_modules' || entry.name.startsWith('.')) {
+      continue;
+    }
     
-    const isType = typePatterns.some(pattern => pattern.test(name));
-    const isValue = valuePatterns.some(pattern => pattern.test(name));
-    
-    // If it matches a type pattern and NOT a value pattern, it's a type
-    if (isType && !isValue) {
-      return true;
+    if (entry.isDirectory()) {
+      const result = await findFileRecursively(fullPath, sourcePath, extensions);
+      if (result) return result;
+    } else if (entry.isFile()) {
+      const baseName = path.basename(sourcePath, path.extname(sourcePath));
+      const fileBaseName = path.basename(entry.name, path.extname(entry.name));
+      
+      // Check if file matches
+      if (fileBaseName === baseName) {
+        return fullPath;
+      }
+      
+      // Check directory name matches (for barrel files)
+      const dirName = path.basename(path.dirname(fullPath));
+      if (dirName === baseName) {
+        // Check if it's an index file
+        if (entry.name.startsWith('index.')) {
+          return fullPath;
+        }
+      }
     }
   }
   
-  // If none of the names match type patterns, it's not a type-only import
-  return false;
+  return null;
 }
+
+// Helper function to check if import is from a type declaration file
+export function isTypeDeclarationImport(sourcePath: string): boolean {
+  return sourcePath.endsWith('.d.ts') || 
+         sourcePath.includes('@types/') ||
+         path.basename(sourcePath, '.d.ts') !== path.basename(sourcePath) ||
+         sourcePath.includes('/types/') ||
+         sourcePath.includes('/typings/') ||
+         sourcePath.includes('/interfaces/');
+}
+
+// Helper function to get export type information from source file
+export async function getExportTypes(
+  sourcePath: string
+): Promise<{ typeExports: string[]; valueExports: string[] }> {
+  const result = { typeExports: [] as string[], valueExports: [] as string[] };
+  
+  try {
+    const resolvedPath = await resolveSourceFile(sourcePath);
+    if (!resolvedPath || !fs.existsSync(resolvedPath)) {
+      return result;
+    }
+    
+    const content = await fs.promises.readFile(resolvedPath, 'utf8');
+    
+    // Check for type exports
+    const typeExportRegex = /export\s+(?:type\s+|interface\s+)(\w+)/g;
+    let match;
+    while ((match = typeExportRegex.exec(content)) !== null) {
+      result.typeExports.push(match[1]);
+    }
+    
+    // Check for export type { ... } statements
+    const exportTypeGroupRegex = /export\s+type\s*\{([^}]+)\}/g;
+    while ((match = exportTypeGroupRegex.exec(content)) !== null) {
+      const types = match[1].split(',').map(t => t.trim()).filter(Boolean);
+      result.typeExports.push(...types);
+    }
+    
+    // Check for value exports (functions, classes, const)
+    const valueExportRegex = /export\s+(?:function|class|const|let|var)\s+(\w+)/g;
+    while ((match = valueExportRegex.exec(content)) !== null) {
+      result.valueExports.push(match[1]);
+    }
+    
+    // Check for export { ... } statements (mixed)
+    const exportGroupRegex = /export\s*\{([^}]+)\}(?!\s*type)/g;
+    while ((match = exportGroupRegex.exec(content)) !== null) {
+      const exports = match[1].split(',').map(t => t.trim()).filter(Boolean);
+      // These could be either types or values, need further analysis
+      // For now, we'll treat them cautiously
+      exports.forEach(exp => {
+        // Check if export name matches type patterns
+        if (shouldBeTypeImportBasedOnPattern(exp)) {
+          result.typeExports.push(exp);
+        } else {
+          result.valueExports.push(exp);
+        }
+      });
+    }
+    
+    // Remove duplicates
+    result.typeExports = [...new Set(result.typeExports)];
+    result.valueExports = [...new Set(result.valueExports)];
+    
+  } catch (error: unknown) {
+    console.warn(`⚠️ Could not analyze exports from ${sourcePath}:`, error.message);
+  }
+  
+  return result;
+}
+
+// Improved version of shouldBeTypeImportWithSourceCheck using resolveSourceFile
+export async function shouldBeTypeImportWithEnhancedSourceCheck(
+  name: string, 
+  sourcePath: string
+): Promise<boolean> {
+  // Quick pattern check first
+  const patternResult = shouldBeTypeImportBasedOnNameAndContext(name, sourcePath);
+  
+  // If source path indicates type declaration, it's definitely a type
+  if (isTypeDeclarationImport(sourcePath)) {
+    return true;
+  }
+  
+  try {
+    const resolvedPath = await resolveSourceFile(sourcePath);
+    if (resolvedPath) {
+      // Get actual exports from the source file
+      const { typeExports, valueExports } = await getExportTypes(resolvedPath);
+      
+      // If we found explicit type export, use that
+      if (typeExports.includes(name)) {
+        return true;
+      }
+      
+      // If we found explicit value export, use that
+      if (valueExports.includes(name)) {
+        return false;
+      }
+      
+      // If the file itself is a type declaration file
+      if (resolvedPath.endsWith('.d.ts')) {
+        return true;
+      }
+      
+      // Check file content patterns
+      const content = await fs.promises.readFile(resolvedPath, 'utf8');
+      
+      // Look for specific patterns
+      if (content.includes(`export interface ${name}`) ||
+          content.includes(`export type ${name}`) ||
+          content.includes(`export enum ${name}`)) {
+        return true;
+      }
+      
+      if (content.includes(`export function ${name}`) ||
+          content.includes(`export class ${name}`) ||
+          content.includes(`export const ${name}`) ||
+          content.includes(`export let ${name}`) ||
+          content.includes(`export var ${name}`) ||
+          content.includes(`export default ${name}`)) {
+        return false;
+      }
+      
+      // Check for mixed export statements
+      const exportStatementRegex = new RegExp(`export\\s*\\{[^}]*\\b${name}\\b[^}]*\\}`, 'g');
+      const exportStatements = content.match(exportStatementRegex);
+      
+      if (exportStatements) {
+        // If any export statement contains 'type', it's a type export
+        for (const statement of exportStatements) {
+          if (statement.includes('export type')) {
+            return true;
+          }
+        }
+      }
+    }
+  } catch (error: unknown) {
+    // Fall back to pattern matching if source analysis fails
+    console.debug(`⚠️ Source analysis failed for ${name} from ${sourcePath}:`, error.message);
+  }
+  
+  // Default to pattern-based decision
+  return patternResult;
+}
+
+
+
+export async function shouldBeTypeImportWithSourceCheck(
+  name: string, 
+  sourcePath: string
+): Promise<boolean> {
+  // First use pattern matching
+  const patternResult = shouldBeTypeImportBasedOnNameAndContext(name, sourcePath);
+  
+  // Optionally check source file for more accuracy
+  if (process.env.CHECK_SOURCE_FILES === 'true') {
+    try {
+      const resolvedPath = await resolveSourceFile(sourcePath);
+      if (resolvedPath && fs.existsSync(resolvedPath)) {
+        const content = fs.readFileSync(resolvedPath, 'utf8');
+        
+        // Check for class export
+        if (content.includes(`export class ${name}`) || 
+            content.includes(`export default class ${name}`)) {
+          return false;
+        }
+        
+        // Check for function export
+        if (content.includes(`export function ${name}`) ||
+            content.includes(`export default function ${name}`)) {
+          return false;
+        }
+        
+        // Check for interface/type export
+        if (content.includes(`export interface ${name}`) ||
+            content.includes(`export type ${name}`)) {
+          return true;
+        }
+      }
+    } catch {
+      // Fall back to pattern matching
+    }
+  }
+  
+  return patternResult;
+}
+
+
+
+
+export async function findFilePath(target: string): Promise<string | null> {
+    // If it's already a valid path
+    if (fs.existsSync(target)) {
+        return target;
+    }
+    
+    // If it exists with current directory
+    const fullPath = path.resolve(process.cwd(), target);
+    if (fs.existsSync(fullPath)) {
+        return fullPath;
+    }
+    
+    // Check if it's a relative path from src
+    const srcPath = path.resolve(process.cwd(), 'src', target);
+    if (fs.existsSync(srcPath)) {
+        return srcPath;
+    }
+    
+    // Try different extensions
+    const possiblePaths = [
+        path.resolve(process.cwd(), target),
+        path.resolve(process.cwd(), 'src', target),
+        path.resolve(process.cwd(), target + '.ts'),
+        path.resolve(process.cwd(), target + '.tsx'),
+        path.resolve(process.cwd(), 'src', target + '.ts'),
+        path.resolve(process.cwd(), 'src', target + '.tsx'),
+        // Try without extension
+        path.resolve(process.cwd(), target.replace(/\.(ts|tsx)$/, '') + '.ts'),
+        path.resolve(process.cwd(), target.replace(/\.(ts|tsx)$/, '') + '.tsx'),
+    ];
+    
+    for (const possiblePath of possiblePaths) {
+        if (fs.existsSync(possiblePath)) {
+            return possiblePath;
+        }
+    }
+    
+    // Search recursively using find command
+    try {
+        const basename = path.basename(target).replace(/\.(ts|tsx)$/, '');
+        const findCmd = `find src/ -name "${basename}*" -type f 2>/dev/null | head -5`;
+        const foundFiles = execSync(findCmd, { encoding: 'utf8' })
+            .split('\n')
+            .filter(f => f.trim() && (f.endsWith('.ts') || f.endsWith('.tsx')));
+        
+        if (foundFiles.length > 0) {
+            return path.resolve(process.cwd(), foundFiles[0]);
+        }
+    } catch (error) {
+        // Continue
+    }
+    
+    return null;
+}
+
+
 
 export function fixImportStatement(importStatement: string): string {
   if (!importStatement.includes('import')) return importStatement;
@@ -189,7 +572,7 @@ export function fixImportStatement(importStatement: string): string {
   }
   
   // For compatibility with the original function signature
-  if (shouldBeTypeImportBasedOnNameAndContext(importStatement, [])) {
+  if (shouldBeTypeImportBasedOnNameAndContext(importStatement, undefined, [])) {
     // This handles the case where the original function used the full statement
     // Try to convert based on patterns
     if (importStatement.includes('import {')) {
@@ -202,124 +585,145 @@ export function fixImportStatement(importStatement: string): string {
   return importStatement; // No change needed
 }
 
-// Helper function for the simple case (just checking the name)
-function shouldBeTypeImportBasedOnName(name: string): boolean {
-  const typePatterns = [
-    /Entity$/,
-    /Data$/,
-    /Config$/,
-    /Store$/,
-    /Props$/,
-    /Options$/,
-    /Manager$/,
-    /Type$/,
-    /Interface$/,
-    /State$/,
-    /Meta$/,
-    /Payload$/,
-    /Event$/,
-    /Category$/,
-    /Version$/,
-    /Snapshot$/,
-    /Attachment$/,
-    /Collection$/,
-    /Item$/,
-    /Field$/,
-    /^Base[A-Z]/,
-    /^Default[A-Z]/,
-    /^Snapshot[A-Z]/,
-    /^Version[A-Z]/,
-    /^Realtime[A-Z]/,
-    /^T[A-Z]/, // Generic types: T, TKey, TValue
-    /Props$/, // React props
-    /State$/, // Component state
-    /Context$/, // React context
-    /Response$/, // API response types
-    /Request$/, // API request types
-    /Parameters$/, // Function parameters type
-    /ReturnType$/ // Function return type
-  ];
-  
-  const valuePatterns = [
-    /^use[A-Z]/, // React hooks
-    /^create[A-Z]/, // Factory functions
-    /^get[A-Z]/, // Getter functions
-    /^set[A-Z]/, // Setter functions
-    /^is[A-Z]/, // Checker functions
-    /^has[A-Z]/, // Checker functions
-    /^[a-z]/, // lowercase usually values
-    /Api$/, // APIs are usually runtime
-    /StoreClass$/, // Classes are runtime
-    /Service$/, // Services are runtime
-    /Helper$/, // Helper functions
-    /Util$/, // Utility functions
-    /^fetch/, // Fetch functions
-    /^update/, // Update functions
-    /^delete/, // Delete functions
-    /^add/, // Add functions
-    /^remove/, // Remove functions
-  ];
-  
-  const isType = typePatterns.some(pattern => pattern.test(name));
-  const isValue = valuePatterns.some(pattern => pattern.test(name));
-  
-  // If it looks like a type and doesn't look like a value, it's probably a type
-  return isType && !isValue;
-}
-
 // For compatibility with original function that took importStatement and array of names
-function shouldBeTypeImportBasedOnNameAndContext(importStatement: string, importedNames: string[]): boolean {
-  // First check individual names
-  if (importedNames.length > 0) {
-    return importedNames.some(name => shouldBeTypeImportBasedOnName(name));
+export function shouldBeTypeImportBasedOnNameAndContext(
+  name: string, 
+  sourcePath?: string,
+  allImports?: string[]
+): boolean {
+  // ===== STEP 1: Check exact matches (highest priority) =====
+  if (TYPE_PATTERNS.exactMatches.has(name)) return true;
+  if (VALUE_PATTERNS.exactMatches.has(name)) return false;
+  
+  // ===== STEP 2: Check ambiguous cases with source context =====
+  const ambiguousHandler = AMBIGUOUS_CASES.get(name);
+  if (ambiguousHandler) {
+    return ambiguousHandler(sourcePath);
   }
   
-  // Fallback: check the import statement itself for patterns
-  const typePatterns = [
-    /DataStore$/,
-    /Entity$/,
-    /Metadata$/,
-    /Config$/,
-    /Interface$/,
-    /Type$/,
-    /Props$/,
-    /State$/,
-    /Context$/,
-    /Snapshot$/,
-    /Definition$/,
-    /Analysis$/,
-    /Transition$/
-  ];
+  // ===== STEP 3: Check value patterns (avoid false positives) =====
+  const matchesValuePattern = 
+    VALUE_PATTERNS.prefixes.some(pattern => pattern.test(name)) ||
+    VALUE_PATTERNS.suffixes.some(pattern => pattern.test(name));
   
-  // Check for type-related keywords in the import statement
-  const hasTypeKeyword = typePatterns.some(pattern => 
-    importStatement.includes(pattern.source.replace('\\$', ''))
-  );
+  if (matchesValuePattern) return false;
   
-  // Check source path for type indicators
-  const sourceMatch = importStatement.match(/from\s+['"]([^'"]+)['"]/);
-  if (sourceMatch) {
-    const source = sourceMatch[1];
-    const fileName = path.basename(source, path.extname(source));
+  // ===== STEP 4: Check type patterns =====
+  const matchesTypePattern = 
+    TYPE_PATTERNS.suffixes.some(pattern => pattern.test(name)) ||
+    TYPE_PATTERNS.prefixes.some(pattern => pattern.test(name)) ||
+    TYPE_PATTERNS.fullMatch.some(pattern => pattern.test(name));
+  
+  // ===== STEP 5: Source file context analysis =====
+  if (sourcePath) {
+    const fileName = sourcePath.split('/').pop()?.replace(/\.[^.]+$/, '') || '';
     
-    // Files with these names often export types
+    // A. Files that typically export types
     const typeFilePatterns = [
-      /types?$/,
-      /interfaces?$/,
-      /props$/,
-      /config$/,
-      /schemas?$/,
-      /models?$/,
-      /entities?$/
+      /types?$/i,
+      /interfaces?$/i,
+      /typings?$/i,
+      /models?$/i,
+      /entities?$/i,
+      /configs?$/i,
+      /schemas?$/i,
+      /props$/i,
+      /definitions?$/i,
     ];
     
     const isTypeFile = typeFilePatterns.some(pattern => pattern.test(fileName));
-    if (isTypeFile) {
+    if (isTypeFile && matchesTypePattern) {
       return true;
+    }
+    
+    // B. Files that typically export runtime code
+    const runtimeFilePatterns = [
+      /actions?$/i,
+      /services?$/i,
+      /stores?$/i,
+      /components?$/i,
+      /pages?$/i,
+      /utils?$/i,
+      /helpers?$/i,
+      /apis?$/i,
+      /hooks?$/i,
+      /reducers?$/i,
+      /slices?$/i,
+    ];
+    
+    const isRuntimeFile = runtimeFilePatterns.some(pattern => pattern.test(fileName));
+    if (isRuntimeFile) {
+      // Even if it matches type patterns, be conservative for runtime files
+      return false;
+    }
+    
+    // C. Check source path for keywords
+    const sourceHasTypeKeywords = [
+      'types',
+      'typings', 
+      'interfaces',
+      'models',
+      'config',
+      'schemas'
+    ].some(keyword => sourcePath.includes(keyword));
+    
+    if (sourceHasTypeKeywords && matchesTypePattern) {
+      return true;
+    }
+    
+    // D. Check source path for runtime keywords
+    const sourceHasRuntimeKeywords = [
+      'actions',
+      'services',
+      'stores',
+      'components',
+      'pages',
+      'utils',
+      'helpers',
+      'apis'
+    ].some(keyword => sourcePath.includes(keyword));
+    
+    if (sourceHasRuntimeKeywords) {
+      return false;
     }
   }
   
-  return hasTypeKeyword;
+  // ===== STEP 6: Check for single capital letters (T, K, V - TypeScript generics) =====
+  if (/^[A-Z]$/.test(name)) {
+    return true; // Single capital letters are almost always type parameters
+  }
+  
+  // ===== STEP 7: Check import statement context (if provided) =====
+  if (allImports && allImports.length > 0) {
+    // If ALL imports in the statement match type patterns, it's likely a type-only import
+    const allAreTypePatterns = allImports.every(importName => 
+      TYPE_PATTERNS.suffixes.some(pattern => pattern.test(importName)) ||
+      TYPE_PATTERNS.prefixes.some(pattern => pattern.test(importName))
+    );
+    
+    if (allAreTypePatterns) {
+      return true;
+    }
+    
+    // If ANY import clearly looks like a value, be conservative
+    const hasClearValue = allImports.some(importName => 
+      VALUE_PATTERNS.prefixes.some(pattern => pattern.test(importName)) ||
+      VALUE_PATTERNS.exactMatches.has(importName)
+    );
+    
+    if (hasClearValue) {
+      return false;
+    }
+  }
+  
+  // ===== STEP 8: Final decision =====
+  // If it matches type patterns and we haven't found reasons against it
+  if (matchesTypePattern) {
+    return true;
+  }
+  
+  // Default: conservative approach
+  return false;
 }
 
 
@@ -469,36 +873,55 @@ export function applyFixes(
         // Try to find the line if line number is not provided or invalid
         let lineIndex = (fix.line || 1) - 1;
         
+        // Normalize both the target and actual line for comparison
+        const normalizeImport = (importStr: string): string => {
+          return importStr
+            .trim()
+            .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+            .replace(/,\s+/g, ', ') // Normalize comma spacing
+            .replace(/\s+from\s+/g, ' from ') // Normalize "from" spacing
+            .replace(/['"]/g, "'"); // Normalize quotes
+        };
+        
+        const normalizedOriginal = normalizeImport(fix.original);
+        const normalizedFixed = normalizeImport(fix.fixed);
+        
         // If line number is not provided or out of bounds, search for the import
-        if (lineIndex < 0 || lineIndex >= lines.length || !lines[lineIndex].includes(fix.original)) {
-          // Search for the import in the file
-          lineIndex = lines.findIndex(line => 
-            line.includes(fix.original) && 
-            !line.includes('import type') // Ensure we don't match already fixed imports
-          );
+        if (lineIndex < 0 || lineIndex >= lines.length || 
+            normalizeImport(lines[lineIndex]) !== normalizedOriginal) {
           
-          if (lineIndex === -1) {
-            // Try a more flexible search - just look for the import statement pattern
+          // Search for the import in the file using normalized comparison
+          lineIndex = lines.findIndex(line => {
+            const normalizedLine = normalizeImport(line);
+            // Check if this line matches the original import (normalized)
+            if (normalizedLine === normalizedOriginal) {
+              return true;
+            }
+            
+            // Also check if line contains the import names and source
             const importMatch = fix.original.match(/import\s+\{([^}]+)\}\s+from\s+['"]([^'"]+)['"]/);
             if (importMatch) {
               const [, importNames, sourcePath] = importMatch;
-              const importNamesList = importNames.split(',').map(name => name.trim());
+              const importNamesList = importNames.split(',').map((name: string) => name.trim());
               
-              // Search for any line containing all the import names and source path
-              lineIndex = lines.findIndex(line => {
-                if (line.includes('import type')) return false;
-                if (!line.includes(sourcePath)) return false;
-                return importNamesList.every(name => line.includes(name));
-              });
+              // Check if line contains all import names and source path
+              if (line.includes('import') && line.includes(sourcePath)) {
+                return importNamesList.every((name: string) => line.includes(name));
+              }
             }
-          }
+            
+            return false;
+          });
         }
         
         if (lineIndex >= 0 && lineIndex < lines.length) {
+          const currentLine = lines[lineIndex];
+          const normalizedCurrent = normalizeImport(currentLine);
+          
           // Check if this line needs fixing (not already fixed)
-          if (lines[lineIndex].includes(fix.original) && !lines[lineIndex].includes('import type')) {
+          if (normalizedCurrent === normalizedOriginal && !currentLine.includes('import type')) {
             // Replace the original import with the fixed one
-            lines[lineIndex] = lines[lineIndex].replace(fix.original, fix.fixed);
+            lines[lineIndex] = currentLine.replace(/import\s+\{/, 'import type {');
             applied++;
             
             if (options.verbose) {
@@ -506,22 +929,42 @@ export function applyFixes(
               const shortFixed = fix.fixed.length > 60 ? fix.fixed.substring(0, 60) + '...' : fix.fixed;
               console.log(`✅ Fixed: ${path.basename(filePath)}:${lineIndex + 1} (${shortOriginal} → ${shortFixed})`);
             }
-          } else if (lines[lineIndex].includes('import type')) {
+          } else if (currentLine.includes('import type')) {
             // Already fixed - skip
             if (options.verbose) {
               console.log(`⏭️  Skipped: ${path.basename(filePath)}:${lineIndex + 1} (already using import type)`);
             }
           } else {
-            if (options.verbose) {
-              console.warn(`⚠️  Line ${lineIndex + 1} in ${filePath} doesn't match expected content`);
-              console.warn(`    Looking for: ${fix.original}`);
-              console.warn(`    Found: ${lines[lineIndex]}`);
+            // Try a more flexible replacement
+            if (currentLine.includes('import {') && currentLine.includes(fix.original.split(' from ')[1])) {
+              // The import names might be in different order or have different spacing
+              lines[lineIndex] = currentLine.replace(/import\s+\{/, 'import type {');
+              applied++;
+              
+              if (options.verbose) {
+                console.log(`✅ Fixed (flexible match): ${path.basename(filePath)}:${lineIndex + 1}`);
+              }
+            } else {
+              if (options.verbose) {
+                console.warn(`⚠️  Line ${lineIndex + 1} in ${filePath} doesn't match expected content`);
+                console.warn(`    Looking for: ${normalizedOriginal}`);
+                console.warn(`    Found: ${normalizedCurrent}`);
+              }
+              failed++;
             }
-            failed++;
           }
         } else {
           if (options.verbose) {
             console.warn(`⚠️  Could not find import in ${filePath}: ${fix.original}`);
+            
+            // Debug: show what the file actually contains
+            console.warn(`    Searching for: ${normalizedOriginal}`);
+            console.warn(`    File contains these @/core imports:`);
+            lines.forEach((line, idx) => {
+              if (line.includes('@/core') && line.includes('import')) {
+                console.warn(`    Line ${idx + 1}: ${line.trim()}`);
+              }
+            });
           }
           failed++;
         }
@@ -556,6 +999,27 @@ export function applyFixes(
   return { applied, failed, backups };
 }
 
+// Simple version without context
+export function shouldBeTypeImportBasedOnPattern(name: string): boolean {
+  // Check exact matches first
+  if (TYPE_PATTERNS.exactMatches.has(name)) return true;
+  if (VALUE_PATTERNS.exactMatches.has(name)) return false;
+  
+  // Check type patterns
+  const matchesTypePattern = 
+    TYPE_PATTERNS.suffixes.some(pattern => pattern.test(name)) ||
+    TYPE_PATTERNS.prefixes.some(pattern => pattern.test(name)) ||
+    TYPE_PATTERNS.fullMatch.some(pattern => pattern.test(name));
+  
+  // Check value patterns
+  const matchesValuePattern = 
+    VALUE_PATTERNS.suffixes.some(pattern => pattern.test(name)) ||
+    VALUE_PATTERNS.prefixes.some(pattern => pattern.test(name));
+  
+  // If it looks like a type and doesn't look like a value, it's probably a type
+  return matchesTypePattern && !matchesValuePattern;
+}
+
 
 export function getContextTips(context?: string): string | null {
   const tips: Record<string, string> = {
@@ -567,3 +1031,7 @@ export function getContextTips(context?: string): string | null {
   
   return tips[context || 'default'] || tips.default;
 }
+
+
+// Alias for backward compatibility
+export const shouldBeTypeImportBasedOnName = shouldBeTypeImportBasedOnNameAndContext;

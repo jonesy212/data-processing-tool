@@ -1,5 +1,5 @@
-ProjectManagementEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ProjectManagementEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ProjectManagementEndpoints extends EndpointCategoryConfig {
   createProject: EndpointConfig;

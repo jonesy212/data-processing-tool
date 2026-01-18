@@ -1,17 +1,18 @@
 // metadataTypes.ts
-// AppMetadata.ts
 
-import { Constraint, IndexDefinition } from '@/core/components/database/SchemaEvolutionManager';
-import { ValidationRule } from '@/core/snapshots/ValidationRule';
-
-import { IBackendStructure } from '@/core/config/appStructure/IBackendStructure';
+import type { Constraint, IndexDefinition } from '@/core/components/database/SchemaEvolutionManager';
+import type { ValidationRule } from '@/core/snapshots/ValidationRule';
+import type { WorkflowTransition } from '@/core/models/phases/WorkflowTransition';
+import type { BackendStructure } from '@/core/server/database/BackendStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { TaskMetadata, UnifiedMetadata, } from '@/core/config/MetaDataOptions';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { DatabaseSchema, ServiceSchema, StructureSchema } from '@/core/typings/database';
-import { AppTask } from '@/core/typings/entities/AppEntity';
-import { WorkflowStep } from '@/core/typings/entities/DocumentEntity';
+import type { DatabaseSchema, ServiceSchema, StructureSchema } from '@/core/typings/database';
+import type { AppTask } from '@/core/typings/entities/AppEntity';
+import type { WorkflowStep } from '@/core/typings/entities/DocumentEntity';
+import type { MigrationDefinition } from '@/core/components/database/SchemaEvolutionManager'
+import type { RelationshipDefinition } from '@/core/components/database/SchemaEvolutionManager'
 
 // Complete type safety with all App-specific types
 interface AppMetadata<
@@ -21,7 +22,7 @@ interface AppMetadata<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends UnifiedMetadata<AppTask> {
+> extends UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   
   // 🎯 Application Identity & Versioning
   appVersion: string;
@@ -97,7 +98,6 @@ interface WorkflowDefinition {
   transitions: WorkflowTransition[];
 }
 
-// AppSchema.types.ts
 interface AppSchema<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -111,7 +111,7 @@ interface AppSchema<
   lastModified: Date;
   
   // ✅ Integrated Backend Structure
-  backendStructure: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backendStructure: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // ✅ Schema Definitions
   databaseSchema: DatabaseSchema;

@@ -1,8 +1,9 @@
-FeedbackService.tsx
-import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
-import { Feedback } from '@/core/features/support/Feedback';
-import { Channel, ChannelType } from "@/core/interfaces/chat/Channel";
-import { YourProductContentType } from '@/core/products/YourProductContentType';
+// FeedbackService.tsx
+import type { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
+import dataProcessingService from '@/core/api/service/DataProcessingService';
+import type { Feedback } from '@/core/features/support/Feedback';
+import type { Channel, ChannelType } from "@/core/interfaces/chat/Channel";
+import type { YourProductContentType } from '@/core/products/YourProductContentType';
 
 class FeedbackService {
   private static instance: FeedbackService;

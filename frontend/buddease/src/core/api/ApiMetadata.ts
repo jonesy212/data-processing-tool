@@ -1,4 +1,4 @@
-ApiMetadata.ts
+// ApiMetadata.ts
 // External API calls for metadata operations
 
 import internalApiService from "@/core/api/ApiClient";

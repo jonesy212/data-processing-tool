@@ -1,8 +1,9 @@
-EnhancedGroupChatDashboard.tsx
+// EnhancedGroupChatDashboard.tsx
 import React from 'react';
 
 import ChatCard from "@/core/components/cards/ChatCard";
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import Group from "./Group";
 import GroupChatMessage from "./GroupChatMessage";
 

@@ -1,7 +1,7 @@
-ReactWebAnalyzer.ts
+// ReactWebAnalyzer.ts
 analyzers/ReactWebAnalyzer.ts
 import { BuildAnalyzer } from '@/core/generators/corrections/analyzers/BuildAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -46,7 +46,6 @@ export class ReactWebAnalyzer extends BuildAnalyzer {
 
     console.log('🔍 Analyzing React web dependencies...');
 
-    // Next.js analysis
     const nextJsErrors = this.analyzeNextJs();
     corrections.push(...nextJsErrors);
 

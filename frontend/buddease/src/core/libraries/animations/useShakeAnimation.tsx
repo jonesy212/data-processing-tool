@@ -1,4 +1,4 @@
-useShakeAnimation.tsx
+// useShakeAnimation.tsx
 import { Animated } from 'react-native';
 
 export const useShakeAnimation = () => {

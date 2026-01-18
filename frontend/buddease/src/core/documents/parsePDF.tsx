@@ -1,4 +1,4 @@
-parsePDF.tsx
+// parsePDF.tsx
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import { YourPDFType } from "@/core/documents/DocType";
 import { extractTextFromPDF } from "@/core/documents/DocumentGeneratorMethods";
@@ -46,7 +46,6 @@ function extractText(pdfFilePath: string): string {
 // Function to extract text content from a PDF page
 function extractTextFromPage(page: PDFPage): Promise<string> {
     // Implement your logic to extract text from the page here
-    // You can use libraries like pdf.js or other PDF parsing libraries
 
     // For example, let's say you have a function called 'extractText' that extracts text from a page
     const pageText = extractText(String(page)); // Example function to extract text from page

@@ -1,4 +1,4 @@
-CustomizationOptions.tsx 
+// CustomizationOptions.tsx
 import React from 'react';
 
 // imports for layout and multimedia content customization components
@@ -6,7 +6,8 @@ import LayoutCustomization from '@/core/components/configs/LayoutCustomization';
 import { AnimatedComponentProps } from '@/core/components/styling/AnimationsAndTansitions';
 import { useThemeCustomization } from '@/core/hooks/useThemeCustomization';
 import ThemeCustomization from '@/core/hooks/userInterface/ThemeCustomization';
-import MultimediaContentCustomization, { MultimediaContentCustomizationProps } from '@/core/pages/content/MultimediaContentCustomization';
+import type { MultimediaContentCustomizationProps } from '@/core/pages/content/MultimediaContentCustomization';
+import MultimediaContentCustomization from '@/core/pages/content/MultimediaContentCustomization';
 import { ThemeState } from '@/core/state/redux/slices/ThemeSlice';
 
 

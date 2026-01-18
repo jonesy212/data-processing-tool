@@ -1,20 +1,20 @@
 // SnapshotStoreOptions.ts
-import { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
-import { ProjectMetadata } from '@/core/config/StructuredMetadata';
+import type { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
+import type { ProjectMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category, CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
 import { Content } from '@/core/models/content/AddContent';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { ConfigureSnapshotStorePayload } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreMethods } from '@/core/snapshots/SnapshotStoreMethods';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { Version } from '@/core/versions/Version';
 

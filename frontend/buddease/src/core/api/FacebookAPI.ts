@@ -1,4 +1,4 @@
-FacebookAPI.ts
+// FacebookAPI.ts
 
 // Import necessary modules and types
 import { Note, handleNoteApiErrorAndNotify } from '@/core/api/ApiNote';
@@ -6,7 +6,8 @@ import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { authToken } from '@/core/server/auth/authToken';
-import axios, { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
+import axios from 'axios';
 
 // Define the base URL for Facebook API
 const FACEBOOK_API_BASE_URL = 'https://graph.facebook.com/v12.0';

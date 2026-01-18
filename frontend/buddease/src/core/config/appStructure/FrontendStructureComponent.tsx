@@ -29,7 +29,6 @@ const FrontendStructureComponent: React.FC<FrontendStructureProps> = ({
         traverseDirectory(filePath);
       } else {
         // Logic to parse file and update frontendStructure accordingly
-        // Example: if (file.endsWith('.tsx')) { /* update frontendStructure */ }
         if (file.endsWith(".tsx")) {
           frontendStructure[file] = {
             path: filePath,

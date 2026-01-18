@@ -1,4 +1,4 @@
-traverseFrontendDirectoryExample.ts
+// traverseFrontendDirectoryExample.ts
 
 // Usage example
 const { versionNumber, appVersion } = getCurrentAppInfo();

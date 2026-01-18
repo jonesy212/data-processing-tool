@@ -1,4 +1,4 @@
-DesignDashboard.tsx
+// DesignDashboard.tsx
 "use client";
 
 import YourParentComponent from "@/core/components/prompts/YourParentComponent";

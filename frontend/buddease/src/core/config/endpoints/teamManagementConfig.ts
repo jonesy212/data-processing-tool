@@ -1,4 +1,4 @@
-teamManagementConfig.ts
+// teamManagementConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { TeamManagementEndpoints } from '@/core/typings/categories/TeamManagementEndpoints';
 

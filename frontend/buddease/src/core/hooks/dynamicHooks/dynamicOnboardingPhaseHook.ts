@@ -1,4 +1,4 @@
-dynamicOnboardingPhaseHook.ts
+// dynamicOnboardingPhaseHook.ts
 
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 

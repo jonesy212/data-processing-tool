@@ -1,4 +1,4 @@
-getCategoryFromFilePath.ts
+// getCategoryFromFilePath.ts
 import { FileCategory, fileMapping } from "@/core/documents/FileType";
 import { fileCategoryMapping } from "@/core/libraries/categories/fileCategoryMapping";
 

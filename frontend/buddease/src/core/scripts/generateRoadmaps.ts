@@ -1,6 +1,6 @@
-generateRoadmaps.ts
+// generateRoadmaps.ts
 import { DomainStructure } from '@/core/config/appStructure/DomainStructure';
-import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
+import type { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
 import PackageRecommendationGenerator from '@/core/generators/PackageRecommendationGenerator';
 import { PackageJson } from '@/core/scripts/generate-commands-doc';
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';
@@ -47,7 +47,6 @@ export async function generateRoadmaps(
   const analyzer = new ProjectTreeAnalyzer();
   const projectStructure = await analyzer.analyzeProjectTree(); // async fetch
 
-  // Read the actual package.json to get existing dependencies
   const packageJsonPath = path.resolve(process.cwd(), 'package.json');
   let existingDependencies = new Set<string>();
   

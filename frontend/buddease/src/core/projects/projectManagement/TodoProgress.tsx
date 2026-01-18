@@ -1,7 +1,7 @@
-TodoProgress.tsx
+// TodoProgress.tsx
 import ListGenerator from "@/core/generators/ListGenerator";
-import { Data } from '@/core/models/data/Data';
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Data } from '@/core/models/data/Data';
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { Todo } from "@/core/todos/Todo";
 import React from "react";
 

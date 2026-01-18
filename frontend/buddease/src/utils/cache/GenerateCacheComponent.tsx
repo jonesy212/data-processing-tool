@@ -1,5 +1,5 @@
-GenerateCacheComponent.ts
-components/cache/GenerateCacheComponent.tsx
+// GenerateCacheComponent.tsx
+
 "use client";
 
 import React from 'react';
@@ -14,7 +14,6 @@ const GenerateCacheComponent: React.FC<GenerateCacheComponentProps> = ({
 }) => {
   const handleGenerateCache = async () => {
     try {
-      // You can call an API endpoint that uses GenerateCache.ts logic
       const response = await fetch('/api/generate-cache', {
         method: 'POST'
       });

@@ -2,12 +2,12 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { StatusType } from "@/core/models/data/StatusType";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 
 // ------------------------------

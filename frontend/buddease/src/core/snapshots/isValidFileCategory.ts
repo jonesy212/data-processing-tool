@@ -1,4 +1,4 @@
-isValidFileCategory.ts
+// isValidFileCategory.ts
 import { FileCategory } from "@/core/documents/FileType";
 
 isValidFileCategory.tsy

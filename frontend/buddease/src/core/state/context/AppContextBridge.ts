@@ -1,4 +1,4 @@
-AppContextBridge.ts
+// AppContextBridge.ts
 context/AppContextBridge.ts
 import { appStores } from '@/core/pages/_app';
 

@@ -1,4 +1,4 @@
-CustomModifier.tsx
+// CustomModifier.tsx
 import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { ContentBlock, ContentState, DraftInlineStyle, EditorState, Modifier, SelectionState } from "draft-js";
 

@@ -1,11 +1,10 @@
 // SnapshotList.tsx
-// SnapshotList.ts
 import { Label } from "@/core/branding/BrandingSettings";
 import { ContentItem } from "@/core/cards/DummyCardLoader";
 import { ChatRoom } from "@/core/communications/ChatRoom";
 import { Sender } from "@/core/components/communications/CommunicationPage";
 import { SharedIdentifiers } from "@/core/documents/RelatedProps";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 
@@ -16,12 +15,12 @@ import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { Data } from "@/core/models/data/Data";
+import type { Data } from "@/core/models/data/Data";
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import { User } from "@/core/users/User";
 import { createMessage, MessageProps } from "@/utils/web3/createMessage";
 

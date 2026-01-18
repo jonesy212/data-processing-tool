@@ -1,4 +1,4 @@
-BlockchainAsset.ts
+// BlockchainAsset.ts
 export interface BlockchainAsset {
   id: string; // Unique identifier for the asset
   name: string; // Name of the asset

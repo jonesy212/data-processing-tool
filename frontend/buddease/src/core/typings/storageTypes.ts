@@ -1,5 +1,4 @@
-storageTypes.ts
-storageTypes.ts
+// storageTypes.ts
 // Centralized storage/search metadata (all fields you listed)
 export interface StorageMetadata {
   // DB layer

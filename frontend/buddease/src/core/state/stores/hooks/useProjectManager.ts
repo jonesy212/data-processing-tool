@@ -1,4 +1,4 @@
-useProjectManager.ts
+// useProjectManager.ts
 state/stores/hooks/useProjectManager.ts
 
 import { projectManagerStore } from "@/core/state/hybrid/ProjectManagerStore";

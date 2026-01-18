@@ -1,4 +1,4 @@
-isFileGitDirty
+// isFileGitDirty.ts
 import { execSync } from 'child_process';
 
 function isFileGitDirty(file: string): boolean {

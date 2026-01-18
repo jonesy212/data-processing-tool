@@ -1,8 +1,8 @@
-SearchResultItem.tsx
-import { BaseEntity } from '@/core/config/BaseConfig';
+// SearchResultItem.tsx
+import type { BaseEntity } from '@/core/config/BaseConfig';
 import ListGenerator from '@/core/generators/ListGenerator';
-import { Data } from '@/core/models/data/Data';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { Data } from '@/core/models/data/Data';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import React from 'react';
 
 

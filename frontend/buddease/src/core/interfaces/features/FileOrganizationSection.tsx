@@ -1,4 +1,4 @@
-FileOrganizationSection.tsx
+// FileOrganizationSection.tsx
 // FileOrganizationSection component
 import React from 'react';
 

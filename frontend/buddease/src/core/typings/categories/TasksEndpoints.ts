@@ -1,5 +1,5 @@
-TasksEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// TasksEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 
 export interface TasksEndpoints extends EndpointCategoryConfig {

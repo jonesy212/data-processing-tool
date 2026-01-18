@@ -1,7 +1,7 @@
-PersonaBuilderUtils.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+// PersonaBuilderUtils.tsx
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { useEffect, useState } from "react";

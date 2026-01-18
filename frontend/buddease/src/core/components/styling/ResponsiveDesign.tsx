@@ -1,6 +1,5 @@
 // ResponsiveDesign.tsx
-// components/ResponsiveDesign.tsx
-import { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
+import type { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
@@ -134,7 +133,6 @@ interface ResponsiveDesignStoreProps {
     };
   };
 }
-// stores/ResponsiveDesignStore.ts
 
 export interface ResponsiveExample {
   title: string;

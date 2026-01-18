@@ -1,3 +1,4 @@
+// PhaseSystem.ts
 src/core/error-analyzer/phases/PhaseSystem.ts
 import type{ PhaseContext } from '@/core/error-analyzer/phases/DynamicPhaseSystem'
 import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';

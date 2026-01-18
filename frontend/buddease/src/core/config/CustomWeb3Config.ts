@@ -1,4 +1,4 @@
-CustomWeb3Config.ts
+// CustomWeb3Config.ts
 erc20Balance.ts
 
 import { Web3 } from "web3";

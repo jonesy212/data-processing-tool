@@ -1,3 +1,4 @@
+// index.ts
 src/app/error-analyzer/index.ts
 
 // Value exports (classes, functions, etc.)

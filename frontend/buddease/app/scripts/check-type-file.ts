@@ -1,1 +1,1 @@
-check-type-file.ts
+// check-type-file.ts

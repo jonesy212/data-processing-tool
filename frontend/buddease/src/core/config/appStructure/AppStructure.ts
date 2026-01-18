@@ -1,10 +1,10 @@
-AppStructure.ts
+// AppStructure.ts
 import * as apiFile from '@/core/api/ApiFiles';
 import SecurityAPI from '@/core/api/SecurityAPI';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DataVersions } from '@/core/configs/DataVersionsConfig';
 import type { Attachment, FileType } from '@/core/documents/attachment/Attachment';
-import { BaseEntityProperties } from '@/core/documents/RelatedProps';
+import type { BaseEntityProperties } from '@/core/documents/RelatedProps';
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import { Content } from '@/core/models/content/AddContent';
 import { Permission } from "@/core/permissions/Permission";
@@ -118,7 +118,7 @@ interface FileSystemService {
 }
 
 export default class AppStructure<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -451,7 +451,7 @@ export default class AppStructure<
 export type { AppStructureItem, AppStructurePermissions };
 
 export const createAppStructure = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,4 +1,4 @@
-ApiHighlightEvent.tsx
+// ApiHighlightEvent.tsx
 import { handleApiErrorAndNotify } from '@/core/api/ApiData';
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';

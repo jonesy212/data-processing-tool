@@ -1,4 +1,4 @@
-useSecureProjectId.ts
+// useSecureProjectId.ts
 import UserRoles from '@/core/models/UserRoles';
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/core/state/context/AuthContext';

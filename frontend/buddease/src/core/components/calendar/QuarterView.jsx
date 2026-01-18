@@ -1,3 +1,4 @@
+// QuarterView.jsx
 import React from 'react';
 import MonthView from '@/MonthView';
 

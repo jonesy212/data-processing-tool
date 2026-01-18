@@ -1,11 +1,11 @@
-SecurityAudit.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/core/config/BaseConfig';
+// SecurityAudit.ts
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import { useSecurityAudit } from '@/core/hooks/useSecurityAudit';
 import SecureFieldManager from "./SecureFieldManager";
 
 
 class SecurityAudit<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {

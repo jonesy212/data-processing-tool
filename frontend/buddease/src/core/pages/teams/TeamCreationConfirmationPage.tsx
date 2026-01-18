@@ -1,4 +1,4 @@
-TeamCreationConfirmationPage.tsx
+// TeamCreationConfirmationPage.tsx
  
 import TeamData from "@/core/components/models/teams/TeamData";
 import React from "react";

@@ -1,4 +1,4 @@
-IconLibraryManager.tsx
+// IconLibraryManager.tsx
 import { IconLibrary, loadIconLibrary } from "@/core/components/icons/iconLibraryLoader";
 import { IconLoader } from "./IconLoader";
 

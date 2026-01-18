@@ -1,4 +1,4 @@
-determineDocumentType.ts
+// determineDocumentType.ts
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
 
 function determineDocumentType(options: {

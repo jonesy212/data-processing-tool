@@ -1,5 +1,4 @@
 // types.ts
-// types/middleware.ts
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';

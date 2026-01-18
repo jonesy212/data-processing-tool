@@ -1,4 +1,4 @@
-GenerateTable.tsx
+// GenerateTable.tsx
 import { Table, TableProps } from 'antd';
 import React from 'react';
 

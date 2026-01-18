@@ -1,6 +1,7 @@
-CustomSlider.tsx
+// CustomSlider.tsx
 import { Slider } from 'antd';
-import React, { ChangeEvent, ChangeEventHandler, useState } from 'react';
+import type { ChangeEvent, ChangeEventHandler, useState } from 'react';
+import React from 'react';
 
 // Define props interface for CustomSlider
 interface CustomSliderProps {

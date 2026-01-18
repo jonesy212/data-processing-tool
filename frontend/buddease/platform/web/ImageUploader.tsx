@@ -1,4 +1,6 @@
+// ImageUploader.tsx
 import React, { ChangeEvent, useState } from "react";
+
 interface UploaderProps {
   onUpload: (file: File) => void;
 }

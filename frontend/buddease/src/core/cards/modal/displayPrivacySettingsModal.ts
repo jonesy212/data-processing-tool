@@ -1,4 +1,4 @@
-displayPrivacySettingsModal.ts
+// displayPrivacySettingsModal.ts
 // Assuming you have a modal component or function to display the privacy settings modal
 
 import { PrivacySettings } from "@/core/settings/PrivacySettings";

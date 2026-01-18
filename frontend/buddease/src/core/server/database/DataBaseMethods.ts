@@ -1,4 +1,4 @@
-DataBaseMethods.ts
+// DataBaseMethods.ts
 src/server/database/DataBaseMethods.ts
 
 import { DatabasePool } from '@/core/server/database/DatabasePool';

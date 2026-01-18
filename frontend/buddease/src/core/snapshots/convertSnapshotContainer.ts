@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotContainerType } from "@/core/snapshots/SnapshotContainer";
+import type { SnapshotContainerType } from "@/core/snapshots/SnapshotContainer";
 ;
 
 /**

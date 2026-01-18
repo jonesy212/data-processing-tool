@@ -1,9 +1,9 @@
-SettingsStore.ts
+// SettingsStore.ts
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
 import { ThemeEnum } from '@/core/libraries/ui/theme/Theme';
 import { NotificationChannels } from '@/core/notifications/NotificationChannels';
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
-import { UserManagerState } from '@/core/state/redux/slices/UserSlice';
+import type { UserManagerState } from '@/core/state/redux/slices/UserSlice';
 import NotificationStore from '@/core/state/stores/NotificationStore';
 import { YourSettingsResponseType } from '@/core/typings/responseTypes';
 import { makeAutoObservable, reaction } from "mobx";

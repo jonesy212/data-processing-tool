@@ -1,9 +1,9 @@
-SQLDoc.ts
+// SQLDoc.ts
 
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SQLDocument } from "@/core/documents/editing/SQLDocument";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 
 // SQLDocument Implementation
 class SQLDoc<

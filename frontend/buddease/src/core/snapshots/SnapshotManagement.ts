@@ -1,11 +1,11 @@
 // SnapshotManagement.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { Snapshot, Snapshots, UpdateSnapshotPayload } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';

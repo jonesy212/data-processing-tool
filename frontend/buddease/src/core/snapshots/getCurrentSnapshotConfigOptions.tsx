@@ -4,11 +4,11 @@ import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
 import { InitializedDelegate } from '@/core/snapshots/SnapshotStoreOptions';
@@ -24,7 +24,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 
 class InitializedDelegateClass<

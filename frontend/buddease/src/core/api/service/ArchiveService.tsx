@@ -1,15 +1,15 @@
 // ArchiveService.tsx
 
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Version } from '@/core/versions/Version';
 import { LocalStorageAdapter, PersistenceLayer } from '@/core/dataIntegration/persistenceLayer';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { CloudStorageProvider, FileMetadata } from '@/core/interfaces/provider/CloudStorageProvider';
+import type { CloudStorageProvider, FileMetadata } from '@/core/interfaces/provider/CloudStorageProvider';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import authService from '@/core/server/auth/AuthService'; // Your client-side AuthService
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";
+import type { Version } from '@/core/versions/Version';
 import StorageService from '@/src/utils/storage/StorageService';
 
 const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
@@ -121,7 +121,7 @@ class ArchiveService {
 
   
   private async storeArchivedSnapshot<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -304,7 +304,7 @@ class ArchiveService {
   }
 
   async archiveSnapshot<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -388,7 +388,7 @@ class ArchiveService {
   }
 
   private validateSnapshotForArchiving<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -418,7 +418,7 @@ class ArchiveService {
   }
 
   private async processSnapshotData<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -528,7 +528,7 @@ class ArchiveService {
 
 
   private sendArchiveNotification<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
@@ -571,7 +571,6 @@ class ArchiveService {
     await this.storage.set('archive-index', newIndex);
   }
 
-  // In ArchiveService.ts
   private getCurrentUser(): string {
     // Check if auth service exists and user is authenticated
     if (this.auth && this.auth.isAuthenticated && this.auth.isAuthenticated()) {
@@ -603,7 +602,7 @@ class ArchiveService {
 
 // Standalone function version
 export const archiveSnapshot = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -618,11 +617,10 @@ export const archiveSnapshot = async <
     config?: Partial<ArchiveConfig>;
   }
 ): Promise<ArchiveMetadata> => {
-  const archiveService = new ArchiveService(options?.config);
+  const archiveService = new ArchiveService(options?.config, storage);
   return archiveService.archiveSnapshot(snapshot, options);
 };
 
-// Utility functions (implement these in archive-utils.ts)
 const generateArchiveId = (): string => {
   return `arc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
@@ -656,6 +654,6 @@ const calculateChecksum = (data: string): string => {
 
 
 export {
-  calculateChecksum, compressData, generateArchiveId
+    calculateChecksum, compressData, generateArchiveId
 };
 

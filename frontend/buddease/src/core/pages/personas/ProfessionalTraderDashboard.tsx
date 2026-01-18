@@ -1,4 +1,4 @@
-ProfessionalTraderDashboard.tsx
+// ProfessionalTraderDashboard.tsx
 import React, { useState } from 'react';
 
 interface ProfessionalTraderDashboardProps {

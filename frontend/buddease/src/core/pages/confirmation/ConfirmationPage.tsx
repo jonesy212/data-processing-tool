@@ -1,5 +1,6 @@
-ConfirmationPage.tsx
-import React, { ReactNode } from 'react';
+// ConfirmationPage.tsx
+import type { ReactNode } from 'react';
+import React from 'react';
 
 interface ConfirmationPageProps {
   title: string;

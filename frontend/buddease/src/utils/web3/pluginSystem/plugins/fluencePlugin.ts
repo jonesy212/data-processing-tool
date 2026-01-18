@@ -1,5 +1,4 @@
-// Import AquaChat and other necessary modules based on your actual structure
-
+// fluencePlugin.ts
 
 import { AquaChat } from '@/core/components/communications/chat/AquaChat';
 import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';

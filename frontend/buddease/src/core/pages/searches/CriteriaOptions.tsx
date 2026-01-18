@@ -1,5 +1,4 @@
-CriteriaOptions.tsx
-CriteriaOptions.ts
+// CriteriaOptions.tsx
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
 import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/core/components/phases/FeedbackPhase";

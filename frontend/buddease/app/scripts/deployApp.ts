@@ -1,5 +1,4 @@
 // deployApp.ts
-// scripts/deployApp.ts - A "big method" for deployment
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';

@@ -9,7 +9,7 @@ import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificatio
 import { NotificationManagerService } from '@/core/services/NotificationManagerService';
 import { NotificationContainer } from '@/core/services/NotificationService';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { AxiosError, AxiosResponse } from 'axios';
 
 // API Configuration

@@ -1,4 +1,4 @@
-// TradingUtils.tsx    
+// TradingUtils.js
         // Example implementation of getTradeExecutions
 const getTradeExecutions = async () => {
   try {

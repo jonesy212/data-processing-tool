@@ -1,5 +1,4 @@
-PromptGeneratorService.tsx
-PromptGeneratorService.ts
+// PromptGeneratorService.tsx
 
 export interface Scenario {
   description: string;

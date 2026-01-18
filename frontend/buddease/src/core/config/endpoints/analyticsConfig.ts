@@ -1,4 +1,4 @@
-analyticsConfig.ts
+// analyticsConfig.ts
 import { AnalyticsEndpoints } from '@/core/typings/categories/AnalyticsEndpoints';
 
 export const analyticsConfig: AnalyticsEndpoints = {

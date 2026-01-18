@@ -1,4 +1,4 @@
-Repository.ts
+// Repository.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 
 export interface Repository<T extends BaseDataEntity> {

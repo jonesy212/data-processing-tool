@@ -1,4 +1,4 @@
-TableComponent.tsx
+// TableComponent.tsx
 // Import necessary components and styles
 import { Table } from 'antd';
 import React from 'react';

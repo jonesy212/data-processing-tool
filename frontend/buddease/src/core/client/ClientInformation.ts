@@ -1,6 +1,6 @@
-ClientInformation.ts
+// ClientInformation.ts
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
-import { MediaMetadata } from "@/core/config/MetaDataOptions";
+import type { MediaMetadata } from "@/core/config/MetaDataOptions";
 
 interface MediaSession {
   metadata: MediaMetadata | null;

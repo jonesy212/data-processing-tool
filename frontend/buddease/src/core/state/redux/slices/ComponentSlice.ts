@@ -1,4 +1,4 @@
-ComponentSlice.ts
+// ComponentSlice.ts
 /features/components/slices/componentSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 

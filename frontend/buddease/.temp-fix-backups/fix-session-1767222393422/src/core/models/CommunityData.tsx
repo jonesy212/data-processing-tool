@@ -2,7 +2,6 @@
 import { Team } from "@/core/components/teams/Team";
 import {
     BaseDataEntity,
-    BaseDataRoot,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
@@ -13,7 +12,7 @@ import { TeamMember } from "@/core/models/teams/TeamMembers";
 
 
 export interface CommunityData<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

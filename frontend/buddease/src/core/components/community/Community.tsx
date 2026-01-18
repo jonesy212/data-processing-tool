@@ -1,4 +1,4 @@
-Community.tsx
+// Community.tsx
 import BlogComponent from '@/core/components/blogs/BlogComponent';
 import CommunityDetails from '@/core/components/community/CommunityDetails';
 import WeThePeoplePage from '@/core/components/community/WeThePeoplePage';

@@ -1,4 +1,4 @@
-Encryption.ts
+// Encryption.ts
 
 import { decryptedData } from "@/core/server/security/decryptedData";
 import { encryptData } from "@/core/server/security/encryptedData";

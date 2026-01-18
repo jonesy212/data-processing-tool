@@ -1,5 +1,4 @@
 // ActionScheduler.tsx
-// ActionScheduler.ts
 import useAsyncHookLinker, { LibraryAsyncHook } from '@/core/hooks/useAsyncHookLinker';
 import { useEffect } from 'react';
 

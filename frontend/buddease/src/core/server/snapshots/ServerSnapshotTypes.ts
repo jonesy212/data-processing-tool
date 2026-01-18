@@ -1,13 +1,13 @@
 // ServerSnapshotTypes.ts
 // Server-specific types and interfaces
 
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import type { CreateSnapshotsPayload } from '@/core/interfaces/payload/payloadTypes';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { CreateSnapshotsPayload } from '@/core/interfaces/payload/payloadTypes';
 
 export interface ServerSnapshotConfig<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -22,7 +22,7 @@ export interface ServerSnapshotConfig<
 }
 
 export interface ServerPayloadHandlers<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -35,7 +35,7 @@ export interface ServerPayloadHandlers<
 }
 
 export interface ServerSnapshotStoreOptions<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

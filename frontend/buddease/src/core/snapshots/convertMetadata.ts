@@ -1,11 +1,11 @@
 // convertMetadata.ts
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { MetadataEntriesType, StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Taggable } from '@/core/models/tracker/Tag';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { EventManager, InitializedState } from "@/core/state/stores/DataStore";
+import type { EventManager, InitializedState } from "@/core/state/stores/DataStore";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 
 function convertBaseConfig<

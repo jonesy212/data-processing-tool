@@ -1,4 +1,4 @@
-// app/generators/corrections/ImportErrorSummary.ts
+// ImportErrorSummary.ts
 import { CircularDependencyDetector } from '@/core/generators/corrections/CircularDependencyDetector';
 import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import { exec } from 'child_process';
@@ -1794,7 +1794,6 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
     console.log('\n🔬 COMPARING ESM SCAN RESULTS');
     console.log('══════════════════════════════');
     
-    // Get results from fix-imports.ts style scan
     const simpleScanIssues = await this.simpleScanForESM();
     
     console.log(`Simple ESM Scan: ${simpleScanIssues.length} issues`);
@@ -1852,7 +1851,6 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
 
 
   private async simpleScanForESM(): Promise<ImportError[]> {
-    // Recreate the simple scan logic from fix-imports.ts
     const errors: ImportError[] = [];
     const scanDirs = ['src', 'app', 'platform']
       .filter(dir => fs.existsSync(path.join(process.cwd(), dir)))
@@ -1870,7 +1868,6 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
           if (importMatch) {
             const importPath = importMatch[1];
             
-            // Simple existence check like fix-imports.ts
             if (!this.simpleImportExists(file, importPath)) {
               errors.push({
                 filePath: file,
@@ -2012,7 +2009,6 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
           categorized = true;
         }
         
-        // Import has .js/.jsx extension in TypeScript file
         if ((sourceExt === '.ts' || sourceExt === '.tsx') && 
             (importExt === '.js' || importExt === '.jsx') && 
             importPath.startsWith('.')) {
@@ -2106,7 +2102,6 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
   }
 
   private simpleImportExists(sourceFile: string, importPath: string): boolean {
-    // Simple check like fix-imports.ts
     if (!importPath.startsWith('.') && !importPath.startsWith('@/')) {
       return true; // Assume node module
     }

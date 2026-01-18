@@ -1,7 +1,7 @@
+// FrontendCacheManager.tsx
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 
 
-// FrontendCacheManager.ts
 class FrontendCacheManager {
   private frontendStructure: FrontendStructure= {} as FrontendStructure;
   private uniqueConstraints: Record<string, Set<any>> = {};

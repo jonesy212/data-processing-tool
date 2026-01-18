@@ -1,5 +1,5 @@
-CalendarYearView.tsx
-import { CommonCalendarProps } from "@/core/components/calendar/Calendar";
+// CalendarYearView.tsx
+import type { CommonCalendarProps } from "@/core/components/calendar/Calendar";
 import { YearInfo } from "@/core/components/calendar/CalendarYear";
 import { Project } from "@/core/models/projects/Project";
 import React from "react";

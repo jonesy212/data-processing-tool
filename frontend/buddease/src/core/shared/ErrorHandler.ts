@@ -1,5 +1,4 @@
 // ErrorHandler.ts
-// utils/ErrorHandler.ts
 import { cryptoNotificationMessages } from '@/core/api/ApiCrypto';
 import { configNotificationMessages } from '@/core/api/ConfigManager';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';

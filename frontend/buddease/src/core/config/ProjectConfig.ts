@@ -1,4 +1,4 @@
-ProjectConfig.ts
+// ProjectConfig.ts
 export interface ProjectConfig {
   projectName: string;
   projectPath: string;

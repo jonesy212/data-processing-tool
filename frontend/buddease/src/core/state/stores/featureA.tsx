@@ -1,4 +1,4 @@
-// FeatureA.tsx
+// featureA.tsx
 import useAsyncHookLinker from "@/core/hooks/useAsyncHookLinker";
 import { useFeatureContext } from "@/core/state/context/FeatureContext";
 import React, { useEffect } from "react";

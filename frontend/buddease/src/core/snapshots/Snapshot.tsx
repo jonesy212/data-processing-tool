@@ -11,7 +11,7 @@ import {
 } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import FileData from "@/core/models/data/FileData";
 import {
     ProjectPhaseTypeEnum
@@ -25,10 +25,10 @@ import {
     SnapshotsObject
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { refreshUI, refreshUIForFile } from "@/core/snapshots/refreshUI";
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotConfigProps } from "@/core/snapshots/SnapshotConfigProps";
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotConfigProps } from "@/core/snapshots/SnapshotConfigProps";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { InitializedConfig, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedConfig, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
 import {
     DataStore,
@@ -58,7 +58,7 @@ import {
 
 import { SnapshotCategory } from "@/core/api/getSnapshotEndpoint";
 import { Label } from "@/core/branding/BrandingSettings";
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
+import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import { ExcludedFields } from "@/core/components/routing/Fields";
 import { HighlightColor } from "@/core/components/styling/Palette";
 import {
@@ -81,14 +81,14 @@ import { K, Meta, T } from '@/core/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from "@/core/pages/layouts/fetchUserAreaDimensions";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { ActivityStatus } from "@/core/pages/profile/Profile";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import baseMeta from "@/core/server/database/baseMeta";
 import { payload } from "@/core/server/database/Payload";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import { createSnapshot } from "@/core/snapshots/createSnapshot";
 import { getData } from "@/core/snapshots/methods/dataMethods";
 import { SnapshotSecurity } from "@/core/snapshots/SnapshotSecurity";
-import { storeProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { storeProps } from "@/core/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { SnapshotContext } from "@/core/state/context/SnapshotContext";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";

@@ -5,9 +5,9 @@ import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, Snapsh
 import ApiConfig from '@/core/api/ApiConfigManager';
 import appTreeApiService from "@/core/api/appTreeApi";
 import getSnapshotId from "@/core/api/SnapshotApi";
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import useDocumentManagement from '@/core/hooks/documents/useDocumentManagement';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { StatusType } from "@/core/models/data/StatusType";
 import { ComponentMethods } from '@/core/page';

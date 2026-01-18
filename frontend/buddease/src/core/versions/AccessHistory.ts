@@ -1,4 +1,4 @@
-AccessHistory.ts
+// AccessHistory.ts
 import { AccessRecord } from "@/core/documents/DocumentOptions";
 
 class AccessHistory {

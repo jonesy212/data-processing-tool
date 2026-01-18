@@ -1,4 +1,4 @@
-loadMarkdownDocumentContent.ts
+// loadMarkdownDocumentContent.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import fs from "fs";
 

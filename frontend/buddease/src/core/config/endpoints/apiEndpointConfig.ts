@@ -1,4 +1,4 @@
-apiEndpointConfig.ts
+// apiEndpointConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ApiConfigEndpoints } from '@/core/typings/categories/ApiConfigEndpoints';
 

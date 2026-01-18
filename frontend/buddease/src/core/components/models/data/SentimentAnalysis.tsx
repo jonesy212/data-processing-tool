@@ -1,4 +1,4 @@
-SentimentAnalysis.tsx
+// SentimentAnalysis.tsx
 import React, { useEffect, useState } from 'react';
 
 const SentimentAnalysis: React.FC<{ text: string }> = ({ text }) => {

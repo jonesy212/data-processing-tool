@@ -1,4 +1,4 @@
-DataProcessingComponent.tsx
+// DataProcessingComponent.tsx
 
 import LoadingIndicator from '@/core/models/tracker/LoadingIndicator';
 import React, { useEffect, useState } from "react";

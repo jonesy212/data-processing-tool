@@ -1,5 +1,5 @@
-BrandingService.ts
-import { BrandingSettings } from '@/core/branding/BrandingSettings';
+// BrandingService.ts
+import type { BrandingSettings } from '@/core/branding/BrandingSettings';
 
 // Import the consolidated default branding settings
 import { defaultBrandingSettings } from '@/core/libraries/ui/theme/Branding';

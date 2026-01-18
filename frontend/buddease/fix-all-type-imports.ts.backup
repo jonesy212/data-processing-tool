@@ -3,6 +3,10 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import type { 
+    FixResult, 
+    TypeImportError
+} from '@/app/scripts/types/import-fixes';
 
 // Helper to safely get error message
 function getErrorMessage(error: unknown): string {
@@ -13,22 +17,6 @@ function getErrorMessage(error: unknown): string {
   } else {
     return String(error);
   }
-}
-
-interface TypeImportError {
-  typeName: string;
-  file: string;
-  line?: number;
-  column?: number;
-  importStatement?: string;
-}
-
-interface FixResult {
-  file: string;
-  original: string;
-  fixed: string;
-  success: boolean;
-  line: number;
 }
 
 
@@ -385,7 +373,7 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(error => {
     console.error('Fatal error:', getErrorMessage(error));
     process.exit(1);

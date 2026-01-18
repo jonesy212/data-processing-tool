@@ -1,4 +1,4 @@
-BaseStoreWithCallbacks.ts
+// BaseStoreWithCallbacks.ts
 import { CallbackRegistry, globalCallbackRegistry } from '@/core/libraries/eventSystem/callbackRegistry';
 import { EventHandler } from '@/core/typings/eventHandlers/eventTypes';
 

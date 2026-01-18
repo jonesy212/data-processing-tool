@@ -1,5 +1,4 @@
-CollaborationBoardStore.tsx
-CollaborationBoardStore.tsx
+// CollaborationBoardStore.tsx
 import React from 'react';
 
 // Define the type for the context value

@@ -1,9 +1,9 @@
 // DocumentBuilderComponent.tsx
-import { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
+import type { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
+import type { getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
 import DocumentBuilder, { saveDocument } from "@/core/documents/editing/DocumentBuilder";
 import { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
 import { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";

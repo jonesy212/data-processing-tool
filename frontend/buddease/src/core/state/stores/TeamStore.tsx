@@ -1,5 +1,4 @@
 // TeamStore.tsx
-// TeamManagerStore.tsx
 import { SnapshotOperationType } from "@/core/actions/SnapshotActions";
 import { userService } from "@/core/api/ApiUser";
 import { videoService } from "@/core/api/ApiVideo";
@@ -9,7 +8,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { Meta } from '@/core/models/data/dataStoreMethods';
 import { Phase } from '@/core/models/phases/Phase';
 import { Project } from "@/core/models/projects/Project";
@@ -18,7 +17,7 @@ import { TagsRecord } from '@/core/models/tracker/Tag';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
 
 import { createSnapshot } from '@/core/snapshots/createSnapshot';

@@ -1,4 +1,4 @@
-RotateAnimation.tsx
+// RotateAnimation.tsx
 import React, { useEffect, useState } from 'react';
 
 interface RotateProps {

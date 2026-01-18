@@ -1,4 +1,4 @@
-CalendarEventPrompt.tsx
+// CalendarEventPrompt.tsx
 import useDynamicPromptPhaseHook, {
     generatePrompt,
 } from "@/core/hooks/phaseHooks/DynamicPromptPhaseHook";

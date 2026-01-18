@@ -1,4 +1,4 @@
-TenantManagementFeature.tsx
+// TenantManagementFeature.tsx
 import React, { useState } from "react";
 
 const TenantManagementFeature: React.FC = () => {

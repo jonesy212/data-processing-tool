@@ -1,4 +1,4 @@
-ECommerceIntegration.tsx
+// ECommerceIntegration.tsx
 import React from "react";
 
 interface ECommerceIntegrationProps {

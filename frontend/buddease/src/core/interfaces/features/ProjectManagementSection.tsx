@@ -1,4 +1,4 @@
-ProjectManagementSection.tsx
+// ProjectManagementSection.tsx
 // ProjectManagementSection component
 import React from 'react';
 

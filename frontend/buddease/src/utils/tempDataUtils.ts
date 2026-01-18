@@ -1,7 +1,8 @@
-  import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+// tempDataUtils.ts
+  import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig'
-import { AppEntity } from "@/core/typings/entities/AppEntity";
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { AppEntity } from "@/core/typings/entities/AppEntity";
 
   export function storeTempData<
     T extends BaseDataEntity = AppEntity,
@@ -29,7 +30,7 @@ import { AppEntity } from "@/core/typings/entities/AppEntity";
   }
 
   export function getTempData<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,

@@ -6,7 +6,8 @@ import generateFakeData, { FakeDataPartial } from "@/core/intelligence/FakeDataG
 import { metadata } from '@/core/layout';
 import { BaseData, Data } from '@/core/models/data/Data';
 import { Member } from '@/core/models/members/Member';
-import SnapshotStore, { Snapshot } from "@/core/snapshots/Snapshot";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import SnapshotStore from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { NotificationType } from '@/core/state/context/NotificationContext';
 import { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';

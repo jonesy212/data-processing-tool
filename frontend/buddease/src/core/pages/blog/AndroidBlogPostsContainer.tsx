@@ -1,4 +1,4 @@
-// AIoSBlogPosts.tsx
+// AndroidBlogPostsContainer.tsx
 
 import internalApiService from "@/core/api/ApiClient";
 

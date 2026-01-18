@@ -1,14 +1,15 @@
-CalendarContext.tsx
+// CalendarContext.tsx
 import { transformTasksToEvents, transformTodosToEvents } from '@/core/calendar/CalendarEvents';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { Member } from '@/core/models/members/Member';
 import { Project } from '@/core/models/projects/Project';
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import { useTaskManagerStore } from '@/core/state/stores/TaskStore';
 import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import type { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React from 'react';
 
 // Define the type for calendar data
 export type SimpleCalendarEvent<

@@ -1,3 +1,4 @@
+// CalendarComponent.jsx
 import DataFrameAPI from "@/core/api/DataframeApi";
 import { useCalendarContext } from '@/core/calendar/CalendarEvent';
 import ProgressBar from "@/core/models/tracker/ProgressBar";

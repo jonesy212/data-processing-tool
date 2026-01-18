@@ -1,8 +1,9 @@
-PersonaCard.tsx
+// PersonaCard.tsx
 import DetailsProps from "@/core/components/models/data/Details";
-import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { SupportedData } from '@/core/models/CommonData';
-import React, { ReactNode } from "react";
+import type { ReactNode } from 'react';
+import React from 'react';
 import DynamicTypography from "./DummyCardLoader";
 
 

@@ -1,8 +1,8 @@
-UserQuestionnaire.tsx
-import { Question } from '@/core/pages/onboarding/Question';
+// UserQuestionnaire.tsx
+import type { Question } from '@/core/pages/onboarding/Question';
 import QuestionnairePage from '@/core/pages/onboarding/QuestionnairePage';
-import axios from 'axios';
 import React from 'react';
+import internalApiService from '@/core/api/ApiClient';
 
 interface UserQuestionnaireProps {
   onSubmit: (userResponses: any) => void;
@@ -32,7 +32,7 @@ const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({
       // Add logic to handle questionnaire submission
 
       // Example: Send responses to the server using Axios
-      const response = await axios.post('/api/questionnaire-submit', {
+      const response = await internalApiService.post('/api/questionnaire-submit', {
         userResponses,
         // Include any other relevant data to send to the server
       });

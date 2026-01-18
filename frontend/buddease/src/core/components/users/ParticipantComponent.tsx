@@ -1,5 +1,4 @@
-ParticipantComponent.tsx
-ParticipantComponent.ts
+// ParticipantComponent.tsx
 import { Participant } from "@/core/pages/management/ParticipantManagementPage";
 import {
     addParticipant,

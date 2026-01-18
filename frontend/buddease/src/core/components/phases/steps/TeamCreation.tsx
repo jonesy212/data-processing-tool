@@ -10,7 +10,7 @@ import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificatio
 import TeamCreationConfirmationPage from "@/core/pages/teams/TeamCreationConfirmationPage";
 import TeamCreationQuestionnaire from "@/core/pages/teams/TeamCreationQuestionnaire";
 import { useNotification } from "@/core/state/context/NotificationContext";
-import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/core/typings/entities/TeamEntity';
+import type { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/core/typings/entities/TeamEntity';
 
 type ConcreteTeamData = TeamData<
   TeamEntity,

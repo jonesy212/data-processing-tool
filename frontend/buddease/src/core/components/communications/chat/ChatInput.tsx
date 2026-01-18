@@ -1,4 +1,4 @@
-ChatInput.tsx
+// ChatInput.tsx
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import React, { useState } from "react";
 

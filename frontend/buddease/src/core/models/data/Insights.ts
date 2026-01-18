@@ -1,4 +1,4 @@
-Insights.ts
+// Insights.ts
 interface Insight {
     id: string;
     description: string;

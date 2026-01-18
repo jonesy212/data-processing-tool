@@ -6,7 +6,7 @@ import { Category } from '@/core/libraries/categories/generateCategoryProperties
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 
 function convertSnapshotStoreToStorage<
   T extends BaseDataEntity,

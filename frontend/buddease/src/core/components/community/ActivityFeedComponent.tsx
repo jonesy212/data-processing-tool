@@ -1,11 +1,11 @@
-ActivityFeedComponent.tsx
+// ActivityFeedComponent.tsx
 import apiNotificationsService from "@/core/api/NotificationsService";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import useSorting from "@/core/hooks/useSorting";
 import { initializeUserData } from "@/core/pages/onboarding/PersonaBuilderData";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { sortFilteredEvents } from '@/core/state/redux/slices/FilteredEventsSlice';
-import { RootState } from "@/core/state/redux/slices/RootSlice";
+import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { useFilterStore } from "@/core/state/stores/FilterStore";
 import { User, UserData } from "@/core/users/User";
 import { subscribeToRealtimeUpdates } from "@/utils/web3/dAppAdapter/functionality/RealtimeUpdates";

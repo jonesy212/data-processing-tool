@@ -1,4 +1,4 @@
-ApiCollaboration.ts
+// ApiCollaboration.ts
 
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';

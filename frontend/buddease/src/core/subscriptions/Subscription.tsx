@@ -1,18 +1,18 @@
 // Subscription.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from '@/core/documents/DocType';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Data } from '@/core/models/data/Data';
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { ModifiedDate } from '@/core/documents/DocType';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { Data } from '@/core/models/data/Data';
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SubscriberCallback } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
-import { SubscriptionLevel } from "@/core/subscriptions/SubscriptionLevel";
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
-import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
+import type { SubscriberCallback } from '@/core/subscribers/Subscriber';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import type { SubscriptionLevel } from "@/core/subscriptions/SubscriptionLevel";
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,

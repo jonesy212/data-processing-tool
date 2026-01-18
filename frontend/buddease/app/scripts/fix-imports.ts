@@ -1,4 +1,4 @@
-// scripts/fix-imports.ts - UPDATED VERSION WITH VALIDATION
+// fix-imports.ts
 
 import { APP_SPECIFIC_RULES } from '@/core/error-analyzer/rules/app-specific-rules';
 import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
@@ -1541,7 +1541,6 @@ function resolveIntentPreserving(
     if (fs.existsSync(exact)) return importPath; // exact hit – keep it
   }
 
-  // 2. If importer is TSX and import has NO extension, prefer .tsx inside components/
   if (isImporterTSX && !importPath.endsWith('.ts') && !importPath.endsWith('.tsx')) {
     const componentsCandidate = path.join(
       PROJECT_ROOT,
@@ -1552,7 +1551,6 @@ function resolveIntentPreserving(
       return importPath; // already points to .tsx in components – keep
     }
 
-    // 3. If original .ts exists BUT there’s also a .tsx in components, return the latter
     const tsPath  = path.join(PROJECT_ROOT, 'src', importPath.replace(/^@\//, '') + '.ts');
     const tsxPath = path.join(PROJECT_ROOT, 'src', importPath.replace(/^@\//, '') + '.tsx');
     if (fs.existsSync(tsPath) && fs.existsSync(tsxPath) && tsxPath.includes('/components/')) {

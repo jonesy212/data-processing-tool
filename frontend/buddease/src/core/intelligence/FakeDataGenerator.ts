@@ -1,6 +1,6 @@
-FakeDataGenerator.ts
+// FakeDataGenerator.ts
 src/app/generators/GenerateFakeData.ts
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { faker } from '@faker-js/faker';
 
 

@@ -1,4 +1,4 @@
-configureCollaborationPreferences.ts
+// configureCollaborationPreferences.ts
 
 import { CollaborationPreferences } from "@/core/interfaces/settings/CollaborationPreferences";
 

@@ -1,5 +1,5 @@
 // subscribeToSnapshotsImplementation.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
@@ -73,7 +73,7 @@ function isSnapshotWithMetadata<
 
 // Type guard to check if subscriber is a function
 const isFunction = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -112,7 +112,7 @@ const addSubscriptionMethods = <T extends Snapshot<any, any, any, any, any, any>
 
 
 const subscribeToSnapshotsImpl = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -165,7 +165,7 @@ const subscribeToSnapshotsImpl = <
 
 
 const subscribeToSnapshotImpl = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

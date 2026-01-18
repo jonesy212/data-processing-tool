@@ -2,7 +2,7 @@
 import { setCurrentPhase } from '@/core/hooks/phaseHooks/EnhancePhase';
 import { PhaseHookConfig } from '@/core/hooks/phaseHooks/PhaseHooks';
 import { Phase } from "@/core/models/phases/Phase";
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
+import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/core/typings/entities/PhaseEntity';
 import React from 'react';
 
 export enum IdeaCreationPhaseEnum {

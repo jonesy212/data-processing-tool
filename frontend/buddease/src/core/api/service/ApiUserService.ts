@@ -3,7 +3,7 @@ import { UserActions } from "@/core/actions/UserActions";
 import internalApiService from '@/core/api/ApiClient';
 import { getEndpointUrl } from '@/core/api/getConfiguredEndpoint';
 import { useAuth } from '@/core/state/context/AuthContext';
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from "@/core/users/User";
 import { observable, runInAction } from 'mobx';
 

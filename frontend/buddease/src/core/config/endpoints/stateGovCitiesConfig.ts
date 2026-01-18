@@ -1,6 +1,6 @@
-stateGovCitiesConfig.ts
+// stateGovCitiesConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
-import { StateGovCitiesEndpoints } from '@/core/typings/categories/StateGovCitiesEndpoints';
+import type { StateGovCitiesEndpoints } from '@/core/typings/categories/StateGovCitiesEndpoints';
 
 export const stateGovCitiesConfig: StateGovCitiesEndpoints = {
   list: { path: `${BASE_URL}/api/state-gov-cities`, method: "GET" },

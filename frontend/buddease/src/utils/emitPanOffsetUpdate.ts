@@ -1,3 +1,4 @@
+// emitPanOffsetUpdate.ts
 //emitPanOffsetUpdate.ts
 import socketIOClient from 'socket.io-client';
 

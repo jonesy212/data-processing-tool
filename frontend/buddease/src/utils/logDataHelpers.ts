@@ -1,5 +1,4 @@
 // logDataHelpers.ts
-// utils/logDataHelpers.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { LogData } from '@/core/models/LogData';

@@ -1,4 +1,4 @@
-// scripts/analyze-errors.ts
+// analyze-errors.ts
 
 import { BuildErrorHandler } from '@/utils/BuildErrorHandler';
 import { ErrorReporter } from '@/utils/ErrorReporter';

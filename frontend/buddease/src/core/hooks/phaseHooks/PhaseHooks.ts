@@ -1,7 +1,7 @@
 // PhaseHooks.ts
 
 import IdeationPhaseComponent from '@/core/components/phases/IdeationPhaseComponent';
-import type { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import configData from "@/core/config/endpoints/configData";
 import { ipfsConfig } from '@/core/config/ipfsConfig';
 import userSettings from '@/core/config/UserSettings';
@@ -11,14 +11,14 @@ import type { TestPhaseHookConfig, TestPhaseHooks, TestResult, TestScenario, Tra
 import type { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
 import type { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
 import type { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
-import type BrandingSettings from '@/core/libraries/theme/BrandingService';
+import type { BrandingSettings } from '@/core/libraries/theme/BrandingService';
 import { ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
 import type { CustomPhaseHooks, Phase } from '@/core/models/phases/Phase';
 import type { Progress } from '@/core/models/tracker/ProgressBar';
 import { useAuth } from '@/core/state/context/AuthContext';
 import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta, PhaseT } from '@/core/typings/entities/PhaseEntity';
-import { ExtendedDAppAdapter } from "@/utils/web3/dAppAdapter/IPFS";
 import type { ExtendedDappProps } from "@/utils/web3/dAppAdapter/IPFS";
+import { ExtendedDAppAdapter } from "@/utils/web3/dAppAdapter/IPFS";
 import { useEffect } from "react";
 
 const phaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
@@ -103,7 +103,6 @@ export interface TestPhaseHooks<
 }
 
 
-// TestPhaseHookConfig.ts
 
 export interface TestPhaseHookConfig<
   T extends BaseDataEntity,

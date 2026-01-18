@@ -1,5 +1,4 @@
 // Integration.tsx
-// Integration.ts
 
 import { addReport, fetchReports, removeReport } from "@/core/api/ApiReport";
 import type { DataProcessingResult } from "@/core/api/service/DataProcessingService";

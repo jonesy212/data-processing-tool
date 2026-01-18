@@ -6,7 +6,7 @@ import { CollaborationPreferences } from '@/core/interfaces/settings/Collaborati
 import { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
 import BrandingSettings from '@/core/libraries/theme/BrandingService';
 import { CommonData } from '@/core/models/CommonData';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { Member } from '@/core/models/members/Member';
 import { Project } from '@/core/models/projects/Project';
 import { Progress } from '@/core/models/tracker/ProgressBar';

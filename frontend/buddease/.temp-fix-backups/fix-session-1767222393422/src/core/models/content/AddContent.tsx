@@ -11,7 +11,7 @@ import { createLatestVersion } from '@/core/versions/createLatestVersion';
 
 import ContentDetailsListItem from '@/core/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/core/components/models/content/ContentToolbar';
-import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { Attachment } from '@/core/documents/attachment/Attachment';
 import UserRoles from '@/core/models/UserRoles';
 import { SharedMetadata } from '@/core/shared/SharedMetadata';
@@ -27,7 +27,7 @@ import {
 import React, { FormEvent, useState } from 'react';
 
 interface Content<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

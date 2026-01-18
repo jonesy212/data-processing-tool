@@ -1,4 +1,4 @@
-Firewalls.ts
+// Firewalls.ts
 class Firewalls {
     constructor() {
       // Initialize firewall configuration

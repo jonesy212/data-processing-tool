@@ -2,8 +2,8 @@
 // DynamicHooks.tsx
 import { loadDashboardState } from "@/core/api/ApiDashboard";
 import Web3Provider from '@/core/components/web3/Web3Provider';
-import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import type { Attachment } from '@/core/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
 import { ModifiedDate } from '@/core/documents/DocType';
 import { myPhaseHook } from "@/core/hooks/phaseHooks/EnhancePhase";
 import useAsyncHookLinker, { LibraryAsyncHook } from "@/core/hooks/useAsyncHookLinker";

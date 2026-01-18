@@ -305,7 +305,7 @@ text
     "config:backup:list": "node scripts/rollback-configs.js --list",
     "config:verify": "node scripts/validate-configs.js",
     "config:git-rollback": "node scripts/rollback-configs.js --git",
-    "tree": "ts-node src/app/scripts/generateTree.ts",
+    "tree:generate": "ts-node src/app/scripts/generateTree.ts",
     "tree:json": "ts-node src/app/scripts/generateTree.ts json",
     "tree:markdown": "ts-node src/app/scripts/generateTree.ts markdown",
     "prestart": "pnpm run config:sync",

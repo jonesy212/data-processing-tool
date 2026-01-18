@@ -1,4 +1,4 @@
-// example-usage.js
+// analyzer-demo.js
 const { generateEnhancedTreeReport } = require('./generateTree');
 
 // Example 1: Analyze for a task management feature

@@ -1,5 +1,5 @@
-// app/components/calendar/CalendarWeek.tsx
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+// CalendarWeek.tsx
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { Task } from '@/core/components/models/tasks/Task';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';

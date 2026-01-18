@@ -1,7 +1,7 @@
-import { ComponentPattern } from '@/app/scripts/ComponentPatternDetector';
-import {
-    BaseDataEntity,
-    BaseDataRoot
+// TemplateGenerator.ts
+import type { ComponentPattern } from '@/core/scripts/ComponentPatternDetector';
+import type {
+    BaseDataEntity
 } from '@/core/config/BaseConfig';
 
 type GeneratorPattern = {
@@ -20,7 +20,7 @@ export class TemplateGenerator {
   /* =========================================================
    *  PUBLIC GENERATION ENTRY-POINTS
    * ========================================================= */
-  public generate<T extends BaseDataEntity = BaseDataRoot>(
+  public generate<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     switch (pattern.pattern) {
@@ -43,25 +43,25 @@ export class TemplateGenerator {
     }
   }
 
-  public generateList<T extends BaseDataEntity = BaseDataRoot>(
+  public generateList<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     return this.listTemplate<T>(pattern);
   }
 
-  public generateDetail<T extends BaseDataEntity = BaseDataRoot>(
+  public generateDetail<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     return this.detailTemplate<T>(pattern);
   }
 
-  public generateModal<T extends BaseDataEntity = BaseDataRoot>(
+  public generateModal<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     return this.modalTemplate<T>(pattern);
   }
 
-  public generateChart<T extends BaseDataEntity = BaseDataRoot>(
+  public generateChart<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     return this.chartTemplate<T>(pattern);
@@ -70,7 +70,7 @@ export class TemplateGenerator {
   /* =========================================================
    *  PRIVATE TEMPLATES (richer file-1 versions kept)
    * ========================================================= */
-  private crudTemplate<T extends BaseDataEntity = BaseDataRoot>(
+  private crudTemplate<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const {
@@ -99,7 +99,7 @@ export class TemplateGenerator {
 
     ${propsInterface}
 
-    export const ${componentName} = <T extends BaseDataEntity = BaseDataRoot>({
+    export const ${componentName} = <T extends BaseDataEntity = BaseDataEntity>({
     ${requiresAuth ? '  accessToken,\n' : ''}${usesSnapshotStore ? '  snapshotConfigs,\n  configId,\n' : ''}${usesDebugInfo ? '  debugInfo,\n  onDebug,\n' : ''}${usesMeta ? '  meta,\n' : ''}${usesComponentConfig && configKeys ? '  themeOverride,\n' : ''}  data,
       onChange,
     }: ${componentName}Props<T>) => {
@@ -118,7 +118,7 @@ export class TemplateGenerator {
   `;
   }
 
-  private formTemplate<T extends BaseDataEntity = BaseDataRoot>(
+  private formTemplate<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const {
@@ -139,7 +139,7 @@ export class TemplateGenerator {
 ${usesSnapshotStore ? "import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';\n" + "import { storeTempData, getTempData } from '@/app/utils/tempDataUtils';\n" : ''}${usesComponentConfig ? "import { useComponentConfig } from '@/app/hooks/useComponentConfig';\n" : ''}${usesErrorHandling ? "import { useErrorHandling } from '@/app/hooks/useErrorHandling';\n" : ''}
 
 interface ${componentName}Props<T extends BaseDataEntity> {
-${usesSnapshotStore ? '  snapshotConfigs: SnapshotStoreConfig<T, T, any, any, any, any>[];\n  configId: string;' : ''}${usesComponentConfig && configKeys ? `\n  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;` : ''}
+${usesSnapshotStore ? '  snapshotConfigs: SnapshotStoreConfig<T, T, any, any, any, any>[];\n  configId: string;' : ''}${usesComponentConfig && configKeys ? `\n  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${k}'`).join(' | ')}>;` : ''}
 }
 
 export const ${componentName} = <T extends BaseDataEntity>({
@@ -206,7 +206,7 @@ ${usesSnapshotStore ? '  snapshotConfigs, configId,' : ''}${usesComponentConfig 
 
   private safeKeys<T extends BaseDataEntity>(keys?: (keyof T)[]): string[] {
     if (!keys) return [];
-    return keys.map(k => String(k));
+    return keys.map((k: keyof T, index: number, array: (keyof T)[]) => String(k));
   }
 
   private tableTemplate<T extends BaseDataEntity>(
@@ -225,7 +225,7 @@ ${usesSnapshotStore ? '  snapshotConfigs, configId,' : ''}${usesComponentConfig 
 
   interface ${componentName}Props<T extends BaseDataEntity> {
     data: T[];
-  ${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;` : ''}
+  ${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${String(k)}'`).join(' | ')}>;` : ''}
   }
 
   export const ${componentName} = <T extends BaseDataEntity>({
@@ -283,7 +283,7 @@ ${usesSnapshotStore ? '  snapshotConfigs, configId,' : ''}${usesComponentConfig 
 
 interface ${componentName}Props<T extends BaseDataEntity> {
   items: T[];
-${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;` : ''}
+${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${String(k)}'`).join(' | ')}>;` : ''}
 }
 
 export const ${componentName} = <T extends BaseDataEntity>({
@@ -328,7 +328,7 @@ export const ${componentName} = <T extends BaseDataEntity>({
 
   interface ${componentName}Props<T extends BaseDataEntity> {
     data: T;
-  ${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;` : ''}
+  ${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${String(k)}'`).join(' | ')}>;` : ''}
   }
 
   export const ${componentName} = <T extends BaseDataEntity>({
@@ -367,7 +367,7 @@ interface ${componentName}Props {
   isOpen: boolean;
   onClose: () => void;
   children?: React.ReactNode;
-${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;` : ''}
+${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${String(k)}'`).join(' | ')}>;` : ''}
 }
 
 export const ${componentName}: React.FC<${componentName}Props> = ({
@@ -431,7 +431,7 @@ interface ${componentName}Props {
   data: any[];
   width?: number;
   height?: number;
-${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;` : ''}
+${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${String(k)}'`).join(' | ')}>;` : ''}
 }
 
 export const ${componentName}: React.FC<${componentName}Props> = ({
@@ -521,7 +521,7 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
     return imports.join('\n');
   }
 
-  private buildPropsInterface<T extends BaseDataEntity = BaseDataRoot>(
+  private buildPropsInterface<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const {
@@ -551,17 +551,17 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
       props.push('  meta?: DefaultMeta<T, T>;');
     }
     if (usesComponentConfig && configKeys) {
-      props.push(`  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;`);
+      props.push(`  themeOverride?: Pick<ComponentsConfig, ${configKeys.map((k: string)=> `'${String(k)}'`).join(' | ')}>;`);
     }
     props.push('  data: T[];');
     props.push('  onChange?: (rows: T[]) => void;');
 
-    return `interface ${componentName}Props<T extends BaseDataEntity = BaseDataRoot> {
+    return `interface ${componentName}Props<T extends BaseDataEntity = BaseDataEntity> {
 ${props.join('\n')}
 }`;
   }
 
-  private buildHooks<T extends BaseDataEntity = BaseDataRoot>(
+  private buildHooks<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const {
@@ -587,7 +587,7 @@ ${props.join('\n')}
     return hooks.join('\n');
   }
 
-  private buildDebugHelper<T extends BaseDataEntity = BaseDataRoot>(
+  private buildDebugHelper<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const { componentName, usesDebugInfo } = pattern;
@@ -607,7 +607,7 @@ ${props.join('\n')}
   };`;
   }
 
-  private buildSnapshotEffects<T extends BaseDataEntity = BaseDataRoot>(
+  private buildSnapshotEffects<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const { usesSnapshotStore, componentName } = pattern;
@@ -636,7 +636,7 @@ ${props.join('\n')}
   }, [rows]);`;
   }
 
-  private buildHandlers<T extends BaseDataEntity = BaseDataRoot>(
+  private buildHandlers<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const { usesNotificationService, usesErrorHandling } = pattern;
@@ -656,7 +656,7 @@ ${props.join('\n')}
   };`;
   }
 
-  private buildCrudRender<T extends BaseDataEntity = BaseDataRoot>(
+  private buildCrudRender<T extends BaseDataEntity = BaseDataEntity>(
     pattern: ComponentPattern<T>
   ): string {
     const {

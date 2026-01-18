@@ -2,7 +2,7 @@
 import { parseData, ParsedData } from '@/core/dataIntegration/parseData';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { sanitizeComments } from '@/core/models/cypto/SanitizationFunctions';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 
 // Define a specific type that extends T to include the comment property
 interface DataWithComment<T extends BaseData<any>> {

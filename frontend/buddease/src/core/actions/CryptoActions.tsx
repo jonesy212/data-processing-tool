@@ -1,5 +1,4 @@
 // CryptoActions.tsx
-// CryptoActions.ts
 import TradingStrategy from "@/core/trading/TradingStrategy";
 import { MarketTrendEnum } from '@/core/pages/searches/CriteriaEnums'
 import type { InvestmentStrategy } from '@/core/components/crypto/InvestmentStrategy';

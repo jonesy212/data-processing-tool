@@ -1,7 +1,7 @@
 // EducationalVideoMetadata.ts
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
-import { VideoMetadata } from '@/core/config/StructuredMetadata';
-import { BaseData } from '@/core/models/data/Data';
+import type { VideoMetadata } from '@/core/config/StructuredMetadata';
+import type { BaseData } from '@/core/models/data/Data';
 import { UserData } from '@/core/users/User';
 
 interface EducationalVideoMetadata<

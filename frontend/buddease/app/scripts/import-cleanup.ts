@@ -1,4 +1,4 @@
-// app/scripts/import-cleanup.ts
+// import-cleanup.ts
 import { execSync } from 'child_process';
 
 async function runImportCleanup() {

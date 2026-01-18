@@ -1,4 +1,4 @@
-ApiTeam.ts
+// ApiTeam.ts
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { headersConfig } from "@/core/components/shared/SharedHeaders";

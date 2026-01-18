@@ -1,4 +1,4 @@
-NetworkSegmentation.ts
+// NetworkSegmentation.ts
 class NetworkSegmentation {
     constructor() {
       // Initialize network segmentation configuration

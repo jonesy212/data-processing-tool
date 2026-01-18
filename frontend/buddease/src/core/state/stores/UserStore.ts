@@ -1,3 +1,4 @@
+// UserStore.ts
 //UserStore.ts
 import CalendarEventTimingOptimization, {
     ExtendedCalendarEvent,
@@ -10,7 +11,7 @@ import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages"
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useSecureUserId } from "@/core/hooks/useSecureUserId";
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AssignBaseStore, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";

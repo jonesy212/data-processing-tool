@@ -1,10 +1,10 @@
-Fields.ts
+// Fields.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { TaskMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { TaskMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { ProjectMetadata } from "@/core/config/StructuredMetadata";
 import { sharedBaseData } from '@/core/config/metadata/MetadataHooks';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Task } from '@/core/models/tasks/Task';
+import type { Task } from '@/core/models/tasks/Task';
 import type { ExampleAttachment, ExampleEntity, ExampleExcludedFields, ExampleIncludedFields, ExampleK, ExampleMeta } from "@/core/typings/entities/ExampleEntity";
 import {
     ProjectAttachment,

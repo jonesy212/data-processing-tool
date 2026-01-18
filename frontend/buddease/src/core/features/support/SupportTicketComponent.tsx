@@ -1,8 +1,7 @@
-SupportTicketComponent.tsx
-SupportTicketComponent.ts
+// SupportTicketComponent.tsx
 app/features/support/SupportTicketComponent.tsx
 import UserSupportPhase from '@/core/features/support/UserSupportPhaseComponent';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { provideCustomerSupport } from '@/core/state/slices/ApiManagerSlice';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

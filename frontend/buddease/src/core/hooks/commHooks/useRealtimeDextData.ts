@@ -1,5 +1,6 @@
-useRealtimeDextData.ts
-import useRealtimeData, { RealtimeUpdateCallback } from "@/core/hooks/commHooks/useRealtimeData";
+// useRealtimeDextData.ts
+import type { RealtimeUpdateCallback } from '@/core/hooks/commHooks/useRealtimeData';
+import useRealtimeData from '@/core/hooks/commHooks/useRealtimeData';
 import { DEXEnum } from '@/core/models/cypto/exchangeIntegration';
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";

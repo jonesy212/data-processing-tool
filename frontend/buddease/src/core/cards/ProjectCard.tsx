@@ -1,4 +1,4 @@
-ProjectCard.tsx
+// ProjectCard.tsx
 import { AnimationsAndTransitions } from '@/core/components/styling/AnimationsAndTansitions';
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
 import { AnimatedComponentRef } from "@/core/libraries/animations/AnimationComponent";

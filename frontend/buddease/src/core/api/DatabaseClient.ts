@@ -1,21 +1,15 @@
-DatabaseClient.ts
+// DatabaseClient.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 
 import internalApiService from '@/core/api/ApiClient';
 import { endpoints } from "@/core/api/endpointConfigurations";
-import { DatabaseConfig, defaultDatabaseConfig } from '@/core/config/DatabaseConfig';
-import { DatasetModel } from "@/core/todos/tasks/DataSetModel";
+import type { DatabaseConfig, defaultDatabaseConfig } from '@/core/config/DatabaseConfig';
+import type { DatasetModel } from "@/core/todos/tasks/DataSetModel";
 import { buildUrl } from '@/utils/urlBuilder';
-import { NextRequest, NextResponse } from 'next/server';
-import {
-    Pool,
-    PoolConfig,
-    QueryConfig,
-    QueryConfigValues,
-    QueryResult,
-    QueryResultRow
-} from "pg";
+import type { NextRequest, NextResponse } from 'next/server';
+import type { PoolConfig, QueryConfig, QueryConfigValues, QueryResult, QueryResultRow } from 'pg';
+import { Pool } from 'pg';;
 
 
 const pg = require('pg');

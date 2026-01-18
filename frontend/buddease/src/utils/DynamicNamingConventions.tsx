@@ -1,4 +1,4 @@
-// components/DynamicNamingConventions.tsx
+// DynamicNamingConventions.tsx
 import { useDynamicComponents } from '@/core/components/DynamicComponentsContext';
 import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from '@/core/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';

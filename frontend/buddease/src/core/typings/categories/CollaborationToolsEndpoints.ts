@@ -1,5 +1,5 @@
-CollaborationToolsEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// CollaborationToolsEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface CollaborationToolsEndpoints extends EndpointCategoryConfig {
   createTask: EndpointConfig;

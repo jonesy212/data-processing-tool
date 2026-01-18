@@ -1,12 +1,12 @@
-Calendar.tsx
+// Calendar.tsx
 import { Label } from '@/core/branding/BrandingSettings';
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import YourCalendarLibrary from '@/core/calendar/YourCalendarLibrary';
 import MonthView from '@/core/components/calendar/CalendarMonthView';
 import { YearInfo } from '@/core/components/calendar/CalendarYear';
 import YearView from '@/core/components/calendar/CalendarYearView';
 import DayView from '@/core/components/calendar/DayOfWeek';
-import { MonthInfo } from '@/core/components/calendar/Month';
+import type { MonthInfo } from '@/core/components/calendar/Month';
 import WeekView from '@/core/components/calendar/WeekView';
 import { CryptoHolding } from '@/core/components/crypto/CryptoHolding';
 import CryptoTransaction from '@/core/components/crypto/CryptoTransaction';
@@ -17,7 +17,7 @@ import { Project } from '@/core/models/projects/Project';
 import { Progress } from "@/core/models/tracker/ProgressBar";
 import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
 import { Resource } from '@/core/state/redux/slices/CollaborationSlice';
-import { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { ContentPost } from '@/core/typings/contentTypes';
 import { Milestone } from '@/core/typings/milestoneTypes';
 import React from 'react';

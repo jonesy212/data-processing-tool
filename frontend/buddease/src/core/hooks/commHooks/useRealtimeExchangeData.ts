@@ -1,6 +1,7 @@
-useRealtimeExchangeData.ts
+// useRealtimeExchangeData.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import useRealtimeData, { RealtimeUpdateCallback } from "@/core/hooks/commHooks/useRealtimeData";
+import type { RealtimeUpdateCallback } from '@/core/hooks/commHooks/useRealtimeData';
+import useRealtimeData from '@/core/hooks/commHooks/useRealtimeData';
 import { ExchangeEnum } from "@/core/models/cypto/exchangeIntegration";
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";

@@ -6,7 +6,7 @@ import { useMeta } from "@/core/config/useMeta";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

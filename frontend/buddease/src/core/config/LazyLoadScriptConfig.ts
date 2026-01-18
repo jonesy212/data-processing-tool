@@ -1,10 +1,10 @@
-LazyLoadScriptConfig.ts
+// LazyLoadScriptConfig.ts
 import { ApiConfig } from '@/core/api/ApiConfigService';
 import { createSystemConfigs } from '@/core/api/systemConfigs';
 import { traverseFrontendDirectory } from '@/core/api/traverse/route';
 import { UserConfigs } from '@/core/api/userConfigs';
 import { BackendConfig, backendConfig } from '@/core/config/BackendConfig';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DocumentBuilderConfig } from '@/core/config/DocumentBuilderConfig';
 import { FrontendConfig, frontendConfig } from '@/core/config/FrontendConfig';
 import MainConfig from '@/core/config/MainConfig';
@@ -40,7 +40,7 @@ interface LazyLoadScriptConfig {
 }
 
 class LazyLoadScriptConfigImpl<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

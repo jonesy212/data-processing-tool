@@ -1,4 +1,4 @@
-TradingAssetsStep.tsx
+// TradingAssetsStep.tsx
 import { BlockchainAsset } from '@/core/typings/cryptoTypes/BlockchainAsset';
 import React, { useState } from 'react';
 

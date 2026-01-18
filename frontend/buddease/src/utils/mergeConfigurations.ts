@@ -1,4 +1,4 @@
-mergeConfigurations.ts
+// mergeConfigurations.ts
 
 /**
  * Merge configurations ensuring no property is overwritten.

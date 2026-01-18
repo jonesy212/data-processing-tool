@@ -10,7 +10,7 @@ import useSecureSnapshotId from '@/core/hooks/useSecureSnapshotId';
 import useSecureStoreId from '@/core/hooks/useSecureStoreId';
 import { getCategoryProperties } from '@/core/libraries/categories/CategoryManager';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { allCategories } from "@/core/models/data/DataStructureCategories";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { createSnapshotStoreOptions } from "@/core/snapshots/createSnapshotStoreOptions";

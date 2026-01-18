@@ -1,5 +1,5 @@
-DevEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// DevEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface DevEndpoints extends EndpointCategoryConfig {
   getMockData: EndpointConfig;

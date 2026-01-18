@@ -1,4 +1,4 @@
-generateAllHeaders.ts
+// generateAllHeaders.ts
 import createCacheHeaders from "@/core/api/headers/cacheHeaders";
 import generateCustomHeaders from "@/core/api/headers/customHeaders";
 import createRequestHeaders from "@/core/api/headers/requestHeaders";

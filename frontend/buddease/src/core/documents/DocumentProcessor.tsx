@@ -1,5 +1,4 @@
-DocumentProcessor.tsx
-DocumentProcessor.ts
+// DocumentProcessor.tsx
 import { EditorState } from 'draft-js';
 import { useState } from 'react';
 const DocumentProcessor = () => {

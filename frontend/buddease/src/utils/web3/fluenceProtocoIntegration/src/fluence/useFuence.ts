@@ -1,4 +1,4 @@
-// UseFluence.tsx
+// useFuence.ts
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { useEffect } from 'react';
 

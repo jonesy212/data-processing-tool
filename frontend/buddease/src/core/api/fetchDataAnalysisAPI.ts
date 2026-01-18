@@ -1,10 +1,11 @@
-fetchDataAnalysisAPI.ts
+// fetchDataAnalysisAPI.ts
 dataAnalysisSagas.ts
 import { DataAnalysisActions } from "@/core/actions/DataAnalysisActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { DataAnalysis } from "@/core/projects/DataAnalysisPhase/DataAnalysis";
 import { dataAnalysisService } from "@/core/typings/phases/dataAnalysisTypes";
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint

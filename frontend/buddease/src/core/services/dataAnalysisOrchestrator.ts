@@ -1,8 +1,9 @@
 // dataAnalysisOrchestrator.ts
 // // Function to initiate data analysis process
 import axiosInstance from '@/core/api/csrfToken';
-import dataProcessingService, { DataProcessing, DataProcessingResult } from "@/core/api/service/DataProcessingService";
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { DataProcessing, DataProcessingResult } from '@/core/api/service/DataProcessingService';
+import dataProcessingService from '@/core/api/service/DataProcessingService';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 

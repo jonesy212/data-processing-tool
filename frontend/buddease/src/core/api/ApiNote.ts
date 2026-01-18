@@ -13,7 +13,7 @@ import FolderData from '@/core/models/data/FolderData';
 import type { Tag } from '@/core/models/tracker/Tag';
 import { Encryption } from '@/core/server/security/Encryption';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { NoteEntity, NoteK } from '@/core/typings/entities/NoteEntity';
+import type { NoteEntity, NoteK } from '@/core/typings/entities/NoteEntity';
 import type {
     NoteAttachment,
     NoteExcludedFields,

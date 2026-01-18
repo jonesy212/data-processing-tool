@@ -1,4 +1,4 @@
-BugStatusUpdate.tsx
+// BugStatusUpdate.tsx
 import React from 'react';
 
 const BugStatusUpdate = ({ bug, onUpdateStatus }) => {

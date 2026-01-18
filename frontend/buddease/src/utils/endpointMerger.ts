@@ -1,5 +1,5 @@
-endpointMerger.ts
-import { EndpointConfigurations } from '@/core/config/EndpointConfig';
+// endpointMerger.ts
+import type { EndpointConfigurations } from '@/core/config/EndpointConfig';
 import { generateEndpointUrl } from '@/utils/urlGenerator';
 import mergeConfigurations from './mergeConfigurations';
 

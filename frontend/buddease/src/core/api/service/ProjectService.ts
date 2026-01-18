@@ -1,13 +1,13 @@
-ProjectService.ts
+// ProjectService.ts
 import { ProjectActions } from "@/core/actions/ProjectActions";
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { ProjectMetadata } from "@/core/config/StructuredMetadata";
+import type { ProjectMetadata } from "@/core/config/StructuredMetadata";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Phase } from "@/core/models/phases/Phase";
 import ProjectModel from "@/core/models/ProjectModel";
 import { Project, ProjectData } from '@/core/models/projects/Project';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Product } from "@/core/products/Product";
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";
 import { User } from "@/core/users/User";
@@ -494,7 +494,6 @@ class ProjectService {
   };
   
   
-  // Add other methods for updating, deleting, and other project-related operations similar to the ones in ApiUser.ts
 
 }
 

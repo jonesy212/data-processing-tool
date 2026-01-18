@@ -1,4 +1,4 @@
-useAppInitialization.ts
+// useAppInitialization.ts
 app/layout/useAppInitialization.ts
 
 import { ChangeLogManager } from '@/core/logging/ChangeLogEntry';

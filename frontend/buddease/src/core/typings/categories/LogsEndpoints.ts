@@ -1,5 +1,5 @@
-LogsEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// LogsEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface LogsEndpoints extends EndpointCategoryConfig {
   logSession: EndpointConfig;

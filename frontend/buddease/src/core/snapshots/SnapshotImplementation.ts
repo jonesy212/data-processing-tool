@@ -1,5 +1,5 @@
-SnapshotImplementation.ts
-import { Data } from '@/core/models/data/Data';
+// SnapshotImplementation.ts
+import type { Data } from '@/core/models/data/Data';
 import { generateSnapshotId } from "@/utils/snapshotUtils";
 import type {  Snapshot } from '@/core/snapshots/Snapshot';
 

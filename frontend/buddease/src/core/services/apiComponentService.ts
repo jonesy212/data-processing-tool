@@ -1,5 +1,4 @@
 // apiComponentService.ts
-// /app/services/apiComponentService.ts
 import internalApiService from '@/core/api/ApiClient';
 export interface FetchComponentPayload { id: string; }
 export interface CreateComponentPayload { data: any; }

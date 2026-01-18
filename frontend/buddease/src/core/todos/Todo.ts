@@ -4,17 +4,18 @@ import { Collaborator } from '@/core/collaborators/Collaborator';
 import { DayOfWeekProps } from '@/core/components/calendar/DayOfWeek';
 import { Month } from '@/core/components/calendar/Month';
 import { Task } from '@/core/components/models/tasks/Task';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { options } from '@/core/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import ChecklistItem, { ChecklistItemProps } from '@/core/models/ChecklistItem';
+import type { ChecklistItemProps } from '@/core/models/ChecklistItem';
+import ChecklistItem from '@/core/models/ChecklistItem';
 import { Comment } from '@/core/models/comments/Comments';
 import { Content } from '@/core/models/content/AddContent';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
 import { Phase } from '@/core/models/phases/Phase';
 import { Progress } from '@/core/models/tracker/ProgressBar';
@@ -31,7 +32,7 @@ import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import { default as initialState, default as SnapshotStore } from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
+import type { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
 import { CustomComment } from '@/core/state/redux/slices/BlogSlice';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import type { DataStore } from '@/core/state/stores/DataStore';
@@ -55,7 +56,7 @@ export type UserAssignee = Pick<User<UserEntity, UserK, UserMeta, UserAttachment
 };
 
 export interface Todo<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -174,7 +175,7 @@ export interface TodoManagerState<
 
 
 interface TodoMeta<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -192,7 +193,7 @@ interface TodoMeta<
 
 
 class TodoImpl<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -309,7 +310,7 @@ class TodoImpl<
     },
     
     getDataStoreMap: (): Promise<Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
-      return new Promise<Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, >>((resolve) => {
+      return new Promise<Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>((resolve) => {
         resolve(new Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>());
       })
     },

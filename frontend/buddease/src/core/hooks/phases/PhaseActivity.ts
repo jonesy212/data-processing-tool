@@ -1,4 +1,4 @@
-PhaseActivity.ts
+// PhaseActivity.ts
 // Activity tracking utility for phases
 const ACTIVITY_STORAGE_KEY = 'phase-activity-tracker';
 

@@ -1,8 +1,8 @@
 // SnapshotInitialization.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { InitializedState } from "@/core/state/stores/DataStore";
+import type { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedState } from "@/core/state/stores/DataStore";
 
 interface SnapshotInitialization<
   T extends BaseDataEntity,

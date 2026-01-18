@@ -1,4 +1,4 @@
-ApiReport.ts
+// ApiReport.ts
 import internalApiService from '@/core/api/ApiClient';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { FinancialMetrics, processFinancialMetrics } from '@/core/components/metrics/FinancialMetrics';

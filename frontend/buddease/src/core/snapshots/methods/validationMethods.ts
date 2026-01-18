@@ -10,7 +10,6 @@ import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 ;
 
-// validationMethods.ts
 export const ValidationMethods = {
   // EVENT & HIERARCHY VALIDATION METHODS
   
@@ -77,7 +76,6 @@ export const ValidationMethods = {
     },
     
 
-    // validationMethods.ts - Add this to the ValidationMethods object
 addChild: function<
     T extends BaseDataEntity,
     K extends T = T,

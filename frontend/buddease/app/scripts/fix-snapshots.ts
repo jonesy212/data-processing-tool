@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// src/app/scripts/fix-snapshots.ts
+// fix-snapshots.ts
 
 import fs from 'fs';
 import path from 'path';

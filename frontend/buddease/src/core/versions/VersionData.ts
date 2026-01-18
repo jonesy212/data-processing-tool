@@ -12,7 +12,7 @@ import { SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedPro
 import { createBaseData } from '@/core/hooks/useSnapshotManager';
 import { Comment } from '@/core/models/comments/Comments';
 import { Content } from '@/core/models/content/AddContent';
-import { BaseData, Data } from '@/core/models/data/Data';
+import type { BaseData, Data } from '@/core/models/data/Data';
 import { Permission } from '@/core/permissions/Permission';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
@@ -20,7 +20,7 @@ import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIn
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import BackendStructure from '@/core/server/database/BackendStructure';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
-import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { CustomComment } from '@/core/state/redux/slices/BlogSlice';
 import { HistoryEntry } from '@/core/state/stores/HistoryStore';
 import MobXEntityStore from '@/core/state/stores/MobXEntityStore';

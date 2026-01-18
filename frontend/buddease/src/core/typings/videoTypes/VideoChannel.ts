@@ -1,4 +1,4 @@
-VideoChannel.ts
+// VideoChannel.ts
 // Define the VideoChannel interface
 interface VideoChannel {
     id: string;

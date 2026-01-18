@@ -1,5 +1,4 @@
-selectDocumentEditingPermissionsExample.tsx
-selectDocumentEditingPermissionsExample.ts
+// selectDocumentEditingPermissionsExample.tsx
 
 import { assignDocumentPermissions, canEditDocumentContent, selectDocumentEditingPermissions, useDocumentEditingPermissions } from "@/core/components/documents/selectDocumentEditingPermissions";
 import { UserRoleEnum } from "@/core/models/UserRoles";

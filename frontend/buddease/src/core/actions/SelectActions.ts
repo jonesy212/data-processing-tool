@@ -1,5 +1,4 @@
-SelectActions.ts
-SelectActions
+// SelectActions.ts
 
 import { createAction } from "@reduxjs/toolkit";
 

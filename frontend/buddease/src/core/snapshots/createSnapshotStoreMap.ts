@@ -5,8 +5,8 @@ import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotStoreMap } from '@/core/snapshots/SnapshotMap';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
 import SnapshotStore from './SnapshotStore';
 
 export function createSnapshotStoreMap<

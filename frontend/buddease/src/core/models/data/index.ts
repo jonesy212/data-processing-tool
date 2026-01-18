@@ -1,5 +1,4 @@
 // index.ts
-// details/index.ts
 // Import and re-export individual detail configurations
 export type { default as ProjectDetails } from '@/core/models/projects/Project';
 export { default as TaskDetails } from '@/core/models/tasks/Task';

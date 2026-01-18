@@ -10,8 +10,8 @@ import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { Content } from '@/core/models/content/AddContent';
-import { BaseData, Data } from '@/core/models/data/Data';
-import { ProjectStateEnum } from '@/core/models/data/StatusType';
+import type { BaseData, Data } from '@/core/models/data/Data';
+import type { ProjectStateEnum } from '@/core/models/data/StatusType';
 import { Member } from '@/core/models/members/Member';
 import { ProjectType } from '@/core/models/projects/Project';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
@@ -22,8 +22,8 @@ import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { InitializedData, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { InitializedData, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
@@ -1006,20 +1006,6 @@ const updateSnapshot = <
   );
 };
 
-
-const getSnapshots = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
-  data: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category?: Category
-): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
-  return Array.isArray(data) ? data.filter(snapshot => snapshot.category === category) : [];
-};
 
 const getSnapshotItems = async <
   T extends BaseDataEntity,

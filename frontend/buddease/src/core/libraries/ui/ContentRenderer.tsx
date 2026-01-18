@@ -1,8 +1,8 @@
-ContentRenderer.tsx
+// ContentRenderer.tsx
 import { isProject, isTask } from "@/core/libraries/ui/ContentHelpers";
 import { StatusType } from "@/core/models/data/StatusType";
 import { Project, ProjectDetails } from '@/core/models/projects/Project';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Todo } from "@/core/todos/Todo";
 import React from "react";
  

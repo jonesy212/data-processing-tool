@@ -1,7 +1,8 @@
-EditorWithPrompt.tsx
-import React, { ReactNode, useState } from "react";
+// EditorWithPrompt.tsx
+import type { ReactNode, useState } from 'react';
+import React from 'react';
 
-import { ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
+import type { ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
 import { Prompt } from "@/core/prompts/PromptPage";
 import PromptSystem from "@/core/prompts/PromptSystem";
 import { generatePrompt } from "@/core/prompts/promptGenerator";

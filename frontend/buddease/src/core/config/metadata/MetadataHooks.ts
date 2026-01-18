@@ -1,4 +1,4 @@
-MetadataHooks.ts
+// MetadataHooks.ts
 config/metadata/MetadataHooks.ts
 import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -7,7 +7,7 @@ import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields
 import { Version } from '@/core/versions/Version';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SharedRelationshipData } from '@/core/models/data/Data';
+import type { SharedRelationshipData } from '@/core/models/data/Data';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import { UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
 

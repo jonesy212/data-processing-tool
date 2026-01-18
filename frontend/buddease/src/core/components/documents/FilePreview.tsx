@@ -1,6 +1,6 @@
 // FilePreview.tsx
 import CustomFile from "@/core/documents/File";
-import { AppFileEntity, FileAttachment, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/core/typings/entities/FileEntity';
+import type { AppFileEntity, FileAttachment, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/core/typings/entities/FileEntity';
 import { useState } from 'react';
 const FilePreview: React.FC = () => {
   const [file, setFile] = useState<CustomFile<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields> | null>(null);

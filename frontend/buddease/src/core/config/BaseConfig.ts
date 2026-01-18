@@ -1,37 +1,37 @@
 // BaseConfig.ts
-import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
-import { BaseCacheConfig } from '@/core/config/CacheConfig';
-import { BaseMetaInfo } from '@/core/config/metadata/BaseMetaInfo';
-import { SchemaField } from '@/core/config/metadata/SchemaField';
+import type { AppStructureItem } from '@/core/config/appStructure/AppStructure';
+import type { BaseCacheConfig } from '@/core/config/CacheConfig';
+import type { BaseMetaInfo } from '@/core/config/metadata/BaseMetaInfo';
+import type { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { BaseMetadata, UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { useMeta } from '@/core/config/useMeta';
-import { useMetadata } from '@/core/config/useMetadata';
+import type { useMetadata } from '@/core/config/useMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseEntityProperties, SharedIdentifiers } from '@/core/documents/RelatedProps';
-import { Category, CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
-import { SharedTimestamps } from '@/core/models/CommonData';
-import { Taggable, TagsRecord } from '@/core/models/tracker/Tag';
+import type { BaseEntityProperties, SharedIdentifiers } from '@/core/documents/RelatedProps';
+import type { Category, CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
+import type { SharedTimestamps } from '@/core/models/CommonData';
+import type { Taggable, TagsRecord } from '@/core/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
-import { BaseMetadataConfig, BaseRetryConfig, } from "@/core/services/ConfigurationService";
-import { DebugEntry, TempDataStorage } from '@/core/snapshots/methods/debugMethods';
+import type { BaseMetadataConfig, BaseRetryConfig, } from "@/core/services/ConfigurationService";
+import type { DebugEntry, TempDataStorage } from '@/core/snapshots/methods/debugMethods';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { useSnapshot } from '@/core/state/context/SnapshotContext';
 import type { EventManager, InitializedState } from '@/core/state/stores/DataStore';
 import type { AppStructuredMetadata, AppUnifiedMetadata } from '@/core/typings/entities/AppMetadataEntity';
-import {
-    ConfigAttachment,
-    ConfigEntity,
-    ConfigExcludedFields,
-    ConfigIncludedFields,
-    ConfigK,
-    ConfigMeta
+import type {
+  ConfigAttachment,
+  ConfigEntity,
+  ConfigExcludedFields,
+  ConfigIncludedFields,
+  ConfigK,
+  ConfigMeta
 } from '@/core/typings/entities/ConfigEntity';
-import MemberEntity, { MemberExcludedFields } from '@/core/typings/entities/MemberEntity';
-import { AppMetadata } from '@/core/typings/metadataTypes';
-import { AllTypes } from '@/core/typings/PropTypes';
+import type { MemberEntity, MemberExcludedFields } from '@/core/typings/entities/MemberEntity';
+import type { AppMetadata } from '@/core/typings/metadataTypes';
+import type { AllTypes } from '@/core/typings/PropTypes';
 
-type BaseDataEntity = BaseDataRoot;
+export type BaseDataEntity = BaseDataEntity;
 
 interface BaseDataRoot {
   [key: string]: any;
@@ -39,7 +39,7 @@ interface BaseDataRoot {
 }
 
 interface RootCategories<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
 > {
    categoryIds?: string[];
@@ -54,7 +54,7 @@ interface CoreRecordProperties {
 }
 
 interface BaseEntity<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -70,7 +70,7 @@ interface BaseEntity<
 
 // Define a type for your entities
 interface Entity<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -235,7 +235,7 @@ const baseConfig: BaseConfig<
 export { baseConfig, mappedSnapshot };
 
     export type {
-        BaseConfig, BaseDataEntity, BaseDataRoot, BaseEntity, CryptoConfig,
-        DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, RootCategories, SharedConfig
-    };
+    BaseConfig, BaseDataEntity, BaseDataRoot, BaseEntity, CryptoConfig,
+    DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, RootCategories, SharedConfig
+  };
 

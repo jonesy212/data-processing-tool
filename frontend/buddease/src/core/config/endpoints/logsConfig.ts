@@ -1,4 +1,4 @@
-logsConfig.ts
+// logsConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { LogsEndpoints } from '@/core/typings/categories/LogsEndpoints';
 

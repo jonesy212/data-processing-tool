@@ -1,4 +1,4 @@
-LearningPreferences.ts
+// LearningPreferences.ts
 interface LearningPreferences {
   style?: 'visual' | 'auditory' | 'reading' | 'kinesthetic' | 'mixed';
   pace?: 'slow' | 'moderate' | 'fast' | 'self-paced';

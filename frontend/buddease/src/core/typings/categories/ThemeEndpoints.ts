@@ -1,5 +1,5 @@
-ThemeEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ThemeEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ThemeEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

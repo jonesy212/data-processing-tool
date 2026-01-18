@@ -1,6 +1,6 @@
-DataAnalysisPhase.tsx
+// DataAnalysisPhase.tsx
 import Visualization from "@/core/hooks/userInterface/Visualization";
-import { PhaseProps } from "@/core/pages/development/PlanningPhase";
+import type { PhaseProps } from "@/core/pages/development/PlanningPhase";
 import { sendDataToBackend } from "@/core/services/dataAnalysisOrchestrator";
 import { useAuth } from '@/core/state/context/AuthContext';
 import {

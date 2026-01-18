@@ -1,6 +1,9 @@
-CorrectionGenerator.ts
+// CorrectionGenerator.ts
+import fs from 'fs';
+import path from 'path';
 import { BuildAnalyzer } from '@/core/generators/corrections/analyzers/BuildAnalyzer';
-import { ComprehensiveBreakdown, ComprehensiveBreakdownAnalyzer } from '@/core/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer';
+import { ComprehensiveBreakdownAnalyzer } from '@/core/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer';
+import type { ComprehensiveBreakdown } from '@/core/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer';
 import { PatternAnalyzer } from '@/core/generators/corrections/analyzers/PatternAnalyzer';
 import { PlatformDetector } from '@/core/generators/corrections/analyzers/PlatformDetector';
 import { MetroConfigAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/MetroConfigAnalyzer';
@@ -11,18 +14,20 @@ import { BreakdownReportGenerator } from '@/core/generators/corrections/Breakdow
 import { CircularDependencyDetector } from '@/core/generators/corrections/CircularDependencyDetector';
 import { ErrorAnalyzer } from '@/core/generators/corrections/ErrorAnalyzer';
 import { ErrorTracker } from '@/core/generators/corrections/ErrorTracker';
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
 import { ReportGenerators } from '@/core/generators/corrections/ReportGenerators';
 import { SecurityAuditor } from '@/core/generators/corrections/SecurityAuditor';
-import { SnapshotIssue } from '@/core/generators/corrections/SnapshotAnalyzer';
+import type { SnapshotIssue } from '@/core/generators/corrections/SnapshotAnalyzer';
+import { SnapshotAnalyzer } from '@/core/generators/corrections/SnapshotAnalyzer';
 import { StructureValidator } from '@/core/generators/corrections/StructureValidator';
-import { TypeHierarchy } from '@/core/generators/corrections/TypeRelationshipMapper';
+import type { TypeHierarchy } from '@/core/generators/corrections/TypeRelationshipMapper';
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';
-import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
+import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import { BuildErrorHandler } from '@/utils/BuildErrorHandler';
 import { FileHeaderManager } from '@/utils/fileHeaderManager';
 import { readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
+import { TypeRelationshipMapper } from '@/core/generators/corrections/TypeRelationshipMapper';
 
 interface Correction {
     id: string;

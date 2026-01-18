@@ -1,4 +1,4 @@
-AuthClientService.ts
+// AuthClientService.ts
 
 import UserService from "@/core/api/ApiUser";
 import { AuthenticationProvider } from '@/core/interfaces/provider/AuthenticationProvider';

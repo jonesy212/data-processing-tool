@@ -1,5 +1,5 @@
 // getConfigPromise.ts
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
 import type { createDataStore } from '@/core/state/stores/DataStore';

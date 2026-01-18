@@ -1,6 +1,6 @@
-TsConfigAnalyzer.ts
+// TsConfigAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
 

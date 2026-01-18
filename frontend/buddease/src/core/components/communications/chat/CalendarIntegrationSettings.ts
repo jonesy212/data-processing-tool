@@ -1,4 +1,4 @@
-CalendarIntegrationSettings.ts
+// CalendarIntegrationSettings.ts
 // Supporting interfaces for your specific channels
 interface CalendarIntegrationSettings {
   syncDirection: 'bidirectional' | 'one-way';

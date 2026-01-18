@@ -1,4 +1,4 @@
-projectManagementConfig.ts
+// projectManagementConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ProjectManagementEndpoints } from '@/core/typings/categories/ProjectManagementEndpoints';
 

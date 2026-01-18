@@ -1,4 +1,4 @@
-useRealtimeEditing.ts
+// useRealtimeEditing.ts
 import useWebSocket from '@/core/hooks/useWebSocket'; // Custom hook for managing WebSocket connections
 import useEditorState from '@/core/state/useEditorState';
 import { ContentState, EditorState } from 'draft-js';

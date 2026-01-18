@@ -1,4 +1,4 @@
-determineFileCategoryLogger.ts
+// determineFileCategoryLogger.ts
 import { FileCategory, fileMapping } from "@/core/documents/FileType";
 import { fileCategoryMapping } from '@/core/libraries//categories/fileCategoryMapping';
 

@@ -10,7 +10,7 @@ export type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms'
 // Define categories and their associated properties
 // Updated CategoryProperties with generics
 interface CategoryProperties<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
 > {
   id: string;

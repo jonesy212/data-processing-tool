@@ -1,4 +1,4 @@
-Debounce.ts
+// Debounce.ts
 import LazyLoadScriptConfigImpl from "@/core/config/LazyLoadScriptConfig";
 
 Platform-agnostic timeout type

@@ -8,13 +8,13 @@ import { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
 
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot, SnapshotDataType } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMethods, SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreMethods";
+import type { Snapshot, SnapshotDataType } from '@/core/snapshots/Snapshot';
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreMethods, SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreMethods";
 
-import { createSnapshotStoreOptions } from "@/core/snapshots/createSnapshotStoreOptions";
-import { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
+import type { createSnapshotStoreOptions } from "@/core/snapshots/createSnapshotStoreOptions";
+import type { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore, useDataStore } from "@/core/state/stores/DataStore";

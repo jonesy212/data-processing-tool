@@ -1,3 +1,4 @@
+// runImportCheck.ts
 // Simple import checker that avoids CSS issues
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';

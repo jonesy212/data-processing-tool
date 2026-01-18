@@ -1,7 +1,7 @@
-teamSnapshot.ts
+// teamSnapshot.ts
 import { Team } from '@/core/components/teams/Team';
 import useSnapshotManager from '@/core/hooks/useSnapshotManager';
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot'; // Removed snapshotStore import as it's not used
 import { useAssignTeamMemberStore } from '@/core/state/stores/AssignTeamMemberStore';
 

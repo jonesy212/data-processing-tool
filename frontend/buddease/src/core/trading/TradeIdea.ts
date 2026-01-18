@@ -1,4 +1,4 @@
-TradeIdea.ts
+// TradeIdea.ts
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import { SearchCriteria } from "@/core/pages/searches/SearchCriteria";
 import { TradingStrategyOptions } from '@/core/trading/TradingStrategy';

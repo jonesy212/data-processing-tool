@@ -1,4 +1,4 @@
-AppContextHelper.ts
+// AppContextHelper.ts
 
 
 // SINGLE getAppContext function (no duplicates)

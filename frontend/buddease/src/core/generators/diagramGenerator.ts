@@ -1,4 +1,4 @@
-diagramGenerator.ts
+// diagramGenerator.ts
 
 function diagramGenerator(rows: number, cols: number, content: string[]): string {
     try {

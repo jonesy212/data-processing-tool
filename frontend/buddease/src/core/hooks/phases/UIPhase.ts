@@ -1,6 +1,5 @@
-UIPhase.ts
+// UIPhase.ts
 DefaultNotification.ts
-UIPhase.tsx
 import { UIActions } from "@/core/actions/UIActions";
 import UserService from '@/core/api/ApiUser';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";

@@ -1,5 +1,4 @@
-AppTreeExplorer.ts
-AppTreeExplorer.tsx
+// AppTreeExplorer.tsx
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import EnhancedTreeView from "@/core/pages/dashboards/EnhancedTreeView";
 import TreeView from "@/core/pages/dashboards/TreeView";

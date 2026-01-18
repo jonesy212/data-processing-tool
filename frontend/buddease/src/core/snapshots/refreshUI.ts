@@ -1,5 +1,4 @@
-refreshUI.ts
-refreshUI.js
+// refreshUI.ts
 // Reusable refreshUI function
 function refreshUI(updates: {
     stroke?: { width: number; color: string };

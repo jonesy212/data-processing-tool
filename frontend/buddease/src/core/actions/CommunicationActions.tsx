@@ -1,5 +1,4 @@
 // CommunicationActions.tsx
-// CommunicationActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
 export const CommunicationActions = {

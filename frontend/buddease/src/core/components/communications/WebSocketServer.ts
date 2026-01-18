@@ -1,4 +1,4 @@
-WebSocketServer.ts
+// WebSocketServer.ts
 import Logger from '@/core/logging/Logger';
 import { WebSocketServer } from 'ws'; // Changed import
 

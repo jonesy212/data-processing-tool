@@ -10,13 +10,13 @@ import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
-import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { Subscribers } from '@/core/subscribers/Subscriber';
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
 import { default as SnapshotStore } from './SnapshotStore';

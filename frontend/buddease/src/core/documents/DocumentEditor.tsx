@@ -8,7 +8,8 @@ import { UserSettings } from '@/core/config/UserSettings';
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
 import { ModifiedDate } from '@/core/documents/DocType';
 import { DocumentOptions, getDocumentPhase } from '@/core/documents/DocumentOptions';
-import DocumentBuilder, { DocumentData } from '@/core/documents/editing/DocumentBuilder'; // Import the DocumentBuilder component
+import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import DocumentBuilder from '@/core/documents/editing/DocumentBuilder';
 import { options } from '@/core/generators/GenerateUniqueIds';
 import { setCurrentPhase } from '@/core/hooks/phaseHooks/EnhancePhase';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';

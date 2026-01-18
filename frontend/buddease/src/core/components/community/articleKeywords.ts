@@ -1,4 +1,4 @@
-articleKeywords.ts
+// articleKeywords.ts
 
 // Example function to categorize news articles
 const categorizeNews = (newsFeedData: any): string[] => {

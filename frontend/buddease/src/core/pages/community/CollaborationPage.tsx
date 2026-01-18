@@ -1,4 +1,4 @@
-CollaborationPage.tsx
+// CollaborationPage.tsx
 import RealTimeVisualization from "@/core/components/models/realtime/RealTimeVisualization";
 import { ResponsiveDesign } from "@/core/components/styling/ResponsiveDesign";
 import triggerAutosave from "@/core/documents/editing/triggerAutosave";

@@ -1,4 +1,4 @@
-userPreferencesSagaManager.ts
+// userPreferencesSagaManager.ts
 import useApiUserPreferences from '@/core/api/preferences/ApiUserPreferences';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { all, call, put } from 'redux-saga/effects';

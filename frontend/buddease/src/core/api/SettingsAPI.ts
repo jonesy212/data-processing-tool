@@ -1,4 +1,4 @@
-SettingsAPI.ts
+// SettingsAPI.ts
 
 import axiosInstance from "@/core/api/csrfToken";
 import { PrivacySettings } from "@/core/settings/PrivacySettings";

@@ -1,4 +1,4 @@
-TradeLogger.ts
+// TradeLogger.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import Logger from '@/core/components/crypto/CryptoPortfolio';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';

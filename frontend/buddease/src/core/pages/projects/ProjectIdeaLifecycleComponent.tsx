@@ -1,3 +1,4 @@
+// ProjectIdeaLifecycleComponent.tsx
 IdeaLifecycleComponent.tsx
 import { allLifecyclePhases } from '@/core/hooks/phases/lifecycles';
 import React from 'react';

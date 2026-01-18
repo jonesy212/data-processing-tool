@@ -1,5 +1,4 @@
 // generateTree.ts
-// generateTree.ts - Complete Enhanced Version (ESM)
 
 import type { FileNode } from '@/core/components/frontend/TraverseFrontendComponent';
 import type { AnalysisReport } from '@/core/documents/Report';
@@ -447,7 +446,6 @@ function generateMarkdownTree(tree: string): string {
   return `# Project Tree\n\n**Generated**: ${new Date().toISOString()}\n\n\`\`\`\n${tree}\n\`\`\``;
 }
 
-// --- mappers.ts config ---
 const mappersFile = path.resolve(__dirname, '../../server/repository/mappers.ts');
 
 async function updateMappers(relevantNames: string[]) {
@@ -728,61 +726,34 @@ export type { ProjectFile };
 
 // === COMMANDS SECTION ===
 
-// #NOTE - TypeScript Commands (.ts file) - USING TSX
 // | **Output Type**   | **Command**                                              | **File Generated**    |
 // | ----------------- | -------------------------------------------------------- | --------------------- |
-// | 🧱 Text (default) | `tsx src/app/scripts/generateTree.ts text`              | `project-tree.txt`    |
-// | 📘 Markdown       | `tsx src/app/scripts/generateTree.ts markdown`          | `project-tree.md`     |
-// | 🧮 JSON           | `tsx src/app/scripts/generateTree.ts json`              | `project-tree.json`   |
-// | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts text --output ./docs/my-tree.txt`  | `./docs/my-tree.txt`  |
-// | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
-// | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts json --output ./docs/my-tree.json` | `./docs/my-tree.json` |
 
 // # 🔍 ANALYSIS MODE - TypeScript
 // # Basic analysis (console output only)
-// tsx src/app/scripts/generateTree.ts "task management system with real-time collaboration"
 
 // // # Analysis with file output
-// tsx src/app/scripts/generateTree.ts "crypto trading dashboard" --output ./analysis/crypto-analysis.json
 
 // # Analysis with custom path
-// tsx src/app/scripts/generateTree.ts "content management system" --output ./docs/feature-analysis.json
 
 // # 🎯 ROADMAP GENERATION - TypeScript (NEW!)
 // | **Command**                                              | **Files Generated**                                       |
 // | -------------------------------------------------------- | --------------------------------------------------------- |
-// | `tsx src/app/scripts/generateRoadmaps.ts "project name"` | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
-// | `tsx src/app/scripts/generateRoadmaps.ts "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
-// | `tsx src/app/scripts/generateRoadmaps.ts "task app"`     | Complete project roadmap with package recommendations     |
 
 // # 🎯 EXISTING TREE GENERATION - TypeScript!
-// tsx src/app/scripts/generateTree.ts text
-// tsx src/app/scripts/generateTree.ts markdown --output ./docs/structure.md
-// tsx src/app/scripts/generateTree.ts json --output ./docs/tree.json
 
 // # 🏗 BUILD & RUN COMMANDS (After compilation)
 // | **Output Type**   | **Command**                                              | **File Generated**    |
 // | ----------------- | -------------------------------------------------------- | --------------------- |
-// | 🧱 Text (default) | `node dist/app/scripts/generateTree.js text`            | `project-tree.txt`    |
-// | 📘 Markdown       | `node dist/app/scripts/generateTree.js markdown`        | `project-tree.md`     |
-// | 🧮 JSON           | `node dist/app/scripts/generateTree.js json`            | `project-tree.json`   |
-// | ✨ Custom Path     | `node dist/app/scripts/generateTree.js text --output ./docs/my-tree.txt`  | `./docs/my-tree.txt`  |
-// | ✨ Custom Path     | `node dist/app/scripts/generateTree.js markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
-// | ✨ Custom Path     | `node dist/app/scripts/generateTree.js json --output ./docs/my-tree.json` | `./docs/my-tree.json` |
 
 // # 🔍 ANALYSIS MODE - Compiled JavaScript
 // # Basic analysis (console output only)
-// node dist/app/scripts/generateTree.js "task management system with real-time collaboration"
 
 // # Analysis with file output
-// node dist/app/scripts/generateTree.js "crypto trading dashboard" --output ./analysis/crypto-analysis.json
 
 // # 🗺️ ROADMAP GENERATION - Compiled JavaScript (NEW!)
 // | **Command**                                                   | **Files Generated**                                       |
 // | ------------------------------------------------------------- | --------------------------------------------------------- |
-// | `node dist/app/scripts/generateRoadmaps.js "project name"`    | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
-// | `node dist/app/scripts/generateRoadmaps.js "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
-// | `node dist/app/scripts/generateRoadmaps.js "ecommerce app"`   | Complete roadmap with package setup guides                |
 
 // # PNPM SCRIPTS (What you actually use)
 // | **Script**        | **Command**                    | **Purpose**           |

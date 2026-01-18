@@ -1,8 +1,7 @@
-ActionManager.tsx
-ActionManager.ts
+// ActionManager.tsx
 
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 class ActionManager {

@@ -1,8 +1,9 @@
-createLatestVersion.ts
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+// createLatestVersion.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
-import VersionImpl, { Version } from "@/core/versions/Version";
+import type { Version } from '@/core/versions/Version';
+import VersionImpl from '@/core/versions/Version';
 import { VersionHistory } from "@/core/versions/VersionData";
 
 // ✅ Clean, type-safe default version generator
@@ -88,7 +89,7 @@ export function createLatestVersion<
 
 
 export function createLastUpdatedWithVersion<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

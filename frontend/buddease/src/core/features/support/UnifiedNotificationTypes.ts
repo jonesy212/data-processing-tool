@@ -1,4 +1,4 @@
-UnifiedNotificationTypes.ts
+// UnifiedNotificationTypes.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import { NOTIFICATION_TYPES } from '@/core/features/support/NotificationTypes';
 import {

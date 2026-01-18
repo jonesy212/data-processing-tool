@@ -2,7 +2,8 @@
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import SnapshotStore, { Snapshot } from '@/core/snapshots/Snapshot';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import SnapshotStore from '@/core/snapshots/Snapshot';
 
 // ✅ Keep this as a standalone utility function (not in TransformMethods)
 export function transformSubscriberAdvanced<

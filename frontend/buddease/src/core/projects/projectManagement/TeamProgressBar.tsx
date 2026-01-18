@@ -1,4 +1,4 @@
-TeamProgressBar.tsx
+// TeamProgressBar.tsx
 import { Team } from '@/core/components/teams/Team';
 import { AnimatedComponent, AnimatedComponentRef } from '@/core/libraries/animations/AnimationComponent';
 import React from 'react';

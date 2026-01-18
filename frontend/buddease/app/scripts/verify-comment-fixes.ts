@@ -1,4 +1,4 @@
-// scripts/verify-comment-fixes.ts
+// verify-comment-fixes.ts
 import fs from 'fs';
 import path from 'path';
 

@@ -1,4 +1,4 @@
-ThreatModeling.ts
+// ThreatModeling.ts
 class ThreatModeling {
     constructor() {
       // Initialize threat modeling configuration

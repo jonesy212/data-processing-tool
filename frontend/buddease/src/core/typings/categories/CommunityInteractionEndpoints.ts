@@ -1,5 +1,5 @@
-CommunityInteractionEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// CommunityInteractionEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface CommunityInteractionEndpoints extends EndpointCategoryConfig {
   createPost: EndpointConfig;

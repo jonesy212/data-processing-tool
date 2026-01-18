@@ -1,7 +1,7 @@
 // defaultSubscribeToSnapshots.ts
 import * as snapshotApi from '@/core/api/SnapshotApi';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { createMockSnapshot } from '@/core/snapshots/snapshotOperations';
 import { Subscriber } from "@/core/subscribers/Subscriber";

@@ -1,7 +1,7 @@
-securityMeasureTypes.ts
-import { SecurityStatus } from "@/core/models/data/StatusType";
+// securityMeasureTypes.ts
+import type { SecurityStatus } from "@/core/models/data/StatusType";
 import { SnapshotSecurity } from '@/core/snapshots/SnapshotSecurity';
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 
 export enum SecurityMeasureType {
   Header = 'header',

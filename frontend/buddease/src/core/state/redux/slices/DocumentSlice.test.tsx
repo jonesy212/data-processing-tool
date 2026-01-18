@@ -1,7 +1,8 @@
-DocumentSlice.test.tsx
+// DocumentSlice.test.tsx
 import { RootState } from '@/core/state/redux/slices/RootSlice';
 import { configureStore, EnhancedStore, UnknownAction } from '@reduxjs/toolkit';
-import thunk, { ThunkDispatch } from 'redux-thunk';
+import type { ThunkDispatch } from 'redux-thunk';
+import thunk from 'redux-thunk';
 
 Mock API functions or any external dependencies used in the async thunks
 jest.mock('path/to/your/api', () => ({

@@ -5,7 +5,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { CommonData } from '@/core/models/CommonData';
 import { Content } from '@/core/models/content/AddContent';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { ItemUnion } from '@/core/snapshots/SnapshotContainer';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 

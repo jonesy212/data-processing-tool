@@ -1,7 +1,7 @@
-NotificationService.tsx
+// NotificationService.tsx
 import { EventActions } from '@/core/actions/EventActions';
 import { NotificationActions } from "@/core/actions/NotificationActions";
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import AnnouncementManager from "@/core/features/support/AnnouncementManager";
 import { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
@@ -109,7 +109,7 @@ export const logData: LogData<LogEntity, LogK, LogMeta, LogAttachment, LogExclud
 };
 
 export const useNotificationManagerService = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

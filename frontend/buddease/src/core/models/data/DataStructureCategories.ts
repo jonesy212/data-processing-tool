@@ -1,4 +1,4 @@
-DataStructureCategories.ts
+// DataStructureCategories.ts
 // Data related categories
 const dataCategories = {
     notes: [

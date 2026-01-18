@@ -14,8 +14,8 @@ import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { DetailsItem } from '@/core/state/stores/DetailsListStore';
-import { AppEntity } from '@/core/typings/entities/AppEntity';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import type { AppEntity } from '@/core/typings/entities/AppEntity';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 // Define the actual DetailsEntity interface

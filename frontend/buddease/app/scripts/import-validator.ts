@@ -1,4 +1,4 @@
-// scripts/import-validator.ts
+// import-validator.ts
 import fs from 'fs';
 import path from 'path';
 
@@ -179,7 +179,6 @@ export class ImportValidator {
       !importPath.startsWith('@/') && !importPath.startsWith('.') ? `@/${importPath}` : null,
       // Try without @/ prefix
       importPath.startsWith('@/') ? importPath.replace(/^@\//, '') : null,
-      // Try with .ts extension
       `${importPath}.ts`,
       `${importPath}.tsx`,
       // Try index file

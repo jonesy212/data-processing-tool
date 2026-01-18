@@ -1,5 +1,6 @@
+// AppCacheManager.tsx
 import type { BaseData } from '@/core/models/data/Data';
-import { Data } from '@/core/models/data/Data'
+import type { Data } from '@/core/models/data/Data'
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";

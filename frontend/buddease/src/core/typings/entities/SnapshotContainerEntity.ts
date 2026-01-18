@@ -1,4 +1,4 @@
-SnapshotContainerEntity.ts
+// SnapshotContainerEntity.ts
 
 
 import {
@@ -8,7 +8,7 @@ import {
 } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotEntityDataInterface } from '@/core/typings/entities/SnapshotEntity';
+import type { SnapshotEntityDataInterface } from '@/core/typings/entities/SnapshotEntity';
 
 export type SnapshotContainerEntity<
   T extends BaseDataEntity,

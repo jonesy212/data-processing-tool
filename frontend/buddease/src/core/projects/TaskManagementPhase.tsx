@@ -1,4 +1,4 @@
-TaskManagementPhase.tsx
+// TaskManagementPhase.tsx
 import CompletionPhase from "@/core/components/phases/CompletionPhase";
 import PlanningPhase from "@/core/components/phases/DevelopmentPhase";
 import ExecutionPhase from "@/core/components/phases/ExecutionPhase";
@@ -7,7 +7,7 @@ import TestingPhase from "@/core/components/phases/TestingPhase";
 import TaskManagerComponent from '@/core/components/tasks/TaskManagerComponent';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import DataAnalysisPhase from "@/core/projects/DataAnalysisPhase/DataAnalysisPhase";
 import { useState } from "react";
 

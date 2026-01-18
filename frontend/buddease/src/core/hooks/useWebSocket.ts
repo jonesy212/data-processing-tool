@@ -1,4 +1,4 @@
-useWebSocket.ts
+// useWebSocket.ts
 import { csrfToken } from "@/core/api/csrfToken";
 import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';

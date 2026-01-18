@@ -1,4 +1,6 @@
-// scripts/fix-missing-comment-errors.ts
+#!/usr/bin/env tsx
+// fix-missing-comment-errors.ts
+
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
@@ -77,12 +79,12 @@ async function findAndFixMissingComments() {
       
       // Check if this line looks like code that should be a comment
       // Common patterns: import/export statements that got de-commented
-      if (this.isLikelyDecommentedCode(lineContent)) {
+      if (isLikelyDecommentedCode(lineContent)) {
         console.log(`   Line ${error.line}: "${lineContent.trim().substring(0, 60)}..."`);
         
         // Look at context to decide if we should add //
-        const context = this.getContext(lines, lineIndex);
-        if (this.shouldBeComment(lineContent, context)) {
+        const context = getContext(lines, lineIndex);
+        if (shouldBeComment(lineContent, context)) {
           lines[lineIndex] = `// ${lineContent}`;
           fixedInFile++;
           console.log(`     ➕ Added // prefix`);

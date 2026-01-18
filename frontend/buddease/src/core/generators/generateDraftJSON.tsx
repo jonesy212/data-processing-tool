@@ -1,4 +1,4 @@
-generateDraftJSON.tsx
+// generateDraftJSON.tsx
 const generateDraftJSON = (draft: any): string => {
     try {
       // Convert the draft object to JSON string

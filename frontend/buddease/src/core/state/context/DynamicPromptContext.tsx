@@ -1,7 +1,8 @@
-DynamicPromptContext.tsx
+// DynamicPromptContext.tsx
 import { DynamicPromptHookParams, DynamicPromptHookResult } from "@/core/hooks/dynamicHooks/createDynamicPromptHook";
 import createDynamicPromptHook from "@/core/prompts/DynamicPromptHookGenerator";
-import React, { ReactNode, createContext, useContext } from "react";
+import type { ReactNode, createContext, useContext } from 'react';
+import React from 'react';
 
 type DynamicPromptContextType = {
   dynamicPromptHook: (

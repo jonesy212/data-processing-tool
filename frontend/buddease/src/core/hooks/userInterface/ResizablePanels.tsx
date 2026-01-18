@@ -1,5 +1,6 @@
-ResizablePanels.tsx
-import React, { ReactNode, useEffect, useRef } from "react";
+// ResizablePanels.tsx
+import type { ReactNode, useEffect, useRef } from 'react';
+import React from 'react';
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 
 

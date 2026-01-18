@@ -1,5 +1,5 @@
-useToolbarOptions.ts
-import { ToolbarOptions } from "@/core/components/documents/ToolbarOptions";
+// useToolbarOptions.ts
+import type { ToolbarOptions } from "@/core/components/documents/ToolbarOptions";
 import { useState } from "react";
 
 // Custom hook to manage toolbar options

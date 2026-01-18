@@ -1,4 +1,4 @@
-UserPreferencesStore.ts
+// UserPreferencesStore.ts
 src/core/state/stores/UserPreferences/UserPreferencesStore.ts
 
 import themeSettings from '@/core/config/endpoints/themeConfig';

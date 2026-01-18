@@ -1,4 +1,4 @@
-// src/app/scripts/fix-type-exports.ts
+// fix-type-exports.ts
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';

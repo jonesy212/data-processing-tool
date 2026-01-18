@@ -3,8 +3,8 @@ import { SnapshotOperation, SnapshotOperationType } from "@/core/actions/Snapsho
 import { fetchEventId } from '@/core/api/ApiEvent';
 import { getStoreId } from '@/core/api/service/ApiService';
 import createSnapshot from '@/core/api/SnapshotApi';
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { createMetadata } from '@/core/config/metadata/createMetadata';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { createMetadata } from '@/core/config/metadata/createMetadata';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -12,7 +12,7 @@ import { LibraryAsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Category, generateOrVerifySnapshotId } from '@/core/libraries/categories/generateCategoryProperties';
 import { Content } from "@/core/models/content/AddContent";
-import { BaseData } from '@/core/models/data/Data';
+import type { BaseData } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
@@ -24,7 +24,7 @@ import { ExtractContextArgs } from '@/core/snapshots/SnapshotEvents';
 import { SnapshotStoreMap } from '@/core/snapshots/SnapshotMap';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";
 import { SnapshotContext } from '@/core/snapshots/SnapshotSubscriberManagement';
@@ -374,7 +374,7 @@ const createSnapshotStore =  <
 
 
 const createSnapshotConfig = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

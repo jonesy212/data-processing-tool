@@ -1,6 +1,6 @@
-SnapshotAnalyzer.ts
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
-import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
+// SnapshotAnalyzer.ts
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';
 import path from 'path';
 
@@ -18,7 +18,7 @@ interface SnapshotIssue {
 export class SnapshotAnalyzer {
   private snapshotFolderPath: string;
 
-  constructor(snapshotPath: string = '/src/app/snapshots') {
+  constructor(snapshotPath: string = '/src/core/snapshots') {
     this.snapshotFolderPath = path.resolve(process.cwd(), snapshotPath);
   }
 

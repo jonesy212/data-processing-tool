@@ -2,7 +2,7 @@
 import { ModifiedDate } from "@/core/documents/DocType";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
 import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
-import { Data } from '@/core/models/data/Data';
+import type { Data } from '@/core/models/data/Data';
 import { useSearch } from '@/core/state/context/SearchContext';
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import React, { useEffect, useState } from "react";

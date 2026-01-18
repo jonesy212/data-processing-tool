@@ -1,4 +1,4 @@
-Unauthorized.tsx
+// Unauthorized.tsx
 import AccessDenied from '@/core/pages/AccessDenied';
 import { unauthorizedService } from '@/core/services/unauthorizedService';
 import { useAuth } from '@/core/state/context/AuthContext';

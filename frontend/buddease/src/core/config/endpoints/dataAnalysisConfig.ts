@@ -1,4 +1,4 @@
-dataAnalysisConfig.ts
+// dataAnalysisConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { DataAnalysisEndpoints } from '@/core/typings/categories/DataAnalysisEndpoints';
 

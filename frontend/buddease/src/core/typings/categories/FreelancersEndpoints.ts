@@ -1,5 +1,5 @@
-FreelancersEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// FreelancersEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface FreelancersEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;

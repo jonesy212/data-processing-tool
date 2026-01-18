@@ -1,5 +1,5 @@
 // TrackerStore.ts
-import { TrackerProps } from '@/core/models/tracker/Tracker';
+import type { TrackerProps } from '@/core/models/tracker/Tracker';
 import { RootStores } from '@/core/state/stores/RootStores';
 import { makeAutoObservable } from 'mobx';
 

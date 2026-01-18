@@ -1,5 +1,4 @@
 // ChatActions.ts
-// chat/ChatActions.ts
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { ChatRoom } from '@/core/communications/ChatRoom';
 import type { Message } from "@/core/generators/GenerateChatInterfaces";

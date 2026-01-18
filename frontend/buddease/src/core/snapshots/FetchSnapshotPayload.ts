@@ -1,5 +1,5 @@
 // FetchSnapshotPayload.ts
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
+import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";

@@ -1,4 +1,4 @@
-HashUtils.ts
+// HashUtils.ts
 import HashGenerator from "./HashGenerator";
 
 /**

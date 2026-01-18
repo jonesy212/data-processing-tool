@@ -2,13 +2,13 @@
 import { BaseData } from '@/core/models/data/Data';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import { processSnapshot, Snapshot } from '@/core/snapshots/Snapshot';
-import { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
+import type { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 import { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { createMeta } from "@/core/config/metadata/createMeta";
 import { createMetadata } from '@/core/config/metadata/createMetadata';
 import { SchemaField } from "@/core/config/metadata/SchemaField";
@@ -98,7 +98,7 @@ interface SnapshotWithCriteriaContract<
 
 
 type SnapshotWithCriteriaConfig<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

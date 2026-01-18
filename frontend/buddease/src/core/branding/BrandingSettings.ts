@@ -1,7 +1,7 @@
-BrandingSettings.ts
+// BrandingSettings.ts
 import type { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
 
-BrandingSettings.ts (update)
+// BrandingSettings.ts (update)
 export interface BrandingSettings {
   // ===== LOGO SETTINGS =====
   logoUrl: string;

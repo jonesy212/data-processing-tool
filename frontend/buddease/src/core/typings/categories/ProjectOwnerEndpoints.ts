@@ -1,5 +1,5 @@
-ProjectOwnerEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ProjectOwnerEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ProjectOwnerEndpoints extends EndpointCategoryConfig {
   base: EndpointConfig;

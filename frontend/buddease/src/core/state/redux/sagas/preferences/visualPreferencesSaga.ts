@@ -1,4 +1,4 @@
-visualPreferencesSaga.ts
+// visualPreferencesSaga.ts
 // Import necessary dependencies and constants
 import { UserVisualPreferencesActions } from "@/core/config/UserPreferencesActions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";

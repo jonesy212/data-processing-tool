@@ -1,5 +1,4 @@
-usersDataSourceToCSV.tsx
-usersDataSourceToCSV.ts
+// usersDataSourceToCSV.tsx
 const usersDataSourceToCSV = (usersDataSource: any[]) => {
     if (usersDataSource.length === 0) {
       return '';

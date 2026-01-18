@@ -1,5 +1,4 @@
-AdminUserEntity.ts
-// Create AdminUser type aliases (add to your UserEntity.ts)
+// AdminUserEntity.ts
 type AdminUserEntity = AdminUser<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 type AdminUserK = AdminUserEntity;
 type AdminUserMeta = DefaultMeta<AdminUserEntity, AdminUserK>;

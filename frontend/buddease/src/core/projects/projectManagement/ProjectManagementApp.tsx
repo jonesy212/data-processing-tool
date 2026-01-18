@@ -1,8 +1,8 @@
-ProjectManagementApp.js
+// ProjectManagementApp.tsx
 import PhasesNavigation from '@/core/components/phases/PhasesNavigation';
 import ProjectTimelineDashboard from '@/core/dashboards/ProjectTimelineDashboard';
 import RandomWalkVisualization from '@/core/hooks/userInterface/RandomWalkVisualization';
-import { ClientProjectEntity } from '@/core/models/projects/Project';
+import type { ClientProjectEntity } from '@/core/models/projects/Project';
 import CommunicationHub from '@/core/pages/dashboards/DashboardOverview';
 import ProjectCreationForm from '@/core/pages/forums/ProjectCreationForm';
 import DataAnalysisSection from '@/core/projects/DataAnalysisPhase/DataAnalysisSection';

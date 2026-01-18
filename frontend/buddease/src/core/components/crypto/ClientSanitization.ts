@@ -1,4 +1,4 @@
-ClientSanitization.ts
+// ClientSanitization.ts
 
 /**
  * Client-safe sanitization functions without server dependencies

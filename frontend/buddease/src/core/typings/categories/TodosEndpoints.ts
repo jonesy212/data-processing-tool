@@ -1,5 +1,5 @@
-TodosEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// TodosEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface TodosEndpoints extends EndpointCategoryConfig {
   create: EndpointConfig;

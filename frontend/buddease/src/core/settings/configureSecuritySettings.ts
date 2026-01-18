@@ -1,4 +1,4 @@
-configureSecuritySettings.ts
+// configureSecuritySettings.ts
 import SecurityAPI from "@/core/api/SecurityAPI";
 import { openSecuritySettingsModal } from "@/core/cards/modal/openSecuritySettingsModal";
 import { isEqual } from "lodash";

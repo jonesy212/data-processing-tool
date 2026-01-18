@@ -1,4 +1,4 @@
-ConfigurationServiceComponent.tsx
+// ConfigurationServiceComponent.tsx
 import { ApiConfig } from '@/core/api/ApiConfigService';
 import { configServiceInstance } from '@/core/services/ConfigurationService';
 import React from 'react';

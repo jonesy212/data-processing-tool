@@ -3,12 +3,12 @@ import * as snapshotApi from '@/core/api/SnapshotApi';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import useSecureStoreId from "@/core/hooks/useSecureStoreId";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { BaseData } from "@/core/models/data/Data";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { BaseData } from "@/core/models/data/Data";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData } from "@/core/snapshots/SnapshotData";
-import { snapshotFunction, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { snapshotFunction, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { isSnapshot, isSnapshotDataType, snapshotId } from "@/utils/snapshotUtils";
 import {

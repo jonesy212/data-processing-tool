@@ -1,22 +1,22 @@
-ReducerGenerator.tsx
-import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+// ReducerGenerator.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { EntityState } from '@/core/state/redux/slices/EntitySlice';
-import { CollaboratorEntity } from '@/core/typings/entities/CollaboratorEntity';
+import type { EntityState } from '@/core/state/redux/slices/EntitySlice';
+import type { CollaboratorEntity } from '@/core/typings/entities/CollaboratorEntity';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
 
 export type WritableDraft<EntityData> = Draft<EntityData>;
 
 export interface EntityAction<
-  T extends BaseDataEntity = BaseDataRoot
+  T extends BaseDataEntity = BaseDataEntity
 > extends PayloadAction<Draft<T>> {
   id: string;
 }
 
 // Updated type guard
 function isEntityAction<
-  T extends BaseDataEntity = BaseDataRoot
+  T extends BaseDataEntity = BaseDataEntity
 >(
   action: EntityAction<T> | PayloadAction<string>
 ): action is EntityAction<T> {
@@ -24,7 +24,7 @@ function isEntityAction<
 }
 
 interface EntityReducerOptions<
-  T extends BaseDataEntity = BaseDataRoot
+  T extends BaseDataEntity = BaseDataEntity
 > {
   type: string;
   updateFunction: (entity: T, payload: any) => void;
@@ -32,7 +32,7 @@ interface EntityReducerOptions<
 
 // UPDATED: createEntityReducer with proper generics
 export const createEntityReducer = <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,4 +1,4 @@
-TradeStatistics.ts
+// TradeStatistics.ts
 class TradeStatistics {
     private totalVolume: number;
     private totalPrice: number;

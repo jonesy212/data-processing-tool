@@ -1,4 +1,4 @@
-DocumentHelper.ts
+// DocumentHelper.ts
 
 interface DocumentHelper {
   captureEvents(): void;

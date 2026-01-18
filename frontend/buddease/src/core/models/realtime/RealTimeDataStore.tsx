@@ -1,5 +1,5 @@
-RealTimeDataStore.tsx
-import { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/core/typings/entities/AppEntity";
+// RealTimeDataStore.tsx
+import type { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/core/typings/entities/AppEntity";
 import { RealtimeData } from "@/core/typings/realtimeTypes";
 
 
@@ -12,7 +12,6 @@ type AppRealtimeData = RealtimeData<
 >;
 
 
-RealTimeDataStore.ts
 interface RealTimeDataStore {
   realTimeDataList: AppRealtimeData[];
   currentRealTimeDataId: string;

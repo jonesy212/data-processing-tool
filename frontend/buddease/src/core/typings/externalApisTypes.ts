@@ -1,4 +1,4 @@
-externalApisTypes.ts
+// externalApisTypes.ts
 export interface ExternalReference {
   id: string;
   source: string;

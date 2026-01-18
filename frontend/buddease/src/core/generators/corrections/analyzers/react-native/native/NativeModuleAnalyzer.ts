@@ -1,6 +1,6 @@
-NativeModuleAnalyzer.ts
+// NativeModuleAnalyzer.ts
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
 

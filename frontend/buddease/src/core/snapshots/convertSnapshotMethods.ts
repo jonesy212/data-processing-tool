@@ -1,22 +1,19 @@
 // convertSnapshotMethods.ts
-import type { useDataStore } from '@/core/state/stores/DataStore';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import type { Data } from '@/core/models/data/Data';
-import { createSnapshot } from '@/core/snapshots/createSnapshot';
-import type { VersionHistory } from "@/core/versions/VersionData";
-import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import type { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
-import type { SnapshotData } from "@/core/snapshots/SnapshotData";
-import type { Snapshot } from '@/core/snapshots/Snapshot';
-import type { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from "@/core/typings/entities/SnapshotEntity";
-import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/core/config/BaseConfig';
-import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { useDataStore } from '@/core/state/stores/DataStore';
+import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from "@/core/typings/entities/SnapshotEntity";
+import type { VersionHistory } from "@/core/versions/VersionData";
 
-import { 
-  isDataStoreMethod, 
-  isDataStoreWithSnapshotMethods, 
-  isSnapshotStoreMethods 
+import {
+    isDataStoreMethod,
+    isDataStoreWithSnapshotMethods,
+    isSnapshotStoreMethods
 } from '@/core/typings/typeguards/dataStoreTypeGuards';
 
 // Define a callable function type for snapshot methods
@@ -40,7 +37,7 @@ type SnapshotMethodFunction<
 
 // Updated function that accepts both types and uses type guards
 function convertSnapshotMethods<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -130,7 +127,7 @@ function convertSnapshotMethods<
 }
 
 
-export { convertSnapshotMethods }
+export { convertSnapshotMethods };
 
 
 

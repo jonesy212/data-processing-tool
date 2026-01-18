@@ -1,10 +1,11 @@
-DatabaseMigrationDefinition.ts
+// MigrationSystem.ts
 
-import { MigrationEvent } from '@/core/components/database/SchemaEvolutionManager';
+import type { BackendDatabaseService } from '@/core/typings/database'
+import type { MigrationEvent } from '@/core/components/database/SchemaEvolutionManager';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import { DatabaseType } from '@/core/server/database/DatabaseServiceFactory';
-import { DatabaseSchema } from '@/core/typings/database';
-import {
+import type { DatabaseSchema } from '@/core/typings/database';
+import type {
     MigrationContext,
     MigrationDefinition
 } from './SchemaEvolutionManager';

@@ -1,9 +1,9 @@
-ContentItem.tsx
+// ContentItem.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { FileType } from '@/core/documents/attachment/Attachment';
+import type { FileType } from '@/core/documents/attachment/Attachment';
 import { StatusType } from "@/core/models/data/StatusType";
 import { Tag } from "@/core/models/tracker/Tag";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React, { useState } from "react";
 
 // Check if the tag is an instance of Tag

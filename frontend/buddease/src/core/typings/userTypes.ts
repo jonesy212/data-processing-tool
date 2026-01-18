@@ -1,6 +1,6 @@
-userTypes.ts
+// userTypes.ts
 import ChatSettings from '@/core/hooks/userInterface/ChatSettings';
-import { UserDataDefault, UserEntity } from '@/core/typings/entities/UserEntity';
+import type { UserDataDefault, UserEntity } from '@/core/typings/entities/UserEntity';
 
 
 interface UserProfileDetails {

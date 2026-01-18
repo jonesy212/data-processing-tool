@@ -1,5 +1,5 @@
-SecureFieldManager.ts
-import { SecureField, SecureMetadata } from "@/core/server/security/SecureField";
+// SecureFieldManager.ts
+import type { SecureField, SecureMetadata } from "@/core/server/security/SecureField";
 import SecurityAudit from "@/core/server/security/SecurityAudit";
 import crypto from 'crypto';
 

@@ -25,7 +25,7 @@ This component is **generic**, supporting extended data types and attachments us
 
 ```ts
 interface NotificationManagerProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

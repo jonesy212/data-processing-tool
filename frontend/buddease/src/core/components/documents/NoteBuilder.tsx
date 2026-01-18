@@ -6,7 +6,7 @@ import { Version } from '@/core/versions/Version';
 
 
 import { createMetaState } from '@/core/config/MetadataStateManager';
-import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from '@/core/documents/NoteData'; // Assuming you have a NoteData interface
+import type { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from '@/core/documents/NoteData'; // Assuming you have a NoteData interface
 import { VersionHistory } from '@/core/versions/VersionData';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import React, { useState } from 'react';

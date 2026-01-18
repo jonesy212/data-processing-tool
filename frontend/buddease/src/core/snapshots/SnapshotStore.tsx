@@ -3,8 +3,8 @@
 import { SnapshotCategory } from '@/core/api/getSnapshotEndpoint';
 import { Label } from '@/core/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
-import { Data } from '@/core/models/data/Data';
-import { CriteriaType, PriorityValue } from '@/core/pages/searches/CriteriaType';
+import type { Data } from '@/core/models/data/Data';
+import type { CriteriaType, PriorityValue } from '@/core/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import { U, WrappedU } from '@/core/snapshots/isCompatibleTempData';
 import { FilterMethods } from '@/core/snapshots/methods/FilterMethods';
@@ -12,14 +12,14 @@ import { MethodBinder, bindAllMethods } from '@/core/snapshots/methods/methodBin
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotStoreReference } from '@/core/snapshots/SnapshotStoreReference';
 import { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
-import { SubscriberCallbackType } from '@/core/subscriptions/Subscription';
-import { AllTypes } from '@/core/typings/PropTypes';
+import type { SubscriberCallbackType } from '@/core/subscriptions/Subscription';
+import type { AllTypes } from '@/core/typings/PropTypes';
 import { VersionHistory } from '@/core/versions/VersionData';
 
 import getSnapshotStoreConfig from '@/core/api/SnapshotApi';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { ProjectMetadata, StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
@@ -33,11 +33,11 @@ import { SnapshotWithData } from '@/core/components/calendar/CalendarApp';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CombinedEvents, SnapshotManager, SnapshotStoreOptions } from '@/core/hooks/useSnapshotManager';
+import type { CombinedEvents, SnapshotManager, SnapshotStoreOptions } from '@/core/hooks/useSnapshotManager';
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import { Content } from '@/core/models/content/AddContent';
 import { dataStoreMethods } from '@/core/models/data/dataStoreMethods';
-import { NotificationPosition, StatusType } from '@/core/models/data/StatusType';
+import type { NotificationPosition, StatusType } from '@/core/models/data/StatusType';
 import { DebugInfo, TempData } from '@/core/models/data/TempData';
 import { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
@@ -56,7 +56,7 @@ import type { CommonDataStoreMethods, DataStore, EventRecord, InitializedState }
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
-import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from '@/core/typings/YourSpecificSnapshotType';
+import type { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from '@/core/typings/YourSpecificSnapshotType';
 import { Version } from '@/core/versions/Version';
 import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/utils/snapshotUtils';
 
@@ -64,16 +64,16 @@ import { SnapshotOperation } from '@/core/actions/SnapshotActions';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { createSnapshotStores } from '@/core/snapshots/newStoreUtils';
 import { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { delegate, notifySubscribers, subscribeToSnapshot, subscribeToSnapshots } from '@/core/snapshots/snapshotHandlers';
 import { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import { SnapshotOperations, getSnapshotItems } from '@/core/snapshots/snapshotOperations';
 import { SnapshotStoreMethods } from '@/core/snapshots/SnapshotStoreMethods';
-import { InitializedDataStore, SnapshotWithCriteriaAsBase } from '@/core/snapshots/SnapshotStoreOptions';
+import type { InitializedDataStore, SnapshotWithCriteriaAsBase } from '@/core/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteriaContract, data } from '@/core/snapshots/SnapshotWithCriteria';
 
-import { SnapshotStoreProps, useSnapshotStore } from '@/core/snapshots/useSnapshotStore';
+import type { SnapshotStoreProps, useSnapshotStore } from '@/core/snapshots/useSnapshotStore';
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
 

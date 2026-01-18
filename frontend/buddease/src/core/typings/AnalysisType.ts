@@ -1,4 +1,4 @@
-AnalysisType.ts
+// AnalysisType.ts
 enum AnalysisTypeEnum {
     // Descriptive Analysis
     DESCRIPTIVE = "Descriptive Analysis",

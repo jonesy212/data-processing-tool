@@ -1,4 +1,4 @@
-feedbackConfig.ts
+// feedbackConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { FeedbackEndpoints } from '@/core/typings/categories/FeedbackEndpoints';
 

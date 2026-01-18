@@ -1,4 +1,4 @@
-generateCaptionsUtils.ts
+// generateCaptionsUtils.ts
 
 // Function to generate captions for the video
 

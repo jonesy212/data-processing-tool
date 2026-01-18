@@ -1,12 +1,12 @@
 // RealtimeDataComponent.tsx
 import { ExchangeActions } from "@/core/actions/ExchangeActions";
-import { CalendarEvent } from "@/core/calendar/CalendarEvent";
+import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import type { BaseDataEntity, DefaultMeta } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { processSnapshotStore } from "@/core/hooks/commHooks/processSnapshotStore";
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
-import { Data } from "@/core/models/data/Data";
+import type { Data } from "@/core/models/data/Data";
 import { ExchangeData } from "@/core/models/data/ExchangeData";
 import { fetchDEXData } from "@/core/models/data/fetchExchangeData";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";

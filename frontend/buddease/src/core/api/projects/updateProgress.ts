@@ -1,4 +1,4 @@
-updateProgress.ts
+// updateProgress.ts
 /src/app/api/teams/update-progress/route.ts
 import DatabaseClient from '@/core/api/DatabaseClient';
 import { databaseConnection } from '@/core/config/databaseConnection'; // Import the renamed config

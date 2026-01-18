@@ -1,4 +1,4 @@
-// scripts/sync-package.js
+// generate-package-json.js
 const JSON5 = require('json5');
 const fs = require('fs');
 const path = require('path');

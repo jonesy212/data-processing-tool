@@ -1,4 +1,4 @@
-useUIElement.tsx
+// useUIElement.tsx
 import { useEffect, useState } from "react";
 
 export const useUIElement = ({ type, className }: { type: string; className?: string }) => {

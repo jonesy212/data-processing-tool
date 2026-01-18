@@ -1,4 +1,4 @@
-DynamicHookParams.tsx
+// DynamicHookParams.tsx
 
 
 export type DynamicHookParams = {

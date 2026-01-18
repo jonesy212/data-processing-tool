@@ -7,9 +7,9 @@ import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages'
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import Logger from "@/core/logging/Logger";
-import { Task } from "@/core/models/tasks/Task";
+import type { Task } from "@/core/models/tasks/Task";
 import { Progress } from "@/core/models/tracker/ProgressBar";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskMeta } from '@/core/typings/entities/TaskEntity';
 import { Idea } from '@/core/users/Ideas';
 import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";

@@ -1,5 +1,4 @@
 // BuildAnalyzer.ts
-// analyzers/BuildAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { exec } from 'child_process';
@@ -431,7 +430,6 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
   private analyzeNextConfig(content: string, configFile: string): Correction[] {
     const corrections: Correction[] = [];
     
-    // Check for Next.js specific issues
     if (content.includes('target:') && !content.includes('target: \'server\'')) {
       corrections.push(this.createCorrection(
         'nextjs-target-warning',
@@ -654,7 +652,6 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
       const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
 
-      // Check for missing TypeScript if .ts files exist
       const hasTsFiles = this.hasTypeScriptFiles();
       if (hasTsFiles && !deps.typescript && !deps['@types/node']) {
         corrections.push(this.createCorrection(

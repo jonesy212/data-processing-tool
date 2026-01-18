@@ -20,7 +20,7 @@ import type { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import { frontendStructure } from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
 import { saveDocumentToDatabase } from "@/core/config/database/updateDocumentInDatabase";
-import { useMetadata } from "@/core/config/useMetadata";
+import type { useMetadata } from "@/core/config/useMetadata";
 import { ModifiedDate } from "@/core/documents/DocType";
 import {
     getFormattedOptions

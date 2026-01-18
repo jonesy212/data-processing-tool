@@ -1,4 +1,4 @@
-CommunityDetails.tsx
+// CommunityDetails.tsx
 import { CommonDetails } from "@/core/components/models/details/CommonDetails";
 import { Team } from '@/core/components/teams/Team';
 import { CommonData } from "@/core/models/CommonData";

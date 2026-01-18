@@ -2,7 +2,7 @@
 import UserService from '@/core/api/ApiUser';
 import { databaseConfig } from '@/core/config/endpoints/databaseConfig';
 import Logger from '@/core/logging/Logger';
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
+import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
 import { User } from '@/core/users/User';
 import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';

@@ -1,4 +1,4 @@
-RealtimeDataSlice.ts
+// RealtimeDataSlice.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { RealtimeData } from '@/core/typings/realtimeTypes';
 import { createSlice } from "@reduxjs/toolkit";

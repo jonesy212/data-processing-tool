@@ -1,4 +1,4 @@
-diagramGenerationLibrary.ts
+// diagramGenerationLibrary.ts
 
 import { diagramGenerator } from "@/core/generators/diagramGenerator";
 

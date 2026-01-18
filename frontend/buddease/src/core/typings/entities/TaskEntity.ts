@@ -1,23 +1,23 @@
 // TaskEntity.ts
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Permission } from '@/core/permissions/Permission';
+import type { Permission } from '@/core/permissions/Permission';
 
 import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
-import { Task } from '@/core/models/tasks/Task';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Task } from '@/core/models/tasks/Task';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { AllStatus } from "@/core/state/stores/DetailsListStore";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { AppMetadata } from '@/core/typings/metadataTypes';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { AllStatus } from "@/core/state/stores/DetailsListStore";
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { AppMetadata } from '@/core/typings/metadataTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 interface TaskEntity extends BaseEntity<AppMetadata<AppTaskMetadata>> {
   name: string;
@@ -27,7 +27,7 @@ interface TaskEntity extends BaseEntity<AppMetadata<AppTaskMetadata>> {
   isComplete?: boolean;
   startDate?: Date;
   endDate?: Date;
-  userId?: number;
+  userId?: string | null;
   projectName?: string;
 }
 
@@ -39,7 +39,6 @@ interface TaskEntityExtended extends TaskEntity {
 }
 
 // 2. Type definitions with 6 parameters
-type TaskEntity = BaseMetaEntity;
 type TaskK = TaskEntityExtended;
 type TaskMeta = DefaultMeta<TaskEntity, TaskK>;
 type TaskAttachment = Attachment;

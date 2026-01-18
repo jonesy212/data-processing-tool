@@ -1,5 +1,5 @@
-ChatEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ChatEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ChatEndpoints extends EndpointCategoryConfig {
   getThreads: EndpointConfig;

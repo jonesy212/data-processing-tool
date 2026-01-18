@@ -1,9 +1,10 @@
-ArticleStore.ts
+// ArticleStore.ts
 import { handleApiError } from "@/core/api/ApiLogs";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { createMessage } from "@/utils/web3/createMessage";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { observable, runInAction } from "mobx";
 
 const API_BASE_URL = "https://api.yourservice.com"; // Replace with your actual API base URL

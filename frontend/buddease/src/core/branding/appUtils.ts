@@ -1,4 +1,4 @@
-appUtils.ts
+// appUtils.ts
 import type { AppTree } from "@/core/generators/generateAppTree";
 
 // Helper function to retrieve a file from the tree structure
@@ -6,7 +6,6 @@ const getFileFromTree = (appTree: AppTree, fileName: string): string | null => {
     // Check if components is an object
     if (typeof appTree.components === 'object' && appTree.components !== null) {
         // Logic to traverse the tree structure and retrieve the file
-        // Example: appTree.components['example_file.ts']
         const filePath = appTree.components[fileName];
 
         // Check if filePath is a string

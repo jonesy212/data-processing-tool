@@ -1,4 +1,4 @@
-projectOwnerConfig.ts
+// projectOwnerConfig.ts
 import { BASE_URL } from '@/core/api/baseUrl';
 import { ProjectOwnerEndpoints } from '@/core/typings/categories/ProjectOwnerEndpoints';
 

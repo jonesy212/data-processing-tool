@@ -1,4 +1,4 @@
-CollaborationStore.ts
+// CollaborationStore.ts
 import { ExtendedCalendarEvent } from "@/core/calendar/CalendarEventTimingOptimization";
 import { useAuth } from '@/core/state/context/AuthContext';
 import { AssignBaseStore, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";

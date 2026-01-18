@@ -1,6 +1,8 @@
-// src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts
-import { DynamicPhaseExecutor } from '@/core/error-analyzer/phases/DynamicPhaseSystem';
+// SmartBackupPhaseSystem.ts
+import type {  FileChangeTracker, ProductionBackupPoint, TextChange } from '@/core/error-analyzer/phases/DifferentialBackupSystem';
+import { DifferentialBackupSystem } from '@/core/error-analyzer/phases/DifferentialBackupSystem';
 import type { PhaseExecutionResult } from '@/core/error-analyzer/phases/DynamicPhaseSystem';
+import { DynamicPhaseExecutor } from '@/core/error-analyzer/phases/DynamicPhaseSystem';
 import { PhaseExecutor } from '@/core/error-analyzer/phases/PhaseExecutor';
 import { ImportDeduplicator } from '@/utils/import-deduplicator';
 import fs from 'fs';
@@ -19,32 +21,38 @@ export interface BackupPolicy {
   cleanupOldBackups: boolean;
   /** Backup location */
   backupDir: string;
+
+
+  // Add these:
+  /** Use delta/differential backups instead of full copies */
+  useDifferentialBackups: boolean;
+  /** Store diffs instead of full files */
+  storeDiffs: boolean;
+  /** Maximum diff chain length before full snapshot */
+  maxDiffChain: number;
+  /** Compression for diffs */
+  compressDiffs: boolean;
+  /** Diff algorithm to use */
+  diffAlgorithm: 'text' | 'binary' | 'structured';
 }
 
-export interface FileChangeTracker {
-  filePath: string;
-  originalHash: string;
-  currentHash: string;
-  changeCount: number;
-  lastChangeTime: Date;
-  hasBeenFullyFixed: boolean;
-  errorsBefore: number;
-  errorsAfter: number;
-  backupIds: string[];
-}
 
-export interface ProductionBackupPoint {
-  id: string;
-  name: string;
+
+export interface DifferentialBackupInfo {
+  type: 'full' | 'diff';
+  baseBackupId?: string; // For diffs: which full backup this diff is based on
+  diffData?: FileDiff;   // The actual diff changes
   timestamp: Date;
-  description: string;
-  fullyFixedFiles: string[];
-  partialFixedFiles: string[];
-  unfixedFiles: string[];
-  totalChanges: number;
-  successRate: number;
-  metadata: Record<string, any>;
+  operation: string;
 }
+
+export interface FileDiff {
+  changes: TextChange[];
+  previousHash: string;
+  newHash: string;
+  fileSizeReduction: number; // Percentage saved vs full backup
+}
+
 
 export class SmartBackupPhaseSystem {
   private dynamicExecutor: DynamicPhaseExecutor;
@@ -52,6 +60,8 @@ export class SmartBackupPhaseSystem {
   private policy: BackupPolicy;
   private changeTracker: Map<string, FileChangeTracker>;
   private productionBackupPoints: ProductionBackupPoint[] = [];
+  private diffBackupSystem: DifferentialBackupSystem;
+  private diffRegistry: Map<string, DifferentialBackupInfo> = new Map();
 
   constructor(policy: Partial<BackupPolicy> = {}) {
     this.policy = {
@@ -60,10 +70,17 @@ export class SmartBackupPhaseSystem {
       createProductionBackup: true,
       trackEntityChanges: true,
       cleanupOldBackups: true,
+      
       backupDir: path.join(process.cwd(), '.smart-backups'),
+      useDifferentialBackups: true,  // Enable diff backups
+      storeDiffs: true,
+      maxDiffChain: 20,              // Create full backup after 20 diffs
+      compressDiffs: true,
+      diffAlgorithm: 'text'
       ...policy
     };
 
+    this.diffBackupSystem = new DifferentialBackupSystem();
     this.dynamicExecutor = new DynamicPhaseExecutor();
     this.phaseExecutor = new PhaseExecutor();
     this.changeTracker = new Map();
@@ -74,51 +91,85 @@ export class SmartBackupPhaseSystem {
   // ========== INTELLIGENT BACKUP MANAGEMENT ==========
 
   /**
-   * Only create backup if file actually changes
-   */
-  async backupIfChanged(filePath: string, operation: string): Promise<string | null> {
-    if (!this.policy.backupOnChange) {
-      return this.createBackup(filePath, operation);
-    }
+ * Only create backup if file actually changes with smart backup support
+ */
+async backupIfChanged(filePath: string, operation: string): Promise<string | null> {
+  if (!this.policy.backupOnChange) {
+    return this.policy.useDifferentialBackups 
+      ? await this.createSmartBackup(filePath, operation)
+      : await this.createBackup(filePath, operation);
+  }
 
-    const currentHash = await this.getFileHash(filePath);
-    const tracker = this.changeTracker.get(filePath);
+  const currentHash = await this.getFileHash(filePath);
+  const tracker = this.changeTracker.get(filePath);
 
-    // If file hasn't been tracked yet, track it
-    if (!tracker) {
-      const newTracker: FileChangeTracker = {
-        filePath,
-        originalHash: currentHash,
-        currentHash,
-        changeCount: 0,
-        lastChangeTime: new Date(),
-        hasBeenFullyFixed: false,
-        errorsBefore: 0,
-        errorsAfter: 0,
-        backupIds: []
-      };
-      this.changeTracker.set(filePath, newTracker);
-      return null; // No backup needed, no changes yet
-    }
+  // If file hasn't been tracked yet, track it
+  if (!tracker) {
+    const newTracker: FileChangeTracker = {
+      filePath,
+      originalHash: currentHash,
+      currentHash,
+      changeCount: 0,
+      lastChangeTime: new Date(),
+      hasBeenFullyFixed: false,
+      errorsBefore: 0,
+      errorsAfter: 0,
+      backupIds: []
+    };
+    this.changeTracker.set(filePath, newTracker);
+    
+    // Create initial backup
+    const backupId = this.policy.useDifferentialBackups
+      ? await this.createSmartBackup(filePath, `${operation}-initial`)
+      : await this.createBackup(filePath, `${operation}-initial`);
+    
+    // Store reference to backup
+    newTracker.backupIds.push(backupId);
+    
+    return backupId;
+  }
 
-    // Check if file has actually changed
-    if (tracker.currentHash === currentHash) {
-      console.log(`📝 ${path.basename(filePath)}: No changes detected, skipping backup`);
-      return null;
-    }
+  // Check if file has actually changed
+  if (tracker.currentHash === currentHash) {
+    console.log(`📝 ${path.basename(filePath)}: No changes detected, skipping backup`);
+    return null;
+  }
 
-    // File has changed, create backup
+  // File has changed, create appropriate backup
+  if (this.policy.useDifferentialBackups) {
+    // Use differential backup
+    const diffId = await this.diffBackupSystem.createDiffBackup(filePath, operation);
+    
+    // Store reference to diff backup
+    tracker.backupIds.push(`diff:${diffId}`);
     tracker.changeCount++;
     tracker.lastChangeTime = new Date();
     tracker.currentHash = currentHash;
-
+    
+    console.log(`📊 ${path.basename(filePath)}: Differential backup created: ${diffId} (changes: ${tracker.changeCount})`);
+    
+    // Create full backup if diff chain is too long
+    if (tracker.changeCount % this.policy.maxDiffChain === 0) {
+      const fullBackupId = await this.createSmartBackup(filePath, `${operation}-full-snapshot`);
+      console.log(`🔄 ${path.basename(filePath)}: Created full snapshot (every ${this.policy.maxDiffChain} changes): ${fullBackupId}`);
+    }
+    
+    return diffId;
+  } else {
+    // Use full backup (original behavior)
     const backupId = await this.createBackup(filePath, operation);
+    
+    // Update tracker
     tracker.backupIds.push(backupId);
-
+    tracker.changeCount++;
+    tracker.lastChangeTime = new Date();
+    tracker.currentHash = currentHash;
+    
     console.log(`💾 ${path.basename(filePath)}: Changes detected, backup created (${backupId})`);
     
     return backupId;
   }
+}
 
   /**
    * Create production-safe backup point when everything is fixed
@@ -284,25 +335,64 @@ export class SmartBackupPhaseSystem {
   /**
    * Execute import deduplication with smart backup
    */
+  
+  /**
+   * Enhanced import deduplication with guaranteed backups
+   */
   private async executeImportDeduplication(): Promise<any> {
-    console.log('🔍 Running import deduplication...');
+    console.log('🔍 Running import deduplication with guaranteed backups...');
     
     const tsFiles = this.findAllTypeScriptFiles(process.cwd());
     let totalRemoved = 0;
     let filesChanged = 0;
     const changedFiles: string[] = [];
+    const backedUpFiles: string[] = [];
 
     for (const filePath of tsFiles) {
-      const backupId = await this.backupIfChanged(filePath, 'import-deduplication');
-      
-      if (backupId) {
-        // File was backed up, meaning it changed
-        const result = ImportDeduplicator.deduplicateFile(filePath);
-        if (result.removed > 0) {
-          totalRemoved += result.removed;
-          filesChanged++;
-          changedFiles.push(path.relative(process.cwd(), filePath));
+      try {
+        // Always backup before reading/modifying
+        const backupId = await this.backupBeforeModification(
+          filePath, 
+          'import-deduplication-precheck'
+        );
+
+        if (backupId) {
+          backedUpFiles.push(`${path.basename(filePath)}:${backupId}`);
         }
+
+        // Read current content
+        const originalContent = fs.readFileSync(filePath, 'utf-8');
+        
+        // Run deduplication
+        const result = ImportDeduplicator.deduplicateFile(filePath);
+        
+        if (result.removed > 0) {
+          // Backup again before writing changes
+          const writeBackupId = await this.backupBeforeModification(
+            filePath,
+            'import-deduplication-write'
+          );
+
+          if (writeBackupId) {
+            backedUpFiles.push(`${path.basename(filePath)}:${writeBackupId}`);
+          }
+
+          // Apply changes
+          const dedupContent = ImportDeduplicator.getDeduplicatedContent(filePath);
+          const success = await this.safeWriteFile(
+            filePath,
+            dedupContent,
+            'import-deduplication-apply'
+          );
+
+          if (success) {
+            totalRemoved += result.removed;
+            filesChanged++;
+            changedFiles.push(path.relative(process.cwd(), filePath));
+          }
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process ${filePath}:`, error);
       }
     }
 
@@ -311,9 +401,13 @@ export class SmartBackupPhaseSystem {
       totalRemoved,
       filesChanged,
       changedFiles,
-      timestamp: new Date().toISOString()
+      backedUpFiles,
+      timestamp: new Date().toISOString(),
+      backupGuaranteed: true
     };
   }
+
+  
 
   /**
    * Execute phase with smart backup
@@ -675,7 +769,317 @@ ${backupPoint.fullyFixedFiles.map(f => `- ${path.relative(process.cwd(), f)}`).j
     return recommendations;
   }
 
-  async restoreFromBackup(backupId: string): Promise<boolean> {
+
+
+
+  /**
+ * Enhanced restore that handles both full and differential backups
+ */
+/**
+ * Enhanced restore that handles both full and differential backups
+ */
+async restoreFromBackup(backupId: string, useDiffs: boolean = true): Promise<boolean> {
+  // ========== CHECK FOR DIFFERENTIAL BACKUP ==========
+  const backupInfo = this.diffRegistry?.get(backupId);
+  
+  // If this is a differential backup and we should use it
+  if (backupInfo?.type === 'diff' && useDiffs && this.policy.useDifferentialBackups) {
+    console.log(`🔧 Attempting differential restore for: ${backupId}`);
+    
+    if (!backupInfo.baseBackupId || !backupInfo.diffData) {
+      console.error(`❌ Invalid differential backup: ${backupId}`);
+      return false;
+    }
+
+    // Find the original file path from backup log
+    const logPath = path.join(this.policy.backupDir, 'backup-log.json');
+    if (!fs.existsSync(logPath)) {
+      console.error('❌ Backup log not found');
+      return false;
+    }
+
+    const logs = JSON.parse(fs.readFileSync(logPath, 'utf-8'));
+    const backupLog = logs.find((log: any) => log.id === backupId);
+    
+    if (!backupLog) {
+      console.error(`❌ Backup log entry not found for: ${backupId}`);
+      return false;
+    }
+
+    const filePath = backupLog.filePath;
+    
+    try {
+      // 1. First, restore the base full backup
+      console.log(`   ↳ Restoring base backup: ${backupInfo.baseBackupId}`);
+      const baseBackupPath = path.join(this.policy.backupDir, 'file-versions', backupInfo.baseBackupId);
+      
+      if (!fs.existsSync(baseBackupPath)) {
+        throw new Error(`Base backup not found: ${backupInfo.baseBackupId}`);
+      }
+      
+      // Copy base backup to original location
+      fs.copyFileSync(baseBackupPath, filePath);
+      
+      // 2. Apply the diffs to get to the target version
+      console.log(`   ↳ Applying ${backupInfo.diffData.changes?.length || 0} changes...`);
+      const baseContent = fs.readFileSync(filePath, 'utf-8');
+      const restoredContent = this.applyDiffToContent(baseContent, backupInfo.diffData.changes);
+      
+      // 3. Write the final content
+      fs.writeFileSync(filePath, restoredContent, 'utf-8');
+      
+      // 4. Verify the restore
+      const finalHash = await this.getFileHash(filePath);
+      if (backupInfo.diffData.newHash && finalHash !== backupInfo.diffData.newHash) {
+        console.warn(`⚠️ Hash mismatch after restore. Expected: ${backupInfo.diffData.newHash}, Got: ${finalHash}`);
+      }
+      
+      // Update change tracker
+      const tracker = this.changeTracker.get(filePath);
+      if (tracker) {
+        tracker.currentHash = finalHash;
+        tracker.changeCount++;
+        tracker.lastChangeTime = new Date();
+      }
+      
+      console.log(`✅ Restored from diff: ${path.basename(filePath)} (saved ${backupInfo.diffData.fileSizeReduction || 0}% space)`);
+      return true;
+      
+    } catch (error) {
+      console.error(`❌ Failed to restore from differential backup ${backupId}:`, error);
+      
+      // Fallback: Try regular full backup restore
+      console.log('🔄 Falling back to full backup restore...');
+      return await this.restoreFromFullBackupDirect(backupId);
+    }
+  }
+  
+  // ========== REGULAR FULL BACKUP RESTORE ==========
+  return await this.restoreFromFullBackupDirect(backupId);
+}
+
+
+/**
+ * Helper method for full backup restore (your original logic)
+ */
+private async restoreFromFullBackupDirect(backupId: string): Promise<boolean> {
+  const backupPath = path.join(this.policy.backupDir, 'file-versions', backupId);
+  
+  if (!fs.existsSync(backupPath)) {
+    console.error(`❌ Backup not found: ${backupId}`);
+    return false;
+  }
+
+  // Find original file path from backup log
+  const logPath = path.join(this.policy.backupDir, 'backup-log.json');
+  if (!fs.existsSync(logPath)) {
+    console.error('❌ Backup log not found');
+    return false;
+  }
+
+  const logs = JSON.parse(fs.readFileSync(logPath, 'utf-8'));
+  const backupLog = logs.find((log: any) => log.id === backupId);
+  
+  if (!backupLog) {
+    console.error(`❌ Backup log entry not found for: ${backupId}`);
+    return false;
+  }
+
+  // Restore the file
+  fs.copyFileSync(backupPath, backupLog.filePath);
+  
+  // Determine if this was a diff or full backup for logging
+  const backupType = backupId.startsWith('diff-') ? 'diff' : 'full';
+  console.log(`✅ Restored: ${path.basename(backupLog.filePath)} from ${backupType} backup ${backupId}`);
+
+  // Update change tracker
+  const tracker = this.changeTracker.get(backupLog.filePath);
+  if (tracker) {
+    tracker.currentHash = await this.getFileHash(backupLog.filePath);
+    tracker.changeCount++;
+    tracker.lastChangeTime = new Date();
+  }
+
+  return true;
+}
+
+/**
+ * Apply diff changes to content (helper for differential restore)
+ */
+private applyDiffToContent(content: string, changes: TextChange[]): string {
+  if (!changes || changes.length === 0) {
+    return content;
+  }
+  
+  let result = content;
+  
+  // Sort changes by position to apply correctly
+  const sortedChanges = [...changes].sort((a, b) => a.position - b.position);
+  
+  // Apply in reverse order (so positions remain valid)
+  for (let i = sortedChanges.length - 1; i >= 0; i--) {
+    const change = sortedChanges[i];
+    
+    // Convert string position to actual position if needed
+    const position = typeof change.position === 'string' 
+      ? parseInt(change.position) 
+      : change.position;
+    
+    switch (change.type) {
+      case 'insert':
+        result = result.slice(0, position) + 
+                (change.content || '') + 
+                result.slice(position);
+        break;
+        
+      case 'delete':
+        const deleteLength = change.length || (change.content?.length || 0);
+        result = result.slice(0, position) + 
+                result.slice(position + deleteLength);
+        break;
+        
+      case 'replace':
+        const replaceLength = change.length || (change.content?.length || 0);
+        result = result.slice(0, position) + 
+                (change.newContent || change.content || '') + 
+                result.slice(position + replaceLength);
+        break;
+        
+      default:
+        console.warn(`⚠️ Unknown change type: ${change.type}`);
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Initialize differential backup system (#TODO add to constructor or init method)
+ */
+private initDifferentialBackupSystem(): void {
+  // Create diffs directory if using differential backups
+  if (this.policy.useDifferentialBackups) {
+    const diffsDir = path.join(this.policy.backupDir, 'diffs');
+    if (!fs.existsSync(diffsDir)) {
+      fs.mkdirSync(diffsDir, { recursive: true });
+    }
+    
+    // Load existing diff registry
+    this.loadDiffRegistry();
+  }
+}
+
+/**
+ * Load existing diff registry from disk
+ */
+private loadDiffRegistry(): void {
+  const registryPath = path.join(this.policy.backupDir, 'diff-registry.json');
+  
+  if (fs.existsSync(registryPath)) {
+    try {
+      const registryData = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
+      this.diffRegistry = new Map(Object.entries(registryData));
+      console.log(`📊 Loaded ${this.diffRegistry.size} differential backup records`);
+    } catch (error) {
+      console.warn(`⚠️ Failed to load diff registry:`, error);
+      this.diffRegistry = new Map();
+    }
+  } else {
+    this.diffRegistry = new Map();
+  }
+}
+
+/**
+ * Save diff registry to disk
+ */
+private saveDiffRegistry(): void {
+  if (!this.policy.useDifferentialBackups) return;
+  
+  const registryPath = path.join(this.policy.backupDir, 'diff-registry.json');
+  const registryObj = Object.fromEntries(this.diffRegistry);
+  
+  fs.writeFileSync(
+    registryPath, 
+    JSON.stringify(registryObj, null, 2), 
+    'utf-8'
+  );
+}
+
+  /**
+   * Restore from differential backup
+   */
+  private async restoreFromDifferentialBackup(
+    diffBackupId: string, 
+    backupInfo: DifferentialBackupInfo
+  ): Promise<boolean> {
+    if (!backupInfo.baseBackupId || !backupInfo.diffData) {
+      console.error(`❌ Invalid differential backup: ${diffBackupId}`);
+      return false;
+    }
+
+    // Find the original file path
+    const logPath = path.join(this.policy.backupDir, 'backup-log.json');
+    if (!fs.existsSync(logPath)) {
+      console.error('❌ Backup log not found');
+      return false;
+    }
+
+    const logs = JSON.parse(fs.readFileSync(logPath, 'utf-8'));
+    const backupLog = logs.find((log: any) => log.id === diffBackupId);
+    
+    if (!backupLog) {
+      console.error(`❌ Backup log entry not found for: ${diffBackupId}`);
+      return false;
+    }
+
+    const filePath = backupLog.filePath;
+    
+    try {
+      console.log(`🔧 Restoring from differential backup: ${diffBackupId}`);
+      
+      // 1. First restore the base full backup
+      const baseRestored = await this.restoreFromFullBackup(backupInfo.baseBackupId);
+      if (!baseRestored) {
+        throw new Error(`Failed to restore base backup: ${backupInfo.baseBackupId}`);
+      }
+      
+      // 2. Apply the diffs
+      const currentContent = fs.readFileSync(filePath, 'utf-8');
+      const restoredContent = this.applyDiffToContent(currentContent, backupInfo.diffData.changes);
+      
+      // 3. Write the final content
+      fs.writeFileSync(filePath, restoredContent, 'utf-8');
+      
+      // 4. Verify the restore
+      const finalHash = await this.getFileHash(filePath);
+      if (finalHash !== backupInfo.diffData.newHash) {
+        console.warn(`⚠️ Hash mismatch after restore. Expected: ${backupInfo.diffData.newHash}, Got: ${finalHash}`);
+      }
+      
+      // Update change tracker
+      const tracker = this.changeTracker.get(filePath);
+      if (tracker) {
+        tracker.currentHash = finalHash;
+        tracker.changeCount++;
+        tracker.lastChangeTime = new Date();
+      }
+      
+      console.log(`✅ Restored from diff: ${path.basename(filePath)} (saved ${backupInfo.diffData.fileSizeReduction}% space)`);
+      return true;
+      
+    } catch (error) {
+      console.error(`❌ Failed to restore from differential backup ${diffBackupId}:`, error);
+      
+      // Fallback: Try full backup restore
+      console.log('🔄 Falling back to full backup restore...');
+      return await this.restoreFromFullBackup(backupInfo.baseBackupId);
+    }
+  }
+
+  /**
+   * Your original full backup restore method (renamed)
+   */
+  private async restoreFromFullBackup(backupId: string): Promise<boolean> {
     const backupPath = path.join(this.policy.backupDir, 'file-versions', backupId);
     
     if (!fs.existsSync(backupPath)) {
@@ -700,7 +1104,7 @@ ${backupPoint.fullyFixedFiles.map(f => `- ${path.relative(process.cwd(), f)}`).j
 
     // Restore the file
     fs.copyFileSync(backupPath, backupLog.filePath);
-    console.log(`✅ Restored: ${path.basename(backupLog.filePath)} from backup ${backupId}`);
+    console.log(`✅ Restored: ${path.basename(backupLog.filePath)} from full backup ${backupId}`);
 
     // Update change tracker
     const tracker = this.changeTracker.get(backupLog.filePath);
@@ -712,6 +1116,177 @@ ${backupPoint.fullyFixedFiles.map(f => `- ${path.relative(process.cwd(), f)}`).j
 
     return true;
   }
+
+
+  /**
+   * Create differential backup instead of full backup when possible
+   */
+  async createSmartBackup(filePath: string, operation: string): Promise<string> {
+    if (!this.policy.useDifferentialBackups) {
+      // Fall back to full backup
+      return await this.createBackup(filePath, operation);
+    }
+
+    const tracker = this.changeTracker.get(filePath);
+    const currentHash = await this.getFileHash(filePath);
+    
+    // If no tracker exists or this is first backup, create full backup
+    if (!tracker || tracker.backupIds.length === 0) {
+      const backupId = await this.createBackup(filePath, `${operation}-initial`);
+      
+      // Register as full backup
+      this.diffRegistry.set(backupId, {
+        type: 'full',
+        timestamp: new Date(),
+        operation: `${operation}-initial`
+      });
+      
+      return backupId;
+    }
+
+    // Get the last backup ID
+    const lastBackupId = tracker.backupIds[tracker.backupIds.length - 1];
+    const lastBackupInfo = this.diffRegistry.get(lastBackupId);
+    
+    // If last backup was a diff and we've reached max chain length, create full backup
+    const diffChainLength = this.getDiffChainLength(filePath);
+    if (diffChainLength >= this.policy.maxDiffChain) {
+      console.log(`🔄 Max diff chain reached (${diffChainLength}), creating full snapshot`);
+      return await this.createBackup(filePath, `${operation}-full-snapshot`);
+    }
+
+    // Calculate diff between last version and current
+    const lastBackupPath = path.join(this.policy.backupDir, 'file-versions', lastBackupId);
+    if (!fs.existsSync(lastBackupPath)) {
+      console.warn(`⚠️ Previous backup not found, creating full backup instead`);
+      return await this.createBackup(filePath, operation);
+    }
+
+    const lastContent = fs.readFileSync(lastBackupPath, 'utf-8');
+    const currentContent = fs.readFileSync(filePath, 'utf-8');
+    
+    // Calculate the diff
+    const diff = await this.calculateDiff(lastContent, currentContent);
+    
+    // If diff is too large (e.g., >50% of file), create full backup instead
+    const diffSize = JSON.stringify(diff.changes).length;
+    const originalSize = Buffer.byteLength(lastContent, 'utf-8');
+    const diffRatio = diffSize / originalSize;
+    
+    if (diffRatio > 0.5) {
+      console.log(`📊 Diff too large (${Math.round(diffRatio * 100)}%), creating full backup`);
+      return await this.createBackup(filePath, operation);
+    }
+    
+    // Create diff backup
+    const diffId = `diff-${Date.now()}-${currentHash.slice(0, 8)}`;
+    const diffBackupInfo: DifferentialBackupInfo = {
+      type: 'diff',
+      baseBackupId: lastBackupId,
+      diffData: {
+        changes: diff.changes,
+        previousHash: await this.getFileHash(lastBackupPath),
+        newHash: currentHash,
+        fileSizeReduction: Math.round((1 - diffRatio) * 100)
+      },
+      timestamp: new Date(),
+      operation
+    };
+    
+    // Store diff info
+    this.diffRegistry.set(diffId, diffBackupInfo);
+    
+    // Save diff to disk
+    const diffPath = path.join(this.policy.backupDir, 'diffs', `${diffId}.json`);
+    fs.writeFileSync(diffPath, JSON.stringify(diffBackupInfo, null, 2), 'utf-8');
+    
+    // Update tracker
+    tracker.backupIds.push(diffId);
+    tracker.changeCount++;
+    tracker.lastChangeTime = new Date();
+    tracker.currentHash = currentHash;
+    
+    console.log(`📊 Created differential backup: ${diffId} (saved ${diffBackupInfo.diffData!.fileSizeReduction}% space)`);
+    
+    return diffId;
+  }
+
+  /**
+   * Calculate diff between two versions
+   */
+  private async calculateDiff(oldContent: string, newContent: string): Promise<{ changes: TextChange[] }> {
+    // For production, use a proper diff library like 'diff-match-patch'
+    // This is a simplified implementation
+    
+    const changes: TextChange[] = [];
+    
+    if (oldContent === newContent) {
+      return { changes: [] };
+    }
+    
+    // Simple line-based diff for demonstration
+    const oldLines = oldContent.split('\n');
+    const newLines = newContent.split('\n');
+    
+    let i = 0, j = 0;
+    while (i < oldLines.length && j < newLines.length) {
+      if (oldLines[i] !== newLines[j]) {
+        changes.push({
+          type: 'replace',
+          position: i,
+          length: 1,
+          content: oldLines[i],
+          newContent: newLines[j]
+        });
+      }
+      i++;
+      j++;
+    }
+    
+    // Handle remaining lines
+    if (i < oldLines.length) {
+      changes.push({
+        type: 'delete',
+        position: i,
+        length: oldLines.length - i,
+        content: oldLines.slice(i).join('\n')
+      });
+    }
+    
+    if (j < newLines.length) {
+      changes.push({
+        type: 'insert',
+        position: i,
+        length: 0,
+        content: newLines.slice(j).join('\n')
+      });
+    }
+    
+    return { changes };
+  }
+
+  /**
+   * Get the length of the current diff chain for a file
+   */
+  private getDiffChainLength(filePath: string): number {
+    const tracker = this.changeTracker.get(filePath);
+    if (!tracker) return 0;
+    
+    let chainLength = 0;
+    for (let i = tracker.backupIds.length - 1; i >= 0; i--) {
+      const backupId = tracker.backupIds[i];
+      const info = this.diffRegistry.get(backupId);
+      if (info?.type === 'diff') {
+        chainLength++;
+      } else {
+        break; // Hit a full backup, chain ends
+      }
+    }
+    
+    return chainLength;
+  }
+
+  
 
   async cleanupOldBackups(maxBackups: number = 10): Promise<number> {
     if (!this.policy.cleanupOldBackups) {
@@ -833,77 +1408,6 @@ ${backupPoint.fullyFixedFiles.map(f => `- ${path.relative(process.cwd(), f)}`).j
       console.error(`❌ Safe write failed for ${filePath}:`, error);
       return false;
     }
-  }
-
-  /**
-   * Enhanced import deduplication with guaranteed backups
-   */
-  private async executeImportDeduplication(): Promise<any> {
-    console.log('🔍 Running import deduplication with guaranteed backups...');
-    
-    const tsFiles = this.findAllTypeScriptFiles(process.cwd());
-    let totalRemoved = 0;
-    let filesChanged = 0;
-    const changedFiles: string[] = [];
-    const backedUpFiles: string[] = [];
-
-    for (const filePath of tsFiles) {
-      try {
-        // Always backup before reading/modifying
-        const backupId = await this.backupBeforeModification(
-          filePath, 
-          'import-deduplication-precheck'
-        );
-
-        if (backupId) {
-          backedUpFiles.push(`${path.basename(filePath)}:${backupId}`);
-        }
-
-        // Read current content
-        const originalContent = fs.readFileSync(filePath, 'utf-8');
-        
-        // Run deduplication
-        const result = ImportDeduplicator.deduplicateFile(filePath);
-        
-        if (result.removed > 0) {
-          // Backup again before writing changes
-          const writeBackupId = await this.backupBeforeModification(
-            filePath,
-            'import-deduplication-write'
-          );
-
-          if (writeBackupId) {
-            backedUpFiles.push(`${path.basename(filePath)}:${writeBackupId}`);
-          }
-
-          // Apply changes
-          const dedupContent = ImportDeduplicator.getDeduplicatedContent(filePath);
-          const success = await this.safeWriteFile(
-            filePath,
-            dedupContent,
-            'import-deduplication-apply'
-          );
-
-          if (success) {
-            totalRemoved += result.removed;
-            filesChanged++;
-            changedFiles.push(path.relative(process.cwd(), filePath));
-          }
-        }
-      } catch (error) {
-        console.error(`❌ Failed to process ${filePath}:`, error);
-      }
-    }
-
-    return {
-      operation: 'import-deduplication',
-      totalRemoved,
-      filesChanged,
-      changedFiles,
-      backedUpFiles,
-      timestamp: new Date().toISOString(),
-      backupGuaranteed: true
-    };
   }
 
   /**

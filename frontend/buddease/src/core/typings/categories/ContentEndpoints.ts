@@ -1,5 +1,5 @@
-ContentEndpoints.ts
-import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+// ContentEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface ContentEndpoints extends EndpointCategoryConfig {
   fetchContent: EndpointConfig;

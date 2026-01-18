@@ -1,5 +1,5 @@
-FuzzyMatch.ts
-import { Entity } from '@/core/config/BaseConfig';
+// FuzzyMatch.ts
+import type { Entity } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { processTextWithSpaCy } from "@/core/intelligence/AutoGPTSpaCyIntegration";
 import AppTreeService from "@/core/services/AppTreeService";
@@ -8,7 +8,7 @@ import fuzzysort from "fuzzysort";
 
 // Function to perform fuzzy matching with spaCy processing
 export const fuzzyMatchEntities = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

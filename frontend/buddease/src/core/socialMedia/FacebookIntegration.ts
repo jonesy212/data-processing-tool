@@ -1,4 +1,5 @@
-FacebookIntegration.ts
+// FacebookIntegration.ts
+
 import FacebookAPI from "@/core/api/FacebookAPI";
 import { endpoints } from '@/core/api/endpointConfigurations';
 import axiosInstance from "@/core/server/security/axiosInstance";

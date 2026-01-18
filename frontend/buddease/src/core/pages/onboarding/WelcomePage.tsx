@@ -1,4 +1,4 @@
-WelcomePage.tsx
+// WelcomePage.tsx
 import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 import React from "react";
 

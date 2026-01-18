@@ -1,6 +1,7 @@
-DraggableAnimation.tsx
+// DraggableAnimation.tsx
 import { dragRef } from "@/core/dashboards/PhaseDashboard";
-import React, { ReactNode, useEffect } from "react";
+import type { ReactNode, useEffect } from 'react';
+import React from 'react';
 
 interface DraggableAnimationProps {
   onDragStart: () => void;

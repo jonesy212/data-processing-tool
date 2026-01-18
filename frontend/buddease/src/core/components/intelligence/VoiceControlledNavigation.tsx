@@ -1,4 +1,4 @@
-VoiceControlledNavigation.tsx
+// VoiceControlledNavigation.tsx
 import {
     startVoiceRecognition,
     stopVoiceRecognition,
@@ -25,10 +25,8 @@ const VoiceControlledNavigation: React.FC = () => {
       ],
     });
 
-    // Start the Intro.js tour when the component mounts
     intro.start();
 
-    // Clean up the Intro.js instance when the component unmounts
     return () => {
       intro.exit(true);
     };

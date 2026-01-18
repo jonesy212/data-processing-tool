@@ -1,9 +1,10 @@
-AdapterContent.tsx
+// AdapterContent.tsx
 import Link from "@/core/components/routing/Link";
 import {
     AnimatedComponentProps,
 } from "@/core/components/styling/AnimationsAndTansitions";
-import ColorPalette, { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
+import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
+import ColorPalette from '@/core/components/styling/ColorPalette';
 import NavigationGenerator from "@/core/hooks/userInterface/NavigationGenerator";
 import { AnimatedComponent } from "@/core/libraries/animations/AnimationComponent";
 import DraggableAnimation from "@/core/libraries/animations/DraggableAnimation";
