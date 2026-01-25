@@ -1,0 +1,301 @@
+// MobXEntityStore.tsx
+
+import type { GlobalStateActions } from '@/core/actions/GlobalStateActions';
+import type { AppStructureItem } from '@/core/config/appStructure/AppStructure';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { UserSettings } from '@/core/config/UserSettings';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
+import type { DesignSystemConfig } from '@/core/libraries/ui/theme/MapProperties';
+import type { BaseData } from '@/core/models/data/Data';
+import { DocumentSize } from "@/core/models/data/StatusType";
+import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import Version from '@/core/versions/Version';
+import * as crypto from 'crypto'; // Correct crypto module for Node.js
+import * as docx from 'docx';
+import { action, makeAutoObservable } from 'mobx';
+import { useDispatch } from 'react-redux';
+
+
+
+interface ExtendedStyle extends DocxStyle {
+  tableStyles?: {
+    header?: TableStyle;  // Define header as a TableStyle
+    body?: TableStyle;    // Define body as a TableStyle
+    footer?: TableStyle;   // Define footer as a TableStyle
+  };
+}
+
+// Define a TableStyle interface to represent the styles for table cells
+interface TableStyle {
+  fontWeight?: string;
+  root?: CustomXmlComponent; // Ensure root is of type CustomXmlComponent
+  prepForXml: () => Record<string, unknown>;
+  addChildElement?: () => void;
+  rootKey?: string;
+}
+
+
+
+
+class CustomXmlComponent extends XmlComponent {
+  constructor(rootKey: string) {
+    super(rootKey);
+    // Your constructor logic, if needed
+  }
+
+  prepForXml(context: IContext): IXmlableObject | undefined {
+    // Your implementation here
+    return super.prepForXml(context);
+  }
+
+  addChildElement(child: XmlComponent | string): XmlComponent {
+    return super.addChildElement(child);
+  }
+}
+
+
+export default class MobXEntityStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  private rootKey: string;
+  constructor() {
+    makeAutoObservable(this);
+    this.rootKey = this.setRootKey();
+    this.globalState.uniqueIdentifier = this.generateUniqueIdentifier('default');
+  }
+
+  globalState: DocumentOptions & DesignSystemConfig = {
+    documentType: {} as DocumentTypeEnum,
+    userIdea: "",
+    isDynamic: false,
+    documents: [],
+    size: DocumentSize.Letter,
+    visibility: "public",
+    fontSize: 0,
+    textColor: "",
+    backgroundColor: "",
+    fontFamily: "",
+    lineSpacing: 0,
+    alignment: AlignmentOptions.LEFT,
+    indentSize: 0,
+    bulletList: false,
+    numberedList: false,
+    headingLevel: 0,
+    bold: false,
+    italic: false,
+    underline: false,
+    strikethrough: false,
+    subscript: false,
+    superscript: false,
+    hyperlink: "",
+    image: "",
+    table: false,
+    tableRows: 0,
+    tableColumns: 0,
+    codeBlock: false,
+    blockquote: false,
+    codeInline: false,
+    quote: "",
+    todoList: false,
+    orderedTodoList: false,
+    unorderedTodoList: false,
+    colorCoding: {} as Record<string, string>,
+    additionalOptions: [],
+    includeStatus: true,
+    includeAdditionalInfo: true,
+    uniqueIdentifier: UniqueIDGenerator.generateDocumentID(
+      "uniqueIdentifier",
+      NotificationTypeEnum.GENERATED_ID
+    ),
+    includeType: { 
+      enabled: false,
+      format: "all"
+    },
+    includeTitle: true,
+    includeContent: true,
+    animations: {} as DocumentAnimationOptions,
+    customSettings: {} as Record<string, any>,
+    design: {
+      primary: "",
+      secondary: "",
+      accent: "",
+      small: "",
+      medium: "",
+      large: "",
+      bold: "",
+      italic: "",
+      underline: "",
+      documentPhase: {
+        isCreating: true,
+        isEditing: false,
+        isReviewing: false,
+        isPublishing: false,
+      },
+
+      version: {
+        versionNumber: "1.0",
+      },
+
+      font: "",
+      userSettings: {} as UserSettings,
+      // Add more design properties as needed
+    },
+    documentPhase: "isEditing",
+    version: {
+      versionNumber: "1.1",
+      appVersion: "",
+      id: 0,
+      content: {} as DocumentOptions,
+      frontendStructure: {} as Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+      data: [],
+      hash: function(value: string): string {
+        return crypto.createHash("sha256").update(value).digest("hex");
+      },
+      generateStructureHash: function (): Promise<string> {
+        const hash = (crypto as any).createHash("sha256");
+        hash.update(JSON.stringify(this.getContent?.()));
+        return hash.digest("hex");
+      },
+      getVersionNumber: function (): string {
+        return this.versionNumber;
+      },
+
+      updateVersionNumber: function (newVersionNumber: string): void {
+        this.versionNumber = newVersionNumber;
+      },
+
+      compare(otherVersion: Version<
+        BaseData<any>,
+        BaseData<any>,
+        StructuredMetadata<BaseData<any>, BaseData<any>>
+      >): number {
+        // Ensure versionNumber exists
+        const otherVersionNumber = otherVersion.versionNumber ?? 0;
+        const thisVersionNumber = this.versionNumber ?? 0;
+    
+        if (thisVersionNumber > otherVersionNumber) {
+          return 1;
+        } else if (thisVersionNumber < otherVersionNumber) {
+          return -1;
+        } else {
+          return 0;
+        }
+      },
+      
+      parse: function (): number[] {
+        return JSON.parse(this.content);
+      },
+
+      isValid: function (): boolean {
+        return true;
+      },
+      
+      generateHash: function (appVersion: string): string {
+        return crypto.createHash("sha256").update(appVersion).digest("hex");
+      },
+      isNewer: function (otherVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
+        return this.compare?.(otherVersion) === 1;
+      },
+      hashStructure: function(structure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string {
+        return this.hash(JSON.stringify(structure));
+      },
+
+      getStructureHash: async function (): Promise<string> {
+        if (this.frontendStructure === undefined) {
+            return "can't find frontend structure";
+        }
+        // Check if hashStructure is defined and return its result, or handle the undefined case
+        const result = this.hashStructure?.(await this.frontendStructure);
+        return result !== undefined ? result : "hashStructure is undefined";
+    },
+    
+      
+      getContent: function (): string {
+        return this.content;
+      },
+
+      setContent: function (content: string): void {
+        this.content = content;
+      },
+      
+      // Method to retrieve and update structure hash if needed
+      async getStructureHashAndUpdateIfNeeded(globalState: MobXEntityStore['globalState']): Promise<string | undefined> {
+        const currentHash = globalState.version?.getStructureHash()
+        const newHash = crypto.createHash('sha256').update('NewStructureData').digest('hex');
+
+        if (currentHash !== newHash) {
+          await globalState.version?.hashStructure.updateStructureHash(); // Update the hash if needed
+          return globalState.version.getStructureHash();
+        }
+
+        return currentHash;
+      },
+
+    },
+    font: "Arial",
+    tableStyles: {
+      header: {
+        fontWeight: "bold",
+        root: new CustomXmlComponent(this.rootKey), // Create an instance of CustomXmlComponent
+        prepForXml: () => ({}),
+        addChildElement: () => {},
+        rootKey: this.rootKey,
+      } as TableStyle,
+      body: {} as unknown as docx.Style,
+      footer: {} as unknown as docx.Style,
+    },
+  };
+  generateUniqueIdentifier(generatorType: string): string {
+    const uniqueIdentifier = UniqueIDGenerator.generateID('UUID', 'UniqueIdentifier', NotificationTypeEnum.GENERATED_ID, undefined, generatorType);
+    return uniqueIdentifier;
+  }
+
+  // Method to securely set rootKey
+  private setRootKey(): string {
+    // Retrieve the root key from an environment variable
+    const envKey = process.env.ROOT_KEY;
+
+    // Validate the retrieved key
+    if (envKey && this.isValidRootKey(envKey)) {
+      return envKey;
+    }
+
+    // Fallback to a default value if needed
+    console.warn("ROOT_KEY is not set or invalid. Using default value.");
+    return "defaultRootKey"; // Change this to a suitable default
+  }
+
+  // Example validation method for the root key
+  private isValidRootKey(key: string): boolean {
+    // Add logic to validate the rootKey (e.g., length, format)
+    return key.length > 5; // Simple example validation
+  }
+
+
+  // MobX action to update global state using Redux
+  @action
+  // Define methods to update global state
+  updateGlobalState(key: keyof typeof this.globalState, value: any) {
+    useDispatch()(GlobalStateActions.updateGlobalState({ key, value }));
+  }
+  // Add more methods as needed
+}
+
+
+
+//Exampe usage:
+// Example of updating a document-related property
+GlobalStateActions.updateGlobalState({key: 'documentType', value: 'newDocumentType'});
+
+// Example of updating a design-related property
+GlobalStateActions.updateGlobalState({key: 'design.primary', value: '#newPrimaryColor'});

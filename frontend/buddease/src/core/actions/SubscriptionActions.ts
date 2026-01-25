@@ -1,0 +1,269 @@
+// SubscriptionActions.ts
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { Content } from '@/core/models/content/AddContent';
+import type { BaseData } from '@/core/models/data/Data';
+import type { NotificationPosition, ProjectStateEnum } from "@/core/models/data/StatusType";
+import type { Project } from '@/core/models/projects/Project';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
+import { Subscriber } from "@/core/subscribers/Subscriber";
+import type { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import type { AppSubscription } from '@/core/typings/entities/SubscriptionEntity';
+import { category } from '@/utils/snapshotUtils';
+import type { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
+import type { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
+import type { LiveEvent } from "@refinedev/core";
+
+
+interface SubscriptionPayload<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  // S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> {
+  error: string | undefined;
+  meta: {
+    name: string,
+    timestamp: Date,
+    type: NotificationType,
+    startDate: Date,
+    endDate: Date,
+    status: string,
+    id: string,
+    isSticky: boolean,
+    isDismissable: boolean,
+    isClickable: boolean,
+    isClosable: boolean,
+    isAutoDismiss: boolean,
+    isAutoDismissable: boolean,
+    isAutoDismissOnNavigation: boolean,
+    isAutoDismissOnAction: boolean,
+    isAutoDismissOnTimeout: boolean,
+    isAutoDismissOnTap: boolean,
+    optionalData: K,
+    data: T
+  },
+  notify: (id: string, 
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType,
+    notificationPosition?: NotificationPosition | undefined
+  ) => void;  // assuming notify is a function that sends notifications
+  id: string;  // assuming id is a string
+  content: string | object;  // assuming content can be a string or an object
+  date: Date;  // assuming date is a Date object
+  subscribers: Array<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;  // assuming subscribers is an array of Subscriber objects
+  subscription: {
+    active: boolean;
+    plan: string;
+  };  // example structure for subscription
+  onSnapshotCallbacks: Array<(snapshot: T) => void>;  // assuming it's an array of functions
+  onSnapshotCallback: (snapshot: T) => void;  // single callback function
+  onSnapshotCallbackError: (error: Error) => void;  // callback for snapshot errors
+  onSnapshotCallbackRemoved: (snapshot: T) => void;  // callback when a snapshot is removed
+  onSnapshotCallbackAdded: (snapshot: T) => void;  // callback when a snapshot is added
+  onSnapshotCallbackScheduled: (time: Date) => void;  // callback for scheduled snapshot actions
+  onDisconnectingCallbacks: Array<() => void>;  // assuming it's an array of disconnecting callbacks
+  onDisconnectCallback: () => void;  // single disconnect callback
+  onDisconnectCallbackError: (error: Error) => void;  // callback for disconnect errors
+  onDisconnectCallbackRemoved: () => void;  // callback when a disconnect is removed
+  onDisconnectCallbackAdded: () => void;  // callback when a disconnect is added
+  onDisconnectCallbackScheduled: (time: Date) => void;  // callback for scheduled disconnect actions
+  onReconnectingCallbacks: Array<() => void>;  // array of reconnecting callbacks
+  onReconnectCallback: () => void;  // single reconnect callback
+  onReconnectCallbackError: (error: Error) => void;  // callback for reconnect errors
+  onReconnectCallbackRemoved: () => void;  // callback when a reconnect is removed
+  onReconnectCallbackAdded: () => void;  // callback when a reconnect is added
+  onReconnectCallbackScheduled: (time: Date) => void;  // callback for scheduled reconnect actions
+  onErrorCallbacks: Array<(error: Error) => void>;  // array of error callbacks
+  onUnsubscribeCallbacks: Array<() => void>;  // array of unsubscribe callbacks
+  state: string;  // assuming state is a string representing the current state
+  notifyEventSystem: (eventType: string, eventData: any, source: string, event: Event) => void;  // assuming it's a function to notify the event system
+  updateProjectState: ( stateType: ProjectStateEnum,
+    projectId: string,
+    newState: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ,
+    state: object
+  ) => void;  // function to update project state
+  logActivity: ({ activityType, action, userId, date, snapshotId, description, data, }: LogActivityParams) => void;  // function to log activities
+  triggerIncentives: ({ userId, incentiveType, params, }: TriggerIncentivesParams) => void;  // function to trigger incentives
+  name: string;  // name of the subscription
+  data: T;  // generic data, should be of type T
+  email: string;  // email address for notifications
+  subscribe: () => void;  // function to handle subscribe action
+  value: number;  // value associated with the subscription
+  category: Category;  // category for filtering subscriptions
+  unsubscribe: (
+    subscriberId: string,
+    unsubscribeDetails: {
+      userId: string; 
+      snapshotId: string; 
+      unsubscribeType: string; 
+      unsubscribeDate: Date; 
+      unsubscribeReason: string; 
+      unsubscribeData: any;
+    },
+    callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null
+  ) => void;  // function to handle unsubscribe action
+  toSnapshotStore: (snapshot: T) => void;  // function to handle snapshot storage
+  getId: () => string;  // function to get the ID
+  getUserId: () => string;  // function to get the user ID
+  receiveSnapshot: (snapshot: T) => void;  // function to handle receiving a snapshot
+  getState: () => string;  // function to get the current state
+  onError: (error: Error) => void;  // function to handle errors
+  triggerError: (error: Error) => void;  // function to trigger errors
+  onUnsubscribe: () => void;  // callback when unsubscribed
+  onSnapshot: (snapshot: T) => void;  // callback when a snapshot is received
+  triggerOnSnapshot: (snapshot: T) => void;  // function to trigger snapshot actions
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;  // specific Subscriber type, can be undefined
+  message?: string;  // optional message property
+  subscriberId: string;  // subscriber ID
+  type?: "info" | "success" | "error" | "warning";  // type for message categorization
+}
+
+type SubscriptionKType<T extends BaseData<any>> = T & CustomSnapshotData<T, any>;
+
+
+export const SubscriptionActions = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>() => {
+  type UnsubscribePayload = {
+    subscriberId: string;
+    unsubscribeDetails: {
+      userId: string;
+      snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+      snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    };
+  };
+
+  const actions = {
+    // If you really want SubscriptionPayload
+    subscribe: createAction<SubscriptionPayload<AppSubscription>>("subscribe"),
+
+    unsubscribe: createAction<UnsubscribePayload>("unsubscribe"),
+    fetchInitialSubscriptions: createAction("fetchInitialSubscriptions"),
+    subscriptionSuccess: createAction<string>("subscriptionSuccess"),
+    subscriptionFailure: createAction<string>("subscriptionFailure"),
+    liveEventReceived: createAction<LiveEvent>("liveEventReceived"),
+  };
+
+  // Cast to the correct type if needed
+  return actions as {
+    subscribe: ActionCreatorWithPayload<SubscriptionPayload<AppSubscription>>;
+    unsubscribe: ActionCreatorWithPayload<UnsubscribePayload>;
+    fetchInitialSubscriptions: ActionCreatorWithoutPayload;
+    subscriptionSuccess: ActionCreatorWithPayload<string>;
+    subscriptionFailure: ActionCreatorWithPayload<string>;
+    liveEventReceived: ActionCreatorWithPayload<LiveEvent>;
+  };
+};
+
+
+export const createSubscriptionPayload = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  // S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+>(
+  overrides: Partial<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
+): SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+
+  return {
+    error: undefined,
+    email: "default@example.com", // Default value for email
+    value: 0,
+    category: category,
+    meta: {
+      name: "Subscription Notification",
+      timestamp: new Date(),
+      type: 'INFO',
+      startDate: new Date(),
+      endDate: new Date(),
+      status: "ACTIVE",
+      id: "sub_001",
+      isSticky: true,
+      isDismissable: false,
+      isClickable: true,
+      isClosable: true,
+      isAutoDismiss: false,
+      isAutoDismissable: true,
+      isAutoDismissOnNavigation: true,
+      isAutoDismissOnAction: false,
+      isAutoDismissOnTimeout: false,
+      isAutoDismissOnTap: true,
+      optionalData: {} as K,
+      data: {} as T,
+    },
+    notify: (message: string) => console.log(message),
+    id: "sub_001",
+    content: "",
+    date: new Date(),
+    subscribers: [],
+    subscription: { active: true, plan: "Premium" },
+    onSnapshotCallbacks: [],
+    onSnapshotCallback: (snapshot) => console.log("Snapshot received:", snapshot),
+    onSnapshotCallbackError: (error) => console.error("Error in snapshot:", error),
+    onSnapshotCallbackRemoved: (snapshot) => console.log("Snapshot removed:", snapshot),
+    onSnapshotCallbackAdded: (snapshot) => console.log("Snapshot added:", snapshot),
+    onSnapshotCallbackScheduled: (time) => console.log("Snapshot scheduled for:", time),
+    onDisconnectingCallbacks: [],
+    onDisconnectCallback: () => console.log("Disconnected"),
+    onDisconnectCallbackError: (error) => console.error("Disconnect error:", error),
+    onDisconnectCallbackRemoved: () => console.log("Disconnect callback removed"),
+    onDisconnectCallbackAdded: () => console.log("Disconnect callback added"),
+    onDisconnectCallbackScheduled: (time) => console.log("Disconnect scheduled for:", time),
+    onReconnectingCallbacks: [],
+    onReconnectCallback: () => console.log("Reconnected"),
+    onReconnectCallbackError: (error) => console.error("Reconnect error:", error),
+    onReconnectCallbackRemoved: () => console.log("Reconnect callback removed"),
+    onReconnectCallbackAdded: () => console.log("Reconnect callback added"),
+    onReconnectCallbackScheduled: (time) => console.log("Reconnect scheduled for:", time),
+    onErrorCallbacks: [],
+    onUnsubscribeCallbacks: [],
+    state: "active",
+    notifyEventSystem: (event) => console.log("Event:", event),
+    updateProjectState: (state) => console.log("Project state updated:", state),
+    logActivity: (activity) => console.log("Activity logged:", activity),
+    triggerIncentives: () => console.log("Incentives triggered"),
+    name: "User Subscription",
+    data: {} as T,  // Placeholder for T
+    subscribe: () => console.log("Subscribed"),
+    unsubscribe: () => console.log("Unsubscribed"),
+    toSnapshotStore: (snapshot) => console.log("Snapshot stored:", snapshot),
+    getId: () => "sub_001",
+    getUserId: () => "user_001",
+    receiveSnapshot: (snapshot) => console.log("Received snapshot:", snapshot),
+    getState: () => "active",
+    onError: (error) => console.error("Error:", error),
+    triggerError: (error) => console.error("Error triggered:", error),
+    onUnsubscribe: () => console.log("Unsubscribed"),
+    onSnapshot: (snapshot) => console.log("Snapshot:", snapshot),
+    triggerOnSnapshot: (snapshot) => console.log("Triggered snapshot:", snapshot),
+    subscriber: undefined,
+    message: "Welcome to your subscription",
+    subscriberId: "user_001",
+    type: "info",
+    ...overrides,
+  }
+};
+
+export type { SubscriptionPayload };

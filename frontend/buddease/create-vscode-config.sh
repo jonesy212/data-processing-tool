@@ -1,0 +1,1 @@
+scripts/typescript/config/create-vscode-config.sh

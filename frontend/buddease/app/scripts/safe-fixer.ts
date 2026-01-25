@@ -1,0 +1,1 @@
+../../scripts/typescript/backup-recovery/safe-fixer.ts

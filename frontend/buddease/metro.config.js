@@ -1,0 +1,1 @@
+scripts/typescript/config/metro.config.js

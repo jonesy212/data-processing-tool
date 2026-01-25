@@ -1,0 +1,20 @@
+# BUG SUMMARY
+# Generated: Tue Jan  6 17:45:53 CST 2026
+#
+Total files scanned: 3031
+Buggy files: 26
+Buggy lines: 234
+Total lines scanned: 480845
+Bug density: .04%
+
+Top files by bug count:
+  useSnapshotStore.tsx: 121 bugs (./src/core/snapshots/useSnapshotStore.tsx)
+  convertSnapshotsArray.ts: 18 bugs (./src/core/snapshots/convertSnapshotsArray.ts)
+  RetrieveSnapshotData.tsx: 16 bugs (./src/core/snapshots/RetrieveSnapshotData.tsx)
+  addToSnapshotList.tsx: 15 bugs (./src/core/snapshots/addToSnapshotList.tsx)
+  SnapshohtDevConfigs.ts: 14 bugs (./src/core/snapshots/SnapshohtDevConfigs.ts)
+  createSnapshotExample.ts: 8 bugs (./src/core/snapshots/createSnapshotExample.ts)
+  SnapshotContext.tsx: 7 bugs (./src/core/state/context/SnapshotContext.tsx)
+  convertSnapshotToItem.ts: 6 bugs (./src/core/snapshots/convertSnapshotToItem.ts)
+  useSnapshotManager.ts: 6 bugs (./src/core/hooks/useSnapshotManager.ts)
+  DAppAdapterConfig.ts: 3 bugs (./src/utils/web3/dAppAdapter/DAppAdapterConfig.ts)

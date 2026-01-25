@@ -1,0 +1,1 @@
+scripts/bin/misc/run-with-paths.mjs

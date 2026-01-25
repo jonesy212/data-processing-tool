@@ -1,0 +1,1 @@
+scripts/shell/test/fix-with-error-patterns.sh

@@ -1,0 +1,1 @@
+scripts/shell/backup/quick-smart-backup-setup.sh

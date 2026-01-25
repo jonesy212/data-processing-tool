@@ -1,0 +1,215 @@
+
+> buddease@0.1.0 type-check /Users/dixiejones/data_analysis/frontend/buddease
+> tsc --noEmit
+
+src/app/components/models/teams/TeamManager.tsx(20,3): error TS1109: Expression expected.
+src/app/hooks/phases/UIPhase.ts(37,18): error TS1005: ',' expected.
+src/app/hooks/phases/UIPhase.ts(64,24): error TS1005: ',' expected.
+src/app/libraries/ui/buttons/FullscreenButtonComponent.tsx(5,47): error TS1005: ';' expected.
+src/app/libraries/ui/buttons/FullscreenButtonComponent.tsx(5,48): error TS1002: Unterminated string literal.
+src/app/libraries/ui/components/SnapshotComponent.tsx(14,72): error TS1002: Unterminated string literal.
+src/app/models/CommunityData.tsx(17,3): error TS1110: Type expected.
+src/app/models/data/DataService.ts(95,9): error TS1135: Argument expression expected.
+src/app/pages/index.tsx(146,16): error TS1005: ',' expected.
+src/app/pages/index.tsx(146,63): error TS1005: ',' expected.
+src/app/pages/index.tsx(167,1): error TS1128: Declaration or statement expected.
+src/app/pages/onboarding/PlanningSubPhase.tsx(236,1): error TS1109: Expression expected.
+src/app/pages/onboarding/PlanningSubPhase.tsx(236,2): error TS1161: Unterminated regular expression literal.
+src/app/pages/projects/ProjectPlanningPage.tsx(6,1): error TS1005: '=' expected.
+src/app/projects/projectManagement/ProjectManagementApp.jsx(37,51): error TS8010: Type annotations can only be used in TypeScript files.
+src/app/snapshots/addToSnapshotList.tsx(18,3): error TS1434: Unexpected keyword or identifier.
+src/app/snapshots/addToSnapshotList.tsx(18,5): error TS1128: Declaration or statement expected.
+src/app/snapshots/addToSnapshotList.tsx(19,8): error TS1005: ';' expected.
+src/app/snapshots/addToSnapshotList.tsx(20,18): error TS1005: ';' expected.
+src/app/snapshots/addToSnapshotList.tsx(21,18): error TS1005: ';' expected.
+src/app/snapshots/addToSnapshotList.tsx(21,26): error TS1434: Unexpected keyword or identifier.
+src/app/snapshots/addToSnapshotList.tsx(22,18): error TS1005: ';' expected.
+src/app/snapshots/addToSnapshotList.tsx(22,26): error TS1434: Unexpected keyword or identifier.
+src/app/snapshots/addToSnapshotList.tsx(22,42): error TS1005: ';' expected.
+src/app/snapshots/addToSnapshotList.tsx(22,45): error TS1109: Expression expected.
+src/app/snapshots/addToSnapshotList.tsx(133,1): error TS1005: ')' expected.
+src/app/snapshots/convertMetadata.ts(57,38): error TS1110: Type expected.
+src/app/snapshots/InitializableWithData.tsx(12,101): error TS1005: ',' expected.
+src/app/snapshots/isValidMeta.ts(22,88): error TS1005: '(' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(332,91): error TS1005: '>' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(332,93): error TS1109: Expression expected.
+src/app/snapshots/sampleSnapshotInstance.ts(332,94): error TS1005: ':' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(333,3): error TS1109: Expression expected.
+src/app/snapshots/sampleSnapshotInstance.ts(333,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(334,11): error TS1005: ':' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(334,49): error TS1005: ',' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(336,13): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(336,24): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(338,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(339,33): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(351,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(352,39): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(363,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(364,41): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(373,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(377,28): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(380,23): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(383,29): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(383,39): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(388,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(389,40): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(395,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(396,41): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(400,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(401,41): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(408,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(409,31): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(417,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(418,35): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(424,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(425,27): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(430,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(431,34): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(433,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(435,16): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(436,14): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(436,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(441,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(442,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(444,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(445,22): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(451,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(452,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(458,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(459,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(464,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(465,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(467,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(468,28): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(476,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(480,10): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(481,7): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(482,18): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(482,29): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(484,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(485,29): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(487,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(488,26): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(490,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(491,23): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(493,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(494,21): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(496,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(497,21): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(499,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(500,21): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(502,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(508,11): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(508,22): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(517,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(518,22): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(520,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(522,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(558,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(560,32): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(613,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(616,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(623,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(625,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(637,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(638,27): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(661,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(662,32): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(664,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(665,36): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(669,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(670,35): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(672,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(673,35): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(675,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(676,35): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(678,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(679,29): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(681,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(682,24): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(684,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(685,25): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(687,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(689,9): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(690,17): error TS1005: ';' expected.
+src/app/snapshots/sampleSnapshotInstance.ts(690,28): error TS1003: Identifier expected.
+src/app/snapshots/sampleSnapshotInstance.ts(692,4): error TS1128: Declaration or statement expected.
+src/app/snapshots/sampleSnapshotInstance.ts(694,1): error TS1128: Declaration or statement expected.
+src/app/snapshots/snapshotBuilder.ts(63,18): error TS1005: '?' expected.
+src/app/snapshots/snapshotBuilder.ts(64,12): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(64,20): error TS1005: ':' expected.
+src/app/snapshots/snapshotBuilder.ts(65,22): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(65,30): error TS1005: ':' expected.
+src/app/snapshots/snapshotBuilder.ts(66,22): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(66,30): error TS1005: ':' expected.
+src/app/snapshots/snapshotBuilder.ts(66,36): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(67,22): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(67,30): error TS1005: ':' expected.
+src/app/snapshots/snapshotBuilder.ts(67,36): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(67,46): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(68,5): error TS1005: ',' expected.
+src/app/snapshots/snapshotBuilder.ts(69,13): error TS1005: ')' expected.
+src/app/snapshots/snapshotBuilder.ts(70,13): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(71,14): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(72,24): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(73,18): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(74,18): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(75,9): error TS2809: Declaration or statement expected. This '=' follows a block of statements, so if you intended to write a destructuring assignment, you might need to wrap the whole assignment in parentheses.
+src/app/snapshots/snapshotBuilder.ts(76,5): error TS1128: Declaration or statement expected.
+src/app/snapshots/snapshotBuilder.ts(76,6): error TS1128: Declaration or statement expected.
+src/app/snapshots/snapshotBuilder.ts(80,22): error TS1005: ';' expected.
+src/app/snapshots/snapshotBuilder.ts(81,16): error TS1005: ';' expected.
+src/app/snapshots/snapshotBuilder.ts(82,16): error TS1005: ';' expected.
+src/app/snapshots/snapshotBuilder.ts(82,42): error TS1005: ':' expected.
+src/app/snapshots/snapshotBuilder.ts(83,5): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(83,7): error TS1109: Expression expected.
+src/app/snapshots/snapshotBuilder.ts(88,1): error TS1128: Declaration or statement expected.
+src/app/snapshots/snapshotOperations.ts(754,42): error TS1005: ',' expected.
+src/app/snapshots/snapshotOperations.ts(754,45): error TS1005: ',' expected.
+src/app/snapshots/snapshotOperations.ts(754,64): error TS1005: ',' expected.
+src/app/snapshots/snapshotOperations.ts(754,123): error TS1005: ',' expected.
+src/app/snapshots/snapshotOperations.ts(754,124): error TS1109: Expression expected.
+src/app/snapshots/snapshotOperations.ts(754,126): error TS1128: Declaration or statement expected.
+src/app/snapshots/snapshotOperations.ts(755,17): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(756,18): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(757,19): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(758,20): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(759,18): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(760,20): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(761,17): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(762,17): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(763,23): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(764,19): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(765,27): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(766,25): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(767,26): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(768,28): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(769,27): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(770,20): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(771,25): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(772,29): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(773,28): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(774,24): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(775,9): error TS1005: ';' expected.
+src/app/snapshots/snapshotOperations.ts(776,3): error TS1109: Expression expected.
+src/app/snapshots/snapshotOperations.ts(776,5): error TS1434: Unexpected keyword or identifier.
+src/app/snapshots/snapshotOperations.ts(777,1): error TS1128: Declaration or statement expected.
+src/app/snapshots/SnapshotType.ts(362,1): error TS1128: Declaration or statement expected.
+src/app/state/context/NavigationContext.ts(245,38): error TS1005: '>' expected.
+src/app/state/context/NavigationContext.ts(245,43): error TS1005: ';' expected.
+src/app/state/context/NavigationContext.ts(245,58): error TS1109: Expression expected.
+src/app/state/context/NavigationContext.ts(245,70): error TS1161: Unterminated regular expression literal.
+src/app/state/redux/RootSagas.ts(59,22): error TS1005: ':' expected.
+src/app/state/redux/RootSagas.ts(60,26): error TS1005: ':' expected.
+src/app/state/redux/RootSagas.ts(61,28): error TS1005: ',' expected.
+src/app/state/redux/RootSagas.ts(62,11): error TS1005: ':' expected.
+src/app/state/redux/RootSagas.ts(63,27): error TS1005: ',' expected.
+src/app/state/redux/sagas/fileSagas.ts(278,1): error TS1005: '(' expected.
+src/app/state/redux/slices/ThemeSlice.ts(1391,40): error TS1109: Expression expected.
+src/core/state/stores/UserPresentationsStore.ts(126,5): error TS1005: ',' expected.
+src/app/todos/TodoComponent.ts(11,5): error TS1109: Expression expected.
+src/app/typings/entities/AdminUserEntity.ts(19,1): error TS1128: Declaration or statement expected.
+src/app/typings/entities/ConfigEntity.ts(27,3): error TS1005: ',' expected.
+src/app/typings/entities/ProjectManagerEntity.ts(58,3): error TS1005: ',' expected.
+src/app/typings/typeguards/dataStoreTypeGuards.ts(57,21): error TS1005: ',' expected.
+ ELIFECYCLE  Command failed with exit code 1.

@@ -1,0 +1,125 @@
+/* AccessDenied.css */
+.access-denied {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  text-align: center;
+  min-height: 300px;
+}
+
+.access-denied-content {
+  max-width: 500px;
+  width: 100%;
+}
+
+.access-denied .icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+
+.access-denied h1,
+.access-denied h3 {
+  color: #dc3545;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.access-denied h1 {
+  font-size: 2rem;
+}
+
+.access-denied h3 {
+  font-size: 1.5rem;
+}
+
+.access-denied p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.feature-info,
+.role-info {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.feature-info strong,
+.role-info strong {
+  color: #495057;
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #007bff;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.actions button:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.actions button:last-child {
+  background: transparent;
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.actions button:last-child:hover {
+  background: #6c757d;
+  color: white;
+}
+
+/* Specific type styles */
+.access-denied.unauthorized-page .icon {
+  color: #ffc107;
+}
+
+.access-denied.access-denied-page .icon {
+  color: #dc3545;
+}
+
+.access-denied.permission-denied .icon {
+  color: #6f42c1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .access-denied {
+    padding: 2rem 1rem;
+    margin: 1rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions button {
+    width: 100%;
+  }
+}

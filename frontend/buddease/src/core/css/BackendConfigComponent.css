@@ -1,0 +1,129 @@
+/* BackendConfigComponent.css */
+ 
+.backend-config-component {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.config-header {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.config-status {
+  display: flex;
+  gap: 10px;
+}
+
+.status-indicator {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-connected, .status-healthy {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-disconnected, .status-unhealthy {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-unknown {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.config-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.section-title {
+  margin: 0 0 12px 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.config-label {
+  font-weight: 500;
+  color: #495057;
+  min-width: 120px;
+}
+
+.config-value {
+  color: #6c757d;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.config-input {
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.environment-production {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.environment-development {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.environment-staging {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.feature-enabled {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.feature-disabled {
+  color: #6c757d;
+}
+
+.user-context {
+  background: #e7f3ff;
+  border-color: #b3d9ff;
+}
+
+.edit-notice {
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  color: #856404;
+  margin-top: 16px;
+}

@@ -1,0 +1,18 @@
+{
+  "exclude": [
+    "node_modules",
+    ".ts-backups",
+    ".comment-fix-backups",
+    ".type-import-backups",
+    ".import-fix-backups",
+    ".import-fix-backups-archived-*",
+    ".temp-fix-backups",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "platform/android/**/*",
+    "platform/ios/**/*"
+  ]
+}

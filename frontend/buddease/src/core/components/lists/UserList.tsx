@@ -1,0 +1,22 @@
+// UserList.tsx
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+
+import ListGenerator from '@/core/generators/ListGenerator';
+import type { User } from '@/core/users/User';
+interface UserListProps{
+  users?: User[];
+}
+
+const UserList: React.FC<UserListProps> = observer(({ users = [] }) => {
+  // Explicitly type users as an array of User
+
+  return (
+    <div>
+      <h2>User List</h2>
+      <ListGenerator items={users} />
+    </div>
+  );
+});
+
+export default UserList;

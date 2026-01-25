@@ -1,0 +1,57 @@
+// CryptoEndpoints.ts
+import type { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
+
+export interface CryptoEndpoints extends EndpointCategoryConfig {
+  settings: EndpointConfig;
+  list: EndpointConfig;
+  fetchCryptoData: EndpointConfig;
+  fetchCryptoDetails: (cryptoId: string) => EndpointConfig;
+  addCrypto: EndpointConfig;
+  removeCrypto: (cryptoId: string) => EndpointConfig;
+  updateCrypto: (cryptoId: string) => EndpointConfig;
+  getHistoricalData: (cryptoId: string) => EndpointConfig;
+  getNews: (cryptoId: string) => EndpointConfig;
+  getPricePrediction: (cryptoId: string) => EndpointConfig;
+  getTransactions: (cryptoId: string) => EndpointConfig;
+  getExchangeRates: EndpointConfig;
+  getMarketCap: (cryptoId: string) => EndpointConfig;
+  getSocialSentiment: (cryptoId: string) => EndpointConfig;
+  getCommunityDiscussions: (cryptoId: string) => EndpointConfig;
+  getTechnicalAnalysis: (cryptoId: string) => EndpointConfig;
+  getMarketTrend: (cryptoId: string) => EndpointConfig;
+  getTradingVolume: (cryptoId: string) => EndpointConfig;
+  getCommunitySentiment: (cryptoId: string) => EndpointConfig;
+  getSocialImpactAnalysis: (cryptoId: string) => EndpointConfig;
+  getGlobalAdoptionTrends: (cryptoId: string) => EndpointConfig;
+  getUserContributionRewards: (userId: string) => EndpointConfig;
+  getCommunityProjects: EndpointConfig;
+  getDeveloperCompensation: EndpointConfig;
+  getGlobalCollaborationTools: EndpointConfig;
+  getMonetizationOpportunities: EndpointConfig;
+  getRevenueDistribution: EndpointConfig;
+  getImpactAssessment: EndpointConfig;
+  getMarketData: EndpointConfig;
+  getPortfolioSummary: EndpointConfig;
+  getTopGainers: EndpointConfig;
+  getTopLosers: EndpointConfig;
+  getExchangeListings: EndpointConfig;
+  getMarketTrends: EndpointConfig;
+  getTransactionHistory: EndpointConfig;
+  getWalletBalance: EndpointConfig;
+  getAlertSettings: EndpointConfig;
+  getPriceAlerts: EndpointConfig;
+  getInsights: EndpointConfig;
+  getStakingRewards: EndpointConfig;
+  getLiquidityPools: EndpointConfig;
+  getNFTMarketplace: EndpointConfig;
+  getGovernanceProposals: EndpointConfig;
+  getChainAnalysis: EndpointConfig;
+  getDEXTransactions: EndpointConfig;
+  getRegulatoryCompliance: EndpointConfig;
+  getDeveloperDocumentation: EndpointConfig;
+  getIntegrationGuides: EndpointConfig;
+  getDeveloperTools: EndpointConfig;
+  getDeveloperResources: EndpointConfig;
+  getDeveloperEcosystem: EndpointConfig;
+  getDeveloperCommunity: EndpointConfig;
+}

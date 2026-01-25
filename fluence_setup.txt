@@ -1,0 +1,53 @@
+1. pnpm -g install @fluencelabs/cli@latest
+
+verify version:
+fluence --version@fluencelabs/cli/x.y.z darwin-arm64 node-v18.18.0
+
+if you haven't set up your 
+2. fluence init 
+it's a bit confusing, but when it shows your fie path in '()' you can just type a name you want the folder to be.
+
+then: Change into your new 'named' directory and have a look around:
+
+3. now in 'named' directory run to create a service:
+fluence service new peace_world
+
+
+. fluence service repl
+
+
+cd to where the service is( ensure you go to the file path with the folder named service to find your new service based on the name you used.):
+fluence build 
+
+
+
+
+
+
+marine set up:
+# install the Rust compiler and tools to `~/.cargo/bin`
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# add Rust tools to the current PATH
+source $HOME/.cargo/env
+
+# install the nightly toolchain (the x86_64 suffix is needed for compatibility with M1, and 2022-09-15 because newer rust generates wasm we temporarily do not support) 
+rustup install nightly-2022-09-15-x86_64
+
+
+
+
+To be able to use generate subcommand of marine, install the cargo-generate tool:
+
+# install cargo-generate target for the marine tool
+cargo install cargo-generate
+Then, install marine and mrepl:
+
+# install marine
+    cargo +nightly-2022-09-15-x86_64 install marine
+# install mrepl, it requires nightly toolchain
+cargo +nightly-2022-09-15-x86_64 install mrepl
+
+
+when i tried the above , i got an error and it references needing to use '--locked' so i ran:
+cargo +nightly-2022-09-15-x86_64 install marine --locked

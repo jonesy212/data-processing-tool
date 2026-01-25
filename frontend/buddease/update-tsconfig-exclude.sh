@@ -1,0 +1,1 @@
+scripts/typescript/config/update-tsconfig-exclude.sh

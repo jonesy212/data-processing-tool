@@ -1,0 +1,3915 @@
+Project Tree
+Generated: 2025-12-29T01:57:46.059Z
+
+├── app
+│   ├── generators
+│   │   └── corrections
+│   │       ├── reports
+│   │       │   ├── import-error-summary.html
+│   │       │   └── import-error-summary.txt
+│   │       └── summary
+│   │           └── import-errors.json
+│   └── scripts
+│       ├── analyze-errors.ts
+│       ├── analyze-import-errors.mjs
+│       ├── analyze-snapshots-tsc.mjs
+│       ├── analyzeCodeSmells.ts
+│       ├── auto-fix-generics.js
+│       ├── check-braces.ts
+│       ├── check-type-file.ts
+│       ├── CodeQualityScript.ts
+│       ├── CodeScaffoldingScript.ts
+│       ├── CodeScaffoldingScript.ts.dedup-backup.1766901888879.bak
+│       ├── ConfigurationGenerationScript.ts
+│       ├── DatabaseSetupScript.ts
+│       ├── DatabaseSetupScript.ts.dedup-backup.1766901888885.bak
+│       ├── debug-ts-error.ts
+│       ├── deduplicate-imports.ts
+│       ├── DependencyInstallationScript.ts
+│       ├── deployApp.ts
+│       ├── detect-all-circular-deps.ts
+│       ├── diagnose-line-specific.js
+│       ├── diagnose-snapshots.ts
+│       ├── fix-imports-debug.ts
+│       ├── fix-imports.ts
+│       ├── fix-imports.ts.dedup-backup.1766901888891.bak
+│       ├── fix-index-tsx
+│       ├── fix-interface-imports.ts
+│       ├── fix-snapshots.ts
+│       ├── fix-ts1109.ts
+│       ├── fix-type-exports.ts
+│       ├── generate-package-json.js
+│       ├── generateComponentsScript.ts
+│       ├── import-cleanup.ts
+│       ├── import-validator.ts
+│       ├── migrateUserData.ts
+│       ├── migrateUserData.ts.dedup-backup.1766901888899.bak
+│       ├── QualityChecksScript.ts
+│       ├── quick-type-check.ts
+│       ├── run-circular-detector.ts
+│       ├── run-phase-safely.ts
+│       ├── safe-fixer.ts
+│       ├── sync-configs-with-backup.js
+│       ├── sync-configs.js
+│       ├── TemplateGenerator.ts
+│       ├── test-error-analysis.ts
+│       ├── test-headers-fix.ts
+│       ├── test-import.cjs
+│       └── verify-headers-architecture.ts
+├── corrections
+│   ├── api
+│   ├── components
+│   ├── security
+│   ├── utils
+│   ├── comprehensive-breakdown.md
+│   ├── critical-absolute-test.md
+│   ├── critical-errors.md
+│   ├── critical-errors.md.zip
+│   ├── full-report.json
+│   ├── metro-configuration.md
+│   ├── numerical-summary.json
+│   ├── quick-fixes.md
+│   ├── security-absolute-test.md
+│   ├── security-audit.md
+│   ├── structural-absolute-test.md
+│   ├── structural-issues.md
+│   └── type-relationships.md
+├── docs
+│   ├── project-tree.txt
+│   └── project-tree.txt.zip
+├── error-tracking
+│   ├── error-history.json
+│   └── progress-report.md
+├── import-check-reports
+│   └── import-issues.txt
+├── lifecycleDocumentation
+├── lint
+│   ├── configs
+│   │   ├── base.js
+│   │   ├── react-native.js
+│   │   └── react.js
+│   ├── plugins
+│   ├── rules
+│   │   ├── import-path-aliases.js
+│   │   ├── lint-staged.config.js
+│   │   ├── no-console-in-production.js
+│   │   ├── no-crypto-random.js
+│   │   └── setup-lint.js
+│   └── scripts
+├── platform
+│   ├── android
+│   │   ├── AndroidComponent.js
+│   │   └── AndroidLoader.jsx
+│   ├── ios
+│   │   ├── IosComponent.js
+│   │   └── IOSLoader.jsx
+│   ├── shared
+│   │   ├── DatePickerComponent.tsx
+│   │   └── SharedButton.tsx
+│   ├── tablet
+│   │   ├── TabletComponent.js
+│   │   └── TabletLoader.jsx
+│   └── web
+│       ├── CustomTemplateBuilder.tsx
+│       ├── ImageUploader.tsx
+│       ├── VideoUploader.tsx
+│       ├── VideoUploader.tsx.dedup-backup.1766901888925.bak
+│       ├── WebComponent.css
+│       ├── WebComponent.jsx
+│       ├── WebLoader.jsx
+│       └── WebpageBuilder.tsx
+├── public
+│   ├── next.svg
+│   └── vercel.svg
+├── reports
+│   ├── deduplication-report.json
+│   ├── fix-records-1766897669910.json
+│   ├── fix-records-1766907871288.json
+│   ├── import-fixes.md
+│   ├── import-issues-symbol-aware.json
+│   └── validation-report.md
+├── roadmaps
+│   ├── backend-packages.md
+│   ├── dev-roadmap.md
+│   ├── frontend-packages.md
+│   └── nontech-roadmap.md
+├── scripts
+│   ├── import-authority
+│   │   └── snapshot-authority.ts
+│   └── check-snapshot-imports.sh
+├── src
+│   ├── app
+│   │   ├── accessibility
+│   │   ├── actions
+│   │   │   ├── phases
+│   │   │   │   ├── IdeationPhaseActions.ts
+│   │   │   │   ├── PhaseActions.ts
+│   │   │   │   └── TeamCreationPhaseActions.ts
+│   │   │   ├── ActionHandlerService.ts
+│   │   │   ├── ActionScheduler.tsx
+│   │   │   ├── ActionScheduler.tsx.dedup-backup.1766901888929.bak
+│   │   │   ├── ApiActions.ts
+│   │   │   ├── AppActions.ts
+│   │   │   ├── AppActionTypes.ts
+│   │   │   ├── AppCacheManagerActions.ts
+│   │   │   ├── AppDevelopmentActions.ts
+│   │   │   ├── AuthActions.ts
+│   │   │   ├── AuthorizationActions.ts
+│   │   │   ├── AutosaveActions.ts
+│   │   │   ├── AutosaveLogActions.ts
+│   │   │   ├── BlogAction.ts
+│   │   │   ├── BookMarkActions.ts
+│   │   │   ├── CalendarEventActions.ts
+│   │   │   ├── CallActions.ts
+│   │   │   ├── ChatActions.ts
+│   │   │   ├── ChatMessageActions.ts
+│   │   │   ├── ClickableList.tsx
+│   │   │   ├── ClientActions.ts
+│   │   │   ├── CollaborationActions.ts
+│   │   │   ├── CommunicationActions.tsx
+│   │   │   ├── ComponentActions.ts
+│   │   │   ├── ContentActions.ts
+│   │   │   ├── ContextMenuActions.ts
+│   │   │   ├── CryptoActions.tsx
+│   │   │   ├── CryptoActions.tsx.dedup-backup.1766901888932.bak
+│   │   │   ├── DataActions.ts
+│   │   │   ├── DataAnalysisActions.ts
+│   │   │   ├── database.ts
+│   │   │   ├── DataFrameActions.ts
+│   │   │   ├── DEXActions.ts
+│   │   │   ├── DragActions.ts
+│   │   │   ├── DrawingActions.ts
+│   │   │   ├── DynamicConfigActions.ts
+│   │   │   ├── EventActions.ts
+│   │   │   ├── EventHanderActions.ts
+│   │   │   ├── ExchangeActions.ts
+│   │   │   ├── FileActions.ts
+│   │   │   ├── FilterActions.tsx
+│   │   │   ├── GlobalStateActions.ts
+│   │   │   ├── HeaderActions.ts
+│   │   │   ├── HookActions.ts
+│   │   │   ├── ListActions.ts
+│   │   │   ├── liveStreamActions.ts
+│   │   │   ├── MeetingActions.ts
+│   │   │   ├── MouseActions.ts
+│   │   │   ├── nft_todos.txt
+│   │   │   ├── NFTActions.ts
+│   │   │   ├── NotificationActions.ts
+│   │   │   ├── ParticipantActions.ts
+│   │   │   ├── PersonaActions.ts
+│   │   │   ├── ProjectActions.ts
+│   │   │   ├── ProjectManagementActions.ts
+│   │   │   ├── ProjectOwnerActions.ts
+│   │   │   ├── PromptActions.ts
+│   │   │   ├── RealtimeActions.ts
+│   │   │   ├── RoleManagement.sol
+│   │   │   ├── scheduleAction.ts
+│   │   │   ├── SearchActions.ts
+│   │   │   ├── SecurityActions.ts
+│   │   │   ├── SelectActions.ts
+│   │   │   ├── SnapshotActions.tsx
+│   │   │   ├── socialMediaActions.ts
+│   │   │   ├── SubscriptionActions.ts
+│   │   │   ├── TaskActions.ts
+│   │   │   ├── TaskAssignmentSnapshot.tsx
+│   │   │   ├── TeamActions.ts
+│   │   │   ├── TenantActions.ts
+│   │   │   ├── ThemeActions.ts
+│   │   │   ├── TodoActions.ts
+│   │   │   ├── ToolbarActions.ts
+│   │   │   ├── TooltipActions.ts
+│   │   │   ├── UIActions.ts
+│   │   │   ├── UndoRedoActions.ts
+│   │   │   ├── UserActions.tsx
+│   │   │   ├── UserListActions.ts
+│   │   │   ├── UserRoleActions.ts
+│   │   │   ├── UserSupportFeedbackActions.ts
+│   │   │   ├── ValidationActions.ts
+│   │   │   ├── VideoActions.ts
+│   │   │   ├── VideoActions.ts.dedup-backup.1766901888936.bak
+│   │   │   └── ZoomActions.ts
+│   │   ├── api
+│   │   │   ├── apiKey
+│   │   │   │   └── route.ts
+│   │   │   ├── calendar
+│   │   │   │   └── appendData
+│   │   │   │       └── route.ts
+│   │   │   ├── data
+│   │   │   │   └── route.ts
+│   │   │   ├── dataAnalysis
+│   │   │   │   └── route.ts
+│   │   │   ├── database
+│   │   │   │   └── route.ts
+│   │   │   ├── databaseRequest
+│   │   │   │   └── route.ts
+│   │   │   ├── datasets
+│   │   │   │   ├── [id]
+│   │   │   │   │   ├── analyze
+│   │   │   │   │   ├── hypothesisTest
+│   │   │   │   │   ├── statistics
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── upload
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── routes.ts
+│   │   │   ├── documents
+│   │   │   │   ├── generate.ts
+│   │   │   │   └── loadMarkdownDocumentContent.ts
+│   │   │   ├── exchange
+│   │   │   │   └── route.ts
+│   │   │   ├── external
+│   │   │   │   ├── auth
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── shopify
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── sites
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── wix
+│   │   │   │       └── pages
+│   │   │   ├── files
+│   │   │   │   └── route.ts
+│   │   │   ├── generate-cache
+│   │   │   │   └── route.ts
+│   │   │   ├── headers
+│   │   │   │   ├── authenticationHeaders.tsx
+│   │   │   │   ├── cacheHeaders.js
+│   │   │   │   ├── contentHeaders.js
+│   │   │   │   ├── customHeaders.js
+│   │   │   │   ├── generateAllHeaders.ts
+│   │   │   │   ├── HeadersConfig.tsx
+│   │   │   │   ├── proxyHeaders.js
+│   │   │   │   ├── requestHeaders.js
+│   │   │   │   ├── responseHeaders.js
+│   │   │   │   └── securityHeaders.js
+│   │   │   ├── instances
+│   │   │   │   ├── createSharedSnapshotContainer.ts
+│   │   │   │   ├── createSharedSnapshotContainer.ts.dedup-backup.1766901888980.bak
+│   │   │   │   └── snapshotContainerInstance.ts
+│   │   │   ├── loadDrawing
+│   │   │   │   └── route.ts
+│   │   │   ├── persistSnapshot
+│   │   │   │   └── route.ts
+│   │   │   ├── phases
+│   │   │   │   └── phaseApiService.ts
+│   │   │   ├── preferences
+│   │   │   │   ├── ApiUserPreferences.ts
+│   │   │   │   └── ApiVisualPreferences.tsx
+│   │   │   ├── projects
+│   │   │   │   ├── assign.ts
+│   │   │   │   ├── reassign.ts
+│   │   │   │   └── updateProgress.ts
+│   │   │   ├── service
+│   │   │   │   ├── ApiAnalysisService.tsx
+│   │   │   │   ├── ApiService.ts
+│   │   │   │   ├── ApiUserService.ts
+│   │   │   │   ├── ArchiveService.tsx
+│   │   │   │   ├── BaseApiService.ts
+│   │   │   │   ├── BugApiService.tsx
+│   │   │   │   ├── ContentApiService.ts
+│   │   │   │   ├── DataProcessingService.tsx
+│   │   │   │   ├── DetailsApiService.ts
+│   │   │   │   ├── DetailsService.ts
+│   │   │   │   ├── DynamicEventHandlerService.tsx
+│   │   │   │   ├── DynamicEventHandlerService.tsx.dedup-backup.1766901888987.bak
+│   │   │   │   ├── FeedbackService.tsx
+│   │   │   │   ├── PhaseService.ts
+│   │   │   │   ├── PortfolioService.ts
+│   │   │   │   ├── PriceApiService.ts
+│   │   │   │   ├── ProjectService.ts
+│   │   │   │   ├── SnapshotApiService.ts
+│   │   │   │   ├── SocialMediaIntegrationService.tsx
+│   │   │   │   ├── TreeDataService.ts
+│   │   │   │   └── VersionDataApiService.ts
+│   │   │   ├── snapshots
+│   │   │   │   ├── [snapshotsId]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── subscription
+│   │   │   │   ├── route.ts
+│   │   │   │   └── route.ts.dedup-backup.1766901888997.bak
+│   │   │   ├── teams
+│   │   │   │   ├── bulkAssign
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── reassign
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── assign.ts
+│   │   │   │   ├── route.ts
+│   │   │   │   └── unassign.ts
+│   │   │   ├── traverse
+│   │   │   │   └── route.ts
+│   │   │   ├── users
+│   │   │   │   └── route.ts
+│   │   │   ├── videos
+│   │   │   │   ├── AppCacheManagerAPI.ts
+│   │   │   │   └── VideoAPI.ts
+│   │   │   ├── ApiBackend.ts
+│   │   │   ├── ApiCalendar.ts
+│   │   │   ├── ApiClient.ts
+│   │   │   ├── ApiCollaboration.ts
+│   │   │   ├── ApiCommunicationService.ts
+│   │   │   ├── ApiCommunicationService.ts.dedup-backup.1766901888939.bak
+│   │   │   ├── ApiConfigManager.ts
+│   │   │   ├── ApiConfigService.ts
+│   │   │   ├── ApiConfigService.ts.dedup-backup.1766901888942.bak
+│   │   │   ├── ApiContent.ts
+│   │   │   ├── ApiCrypto.ts
+│   │   │   ├── ApiCrypto.tsx
+│   │   │   ├── ApiDashboard.ts
+│   │   │   ├── ApiData.ts
+│   │   │   ├── ApiDataAnalysis.ts
+│   │   │   ├── ApiDatabase.ts
+│   │   │   ├── ApiDataProvider.ts
+│   │   │   ├── ApiDetails.ts
+│   │   │   ├── ApiDocument.ts
+│   │   │   ├── ApiDrawing.ts
+│   │   │   ├── apiEndpointOutput.ts
+│   │   │   ├── ApiEndpoints.ts
+│   │   │   ├── ApiEvent.ts
+│   │   │   ├── ApiExchange.ts
+│   │   │   ├── ApiFiles.ts
+│   │   │   ├── ApiHighlightEvent.tsx
+│   │   │   ├── ApiHighlightEvent.tsx.backup2
+│   │   │   ├── ApiHighlightEvent.tsx.backup3
+│   │   │   ├── ApiHighlightEvent.tsx.dedup-backup.1766901888947.bak
+│   │   │   ├── ApiLogs.ts
+│   │   │   ├── ApiLogs.ts.dedup-backup.1766901888949.bak
+│   │   │   ├── ApiMarkdown.ts
+│   │   │   ├── ApiMarker.ts
+│   │   │   ├── ApiMarkers.ts
+│   │   │   ├── ApiMetadata.ts
+│   │   │   ├── ApiNews.ts
+│   │   │   ├── ApiNote.ts
+│   │   │   ├── ApiNote.ts.dedup-backup.1766901888951.bak
+│   │   │   ├── ApiPhases.ts
+│   │   │   ├── ApiPhases.ts.dedup-backup.1766901888953.bak
+│   │   │   ├── ApiPreferencesEndpoints.ts
+│   │   │   ├── ApiProject.ts
+│   │   │   ├── ApiProxy.ts
+│   │   │   ├── ApiRealtimeData.ts
+│   │   │   ├── ApiReport.ts
+│   │   │   ├── ApiSearch.ts
+│   │   │   ├── ApiStateGovCities.ts
+│   │   │   ├── ApiStore.ts
+│   │   │   ├── ApiTeam.ts
+│   │   │   ├── ApiTodo.ts
+│   │   │   ├── ApiToobar.ts
+│   │   │   ├── ApiToolbar.tsx
+│   │   │   ├── ApiTrade.ts
+│   │   │   ├── ApiTradeCore.ts
+│   │   │   ├── ApiTradingData.ts
+│   │   │   ├── ApiTradingInfo.tsx
+│   │   │   ├── ApiUser.ts
+│   │   │   ├── ApiUserRole.ts
+│   │   │   ├── ApiUserSettings.ts
+│   │   │   ├── ApiVersion.ts
+│   │   │   ├── ApiVideo.ts
+│   │   │   ├── appTreeApi.ts
+│   │   │   ├── articleApi.ts
+│   │   │   ├── axiosConfig.ts
+│   │   │   ├── baseUrl.ts
+│   │   │   ├── BinanceAPI.ts
+│   │   │   ├── BlogAPI.ts
+│   │   │   ├── CategoryApi.ts
+│   │   │   ├── ChatApi.ts
+│   │   │   ├── ChatSidebarProvider.tsx
+│   │   │   ├── chatWebSocket.js
+│   │   │   ├── clientUserJourney.ts
+│   │   │   ├── CollaborationBoardStore.tsx
+│   │   │   ├── CollaborationBoardStore.tsx.dedup-backup.1766901888959.bak
+│   │   │   ├── collaboratorApi.ts
+│   │   │   ├── CommunicationAPI.ts
+│   │   │   ├── config.ts
+│   │   │   ├── ConfigManager.ts
+│   │   │   ├── contentApiService.ts
+│   │   │   ├── ContentRoute.ts
+│   │   │   ├── csrf-token.js
+│   │   │   ├── csrfToken.ts
+│   │   │   ├── CustomFetchEvent.ts
+│   │   │   ├── DatabaseClient.ts
+│   │   │   ├── DataDashboardApi.ts
+│   │   │   ├── DataDashboardApi.ts.dedup-backup.1766901888960.bak
+│   │   │   ├── DataframeApi.ts
+│   │   │   ├── DataStoreApi.ts
+│   │   │   ├── dexApi.ts
+│   │   │   ├── dictionaryInterpretor.ts
+│   │   │   ├── DynamicNotificationMessage.tsx
+│   │   │   ├── encrypt.ts
+│   │   │   ├── endpointConfigurations.ts
+│   │   │   ├── endpointConfigurations.ts.dedup-backup.1766901888973.bak
+│   │   │   ├── EndpointConstructor.ts
+│   │   │   ├── ErrorHandlingActions.ts
+│   │   │   ├── exchangeIntegrationServer.ts
+│   │   │   ├── ExternalApiAuth.tsx
+│   │   │   ├── externalApiConfig.ts
+│   │   │   ├── externalAPInfo.ts
+│   │   │   ├── externalAPIs.ts
+│   │   │   ├── FacebookAPI.ts
+│   │   │   ├── fetchDataAnalysisAPI.ts
+│   │   │   ├── generateComponent.ts
+│   │   │   ├── GenerateText.ts
+│   │   │   ├── getConfigsApi.ts
+│   │   │   ├── getConfiguredEndpoint.ts
+│   │   │   ├── getConfiguredEndpoint.ts.dedup-backup.1766901888978.bak
+│   │   │   ├── getEndpoint.ts
+│   │   │   ├── getSnapshotEndpoint.ts
+│   │   │   ├── IdeaLifecycleAPI.ts
+│   │   │   ├── index.ts
+│   │   │   ├── InstagramAPI.ts
+│   │   │   ├── KuCoinAPI.ts
+│   │   │   ├── NotificationsService.ts
+│   │   │   ├── processSnapshotData.ts
+│   │   │   ├── processSnapshotData.ts.dedup-backup.1766901888983.bak
+│   │   │   ├── ProjectOwnerApi.ts
+│   │   │   ├── SecurityAPI.ts
+│   │   │   ├── sendEmail.ts
+│   │   │   ├── sendSMS.ts
+│   │   │   ├── serviceWorker.js
+│   │   │   ├── SettingsAPI.ts
+│   │   │   ├── SnapshotApi.ts
+│   │   │   ├── SnapshotApi.ts.dedup-backup.1766901888964.bak
+│   │   │   ├── subscriberApi.ts
+│   │   │   ├── systemConfigs.ts
+│   │   │   ├── TasksApi.ts
+│   │   │   ├── TeamApi.ts
+│   │   │   ├── TeamManagementApi.ts
+│   │   │   ├── TestEndpoints.ts
+│   │   │   ├── TwitterIntegrationAPI.ts
+│   │   │   ├── userConfigs.ts
+│   │   │   ├── UsersApi.ts
+│   │   │   └── YouTubeIntegrationAPI.ts
+│   │   ├── branding
+│   │   │   ├── appUtils.ts
+│   │   │   ├── BrandingSettings.ts
+│   │   │   ├── ThemeSettings.ts
+│   │   │   ├── ThemeUtils.ts
+│   │   │   └── updateBranding.ts
+│   │   ├── browser
+│   │   ├── calendar
+│   │   │   ├── CalendarEvent.ts
+│   │   │   ├── CalendarEventCategory.ts
+│   │   │   ├── CalendarEventCollaborator.ts
+│   │   │   ├── CalendarEventConflictDetectionResult.ts
+│   │   │   ├── CalendarEventContentGeneration.ts
+│   │   │   ├── CalendarEventEffectivenessEvaluation.ts
+│   │   │   ├── CalendarEventEngagementMetrics.ts
+│   │   │   ├── CalendarEventFeedbackAnalysis.ts
+│   │   │   ├── CalendarEventFollowUpActionSuggestion.ts
+│   │   │   ├── CalendarEventImpactPrediction.ts
+│   │   │   ├── CalendarEventImprovement.ts
+│   │   │   ├── CalendarEventInvitationPersonalization.ts
+│   │   │   ├── CalendarEventOptimizationRecommendation.ts
+│   │   │   ├── CalendarEventOutcomeVariabilityPrediction.ts
+│   │   │   ├── CalendarEventPriorityClassification.ts
+│   │   │   ├── CalendarEventRiskAssessment.ts
+│   │   │   ├── CalendarEventROIAnalysis.ts
+│   │   │   ├── CalendarEvents.jsx
+│   │   │   ├── CalendarEventSuccessPrediction.ts
+│   │   │   ├── CalendarEventTimingOptimization.ts
+│   │   │   ├── CalendarEventTrendDetectionResult.ts
+│   │   │   ├── CalendarViewSlice.ts
+│   │   │   ├── CalendarWeek.tsx
+│   │   │   ├── Clock.js
+│   │   │   ├── ExternalCalendarOverlay.ts
+│   │   │   ├── ExternalReference.ts
+│   │   │   ├── formatCalendarAsCSV.ts
+│   │   │   ├── formatCalendarAsDOCX.ts
+│   │   │   ├── formatCalendarAsXLS.ts
+│   │   │   ├── formatCalendarAsXLSX.ts
+│   │   │   ├── MeetingData.ts
+│   │   │   ├── ScheduledData.ts
+│   │   │   ├── Stopwatch.tsx
+│   │   │   └── YourCalendarLibrary.js
+│   │   ├── cards
+│   │   │   ├── animation
+│   │   │   │   └── SwingCard.tsx
+│   │   │   ├── init
+│   │   │   │   └── initCards.tsx
+│   │   │   ├── modal
+│   │   │   │   ├── ChatSettingsModal.tsx
+│   │   │   │   ├── displayPrivacySettingsModal.ts
+│   │   │   │   ├── FileUploadModal.tsx
+│   │   │   │   ├── FileUploadModalLauncher.tsx
+│   │   │   │   ├── openNotificationPreferencesModal.tsx
+│   │   │   │   └── openSecuritySettingsModal.ts
+│   │   │   ├── CardFrame.tsx
+│   │   │   ├── chatCard.css
+│   │   │   ├── DashboardConfigCard.tsx
+│   │   │   ├── disconnectFromChatServer.ts
+│   │   │   ├── DummyCard.tsx
+│   │   │   ├── DummyCardLoader.tsx
+│   │   │   ├── EmailCard.tsx
+│   │   │   ├── FileCard.tsx
+│   │   │   ├── FolderCard.tsx
+│   │   │   ├── ImageCard.tsx
+│   │   │   ├── index.tsx
+│   │   │   ├── LoginCard.tsx
+│   │   │   ├── PersonaCard.tsx
+│   │   │   ├── ProjectCard.tsx
+│   │   │   ├── TextCard.tsx
+│   │   │   ├── todo
+│   │   │   └── UserCard.tsx
+│   │   ├── ci
+│   │   ├── client
+│   │   │   ├── Client.ts
+│   │   │   ├── ClientInformation.ts
+│   │   │   ├── ClientInterface.ts
+│   │   │   └── Company.ts
+│   │   ├── collaborators
+│   │   │   └── Collaborator.ts
+│   │   ├── communication
+│   │   │   └── getSocketConnection.ts
+│   │   ├── communications
+│   │   │   ├── ChatRoom.ts
+│   │   │   ├── Language.ts
+│   │   │   └── LanguageEnum.ts
+│   │   ├── components
+│   │   │   ├── admin
+│   │   │   │   ├── AdminDashboard.tsx
+│   │   │   │   ├── DashboardConfigCard.tsx
+│   │   │   │   └── t.txt
+│   │   │   ├── analytics
+│   │   │   │   └── GoogleAnalyticsScript.tsx
+│   │   │   ├── apps
+│   │   │   ├── blogs
+│   │   │   │   └── BlogComponent.tsx
+│   │   │   ├── budget
+│   │   │   │   ├── BudgetDistributionComponent.tsx
+│   │   │   │   └── BudgetDistributionComponent.tsx.dedup-backup.1766901889167.bak
+│   │   │   ├── calendar
+│   │   │   │   ├── AttachmentsAndLinks.tsx
+│   │   │   │   ├── AttendancePrediction.tsx
+│   │   │   │   ├── Attendee.tsx
+│   │   │   │   ├── Calendar.tsx
+│   │   │   │   ├── CalendarApp.tsx
+│   │   │   │   ├── CalendarComponent.jsx
+│   │   │   │   ├── CalendarContext.tsx
+│   │   │   │   ├── CalendarDay.jsx
+│   │   │   │   ├── CalendarEventAgendaItem.tsx
+│   │   │   │   ├── CalendarEventAttendeeAvailabilityAnalysis.tsx
+│   │   │   │   ├── CalendarEventPartnership.tsx
+│   │   │   │   ├── CalendarEventPrompt.tsx
+│   │   │   │   ├── CalendarEventViewingDetails.tsx
+│   │   │   │   ├── CalendarMonth.tsx
+│   │   │   │   ├── CalendarMonthView.tsx
+│   │   │   │   ├── CalendarMonthView.tsx.dedup-backup.1766901889170.bak
+│   │   │   │   ├── CalendarPhase.tsx
+│   │   │   │   ├── CalendarProvider.jsx
+│   │   │   │   ├── CalendarService.tsx
+│   │   │   │   ├── CalendarView.tsx
+│   │   │   │   ├── CalendarWeek.tsx
+│   │   │   │   ├── CalendarYear.tsx
+│   │   │   │   ├── CalendarYearView.tsx
+│   │   │   │   ├── DatePicker.tsx
+│   │   │   │   ├── DayOfWeek.tsx
+│   │   │   │   ├── DefaultCalendarEventViewingDetails.tsx
+│   │   │   │   ├── DefaultCalendarEventViewingDetails.tsx.dedup-backup.1766901889175.bak
+│   │   │   │   ├── EventDetailsComponent.tsx
+│   │   │   │   ├── EventDetailsEnhancement.tsx
+│   │   │   │   ├── GuestInvitations.tsx
+│   │   │   │   ├── loadCalendarEventsDocumentContent.ts
+│   │   │   │   ├── Month.tsx
+│   │   │   │   ├── QuarterView.jsx
+│   │   │   │   ├── Season.tsx
+│   │   │   │   ├── SyncWithExternalCalendars.tsx
+│   │   │   │   ├── todos.tx
+│   │   │   │   ├── WeekView.tsx
+│   │   │   │   └── YearView.tsx
+│   │   │   ├── cards
+│   │   │   │   └── ChatCard.tsx
+│   │   │   ├── charts
+│   │   │   │   └── ChartComponent.tsx
+│   │   │   ├── communications
+│   │   │   │   ├── chat
+│   │   │   │   │   ├── features
+│   │   │   │   │   ├── AquaChat.tsx
+│   │   │   │   │   ├── CalendarIntegrationSettings.ts
+│   │   │   │   │   ├── ChatComponent.tsx
+│   │   │   │   │   ├── ChatInput.tsx
+│   │   │   │   │   ├── ChatMessage.tsx
+│   │   │   │   │   ├── ChatNotification.tsx
+│   │   │   │   │   ├── ChatRoomComponent.tsx
+│   │   │   │   │   ├── ChatRoomContext.tsx
+│   │   │   │   │   ├── ChatRoomDashboard.tsx
+│   │   │   │   │   ├── ChatSettingsPanel.tsx
+│   │   │   │   │   ├── ChatSettingsPanel.tsx.dedup-backup.1766901889179.bak
+│   │   │   │   │   ├── ChatSidebar.tsx
+│   │   │   │   │   ├── ChatUserList.tsx
+│   │   │   │   │   ├── chatUtils.tsx
+│   │   │   │   │   ├── ChatWithFeedback.tsx
+│   │   │   │   │   ├── EnhancedGroupChatDashboard.tsx
+│   │   │   │   │   ├── EnhancedGroupChatDashboard.tsx.dedup-backup.1766901889181.bak
+│   │   │   │   │   ├── Group.ts
+│   │   │   │   │   ├── GroupChatMessage.tsx
+│   │   │   │   │   ├── handleMessageSend.ts
+│   │   │   │   │   ├── ProjectMetadata.js
+│   │   │   │   │   ├── ResetUnreadMessageCount.ts
+│   │   │   │   │   └── useMessagingSystem.tsx
+│   │   │   │   ├── collaboration
+│   │   │   │   ├── email
+│   │   │   │   │   ├── EmaiConfirmation.tsx
+│   │   │   │   │   ├── EmailSetUpForm.tsx
+│   │   │   │   │   ├── RequestEmailPhase.tsx
+│   │   │   │   │   ├── RequestEmailPhase.tsx.dedup-backup.1766901889184.bak
+│   │   │   │   │   ├── SendEmail.tsx
+│   │   │   │   │   ├── SendEmail.tsx.dedup-backup.1766901889186.bak
+│   │   │   │   │   ├── VerifyEmail.tsx
+│   │   │   │   │   ├── VerifyEmailPhase.tsx
+│   │   │   │   │   └── VerifyEmailPhase.tsx.dedup-backup.1766901889187.bak
+│   │   │   │   ├── scheduler
+│   │   │   │   │   ├── Meeting.tsx
+│   │   │   │   │   ├── MeetingComponent.tsx
+│   │   │   │   │   ├── MeetingScheduler.jsx
+│   │   │   │   │   ├── MeetingSchedulerToolbar.jsx
+│   │   │   │   │   ├── OnlinePopupsComponent.tsx
+│   │   │   │   │   ├── ScheduleMeetingComponent.tsx
+│   │   │   │   │   ├── TeamOverview.jsx
+│   │   │   │   │   └── TeamOverviewToolbar.jsx
+│   │   │   │   ├── CommunicationPage.tsx
+│   │   │   │   ├── ConfirmationModal.tsx
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── sendSMS.tsx
+│   │   │   │   ├── sendSMS.tsx.dedup-backup.1766901889190.bak
+│   │   │   │   ├── todo
+│   │   │   │   ├── WebSocket.tsx
+│   │   │   │   ├── WebSocketClient.ts
+│   │   │   │   └── WebSocketServer.ts
+│   │   │   ├── community
+│   │   │   │   ├── ActivityFeedComponent.tsx
+│   │   │   │   ├── ActivityFeedComponent.tsx.dedup-backup.1766901889191.bak
+│   │   │   │   ├── articleKeywords.ts
+│   │   │   │   ├── CommunicationComponent.tsx
+│   │   │   │   ├── CommunicationService.ts
+│   │   │   │   ├── Community.tsx
+│   │   │   │   ├── CommunityDetails.tsx
+│   │   │   │   ├── DiscussionForumComponent.tsx
+│   │   │   │   ├── NewsComponent.tsx
+│   │   │   │   ├── newsFeedIntegration.tsx
+│   │   │   │   ├── todo.txt
+│   │   │   │   ├── UserProfileComponent.tsx
+│   │   │   │   └── WeThePeoplePage.tsx
+│   │   │   ├── configs
+│   │   │   │   ├── ConfigurationServiceComponent
+│   │   │   │   │   └── ConfigurationServiceComponent.tsx
+│   │   │   │   ├── ApiConfigComponent.tsx
+│   │   │   │   ├── ApiConfigComponent.tsx.dedup-backup.1766901889193.bak
+│   │   │   │   ├── BackendConfigComponent.tsx
+│   │   │   │   ├── DetermineFileType.tsx
+│   │   │   │   ├── FrontendConfigComponent.tsx
+│   │   │   │   └── LayoutCustomization.tsx
+│   │   │   ├── containers
+│   │   │   │   ├── CustomBox.tsx
+│   │   │   │   ├── CustomBox.tsx.dedup-backup.1766901889200.bak
+│   │   │   │   ├── LoginContainer.tsx
+│   │   │   │   ├── TextBox.tsx
+│   │   │   │   ├── TextCardContainer.tsx
+│   │   │   │   └── ToggleSwitchContainer.tsx
+│   │   │   ├── context
+│   │   │   │   ├── DIDContext.tsx
+│   │   │   │   └── TeamContext.tsx
+│   │   │   ├── crypto
+│   │   │   │   ├── calculatePriceDifferences.ts
+│   │   │   │   ├── ClientSanitization.ts
+│   │   │   │   ├── CommunityCoinLiquidity.ts
+│   │   │   │   ├── CommunityContribution.tsx
+│   │   │   │   ├── comparePrices.ts
+│   │   │   │   ├── conductTestingAndOptimization.ts
+│   │   │   │   ├── continuousMonitoringAndImprovement.ts
+│   │   │   │   ├── CryptoCallsSystem.tsx
+│   │   │   │   ├── CryptoHolding.tsx
+│   │   │   │   ├── CryptoManager.tsx
+│   │   │   │   ├── CryptoManagerComponent.tsx
+│   │   │   │   ├── CryptoPortfolio.ts
+│   │   │   │   ├── CryptoSectionToolbar.tsx
+│   │   │   │   ├── CryptoService.tsx
+│   │   │   │   ├── CryptoTransaction.tsx
+│   │   │   │   ├── ExchangeComponent.tsx
+│   │   │   │   ├── handleDataFormats.ts
+│   │   │   │   ├── InvestmentStrategy.ts
+│   │   │   │   ├── machineLearning.ts
+│   │   │   │   ├── NFTConversionComponent.tsx
+│   │   │   │   ├── OrderBook.tsx
+│   │   │   │   ├── OrderBookData.ts
+│   │   │   │   ├── OrderBookManager.ts
+│   │   │   │   ├── OrderBookUpdater.ts
+│   │   │   │   ├── Orders.ts
+│   │   │   │   ├── parameterCustomization.ts
+│   │   │   │   ├── PlatformIntegration.ts
+│   │   │   │   ├── predict.js
+│   │   │   │   ├── PricingDataScheduler.tsx
+│   │   │   │   ├── ProjectWithCryptoIntegration.tsx
+│   │   │   │   ├── StrategyOptions.ts
+│   │   │   │   ├── thresholdIdentification.ts
+│   │   │   │   ├── TickerUpdater.ts
+│   │   │   │   ├── TradingPlatform.ts
+│   │   │   │   └── VerifiableCredential.ts
+│   │   │   ├── database
+│   │   │   │   ├── DatabaseMigrationUI.tsx
+│   │   │   │   ├── MigrationSystem.ts
+│   │   │   │   ├── MigrationSystem.ts.dedup-backup.1766901889204.bak
+│   │   │   │   └── SchemaEvolutionManager.ts
+│   │   │   ├── development
+│   │   │   │   ├── BackendStructureViewer.tsx
+│   │   │   │   ├── FrontendStructureViewer.tsx
+│   │   │   │   └── MetadataViewer.tsx
+│   │   │   ├── documents
+│   │   │   │   ├── documentation
+│   │   │   │   │   ├── report
+│   │   │   │   │   ├── scenarios
+│   │   │   │   │   ├── accessibility.md
+│   │   │   │   │   ├── backend_configurations.md
+│   │   │   │   │   ├── CommonDetails.md
+│   │   │   │   │   ├── configurations.md
+│   │   │   │   │   ├── ContentLogger.md
+│   │   │   │   │   ├── dev-correction-roadmap.md
+│   │   │   │   │   ├── document_builder.md
+│   │   │   │   │   ├── ExampleCalendarEvents.md
+│   │   │   │   │   ├── feedback_aggregation_and_reporting.md
+│   │   │   │   │   ├── fix-imports-command.md
+│   │   │   │   │   ├── frontend_configurations.md
+│   │   │   │   │   ├── IntegrationSteps.md
+│   │   │   │   │   ├── phaseApiService.md
+│   │   │   │   │   ├── RegistrationPhaseComponent.md
+│   │   │   │   │   ├── roadmap-cli-guide.md
+│   │   │   │   │   ├── rootLayout_component.md
+│   │   │   │   │   ├── scenario_builder.md
+│   │   │   │   │   ├── supported_data.md
+│   │   │   │   │   ├── TestResults.md
+│   │   │   │   │   ├── theme-system.md
+│   │   │   │   │   └── typeScript-Import-error-analysis-system.md
+│   │   │   │   ├── editing
+│   │   │   │   ├── Toolbar
+│   │   │   │   │   ├── EnhancedVideoControlToolbar.tsx
+│   │   │   │   │   └── VideoToolbar.tsx
+│   │   │   │   ├── DocumentBuilderComponent.tsx
+│   │   │   │   ├── DocumentBuilderConfigComponent.tsx
+│   │   │   │   ├── DocumentFormattingOptionsComponent.tsx
+│   │   │   │   ├── EditorComponent.tsx
+│   │   │   │   ├── EditorWithPrompt.tsx
+│   │   │   │   ├── FilePreview.tsx
+│   │   │   │   ├── FilePreview.tsx.dedup-backup.1766901889207.bak
+│   │   │   │   ├── FileSharingComponent.tsx
+│   │   │   │   ├── NoteBuilder.tsx
+│   │   │   │   ├── opener.md
+│   │   │   │   ├── ProjectManagementToolbar.tsx
+│   │   │   │   ├── Sanitization_Module.md
+│   │   │   │   ├── selectDocumentEditingPermissions.ts
+│   │   │   │   ├── selectDocumentEditingPermissions.ts.dedup-backup.1766901889212.bak
+│   │   │   │   ├── TextEditor.tsx
+│   │   │   │   ├── TodoCoreProjectManagementEnhancements.md
+│   │   │   │   ├── TodoMustHave.md
+│   │   │   │   ├── Toolbar.tsx
+│   │   │   │   ├── Toolbar.tsx.dedup-backup.1766901889209.bak
+│   │   │   │   ├── ToolbarItem.tsx
+│   │   │   │   ├── ToolbarOptions.tsx
+│   │   │   │   ├── types.d.ts
+│   │   │   │   └── YourDocumentGeneratorComponent.tsx
+│   │   │   ├── event
+│   │   │   │   ├── EventCategory.tsx
+│   │   │   │   ├── EventManager.tsx
+│   │   │   │   ├── EventManager.tsx.dedup-backup.1766901889255.bak
+│   │   │   │   └── EventSentiment.tsx
+│   │   │   ├── form
+│   │   │   │   ├── FormatEnum.tsx
+│   │   │   │   └── FormElementStyles.tsx
+│   │   │   ├── framework
+│   │   │   │   └── BlogAndContentEditorFramework.tsx
+│   │   │   ├── frontend
+│   │   │   │   └── TraverseFrontendComponent.tsx
+│   │   │   ├── global
+│   │   │   │   ├── GlobalComponent.tsx
+│   │   │   │   └── StyleSheetComponent.tsx
+│   │   │   ├── icons
+│   │   │   │   ├── AndroidIcon.js
+│   │   │   │   ├── androidIcons.ts
+│   │   │   │   ├── FallbackIcon.tsx
+│   │   │   │   ├── fontAwesomeIconLoader.tsx
+│   │   │   │   ├── fontAwesomeIconOptions.tsx
+│   │   │   │   ├── iconLibraryLoader.ts
+│   │   │   │   ├── IconLibraryManager.tsx
+│   │   │   │   ├── IconLoader.tsx
+│   │   │   │   ├── iconLoaderFactory.ts
+│   │   │   │   ├── icons.ts
+│   │   │   │   ├── iconTypes.ts
+│   │   │   │   ├── iOsIcons.ts
+│   │   │   │   └── WebIcon.tsx
+│   │   │   ├── intelligence
+│   │   │   │   ├── AutoGPT.tsx
+│   │   │   │   ├── TagCreationComponent.tsx
+│   │   │   │   ├── VoiceControlledNavigation.tsx
+│   │   │   │   ├── VoiceNavigation.tsx
+│   │   │   │   └── VoiceNavigation.tsx.dedup-backup.1766901889259.bak
+│   │   │   ├── learning
+│   │   │   ├── libraries
+│   │   │   ├── lists
+│   │   │   │   ├── ArticlesList.tsx
+│   │   │   │   ├── BlogList.test.tsx
+│   │   │   │   ├── BlogList.tsx
+│   │   │   │   ├── CorrectionList.tsx
+│   │   │   │   ├── DetailsList.test.tsx
+│   │   │   │   ├── DetailsList.test.tsx.dedup-backup.1766901889261.bak
+│   │   │   │   ├── DetailsList.tsx
+│   │   │   │   ├── DetailsList.tsx.dedup-backup.1766901889262.bak
+│   │   │   │   ├── DocumentList.tsx
+│   │   │   │   ├── ImageList.tsx
+│   │   │   │   ├── PhaseList.tsx
+│   │   │   │   ├── ProjectList.tsx
+│   │   │   │   ├── TaskList.tsx
+│   │   │   │   ├── TaskList.tsx.dedup-backup.1766901889264.bak
+│   │   │   │   ├── TaskProjectDetails.tsx
+│   │   │   │   ├── TaskProjectListings.tsx
+│   │   │   │   ├── TeamList.tsx
+│   │   │   │   ├── TodoList.tsx
+│   │   │   │   └── UserList.tsx
+│   │   │   ├── logging
+│   │   │   │   ├── LogViewer.tsx
+│   │   │   │   └── LogViewer.tsx.dedup-backup.1766901889266.bak
+│   │   │   ├── metrics
+│   │   │   │   ├── FinancialMetrics.ts
+│   │   │   │   └── TechnicalSpecifications.ts
+│   │   │   ├── models
+│   │   │   │   ├── accessibility
+│   │   │   │   │   └── FocusManager.ts
+│   │   │   │   ├── blogs
+│   │   │   │   │   ├── BlogAction.ts
+│   │   │   │   │   └── BlogEditor.tsx
+│   │   │   │   ├── content
+│   │   │   │   │   ├── BlogAndContentEditor.tsx
+│   │   │   │   │   ├── BlogAndContentEditorWrapper.tsx
+│   │   │   │   │   ├── ContentDetails.tsx
+│   │   │   │   │   ├── ContentDetailsListItem.tsx
+│   │   │   │   │   ├── ContentItem.tsx
+│   │   │   │   │   ├── ContentList.tsx
+│   │   │   │   │   ├── ContentToolbar.tsx
+│   │   │   │   │   └── SharedDashboardContent.tsx
+│   │   │   │   ├── data
+│   │   │   │   │   ├── BugDetails.tsx
+│   │   │   │   │   ├── CalendarDetails.tsx
+│   │   │   │   │   ├── DataComponent.tsx
+│   │   │   │   │   ├── DataFilterForm.tsx
+│   │   │   │   │   ├── DataFrameComponent.tsx
+│   │   │   │   │   ├── DataProcessingComponent.tsx
+│   │   │   │   │   ├── Details.tsx
+│   │   │   │   │   ├── DetailsListItem.tsx
+│   │   │   │   │   ├── ProgressData.tsx
+│   │   │   │   │   ├── SearchResultItem.tsx
+│   │   │   │   │   ├── SentimentAnalysis.tsx
+│   │   │   │   │   ├── UpdatedEventDetailsComponent.tsx
+│   │   │   │   │   └── VideoDetails.tsx
+│   │   │   │   ├── details
+│   │   │   │   │   └── CommonDetails.tsx
+│   │   │   │   ├── display
+│   │   │   │   │   └── MultimediaContentCustomization.tsx
+│   │   │   │   ├── ecommerce
+│   │   │   │   │   └── ECommerceIntegration.tsx
+│   │   │   │   ├── file
+│   │   │   │   │   ├── FileManager.tsx
+│   │   │   │   │   └── FileManager.tsx.dedup-backup.1766901889270.bak
+│   │   │   │   ├── marketing
+│   │   │   │   │   ├── Advertisement.ts
+│   │   │   │   │   ├── Campaign.tsx
+│   │   │   │   │   └── MarketingChannel.tsx
+│   │   │   │   ├── realtime
+│   │   │   │   │   ├── Candidate.tsx
+│   │   │   │   │   ├── IntegrationLogicComponent.tsx
+│   │   │   │   │   ├── RealTimeChart.tsx
+│   │   │   │   │   ├── RealTimeDataCollection.tsx
+│   │   │   │   │   ├── RealtimeDataComponent.tsx
+│   │   │   │   │   ├── RealTimeVisualization.tsx
+│   │   │   │   │   └── VisualizationLogic.ts
+│   │   │   │   ├── tasks
+│   │   │   │   │   ├── ExportTasksPayload.tsx
+│   │   │   │   │   ├── GetTracker.ts
+│   │   │   │   │   ├── ImportTasksPayload.tsx
+│   │   │   │   │   ├── Task.tsx
+│   │   │   │   │   ├── TaskDataSource.ts
+│   │   │   │   │   ├── TaskDetailsComponent.tsx
+│   │   │   │   │   ├── TaskFactory.js
+│   │   │   │   │   └── TaskForm.tsx
+│   │   │   │   ├── teams
+│   │   │   │   │   ├── TeamComponent.tsx
+│   │   │   │   │   ├── TeamData.tsx
+│   │   │   │   │   ├── TeamDetailsComponent.tsx
+│   │   │   │   │   ├── TeamManagementApp.tsx
+│   │   │   │   │   ├── TeamManager.tsx
+│   │   │   │   │   ├── TeamNeeds.tsx
+│   │   │   │   │   └── TrainingSession.tsx
+│   │   │   │   ├── tracker
+│   │   │   │   │   ├── DraggableIndicator.tsx
+│   │   │   │   │   ├── ExampleComponent.tsx
+│   │   │   │   │   ├── LoadingIndicator.tsx
+│   │   │   │   │   ├── LoadingSpinner.tsx
+│   │   │   │   │   ├── ProgressBar.tsx
+│   │   │   │   │   ├── TagComponent.tsx
+│   │   │   │   │   ├── TagComponent.tsx.dedup-backup.1766901889274.bak
+│   │   │   │   │   ├── TaskTrackingComponent.tsx
+│   │   │   │   │   ├── Tracker.ts
+│   │   │   │   │   └── TrackerService.ts
+│   │   │   │   ├── tree
+│   │   │   │   │   └── ProjectExplorer.tsx
+│   │   │   │   ├── video
+│   │   │   │   │   └── LiveStream.tsx
+│   │   │   │   └── ProjectModel.tsx
+│   │   │   ├── navigation
+│   │   │   │   └── navigateToCalendar.tsx
+│   │   │   ├── nft
+│   │   │   │   ├── convertNFT.ts
+│   │   │   │   ├── NFTManagementPhase.ts
+│   │   │   │   └── NFTService.ts
+│   │   │   ├── notifications
+│   │   │   │   ├── Notification.tsx
+│   │   │   │   ├── NotificationComponent.tsx
+│   │   │   │   ├── SetEventNotification.ts
+│   │   │   │   └── useNotificationManagerServiceProps.tsx
+│   │   │   ├── onboarding
+│   │   │   │   ├── InformationGatheringPage.tsx
+│   │   │   │   ├── OnboardingComponent.tsx
+│   │   │   │   └── OnboardingHook.ts
+│   │   │   ├── organizations
+│   │   │   │   └── Organization.tsx
+│   │   │   ├── phases
+│   │   │   │   ├── collaborationPhase
+│   │   │   │   │   ├── CollaborationDisplay.tsx
+│   │   │   │   │   └── CollaborationSettingsPhase.tsx
+│   │   │   │   ├── crypto
+│   │   │   │   │   ├── CallsConferences.tsx
+│   │   │   │   │   ├── CryptoEnthusiastCalls.tsx
+│   │   │   │   │   ├── CryptoEnthusiastDashboard.tsx
+│   │   │   │   │   ├── CryptoEnthusiastDashboard.tsx.dedup-backup.1766901889281.bak
+│   │   │   │   │   ├── CryptoTradingPhase.tsx
+│   │   │   │   │   ├── DoYourOwnResearch.tsx
+│   │   │   │   │   ├── EnthusiastPhase.tsx
+│   │   │   │   │   ├── EnthusiastProfile.tsx
+│   │   │   │   │   ├── FollowTraders.tsx
+│   │   │   │   │   ├── RiskAssessment.tsx
+│   │   │   │   │   ├── riskManagement.ts
+│   │   │   │   │   ├── TraderTypesSelection.tsx
+│   │   │   │   │   ├── TradeStatistics.ts
+│   │   │   │   │   └── VerificationProcess.tsx
+│   │   │   │   ├── ideaPhase
+│   │   │   │   │   ├── IdeaLifecycleComponent.tsx
+│   │   │   │   │   ├── IdeaLifecycleManager.tsx
+│   │   │   │   │   ├── IdeaLifecyclePhase.tsx
+│   │   │   │   │   └── VideoLifecycleManager.tsx
+│   │   │   │   ├── onboarding
+│   │   │   │   │   ├── LaunchPhase.tsx
+│   │   │   │   │   ├── ProfileSetupPhase.tsx
+│   │   │   │   │   └── WelcomePhase.tsx
+│   │   │   │   ├── postLaunchPhase
+│   │   │   │   │   ├── PostLaunchActivitiesPhase.tsx
+│   │   │   │   │   └── todo_upgradeProcess.txt
+│   │   │   │   ├── steps
+│   │   │   │   │   ├── AnalysisStep.tsx
+│   │   │   │   │   ├── PreferencesStep.tsx
+│   │   │   │   │   ├── StepComponent.tsx
+│   │   │   │   │   ├── TeamBasicInfoStep.tsx
+│   │   │   │   │   ├── TeamCreation.tsx
+│   │   │   │   │   ├── TeamCreationManager.tsx
+│   │   │   │   │   ├── TeamMembersStep.tsx
+│   │   │   │   │   ├── TeamPreferencesStep.tsx
+│   │   │   │   │   ├── TeamReviewStep.tsx
+│   │   │   │   │   └── TeamSummaryStep.tsx
+│   │   │   │   ├── AppDevelopmentPhase.tsx
+│   │   │   │   ├── BrainstormingPhase.tsx
+│   │   │   │   ├── BrandingPhase.tsx
+│   │   │   │   ├── CompletionPhase.tsx
+│   │   │   │   ├── ContentManagementPhase.tsx
+│   │   │   │   ├── CourseDevelopmentPhase.tsx
+│   │   │   │   ├── DevelopmentPhase.tsx
+│   │   │   │   ├── DevelopmentPhaseManager.tsx
+│   │   │   │   ├── EmailConfirmationPhase.tsx
+│   │   │   │   ├── ExecutionPhase.tsx
+│   │   │   │   ├── FeedbackManagementContext.tsx
+│   │   │   │   ├── FeedbackPhase.tsx
+│   │   │   │   ├── IdeaLifecycleProcess.tsx
+│   │   │   │   ├── IdeationPhaseComponent.tsx
+│   │   │   │   ├── MarketingPhase.tsx
+│   │   │   │   ├── PhasesNavigation.jsx
+│   │   │   │   ├── ScenarioBuilderPhase.tsx
+│   │   │   │   ├── TaskLoop.tsx
+│   │   │   │   ├── TaskPhaseEnum.ts
+│   │   │   │   ├── TaskProcess.tsx
+│   │   │   │   ├── TenantManagementPhase.tsx
+│   │   │   │   ├── TestingPhase.tsx
+│   │   │   │   ├── todos.txt
+│   │   │   │   ├── TradingPreferencesStep.tsx
+│   │   │   │   ├── TradingProcess.tsx
+│   │   │   │   ├── TwoFactorSetupPhase.tsx
+│   │   │   │   ├── TwoFactorSetupPhase.tsx.dedup-backup.1766901889280.bak
+│   │   │   │   ├── UXUIDevelopmentPhase.tsx
+│   │   │   │   └── WebDevelopmentPhase.tsx
+│   │   │   ├── products
+│   │   │   │   ├── ProductDetails.tsx
+│   │   │   │   └── ProductLaunchDetails.tsx
+│   │   │   ├── projects
+│   │   │   ├── prompts
+│   │   │   │   ├── PromptComponent.tsx
+│   │   │   │   └── YourParentComponent.tsx
+│   │   │   ├── referrals
+│   │   │   │   ├── InviteFriends.tsx
+│   │   │   │   ├── InviteFriends.tsx.dedup-backup.1766901889285.bak
+│   │   │   │   └── ReferralSystem.tsx
+│   │   │   ├── rewards
+│   │   │   │   └── CommissionRecord.ts
+│   │   │   ├── routes
+│   │   │   │   └── AppRoutes.tsx
+│   │   │   ├── routing
+│   │   │   │   ├── ConditionalRouteComponent.tsx
+│   │   │   │   ├── Fields.ts
+│   │   │   │   ├── Link.tsx
+│   │   │   │   ├── MetadataComponent.tsx
+│   │   │   │   ├── ProtectedRoute.tsx
+│   │   │   │   ├── RouteGuard.tsx
+│   │   │   │   ├── Search.tsx
+│   │   │   │   ├── SearchBar.tsx
+│   │   │   │   ├── SearchResult.tsx
+│   │   │   │   └── SearchResult.tsx.dedup-backup.1766901889287.bak
+│   │   │   ├── shared
+│   │   │   │   ├── steps
+│   │   │   │   │   ├── BasicInfoStep.tsx
+│   │   │   │   │   └── GenericStepContainer.tsx
+│   │   │   │   ├── GlobalSettingsComponent.tsx
+│   │   │   │   ├── Share.tsx
+│   │   │   │   ├── SharedHeaders.ts
+│   │   │   │   ├── SharingConfig.tsx
+│   │   │   │   └── SharingOptions.tsx
+│   │   │   ├── socialMedia
+│   │   │   │   ├── MediaComponent.tsx
+│   │   │   │   └── MediaDashboard.tsx
+│   │   │   ├── sort
+│   │   │   │   └── TaskSort.tsx
+│   │   │   ├── stopwatches
+│   │   │   │   ├── BasicStopwatchComponent.tsx
+│   │   │   │   ├── CountdownTimerComponent.tsx
+│   │   │   │   ├── CustomizableTimersComponent.tsx
+│   │   │   │   ├── IntervalTimerComponent.tsx
+│   │   │   │   ├── MultiPhaseTimerComponent.tsx
+│   │   │   │   ├── PomodoroTechniqueComponent.tsx
+│   │   │   │   ├── ProgressiveTimerComponent.tsx
+│   │   │   │   ├── ScheduledTimersComponent.tsx
+│   │   │   │   └── TeamCollaborationTimerComponent.tsx
+│   │   │   ├── strategy
+│   │   │   │   ├── calculateKPMBasedOnEditorChanges.tsx
+│   │   │   │   ├── CalendarEventEngagementStrategy.tsx
+│   │   │   │   └── KPM.tsx
+│   │   │   ├── styling
+│   │   │   │   ├── Accessibility.tsx
+│   │   │   │   ├── AnimationsAndTansitions.tsx
+│   │   │   │   ├── ColorPalette.tsx
+│   │   │   │   ├── ColorPicker.tsx
+│   │   │   │   ├── Documentation.tsx
+│   │   │   │   ├── DynamicColorPalette.tsx
+│   │   │   │   ├── DynamicComponents.tsx
+│   │   │   │   ├── DynamicIconsAndImages.tsx
+│   │   │   │   ├── DynamicSpacingAndLayout.tsx
+│   │   │   │   ├── DynamicSpacingAndLayout.tsx.dedup-backup.1766901889291.bak
+│   │   │   │   ├── DynamicTypography.tsx
+│   │   │   │   ├── EnhancedDesignDashboard.tsx
+│   │   │   │   ├── Palette.tsx
+│   │   │   │   ├── PaletteManager.tsx
+│   │   │   │   ├── ResponsiveDesign.tsx
+│   │   │   │   └── UsageExamplesBox.tsx
+│   │   │   ├── subscriptions
+│   │   │   │   └── SubscriptionComponent.tsx
+│   │   │   ├── support
+│   │   │   │   ├── request.py
+│   │   │   │   ├── UserConsentComponent.jsx
+│   │   │   │   └── UserSupport.tsx
+│   │   │   ├── tasks
+│   │   │   │   ├── TaskComponent.tsx
+│   │   │   │   ├── TaskForm.tsx
+│   │   │   │   └── TaskManagerComponent.tsx
+│   │   │   ├── teams
+│   │   │   │   ├── Team.tsx
+│   │   │   │   ├── TeamAssignmentSnapShot.tsx
+│   │   │   │   ├── TeamComponent.tsx
+│   │   │   │   ├── TeamManagerComponent.tsx
+│   │   │   │   ├── TeamNeeds.tsx
+│   │   │   │   ├── teamSnapshot.ts
+│   │   │   │   └── TrainingSession.tsx
+│   │   │   ├── tenants
+│   │   │   │   └── ConfigureTenantComponent.tsx
+│   │   │   ├── tootips
+│   │   │   │   └── todo
+│   │   │   ├── trading
+│   │   │   │   ├── TradeData.tsx
+│   │   │   │   └── TradeData.tsx.dedup-backup.1766901889294.bak
+│   │   │   ├── typings
+│   │   │   ├── users
+│   │   │   │   ├── management
+│   │   │   │   │   └── UserManagementComponent.tsx
+│   │   │   │   ├── ParticipantComponent.tsx
+│   │   │   │   ├── UserActivityLogComponent.tsx
+│   │   │   │   ├── UserDataComponent.tsx
+│   │   │   │   ├── UserRolesEditor.tsx
+│   │   │   │   └── userSnapshotData.test.ts
+│   │   │   ├── video
+│   │   │   │   ├── HostControls.tsx
+│   │   │   │   ├── HostScreen.tsx
+│   │   │   │   ├── MarkerComponent.tsx
+│   │   │   │   ├── MarkerTimeline.tsx
+│   │   │   │   ├── PlaybackControls.tsx
+│   │   │   │   ├── RewindButton.tsx
+│   │   │   │   ├── VideoEditingPanel.tsx
+│   │   │   │   ├── VideoFramework.tsx
+│   │   │   │   ├── VideoPanel.tsx
+│   │   │   │   ├── VideoPlayer.ts
+│   │   │   │   ├── VideoPlayer.tsx
+│   │   │   │   ├── VideoPlayerToolbar.tsx
+│   │   │   │   ├── VideoRecorder.tsx
+│   │   │   │   └── VideoToolbar.tsx
+│   │   │   ├── web3
+│   │   │   │   ├── aquaIntegration
+│   │   │   │   ├── community
+│   │   │   │   │   └── teams
+│   │   │   │   ├── DAO.sol
+│   │   │   │   ├── PeriodicAudit.sol
+│   │   │   │   ├── todos.txt
+│   │   │   │   ├── TokenBasedAccessControl.sol
+│   │   │   │   └── Web3Provider.ts
+│   │   │   ├── whiteboard
+│   │   │   │   └── Whiteboard.tsx
+│   │   │   ├── AppProviders.tsx
+│   │   │   ├── DynamicComponentsContext.tsx
+│   │   │   ├── LazyIconProps.tsx
+│   │   │   ├── LazyLoadedImage.tsx
+│   │   │   └── Provider.tsx
+│   │   ├── config
+│   │   │   ├── appStructure
+│   │   │   │   ├── appPath.ts
+│   │   │   │   ├── AppStructure.ts
+│   │   │   │   ├── BackendStructureComponent.tsx
+│   │   │   │   ├── BackendStructureWrapper.tsx
+│   │   │   │   ├── DomainStructure.ts
+│   │   │   │   ├── ExtendedBackendStructure.ts
+│   │   │   │   ├── FrontendDataService.ts
+│   │   │   │   ├── FrontendStructure.ts
+│   │   │   │   ├── FrontendStructureComponent.tsx
+│   │   │   │   └── IBackendStructure.ts
+│   │   │   ├── database
+│   │   │   │   └── updateDocumentInDatabase.tsx
+│   │   │   ├── declarations
+│   │   │   │   ├── assets.d.ts
+│   │   │   │   ├── autoGPT.d.ts
+│   │   │   │   ├── css.d.ts
+│   │   │   │   ├── global.d.ts
+│   │   │   │   └── traverseBackend.ts
+│   │   │   ├── endpoints
+│   │   │   │   ├── analyticsConfig.ts
+│   │   │   │   ├── apiEndpointConfig.ts
+│   │   │   │   ├── apiWebBaseConfig.ts
+│   │   │   │   ├── appDetailsConfig.ts
+│   │   │   │   ├── authConfig.ts
+│   │   │   │   ├── batchConfig.ts
+│   │   │   │   ├── blogsConfig.ts
+│   │   │   │   ├── calendarConfig.ts
+│   │   │   │   ├── categoryConfig.ts
+│   │   │   │   ├── chatConfig.ts
+│   │   │   │   ├── clientConfig.ts
+│   │   │   │   ├── collaborationToolsConfig.ts
+│   │   │   │   ├── commentsConfig.ts
+│   │   │   │   ├── communicationConfig.ts
+│   │   │   │   ├── communityInteractionConfig.ts
+│   │   │   │   ├── configConfig.ts
+│   │   │   │   ├── configData.ts
+│   │   │   │   ├── contentConfig.ts
+│   │   │   │   ├── createMergedEndpoints.ts
+│   │   │   │   ├── cryptoConfig.ts
+│   │   │   │   ├── dataAnalysisConfig.ts
+│   │   │   │   ├── databaseConfig.ts
+│   │   │   │   ├── dataConfig.ts
+│   │   │   │   ├── dataProvidersConfig.ts
+│   │   │   │   ├── datasetPathConfig.ts
+│   │   │   │   ├── delegatesConfig.ts
+│   │   │   │   ├── detailsConfig.ts
+│   │   │   │   ├── devConfig.ts
+│   │   │   │   ├── dexConfig.ts
+│   │   │   │   ├── documentsConfig.ts
+│   │   │   │   ├── donationsConfig.ts
+│   │   │   │   ├── drawingConfig.ts
+│   │   │   │   ├── EndpointConfigManager.ts
+│   │   │   │   ├── endpointManager.ts
+│   │   │   │   ├── EnvironmentAwareEndpointManager.ts
+│   │   │   │   ├── externalAuthConfig.ts
+│   │   │   │   ├── feedbackConfig.ts
+│   │   │   │   ├── filesConfig.ts
+│   │   │   │   ├── filteringConfig.ts
+│   │   │   │   ├── freelancersConfig.ts
+│   │   │   │   ├── generatorsConfig.ts
+│   │   │   │   ├── globalCollaborationConfig.ts
+│   │   │   │   ├── highlightsConfig.ts
+│   │   │   │   ├── loggingConfig.ts
+│   │   │   │   ├── logsConfig.ts
+│   │   │   │   ├── markerConfig.ts
+│   │   │   │   ├── messagesConfig.ts
+│   │   │   │   ├── moderatorsConfig.ts
+│   │   │   │   ├── monetizationConfig.ts
+│   │   │   │   ├── newsConfig.ts
+│   │   │   │   ├── notesConfig.ts
+│   │   │   │   ├── notificationsConfig.ts
+│   │   │   │   ├── parameterCustomizationConfig.ts
+│   │   │   │   ├── participantsConfig.ts
+│   │   │   │   ├── participantsEndpoints.ts
+│   │   │   │   ├── paymentConfig.ts
+│   │   │   │   ├── personasConfig.ts
+│   │   │   │   ├── phasesConfig.ts
+│   │   │   │   ├── projectManagementConfig.ts
+│   │   │   │   ├── projectOwnerConfig.ts
+│   │   │   │   ├── projectsConfig.ts
+│   │   │   │   ├── randomWalkConfig.ts
+│   │   │   │   ├── realtimeConfig.ts
+│   │   │   │   ├── registrationConfig.ts
+│   │   │   │   ├── reportsConfig.ts
+│   │   │   │   ├── screenSharingConfig.ts
+│   │   │   │   ├── searchingConfig.ts
+│   │   │   │   ├── securityConfig.ts
+│   │   │   │   ├── snapshotsConfig.ts
+│   │   │   │   ├── sortingConfig.ts
+│   │   │   │   ├── stateGovCitiesConfig.ts
+│   │   │   │   ├── tasksConfig.ts
+│   │   │   │   ├── teamManagementConfig.ts
+│   │   │   │   ├── teamsConfig.ts
+│   │   │   │   ├── themeConfig.ts
+│   │   │   │   ├── todosConfig.ts
+│   │   │   │   ├── toolbarConfig.ts
+│   │   │   │   ├── tradingConfig.ts
+│   │   │   │   ├── uiConfig.ts
+│   │   │   │   ├── uiSettingsConfig.ts
+│   │   │   │   ├── userManagementConfig.ts
+│   │   │   │   ├── userRolesConfig.ts
+│   │   │   │   ├── userRolesNFTConfig.ts
+│   │   │   │   ├── usersConfig.ts
+│   │   │   │   ├── userSettingsConfig.ts
+│   │   │   │   ├── versionConfig.ts
+│   │   │   │   ├── videosConfig.ts
+│   │   │   │   └── webConfig.ts
+│   │   │   ├── factory
+│   │   │   │   ├── CorrectionFactory.ts
+│   │   │   │   ├── SnapshotFactory.ts
+│   │   │   │   ├── TransactionFactory.ts
+│   │   │   │   └── VersionEntityFactory.ts
+│   │   │   ├── metadata
+│   │   │   │   ├── BaseMetaInfo.ts
+│   │   │   │   ├── createMeta.ts
+│   │   │   │   ├── createMetadata.ts
+│   │   │   │   ├── detectMetadataChanges.ts
+│   │   │   │   ├── MetadataHooks.ts
+│   │   │   │   ├── SchemaField.ts
+│   │   │   │   ├── SnapshotMetadata.ts
+│   │   │   │   └── usePhaseMeta.ts
+│   │   │   ├── trading
+│   │   │   │   └── TradingPhaseConfig.tsx
+│   │   │   ├── AppConfig.ts
+│   │   │   ├── BackendConfig.ts
+│   │   │   ├── BaseConfig.ts
+│   │   │   ├── browserConfig.ts
+│   │   │   ├── CacheConfig.ts
+│   │   │   ├── ComponentConfig.ts
+│   │   │   ├── ComponentConfigProvider.tsx
+│   │   │   ├── ComponentsConfig.ts
+│   │   │   ├── createBaseDataEntity.ts
+│   │   │   ├── createMappingConfig.ts
+│   │   │   ├── createMappingConfig.ts.dedup-backup.1766901889318.bak
+│   │   │   ├── CustomWeb3Config.ts
+│   │   │   ├── DatabaseConfig.ts
+│   │   │   ├── databaseConnection.ts
+│   │   │   ├── DatabaseTypes.ts
+│   │   │   ├── DocumentBuilderConfig.ts
+│   │   │   ├── DynamicFormConfig.ts
+│   │   │   ├── EndpointConfig.ts
+│   │   │   ├── EnvironmentConfig.ts
+│   │   │   ├── FrontendConfig.ts
+│   │   │   ├── GenerateUserPreferences.ts
+│   │   │   ├── getConfigPromise.ts
+│   │   │   ├── getDatabaseConfig.tsx
+│   │   │   ├── getUserConfigs.ts
+│   │   │   ├── idleTimeout.ts
+│   │   │   ├── ipfsConfig.ts
+│   │   │   ├── LayoutConfig.tsx
+│   │   │   ├── LazyLoadScriptConfig.ts
+│   │   │   ├── LocalizationConfig.ts
+│   │   │   ├── LogEntry.ts
+│   │   │   ├── LoggerConfig.ts
+│   │   │   ├── LoggingConfig.ts
+│   │   │   ├── MainConfig.tsx
+│   │   │   ├── MappingConfig.tsx
+│   │   │   ├── MappingConfig.tsx.dedup-backup.1766901889301.bak
+│   │   │   ├── MetadataManager.tsx
+│   │   │   ├── MetadataMap.ts
+│   │   │   ├── MetaDataOptions.ts
+│   │   │   ├── MetadataStateManager.ts
+│   │   │   ├── ParameterConfig.ts
+│   │   │   ├── PlaceholderDatabaseService.tsx
+│   │   │   ├── PluginConfig.ts
+│   │   │   ├── ProjectConfig.ts
+│   │   │   ├── RealtimeServiceConfig.ts
+│   │   │   ├── route.ts
+│   │   │   ├── stopwatchConfig.tsx
+│   │   │   ├── StorageConfig.ts
+│   │   │   ├── StructuredMetadata.ts
+│   │   │   ├── UpdatePreferences.ts
+│   │   │   ├── useMeta.tsx
+│   │   │   ├── useMetadata.tsx
+│   │   │   ├── UserPreferences.ts
+│   │   │   ├── UserPreferencesActions.ts
+│   │   │   ├── UserPreferencesActions.ts.dedup-backup.1766901889308.bak
+│   │   │   ├── UserSettings.ts
+│   │   │   ├── UserSettings.ts.dedup-backup.1766901889312.bak
+│   │   │   ├── VideoLifecycleConfig.ts
+│   │   │   └── Web3Config.ts
+│   │   ├── configs
+│   │   │   ├── complete
+│   │   │   ├── alias-config.js
+│   │   │   ├── appThunk.ts
+│   │   │   ├── DataVersionsConfig.tsx
+│   │   │   ├── FrontendDocumentConfig.tsx
+│   │   │   ├── quality.config.json
+│   │   │   └── react-native.config.js
+│   │   ├── content
+│   │   │   └── ContentMaintenance.tsx
+│   │   ├── css
+│   │   │   ├── FormElementStyles
+│   │   │   ├── projects
+│   │   │   │   ├── ProjectCreationForm.css
+│   │   │   │   └── ProjectManagementApp.css
+│   │   │   ├── access_control_styles.css
+│   │   │   ├── AccessDenied.css
+│   │   │   ├── AppTreeExplorer.css
+│   │   │   ├── BackendConfigComponent.css
+│   │   │   ├── base-styles.css
+│   │   │   ├── chat.css
+│   │   │   ├── DashboardManager.css
+│   │   │   ├── DashboardSystem.css
+│   │   │   ├── DesignComponent.tsx
+│   │   │   ├── desktop-styles.css
+│   │   │   ├── FormBuilder.css
+│   │   │   ├── FrontendStructureViewer.css
+│   │   │   ├── navigation_system.css
+│   │   │   ├── phases.css
+│   │   │   ├── search.styles.css
+│   │   │   ├── stylesheet.css
+│   │   │   ├── tablet-styles.css
+│   │   │   └── tv-styles.css
+│   │   ├── dashboards
+│   │   │   ├── DashboardComponent.tsx
+│   │   │   ├── DashboardFramework.tsx
+│   │   │   ├── DashboardSettings.ts
+│   │   │   ├── DynamicDashboard.tsx
+│   │   │   ├── LoadAquaState.tsx
+│   │   │   ├── LoadAquaState.tsx.dedup-backup.1766901889327.bak
+│   │   │   ├── LoadDashboard.tsx
+│   │   │   ├── LoadFluenceState.tsx
+│   │   │   ├── MainDashboardFramework.tsx
+│   │   │   ├── PhaseDashboard.tsx
+│   │   │   ├── PhaseDashboard.tsx.dedup-backup.1766901889329.bak
+│   │   │   ├── PricingDashboard.tsx
+│   │   │   ├── ProjectTimelineDashboard.tsx
+│   │   │   └── RecruiterSeekerDashboard.tsx
+│   │   ├── data
+│   │   ├── dataIntegration
+│   │   │   ├── calendarIntegration
+│   │   │   │   ├── calendarEventManager.ts
+│   │   │   │   └── scheduleCoordinator.ts
+│   │   │   ├── projectIntegration
+│   │   │   │   ├── activityLogger.ts
+│   │   │   │   ├── projectConverter.ts
+│   │   │   │   ├── ProjectLogger.ts
+│   │   │   │   └── projectManagement.ts
+│   │   │   ├── errorRecovery.ts
+│   │   │   ├── parseData.ts
+│   │   │   ├── persistenceLayer.ts
+│   │   │   ├── reduxIntegration.ts
+│   │   │   └── SafeParseData.ts
+│   │   ├── documents
+│   │   │   ├── attachment
+│   │   │   │   └── Attachment.tsx
+│   │   │   ├── editing
+│   │   │   │   ├── autosave.js
+│   │   │   │   ├── autosaveDrawing.ts
+│   │   │   │   ├── CourseBuilder.tsx
+│   │   │   │   ├── DocumentBuilder.tsx
+│   │   │   │   ├── DocumentBuilder.tsx.dedup-backup.1766901889452.bak
+│   │   │   │   ├── DocumentPage.tsx
+│   │   │   │   ├── DocumentPhaseType.ts
+│   │   │   │   ├── formattingChecks.js
+│   │   │   │   ├── FormattingRules.ts
+│   │   │   │   ├── MarkdownDocument.ts
+│   │   │   │   ├── PDFDocument.ts
+│   │   │   │   ├── Presentation.ts
+│   │   │   │   ├── spellCheck.js
+│   │   │   │   ├── SQLDocument.ts
+│   │   │   │   ├── triggerAutosave.js
+│   │   │   │   ├── updateUI.js
+│   │   │   │   ├── wordCount.js
+│   │   │   │   └── wordCountAnalysis.js
+│   │   │   ├── CommonDocumentPropertiesAndMethods.ts
+│   │   │   ├── cryptoDocument.ts
+│   │   │   ├── cryptoDocumentManager.ts
+│   │   │   ├── CustomModifier.tsx
+│   │   │   ├── CustomPDFPage.ts
+│   │   │   ├── DocType.ts
+│   │   │   ├── DocumentCreationUtils.ts
+│   │   │   ├── DocumentEditor.tsx
+│   │   │   ├── DocumentFormattingOptions.tsx
+│   │   │   ├── DocumentGeneratorMethods.ts
+│   │   │   ├── DocumentGeneratorMethods.ts.dedup-backup.1766901889332.bak
+│   │   │   ├── DocumentHelper.ts
+│   │   │   ├── DocumentManagement.tsx
+│   │   │   ├── DocumentOptions.ts
+│   │   │   ├── DocumentPath.ts
+│   │   │   ├── DocumentPermissions.tsx
+│   │   │   ├── DocumentProcessor.tsx
+│   │   │   ├── DocumentProcessor.tsx.dedup-backup.1766901889334.bak
+│   │   │   ├── DocumentSnapshotStore.tsx
+│   │   │   ├── DynamicContent.tsx
+│   │   │   ├── DynamicContentGenerator.js
+│   │   │   ├── DynamicTable.tsx
+│   │   │   ├── File.ts
+│   │   │   ├── FileImportData.tsx
+│   │   │   ├── FileImportData.tsx.dedup-backup.1766901889336.bak
+│   │   │   ├── FileLoadOptions.ts
+│   │   │   ├── FileSelect.tsx
+│   │   │   ├── FileType.ts
+│   │   │   ├── getDocumentNameFromEditorState.ts
+│   │   │   ├── getTextBetweenOffsets.ts
+│   │   │   ├── getToolbarOptions.ts
+│   │   │   ├── MarkdownDoc.ts
+│   │   │   ├── NoteData.ts
+│   │   │   ├── parseCSV.ts
+│   │   │   ├── parseDocx.tsx
+│   │   │   ├── parseExcel.ts
+│   │   │   ├── parsePDF.tsx
+│   │   │   ├── parseXML.ts
+│   │   │   ├── PDFDoc.ts
+│   │   │   ├── PDFDoc.ts.dedup-backup.1766901889338.bak
+│   │   │   ├── RelatedProps.ts
+│   │   │   ├── Report.ts
+│   │   │   ├── RichTextEditor.jsx
+│   │   │   ├── Section.ts
+│   │   │   ├── SharedDocumentProps.ts
+│   │   │   ├── SQLDoc.ts
+│   │   │   └── TextType.ts
+│   │   ├── error-analyzer
+│   │   │   ├── cli
+│   │   │   │   ├── phases-cli.ts
+│   │   │   │   └── phases-cli.ts.dedup-backup.1766901889587.bak
+│   │   │   ├── phases
+│   │   │   │   ├── DynamicPhaseSystem.ts
+│   │   │   │   ├── GranularBackupSystem.ts
+│   │   │   │   ├── PhaseExecutor.ts
+│   │   │   │   ├── SafePhaseExecutor.ts
+│   │   │   │   ├── test-phase.ts
+│   │   │   │   └── TypeScriptDiagnosticPhase.ts
+│   │   │   ├── rules
+│   │   │   │   └── app-specific-rules.ts
+│   │   │   ├── types
+│   │   │   │   ├── ErrorAnalysisTypes.ts
+│   │   │   │   ├── FixStrategyTypes.ts
+│   │   │   │   └── FixStrategyTypes.ts.dedup-backup.1766901889845.bak
+│   │   │   ├── utils
+│   │   │   │   ├── ASTParserUtils.ts
+│   │   │   │   ├── autoFixInterfaceImports.ts
+│   │   │   │   ├── CodePatternDetector.ts
+│   │   │   │   └── ImportExportAnalyzer.ts
+│   │   │   ├── CircularDependencyResolver.ts
+│   │   │   ├── cli.ts
+│   │   │   ├── cli.ts.dedup-backup.1766901889825.bak
+│   │   │   ├── enhanced-cli.ts
+│   │   │   ├── enhanced-cli.ts.dedup-backup.1766901889841.bak
+│   │   │   ├── ErrorFixManager.ts
+│   │   │   ├── FileRelationshipAnalyzer.ts
+│   │   │   ├── fix-strategy.ts
+│   │   │   ├── FixConfidenceCalculator.ts
+│   │   │   ├── FixConfidenceCalculator.ts.dedup-backup.1766901889471.bak
+│   │   │   ├── FixPrioritizer.ts
+│   │   │   ├── FixVerifier.ts
+│   │   │   ├── ImportSuggestionGenerator.ts
+│   │   │   ├── index.ts
+│   │   │   ├── IndexFileFixer.ts
+│   │   │   ├── ProgressTracker.ts
+│   │   │   ├── ReportGenerator.ts
+│   │   │   ├── TransitionEvaluationContext.ts
+│   │   │   ├── TypeRelationshipAnalyzer.ts
+│   │   │   ├── TypeScriptErrorAnalyzer.ts
+│   │   │   ├── TypeScriptErrorFixSystem.ts
+│   │   │   ├── TypeScriptErrorFixSystem.ts.dedup-backup.1766901889486.bak
+│   │   │   └── WorkflowProgressMetrics.ts
+│   │   ├── events
+│   │   │   ├── BaseCustomEvent.ts
+│   │   │   ├── BaseEvent.ts
+│   │   │   ├── defaultImplementation.ts
+│   │   │   ├── Event.ts
+│   │   │   ├── EventStore.ts
+│   │   │   └── EventStore.ts.dedup-backup.1766901889847.bak
+│   │   ├── examples
+│   │   │   ├── analyzer-demo.js
+│   │   │   ├── CacheExample.ts
+│   │   │   ├── CacheExample.ts.dedup-backup.1766901889850.bak
+│   │   │   ├── DocumentExamples.tsx
+│   │   │   ├── ExampleApi.md
+│   │   │   ├── exampleAuthenticateWithWix.ts
+│   │   │   ├── ExamplePriceService.ts
+│   │   │   ├── ExampleTeam.ts
+│   │   │   ├── generateComponentExample.ts
+│   │   │   ├── selectDocumentEditingPermissionsExample.tsx
+│   │   │   ├── TradingExamples.ts
+│   │   │   ├── traverseFrontendDirectoryExample.ts
+│   │   │   ├── writeUserCacheExample.ts
+│   │   │   └── yourResponseTypeDataExample.ts
+│   │   ├── features
+│   │   │   ├── feedback
+│   │   │   │   └── FeedbackLoop.tsx
+│   │   │   ├── meetings
+│   │   │   │   ├── host
+│   │   │   │   │   ├── HostVideoLayout.tsx
+│   │   │   │   │   ├── MeetingSchedulerHost.tsx
+│   │   │   │   │   ├── MeetingSchedulerHostScreen.tsx
+│   │   │   │   │   └── MeetingSchedulerHostToolbar.tsx
+│   │   │   │   ├── utils
+│   │   │   │   └── viewer
+│   │   │   │       ├── MeetingSchedulerViewer.tsx
+│   │   │   │       ├── MeetingSchedulerViewerScreen.tsx
+│   │   │   │       ├── MeetingSchedulerViewerToolbar.tsx
+│   │   │   │       └── ViewerVideoLayout.tsx
+│   │   │   ├── news
+│   │   │   │   └── updateFilteredNewsUI.ts
+│   │   │   ├── shortcuts
+│   │   │   │   ├── analytics
+│   │   │   │   │   └── updateAnalyticsUI.js
+│   │   │   │   └── ShortcutKeys.tsx
+│   │   │   ├── support
+│   │   │   │   ├── AnnouncementManager.ts
+│   │   │   │   ├── ConsentMessages.json
+│   │   │   │   ├── DataNotifications.ts
+│   │   │   │   ├── ExtendedNotificationMessages.ts
+│   │   │   │   ├── Feedback.ts
+│   │   │   │   ├── FeedbackAggregator.tsx
+│   │   │   │   ├── NotificationEditingPhaseHook.tsx
+│   │   │   │   ├── NotificationManager.ts
+│   │   │   │   ├── NotificationMessages.js
+│   │   │   │   ├── NotificationMessagesFactory.ts
+│   │   │   │   ├── NotificationProvider.tsx
+│   │   │   │   ├── NotificationProvider.tsx.dedup-backup.1766901889858.bak
+│   │   │   │   ├── NotificationSettings.ts
+│   │   │   │   ├── NotificationTypes.ts
+│   │   │   │   ├── ProjectFeedback.ts
+│   │   │   │   ├── PushNotificationManager.ts
+│   │   │   │   ├── SupportTicketComponent.tsx
+│   │   │   │   ├── TaskProjectFeedback.tsx
+│   │   │   │   ├── UnifiedNotificationTypes.ts
+│   │   │   │   ├── updateNotificationSettings.ts
+│   │   │   │   └── UserSupportPhaseComponent.tsx
+│   │   │   ├── tools
+│   │   │   │   └── Tools.tsx
+│   │   │   ├── videos
+│   │   │   │   └── CaptionManagementComponent.tsx
+│   │   │   ├── FeatureFiles.tsx
+│   │   │   ├── RealtimeTranscriptionComponent.tsx
+│   │   │   └── RealtimeTranscriptionComponent.tsx.dedup-backup.1766901889854.bak
+│   │   ├── generators
+│   │   │   ├── corrections
+│   │   │   │   ├── analyzers
+│   │   │   │   │   ├── react-native
+│   │   │   │   │   ├── BaseAnalyzer.ts
+│   │   │   │   │   ├── BuildAnalyzer.ts
+│   │   │   │   │   ├── ComprehensiveBreakdownAnalyzer.ts
+│   │   │   │   │   ├── ComprehensiveBreakdownAnalyzer.ts.dedup-backup.1766901889897.bak
+│   │   │   │   │   ├── ComprehensiveFrontendAnalyzer.ts
+│   │   │   │   │   ├── ExecAsync.ts
+│   │   │   │   │   ├── fileCategoryAnalyzers.ts
+│   │   │   │   │   ├── frontendAnalyzer.ts
+│   │   │   │   │   ├── ImplementationCounter.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── PatternAnalyzer.ts
+│   │   │   │   │   ├── PlatformDetector.ts
+│   │   │   │   │   ├── ReactNativeAnalyzer.ts
+│   │   │   │   │   ├── ReactWebAnalyzer.ts
+│   │   │   │   │   ├── TypeScriptAnalyzer.ts
+│   │   │   │   │   └── unifiedAnalyzer.ts
+│   │   │   │   ├── reports
+│   │   │   │   │   ├── ImportReport.ts
+│   │   │   │   │   ├── ImportReport.ts.dedup-backup.1766901889905.bak
+│   │   │   │   │   ├── PatternReport.ts
+│   │   │   │   │   └── QualityReport.ts
+│   │   │   │   ├── validators
+│   │   │   │   │   ├── ConfigurationValidator.ts
+│   │   │   │   │   ├── FileStructureValidator.ts
+│   │   │   │   │   ├── MultiPlatformDirectoryValidator.ts
+│   │   │   │   │   └── PackageJsonValidator.ts
+│   │   │   │   ├── BreakdownReportGenerator.ts
+│   │   │   │   ├── CircularDependencyDetector.ts
+│   │   │   │   ├── CorrectionGenerator.ts
+│   │   │   │   ├── CorrectionGenerator.ts.dedup-backup.1766901889884.bak
+│   │   │   │   ├── CorrectionMessageGenerator.ts
+│   │   │   │   ├── CorrectionWizard.tsx
+│   │   │   │   ├── ErrorAnalyzer.ts
+│   │   │   │   ├── ErrorTracker.ts
+│   │   │   │   ├── ImportErrorSummary.ts
+│   │   │   │   ├── ImportFixServicies.ts
+│   │   │   │   ├── ReportGenerators.ts
+│   │   │   │   ├── ReportTester.ts
+│   │   │   │   ├── runImportCheck.ts
+│   │   │   │   ├── runImportCheck.ts.dedup-backup.1766901889910.bak
+│   │   │   │   ├── SecurityAuditor.ts
+│   │   │   │   ├── SecurityAuditor.ts.dedup-backup.1766901889895.bak
+│   │   │   │   ├── SnapshotAnalyzer.ts
+│   │   │   │   ├── StructureValidator.ts
+│   │   │   │   └── TypeRelationshipMapper.ts
+│   │   │   ├── ApiCodeGenerator.ts
+│   │   │   ├── ApiCodeOptions.ts
+│   │   │   ├── ContentIDGenerator.ts
+│   │   │   ├── diagramGenerationLibrary.ts
+│   │   │   ├── diagramGenerator.ts
+│   │   │   ├── docxGenerator.ts
+│   │   │   ├── DynamicHookGeneratorDocumentation.md
+│   │   │   ├── FeedbackReportGenerator.ts
+│   │   │   ├── generateAbiContracts.tsx
+│   │   │   ├── generateAppTree.tsx
+│   │   │   ├── GenerateButtons.tsx
+│   │   │   ├── GenerateCache.ts
+│   │   │   ├── generateCaptions.ts
+│   │   │   ├── GenerateChatInterfaces.ts
+│   │   │   ├── GenerateComponentComponent.tsx
+│   │   │   ├── GenerateDatabase.tsx
+│   │   │   ├── GenerateDatabase.tsx.dedup-backup.1766901889862.bak
+│   │   │   ├── generateDevConfigurationSummaryContent.tsx
+│   │   │   ├── generateDraftJSON.tsx
+│   │   │   ├── generateDynamicData.tsx
+│   │   │   ├── generateFileChecklist.tsx
+│   │   │   ├── generateHeaders.tsx
+│   │   │   ├── GenerateInterfaces.ts
+│   │   │   ├── GenerateModal.tsx
+│   │   │   ├── generateNewApiConfig.ts
+│   │   │   ├── generateNewRoute.tsx
+│   │   │   ├── GenerateNewTask.ts
+│   │   │   ├── GenerateNewTeam.ts
+│   │   │   ├── GenerateNewTodo.ts
+│   │   │   ├── GenerateTable.tsx
+│   │   │   ├── generateTokens.ts
+│   │   │   ├── GenerateTokens.tsx
+│   │   │   ├── GenerateUniqueIds.ts
+│   │   │   ├── GenerateUtilityFunctions.tsx
+│   │   │   ├── GenericContainerGenerator.ts
+│   │   │   ├── getUserIdeaFromForm.ts
+│   │   │   ├── GroupGenerator.tsx
+│   │   │   ├── HashGenerator.tsx
+│   │   │   ├── HashUtils.ts
+│   │   │   ├── ipfsGenerator.ts
+│   │   │   ├── ListGenerator.tsx
+│   │   │   ├── MessaageType.tsx
+│   │   │   ├── MessaageType.tsx.dedup-backup.1766901889879.bak
+│   │   │   ├── NFTGenerator.ts
+│   │   │   ├── PackageRecommendationGenerator.ts
+│   │   │   ├── presetPercentages.ts
+│   │   │   ├── processSnapshotList.tsx
+│   │   │   ├── snapshotCache.ts
+│   │   │   ├── SnapshotListGenerator.tsx
+│   │   │   ├── SubscriptionCriteria.ts
+│   │   │   ├── TaskReportGenerator.tsx
+│   │   │   ├── TeamManagementFeatureGenerator.ts
+│   │   │   ├── TeamManagementFeatureGenerator.ts.dedup-backup.1766901889883.bak
+│   │   │   ├── todo_VersioningStrategy.txt
+│   │   │   ├── trace-resolve.mjs
+│   │   │   ├── usePanelContents.tsx
+│   │   │   └── usePanelContents.tsx.dedup-backup.1766901889913.bak
+│   │   ├── highlighting
+│   │   │   └── screenFunctionality
+│   │   │       ├── HighlightActions.ts
+│   │   │       ├── HighlightEvent.ts
+│   │   │       ├── HighlightEventMetadata.ts
+│   │   │       └── hover_tootips.html
+│   │   ├── hooks
+│   │   │   ├── authentication
+│   │   │   │   └── useTwoFactorAuthentication.tsx
+│   │   │   ├── commHooks
+│   │   │   │   ├── idleTimeoutCondition.ts
+│   │   │   │   ├── idleTimeoutConstants.ts
+│   │   │   │   ├── idleTimeoutParams.ts
+│   │   │   │   ├── idleTimeoutUtils.ts
+│   │   │   │   ├── MessagingSystem.tsx
+│   │   │   │   ├── processSnapshotStore.ts
+│   │   │   │   ├── useCameraAccess.ts
+│   │   │   │   ├── useFileUpload.tsx
+│   │   │   │   ├── useHookNotification.tsx
+│   │   │   │   ├── useIdleTimeout.tsx
+│   │   │   │   ├── useNotificationBar.tsx
+│   │   │   │   ├── useRealtimeData.tsx
+│   │   │   │   ├── useRealtimeDextData.ts
+│   │   │   │   ├── useRealtimeExchangeData.ts
+│   │   │   │   ├── useSearchPagination.ts
+│   │   │   │   ├── useSocialAuthentication.tsx
+│   │   │   │   ├── useUIRealtimeData.tsx
+│   │   │   │   ├── useVoiceRecognition.tsx
+│   │   │   │   └── useWebNotifications.ts
+│   │   │   ├── dataHooks
+│   │   │   │   ├── exportTasksToCSV.tsx
+│   │   │   │   ├── RealtimeUpdatesComponent.tsx
+│   │   │   │   ├── RealtimeUpdatesComponent.tsx.dedup-backup.1766901889917.bak
+│   │   │   │   ├── useBatchProcessing.ts
+│   │   │   │   └── useDataExport.ts
+│   │   │   ├── documents
+│   │   │   │   ├── useDocumentManagement.ts
+│   │   │   │   ├── usersDataSourceToCSV.tsx
+│   │   │   │   └── useToolbarOptions.ts
+│   │   │   ├── dynamicHooks
+│   │   │   │   ├── createCustomTransaction.ts
+│   │   │   │   ├── createDynamicPromptHook.tsx
+│   │   │   │   ├── dynamicFormGenerator.ts
+│   │   │   │   ├── dynamicHookGenerator.tsx
+│   │   │   │   ├── dynamicHooks.ts
+│   │   │   │   ├── dynamicOnboardingPhaseHook.ts
+│   │   │   │   ├── dynamicQuestionGenerator.ts
+│   │   │   │   ├── useApiManager.ts
+│   │   │   │   └── web3Hook.ts
+│   │   │   ├── phaseHooks
+│   │   │   │   ├── CollaborationPhaseHooks.tsx
+│   │   │   │   ├── CollaborativeBloggingPlatform.tsx
+│   │   │   │   ├── DynamicPromptPhaseHook.tsx
+│   │   │   │   ├── EnhancePhase.tsx
+│   │   │   │   ├── PhaseHooks.ts
+│   │   │   │   └── RecruitingPhaseStep.tsx
+│   │   │   ├── phases
+│   │   │   │   ├── LifecycleManager.ts
+│   │   │   │   ├── lifecycles.ts
+│   │   │   │   ├── PhaseActivity.ts
+│   │   │   │   ├── UIPhase.ts
+│   │   │   │   └── UIPhase.ts.dedup-backup.1766901889920.bak
+│   │   │   ├── userInterface
+│   │   │   │   ├── ActionList.tsx
+│   │   │   │   ├── automation_process.tsx
+│   │   │   │   ├── ChatSettings.ts
+│   │   │   │   ├── DashboardPanel.tsx
+│   │   │   │   ├── DynamicDashboard.tsx
+│   │   │   │   ├── DynamicInputFieldsProps.tsx
+│   │   │   │   ├── InputFields.tsx
+│   │   │   │   ├── NavigationGenerator.tsx
+│   │   │   │   ├── RandomWalkActions.tsx
+│   │   │   │   ├── RandomWalkSuggestions.tsx
+│   │   │   │   ├── RandomWalkSuggestions.tsx.dedup-backup.1766901889948.bak
+│   │   │   │   ├── RandomWalkVisualization.tsx
+│   │   │   │   ├── RandomWalkVisualization.tsx.dedup-backup.1766901889949.bak
+│   │   │   │   ├── ResizablePanels.tsx
+│   │   │   │   ├── TableStyle.ts
+│   │   │   │   ├── ThemeConfigContext.tsx
+│   │   │   │   ├── ThemeCustomization.tsx
+│   │   │   │   ├── UIPhaseHooks.tsx
+│   │   │   │   ├── useCache.ts
+│   │   │   │   ├── useDarkModeToggle.ts
+│   │   │   │   ├── usePagination.ts
+│   │   │   │   ├── useResizablePanels.ts
+│   │   │   │   └── Visualization.tsx
+│   │   │   ├── baseQuestionnaireData.ts
+│   │   │   ├── ChildComponent.tsx
+│   │   │   ├── DynamicHookParams.tsx
+│   │   │   ├── generateDynamicDummyHook.tsx
+│   │   │   ├── GenerateUserLayout.ts
+│   │   │   ├── getCurrentAppType.ts
+│   │   │   ├── HookConverter.ts
+│   │   │   ├── idleTimeoutHooks.ts
+│   │   │   ├── isRealtimeDataItemArray.ts
+│   │   │   ├── NFTConversionComponent.tsx
+│   │   │   ├── RoadmapScoringPlugin.ts
+│   │   │   ├── useAppSelector.ts
+│   │   │   ├── useAsyncHookLinker.ts
+│   │   │   ├── useAuthentication.tsx
+│   │   │   ├── useAuthToken.ts
+│   │   │   ├── useAutoGPT.tsx
+│   │   │   ├── useCalendarManagement.ts
+│   │   │   ├── useChatDashboard.tsx
+│   │   │   ├── useCryptoIntegration.ts
+│   │   │   ├── useDatabase.ts
+│   │   │   ├── useDebouncedCallback.ts
+│   │   │   ├── useDID.ts
+│   │   │   ├── useDummyGenerator.tsx
+│   │   │   ├── useDynamicNavigation.ts
+│   │   │   ├── useErrorHandling.tsx
+│   │   │   ├── useErrorHandling.tsx.dedup-backup.1766901889925.bak
+│   │   │   ├── useEventSystem.ts
+│   │   │   ├── useFaker.ts
+│   │   │   ├── useFetchUser.ts
+│   │   │   ├── useFilePath.ts
+│   │   │   ├── useFiles.ts
+│   │   │   ├── useFiltering.tsx
+│   │   │   ├── useFullscreen.ts
+│   │   │   ├── useIconLoaderAsync.tsx
+│   │   │   ├── useIconStore.ts
+│   │   │   ├── useIconStore.ts.dedup-backup.1766901889935.bak
+│   │   │   ├── useJobSearch.tsx
+│   │   │   ├── useLifecycle.ts.ts
+│   │   │   ├── useLocalStorage.ts
+│   │   │   ├── useLogManagement.ts
+│   │   │   ├── useNotificationSystem.ts
+│   │   │   ├── useNotificationSystem.ts.dedup-backup.1766901889939.bak
+│   │   │   ├── useNotifier.ts
+│   │   │   ├── usePhaseActivity.ts
+│   │   │   ├── usePhaseManagement.ts
+│   │   │   ├── useRealtimeEditing.ts
+│   │   │   ├── useRegistration.ts
+│   │   │   ├── useRoleAccess.ts
+│   │   │   ├── useRoleAccess.ts.dedup-backup.1766901889942.bak
+│   │   │   ├── userScenarioCreation.tsx
+│   │   │   ├── useSecureAccountId.ts
+│   │   │   ├── useSecureDocumentId.ts
+│   │   │   ├── useSecureExchangeId.ts
+│   │   │   ├── useSecureProjectId.ts
+│   │   │   ├── useSecureSender.ts
+│   │   │   ├── useSecureSnapshotId.ts
+│   │   │   ├── useSecureStoreId.ts
+│   │   │   ├── useSecureUserId.ts
+│   │   │   ├── useSecurityAudit.ts
+│   │   │   ├── useServerFileSystem.ts
+│   │   │   ├── useSimplePhaseManagement.ts
+│   │   │   ├── useSnapshotApi.ts
+│   │   │   ├── useSnapshotManager.ts
+│   │   │   ├── useSnapshotNotifications.ts
+│   │   │   ├── useSorting.ts
+│   │   │   ├── useStepNavigation.ts
+│   │   │   ├── useStorageManager.ts
+│   │   │   ├── useStore.tsx
+│   │   │   ├── useSubscription.tsx
+│   │   │   ├── useSupportTickets.ts
+│   │   │   ├── useTaskManagement.ts
+│   │   │   ├── useTeamManagement.ts
+│   │   │   ├── useTestPhaseHooks.tsx
+│   │   │   ├── useThemeCustomization.tsx
+│   │   │   ├── useToolbarActions.ts
+│   │   │   ├── useUserProfile.test.tsx
+│   │   │   ├── useUserProfile.tsx
+│   │   │   ├── useVerifiableCredential.ts
+│   │   │   ├── useVideoLifecycle.ts
+│   │   │   ├── useVideoPlayer.ts
+│   │   │   ├── useWebSocket.ts
+│   │   │   ├── VersioningComponent.tsx
+│   │   │   ├── VideoLifecycleHooks.ts
+│   │   │   ├── VideoLifecycleManager.tsx
+│   │   │   └── YourComponent.tsx
+│   │   ├── images
+│   │   ├── intelligence
+│   │   │   ├── AutoGPTPromptsConfig.ts
+│   │   │   ├── AutoGPTSpaCyIntegration.ts
+│   │   │   ├── EventEmitterIntegration.ts
+│   │   │   ├── FakeDataGenerator.ts
+│   │   │   ├── TaggableItem.ts
+│   │   │   └── VoiceControl.ts
+│   │   ├── interfaces
+│   │   │   ├── chat
+│   │   │   │   ├── Channel.ts
+│   │   │   │   ├── CommonInterfaces.ts
+│   │   │   │   └── GroupChat.ts
+│   │   │   ├── collaboration
+│   │   │   ├── features
+│   │   │   │   ├── CollaborationBoard.tsx
+│   │   │   │   ├── CommunicationSection.tsx
+│   │   │   │   ├── ContentCreationSection.tsx
+│   │   │   │   ├── FeatureToggleManager.ts
+│   │   │   │   ├── FeatureTogglePage.tsx
+│   │   │   │   ├── FileOrganizationSection.tsx
+│   │   │   │   ├── IdeationSection.tsx
+│   │   │   │   ├── PlanningSection.tsx
+│   │   │   │   └── ProjectManagementSection.tsx
+│   │   │   ├── history
+│   │   │   │   └── TaskHistoryEntry.tsx
+│   │   │   ├── options
+│   │   │   │   ├── CollaborationOptions.ts
+│   │   │   │   ├── CustomizationOptions.tsx
+│   │   │   │   └── desctiption.txt
+│   │   │   ├── payload
+│   │   │   │   └── payloadTypes.ts
+│   │   │   ├── preferences
+│   │   │   ├── provider
+│   │   │   │   ├── AuthenticationProvider.ts
+│   │   │   │   ├── authProviderInstance.ts
+│   │   │   │   ├── CloudStorageProvider.ts
+│   │   │   │   ├── DatabaseProvider.tsx
+│   │   │   │   └── dataProviderInstance.ts
+│   │   │   ├── settings
+│   │   │   │   ├── BrainstormingSettings.ts
+│   │   │   │   ├── CalendarDisplaySettings.tsx
+│   │   │   │   ├── CollaborationPreferences.ts
+│   │   │   │   ├── LearningPreferences.ts
+│   │   │   │   ├── MeetingsSettings.ts
+│   │   │   │   ├── ProjectManagementSettings.ts
+│   │   │   │   └── TeamBuildingSettings.ts
+│   │   │   ├── createVisualizations.tsx
+│   │   │   ├── NavigationManager.tsx
+│   │   │   ├── NavigationMenu.tsx
+│   │   │   ├── NotificationDisplayUI.tsx
+│   │   │   └── UserIdeaComponentUI.tsx
+│   │   ├── layout
+│   │   │   ├── FullscreenControls.tsx
+│   │   │   ├── LayoutControls.tsx
+│   │   │   ├── RootLayoutContent.css
+│   │   │   ├── RootLayoutContent.tsx
+│   │   │   ├── useAnimatedRoot.ts
+│   │   │   ├── useAppInitialization.ts
+│   │   │   ├── useAppThemeInit.ts
+│   │   │   └── useLayoutState.ts
+│   │   ├── libraries
+│   │   │   ├── actions
+│   │   │   │   └── themeChangeAction.tsx
+│   │   │   ├── animations
+│   │   │   │   ├── DraggableAnimation
+│   │   │   │   │   ├── CustomDragObject.tsx
+│   │   │   │   │   ├── useDrag.tsx
+│   │   │   │   │   └── useText.tsx
+│   │   │   │   ├── movementAnimations
+│   │   │   │   │   └── MovementAnimationActions.tsx
+│   │   │   │   ├── physics
+│   │   │   │   ├── text
+│   │   │   │   │   └── TypingAnimation.tsx
+│   │   │   │   ├── AnimationComponent.tsx
+│   │   │   │   ├── AnimationControls.tsx
+│   │   │   │   ├── AnimationDial.tsx
+│   │   │   │   ├── AnimationLibrary.tsx
+│   │   │   │   ├── DraggableAnimation.tsx
+│   │   │   │   ├── DynamicSelectionControls.tsx
+│   │   │   │   ├── FadeInAnimation.tsx
+│   │   │   │   ├── RotateAnimation.tsx
+│   │   │   │   ├── SlideUpAnimation.tsx
+│   │   │   │   └── useShakeAnimation.tsx
+│   │   │   ├── cache
+│   │   │   │   ├── client
+│   │   │   │   │   ├── CacheManager.ts
+│   │   │   │   │   ├── constants.ts
+│   │   │   │   │   ├── DocumentCreator.tsx
+│   │   │   │   │   ├── DocumentGenerator.ts
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── types.ts
+│   │   │   │   │   └── useComponentGenerator.ts
+│   │   │   │   └── CacheResponse.ts
+│   │   │   ├── categories
+│   │   │   │   ├── buildSnapshotData.ts
+│   │   │   │   ├── CategoryManager.tsx
+│   │   │   │   ├── CategoryMapper.ts
+│   │   │   │   ├── determineCategory.ts
+│   │   │   │   ├── determineDocumentType.ts
+│   │   │   │   ├── determineFileCategory.tsx
+│   │   │   │   ├── determineSnapshotStoreCategory.ts
+│   │   │   │   ├── fileCategoryMapping.ts
+│   │   │   │   ├── generateCategoryProperties.ts
+│   │   │   │   └── getCategoryFromFilePath.ts
+│   │   │   ├── drawing
+│   │   │   │   ├── drawingLibrary.ts
+│   │   │   │   ├── drawingLibraryMock.ts
+│   │   │   │   └── generateDrawingJSON.ts
+│   │   │   ├── eventSystem
+│   │   │   │   ├── BaseStoreWithCallbacks.ts
+│   │   │   │   ├── callbackRegistry.ts
+│   │   │   │   ├── eventEmitter.ts
+│   │   │   │   ├── eventHandlers.ts
+│   │   │   │   └── ProjectEventEmitter.ts
+│   │   │   ├── menu
+│   │   │   │   ├── Checkbox.tsx
+│   │   │   │   ├── ClearFiltersButton.tsx
+│   │   │   │   ├── Dropdown.tsx
+│   │   │   │   ├── RadioButton.tsx
+│   │   │   │   ├── SortableTableHeaders.tsx
+│   │   │   │   ├── TagCloud.tsx
+│   │   │   │   └── ToggleSwitch.tsx
+│   │   │   ├── presentations
+│   │   │   │   ├── generatePresentationJSON.ts
+│   │   │   │   └── presentationLibrary.ts
+│   │   │   ├── testing
+│   │   │   │   ├── avoidCollisions.ts
+│   │   │   │   └── generateRandomWalkPositions.ts
+│   │   │   ├── theme
+│   │   │   │   ├── BrandingService.ts
+│   │   │   │   ├── PromptGeneratorService.tsx
+│   │   │   │   ├── ThemeManagerServiceContext.tsx
+│   │   │   │   └── ThemeService.ts
+│   │   │   ├── toolbar
+│   │   │   │   ├── CryptoSectionToolbar.tsx
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   └── ToolbarItemsProvider.tsx
+│   │   │   ├── ui
+│   │   │   │   ├── buttons
+│   │   │   │   │   ├── CustomSlider.tsx
+│   │   │   │   │   ├── FullscreenButtonComponent.tsx
+│   │   │   │   │   ├── onCancel.ts
+│   │   │   │   │   ├── onCancel.tsx
+│   │   │   │   │   ├── onLogicalAnd.tsx
+│   │   │   │   │   ├── onSubmit.tsx
+│   │   │   │   │   ├── ReusableButton.tsx
+│   │   │   │   │   └── ReusableButton.tsx.dedup-backup.1766901890180.bak
+│   │   │   │   ├── components
+│   │   │   │   │   ├── Component.tsx
+│   │   │   │   │   ├── Component.tsx.dedup-backup.1766901890238.bak
+│   │   │   │   │   ├── ConditionalRouteComponent.tsx
+│   │   │   │   │   ├── ConfigurationManagement.ts
+│   │   │   │   │   ├── CreateComponentForm.tsx
+│   │   │   │   │   ├── CreateComponentForm.tsx.dedup-backup.1766901890376.bak
+│   │   │   │   │   ├── DeleteComponent.tsx
+│   │   │   │   │   ├── DynamicRouteComponent.tsx
+│   │   │   │   │   ├── SnapshotComponent.tsx
+│   │   │   │   │   └── UpdateComponent.tsx
+│   │   │   │   ├── theme
+│   │   │   │   │   ├── AliasToken.ts
+│   │   │   │   │   ├── AppHeader.tsx
+│   │   │   │   │   ├── AppHeader.tsx.dedup-backup.1766901890377.bak
+│   │   │   │   │   ├── Branding.ts
+│   │   │   │   │   ├── BrandingConfig.ts
+│   │   │   │   │   ├── BrandingUpdater.tsx
+│   │   │   │   │   ├── FaviconComponent.tsx
+│   │   │   │   │   ├── MapProperties.ts
+│   │   │   │   │   ├── sharedThemes.ts
+│   │   │   │   │   ├── Theme.tsx
+│   │   │   │   │   ├── ThemeConfig.ts
+│   │   │   │   │   ├── ThemeSwitcher.tsx
+│   │   │   │   │   └── UserBrandingPreferences.ts
+│   │   │   │   ├── ContentHelpers.ts
+│   │   │   │   ├── ContentRenderer.tsx
+│   │   │   │   ├── CustomContentState.tsx
+│   │   │   │   ├── DraggableDiv.tsx
+│   │   │   │   ├── DynamicRenderer.tsx
+│   │   │   │   ├── ElementSelector.tsx
+│   │   │   │   ├── ElementSelector.tsx.dedup-backup.1766901889963.bak
+│   │   │   │   ├── UILibrary.tsx
+│   │   │   │   ├── UILibrary.tsx.dedup-backup.1766901889972.bak
+│   │   │   │   ├── useTheme.ts
+│   │   │   │   ├── useUIElement.tsx
+│   │   │   │   └── useUIStore.ts
+│   │   │   └── serverApi.ts
+│   │   ├── logging
+│   │   │   ├── ChangeLogEntry.ts
+│   │   │   ├── determineFileCategoryLogger.ts
+│   │   │   ├── Logger.ts
+│   │   │   └── TradeLogger.ts
+│   │   ├── middleware
+│   │   │   ├── core
+│   │   │   │   ├── loggingMiddleware.ts
+│   │   │   │   ├── notificationMiddleware.ts
+│   │   │   │   ├── persistenceMiddleware..ts
+│   │   │   │   ├── types.ts
+│   │   │   │   └── validationMiddleware.ts
+│   │   │   ├── pipeline
+│   │   │   │   ├── createMiddlewarePipeline.ts
+│   │   │   │   └── middlewareManager.ts
+│   │   │   ├── plugins
+│   │   │   │   ├── analyticsMiddleware.ts
+│   │   │   │   ├── auditMiddleware.ts
+│   │   │   │   └── cacheMiddleware.ts
+│   │   │   └── index.ts
+│   │   ├── models
+│   │   │   ├── accessibility
+│   │   │   │   └── FocusManager.ts
+│   │   │   ├── blogs
+│   │   │   │   └── BlogEditor.tsx
+│   │   │   ├── builders
+│   │   │   │   └── TaskSnapshotConfigBuilder.ts
+│   │   │   ├── comments
+│   │   │   │   └── Comments.ts
+│   │   │   ├── content
+│   │   │   │   ├── AddContent.tsx
+│   │   │   │   ├── BlogAndContentEditorWrapper.tsx
+│   │   │   │   ├── fetchContent.tsx
+│   │   │   │   ├── fetchContent.tsx.dedup-backup.1766901890382.bak
+│   │   │   │   ├── ItemTypes.ts
+│   │   │   │   └── SharedDashboardContent.tsx
+│   │   │   ├── cypto
+│   │   │   │   ├── CryptoWatchlist.ts
+│   │   │   │   ├── detectArbitrage.ts
+│   │   │   │   ├── DEX.ts
+│   │   │   │   ├── Exchange.ts
+│   │   │   │   ├── exchangeIntegration.ts
+│   │   │   │   ├── generateCryptoWatchlistJSON.ts
+│   │   │   │   ├── NFT.ts
+│   │   │   │   ├── realTimePriceComparison.ts
+│   │   │   │   └── SanitizationFunctions.ts
+│   │   │   ├── data
+│   │   │   │   ├── AnalyticsData.ts
+│   │   │   │   ├── BaseDataOperations.ts
+│   │   │   │   ├── BookmarkData.ts
+│   │   │   │   ├── CalendarEventAttendancePrediction.tsx
+│   │   │   │   ├── Data.tsx
+│   │   │   │   ├── dataContracts.ts
+│   │   │   │   ├── dataLoader.ts
+│   │   │   │   ├── DataService.ts
+│   │   │   │   ├── dataStoreMethods.ts
+│   │   │   │   ├── DataStructureCategories.ts
+│   │   │   │   ├── DetailsContext.tsx
+│   │   │   │   ├── DEXData.ts
+│   │   │   │   ├── documentBuilderConfig.ts
+│   │   │   │   ├── EventContentAnalysis.tsx
+│   │   │   │   ├── EventPriorityClassification.ts
+│   │   │   │   ├── ExchangeData.ts
+│   │   │   │   ├── fetchExchangeData.ts
+│   │   │   │   ├── FileData.ts
+│   │   │   │   ├── Folder.ts
+│   │   │   │   ├── FolderData.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── Insights.ts
+│   │   │   │   ├── Marker.ts
+│   │   │   │   ├── ServiceData.tsx
+│   │   │   │   ├── StatusType.ts
+│   │   │   │   ├── Streaming.tsx
+│   │   │   │   ├── TaskMetadata.ts
+│   │   │   │   └── TempData.ts
+│   │   │   ├── display
+│   │   │   │   ├── DeviceDimensions.ts
+│   │   │   │   ├── MultimediaContentCustomization.tsx
+│   │   │   │   └── ShowToast.ts
+│   │   │   ├── ecommerce
+│   │   │   │   └── ECommerceIntegration.tsx
+│   │   │   ├── marketing
+│   │   │   │   ├── Advertisement.ts
+│   │   │   │   ├── Campaign.tsx
+│   │   │   │   └── MarketingChannel.tsx
+│   │   │   ├── members
+│   │   │   │   └── Member.ts
+│   │   │   ├── phases
+│   │   │   │   ├── autoFixInterfaceImportsWithBackup.ts
+│   │   │   │   ├── DocumentPhase.ts
+│   │   │   │   ├── Phase.ts
+│   │   │   │   ├── PhaseBackupSystem.ts
+│   │   │   │   ├── PhaseManager.tsx
+│   │   │   │   ├── PhaseManager.tsx.dedup-backup.1766901890388.bak
+│   │   │   │   ├── Phases.tsx
+│   │   │   │   ├── Phases.tsx.dedup-backup.1766901890393.bak
+│   │   │   │   ├── PhaseSystem.ts
+│   │   │   │   ├── PhaseTransitions.tsx
+│   │   │   │   ├── PhaseTransitions.tsx.dedup-backup.1766901890392.bak
+│   │   │   │   ├── SubPhase.ts
+│   │   │   │   └── WorkflowTransition.ts
+│   │   │   ├── projects
+│   │   │   │   └── Project.tsx
+│   │   │   ├── realtime
+│   │   │   │   ├── Candidate.tsx
+│   │   │   │   ├── IntegrationLogic.tsx
+│   │   │   │   ├── RealTimeChart.tsx
+│   │   │   │   ├── RealTimeDataCollection.tsx
+│   │   │   │   ├── RealTimeDataStore.tsx
+│   │   │   │   ├── RealTimeVisualization.tsx
+│   │   │   │   ├── TimeBasedCodeGenerator.ts
+│   │   │   │   └── VisualizationLogic.ts
+│   │   │   ├── tasks
+│   │   │   │   ├── ExportTasksPayload.ts
+│   │   │   │   ├── GetTracker.ts
+│   │   │   │   ├── ImportTasksPayload.ts
+│   │   │   │   ├── StoreMethods.ts
+│   │   │   │   ├── Subtask.ts
+│   │   │   │   ├── Task.tsx
+│   │   │   │   └── TaskComment.ts
+│   │   │   ├── teams
+│   │   │   │   ├── Contributor.ts
+│   │   │   │   ├── TeamData.tsx
+│   │   │   │   ├── TeamManagementApp.tsx
+│   │   │   │   └── TeamMembers.ts
+│   │   │   ├── tracker
+│   │   │   │   ├── DraggableIndicator.tsx
+│   │   │   │   ├── ExampleComponent.tsx
+│   │   │   │   ├── LoadingIndicator.tsx
+│   │   │   │   ├── LoadingSpinner.tsx
+│   │   │   │   ├── ProgressBar.tsx
+│   │   │   │   ├── Tag.tsx
+│   │   │   │   ├── TaskTrackingComponent.tsx
+│   │   │   │   ├── Tracker.ts
+│   │   │   │   └── TrackerService.ts
+│   │   │   ├── video
+│   │   │   │   └── LiveStream.tsx
+│   │   │   ├── ChecklistItem.tsx
+│   │   │   ├── CommonData.test.tsx
+│   │   │   ├── CommonData.tsx
+│   │   │   ├── CommunityData.tsx
+│   │   │   ├── LogData.tsx
+│   │   │   ├── ProjectModel.tsx
+│   │   │   ├── Reward.ts
+│   │   │   ├── TreeNode.ts
+│   │   │   ├── UserManagement.ts
+│   │   │   ├── UserProfileManagement.ts
+│   │   │   ├── UserRole.ts
+│   │   │   └── UserRoles.ts
+│   │   ├── notifications
+│   │   │   ├── NotificationChannelHelper.ts
+│   │   │   ├── NotificationChannelHelperImpl.ts
+│   │   │   ├── NotificationChannelManager.ts
+│   │   │   ├── NotificationChannelManager.ts.dedup-backup.1766901890396.bak
+│   │   │   ├── NotificationChannels.ts
+│   │   │   └── notificationHelpers.ts
+│   │   ├── pages
+│   │   │   ├── blog
+│   │   │   │   ├── AIoSBlogPosts.tsx
+│   │   │   │   ├── AndroidBlogPostsContainer.tsx
+│   │   │   │   ├── Blog.ts
+│   │   │   │   ├── BlogGenerator.tsx
+│   │   │   │   ├── BlogGroup.tsx
+│   │   │   │   ├── BlogManager.tsx
+│   │   │   │   ├── BlogOverview.tsx
+│   │   │   │   ├── BlogPage.tsx
+│   │   │   │   ├── BlogPost.tsx
+│   │   │   │   ├── BlogPosts.tsx
+│   │   │   │   ├── BlogShare.tsx
+│   │   │   │   ├── BlogUtils.ts
+│   │   │   │   ├── CalendarUtils.ts
+│   │   │   │   ├── generateSimulatedEventsUtils.tsx
+│   │   │   │   ├── GroupRenderer.tsx
+│   │   │   │   ├── MyBlog.tsx
+│   │   │   │   ├── NewBlogPostForm.tsx
+│   │   │   │   ├── NotificationDisplay.tsx
+│   │   │   │   └── UpdateCallbackUtils.ts
+│   │   │   ├── chat
+│   │   │   │   └── ChatPage.tsx
+│   │   │   ├── community
+│   │   │   │   ├── CollaborationData.ts
+│   │   │   │   ├── CollaborationPage.tsx
+│   │   │   │   ├── CollaborationSettings.tsx
+│   │   │   │   ├── CollaborationToolsToolbar.tsx
+│   │   │   │   ├── CommunityProjectsPage.tsx
+│   │   │   │   ├── configureCollaborationPreferences.ts
+│   │   │   │   └── MentorshipRequest.tsx
+│   │   │   ├── confirmation
+│   │   │   │   ├── ConfirmationPage.tsx
+│   │   │   │   └── TradingConfirmationPage.tsx
+│   │   │   ├── content
+│   │   │   │   ├── CaptionManagementPage.js
+│   │   │   │   ├── ContentCreationPage.tsx
+│   │   │   │   ├── contentManagementPage.js
+│   │   │   │   └── MultimediaContentCustomization.tsx
+│   │   │   ├── course
+│   │   │   │   ├── CourseDevelopmentPage.tsx
+│   │   │   │   ├── CourseDevelopmentPhaseManager.tsx
+│   │   │   │   ├── CourseDevelopmentPhaseManager.tsx.dedup-backup.1766901890407.bak
+│   │   │   │   ├── CourseLearningPhase.tsx
+│   │   │   │   ├── CoursePlanningPhase.tsx
+│   │   │   │   ├── CourseSetupPhase.tsx
+│   │   │   │   └── EducationalVideoMetadata.ts
+│   │   │   ├── crypto
+│   │   │   │   └── RiskAssessmentPage.tsx
+│   │   │   ├── culture
+│   │   │   │   ├── collections
+│   │   │   │   │   └── manageMediaCollections.ts
+│   │   │   │   └── music
+│   │   │   │       ├── ArtistPhase.tsx
+│   │   │   │       └── MusicPage.tsx
+│   │   │   ├── dashboards
+│   │   │   │   ├── AdapterDashboard.tsx
+│   │   │   │   ├── BugComments.tsx
+│   │   │   │   ├── BugFilter.tsx
+│   │   │   │   ├── BugList.tsx
+│   │   │   │   ├── BugSort.tsx
+│   │   │   │   ├── BugStatusUpdate.tsx
+│   │   │   │   ├── BugStatusUpdate.tsx.dedup-backup.1766901890410.bak
+│   │   │   │   ├── BugTable.tsx
+│   │   │   │   ├── BugTrackingDashboard.tsx
+│   │   │   │   ├── ChatDashboard.tsx
+│   │   │   │   ├── ClientDesignDashboard.tsx
+│   │   │   │   ├── CollaborationDashboard.tsx
+│   │   │   │   ├── CollaborationDashboard.tsx.dedup-backup.1766901890413.bak
+│   │   │   │   ├── CollaborationPanel.tsx
+│   │   │   │   ├── dashboard.css
+│   │   │   │   ├── DashboardLoader.tsx
+│   │   │   │   ├── DashboardManager.tsx
+│   │   │   │   ├── DashboardOverview.jsx
+│   │   │   │   ├── DataDashboard.tsx
+│   │   │   │   ├── DesignDashboard.tsx
+│   │   │   │   ├── DirectoryExplorer.tsx
+│   │   │   │   ├── EnhancedTreeView.css
+│   │   │   │   ├── EnhancedTreeView.tsx
+│   │   │   │   ├── FileStructureViewer.tsx
+│   │   │   │   ├── index.tsx
+│   │   │   │   ├── ModalFunctions.ts
+│   │   │   │   ├── ProjectDashboard.tsx
+│   │   │   │   ├── RealTimeDashboardPage.tsx
+│   │   │   │   ├── RecruiterSeekerDashboard.tsx
+│   │   │   │   ├── SearchableVisualFlowDashboard.tsx
+│   │   │   │   ├── ServerDesignDashboard.tsx
+│   │   │   │   ├── TreeView.tsx
+│   │   │   │   ├── UserDashboard.tsx
+│   │   │   │   ├── UserPreferencesDashboard.tsx
+│   │   │   │   └── VisualFlowDashboard.tsx
+│   │   │   ├── development
+│   │   │   │   ├── AndroidSpecificContent.tsx
+│   │   │   │   ├── AppDevelopmentProcess.tsx
+│   │   │   │   ├── EmailConfirmationPhase.tsx
+│   │   │   │   ├── EmailConfirmationPhaseComponent.tsx
+│   │   │   │   └── PlanningPhase.tsx
+│   │   │   ├── forms
+│   │   │   │   ├── formBuilder
+│   │   │   │   │   ├── FormBuilder.tsx
+│   │   │   │   │   └── FormInput.tsx
+│   │   │   │   ├── formElement
+│   │   │   │   │   ├── DropdownMenu.tsx
+│   │   │   │   │   └── TextInput.tsx
+│   │   │   │   ├── utils
+│   │   │   │   │   └── CommonLoginLogic.ts
+│   │   │   │   ├── AndroidForm.tsx
+│   │   │   │   ├── ChangePasswordForm.tsx
+│   │   │   │   ├── DynamicConfigurationLogic.jsx
+│   │   │   │   ├── DynamicForm.tsx
+│   │   │   │   ├── EmailVerificationForm.tsx
+│   │   │   │   ├── FeedbackForm.tsx
+│   │   │   │   ├── fetchCustomFeedbackForm.tsx
+│   │   │   │   ├── ForgotPasswordForm.tsx
+│   │   │   │   ├── FormBuilder.tsx
+│   │   │   │   ├── FormControl.tsx
+│   │   │   │   ├── FormDocumentMiddleware.tsx
+│   │   │   │   ├── FormInputComponent.tsx
+│   │   │   │   ├── FormUI.tsx
+│   │   │   │   ├── InteractiveForm.tsx
+│   │   │   │   ├── IOSForm.tsx
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   ├── PreviewForm.tsx
+│   │   │   │   ├── ProjectCreationForm.tsx
+│   │   │   │   ├── RegisterForm.tsx
+│   │   │   │   ├── UserFormComponent.jsx
+│   │   │   │   ├── UserSettingsForm.tsx
+│   │   │   │   └── YourFormComponent.test.jsx
+│   │   │   ├── layouts
+│   │   │   │   ├── AnimatedDashboard.tsx
+│   │   │   │   ├── AnimatedDashboard.tsx.dedup-backup.1766901890426.bak
+│   │   │   │   ├── CommonLayout.tsx
+│   │   │   │   ├── DashboardLayout.tsx
+│   │   │   │   ├── fetchUserAreaDimensions.ts
+│   │   │   │   ├── kanban.ts
+│   │   │   │   ├── LayoutContext.tsx
+│   │   │   │   ├── LayoutEditor.tsx
+│   │   │   │   ├── Layouts.tsx
+│   │   │   │   ├── usePhaseWithLoad.ts
+│   │   │   │   └── waitForLoad.ts
+│   │   │   ├── logs
+│   │   │   │   ├── LoggingPage.tsx
+│   │   │   │   └── LogViewer.tsx
+│   │   │   ├── management
+│   │   │   │   └── ParticipantManagementPage.tsx
+│   │   │   ├── onboarding
+│   │   │   │   ├── onboardingTests
+│   │   │   │   │   ├── questionnaireLogic.test.ts
+│   │   │   │   │   └── UserJourneyManager.test.tsx
+│   │   │   │   ├── FeatureImplementationSubPhase.tsx
+│   │   │   │   ├── GettingToKnowYouPage.tsx
+│   │   │   │   ├── InitialSetupSubPhase.tsx
+│   │   │   │   ├── OfferPage.tsx
+│   │   │   │   ├── OnboardingManager.tsx
+│   │   │   │   ├── OnboardingPage.tsx
+│   │   │   │   ├── OnboardingPhase.tsx
+│   │   │   │   ├── OnboardingQuestionnaireData.ts
+│   │   │   │   ├── OnboardingScreen.tsx
+│   │   │   │   ├── PersonaBuilderData.tsx
+│   │   │   │   ├── PlanningSubPhase.tsx
+│   │   │   │   ├── Question.tsx
+│   │   │   │   ├── questionnaireLogic.ts
+│   │   │   │   ├── questionnaireLogic.ts.dedup-backup.1766901890804.bak
+│   │   │   │   ├── QuestionnairePage.tsx
+│   │   │   │   ├── Registration.tsx
+│   │   │   │   ├── RegistrationPhase.tsx
+│   │   │   │   ├── RegistrationPhaseComponent.tsx
+│   │   │   │   └── WelcomePage.tsx
+│   │   │   ├── personas
+│   │   │   │   ├── recruiterDashboard
+│   │   │   │   │   ├── generateCaptionsUtils.ts
+│   │   │   │   │   ├── PersonaBuilderDashboard.tsx
+│   │   │   │   │   ├── PersonaBuilderDashboard.tsx.dedup-backup.1766901890896.bak
+│   │   │   │   │   ├── PersonaBuilderUtils.tsx
+│   │   │   │   │   └── PersonaPanel.tsx
+│   │   │   │   ├── ArtistPersona.tsx
+│   │   │   │   ├── ArtPersona.ts
+│   │   │   │   ├── CryptoEnthusiastCalendar.tsx
+│   │   │   │   ├── CryptoEnthusiastDocuments.tsx
+│   │   │   │   ├── CryptoEnthusiastFollowing.tsx
+│   │   │   │   ├── CryptoEnthusiastTraderInfo.tsx
+│   │   │   │   ├── DeveloperPersona.ts
+│   │   │   │   ├── DeveloperPersona.tsx
+│   │   │   │   ├── FeatureStructure.ts
+│   │   │   │   ├── Persona.tsx
+│   │   │   │   ├── PersonaBuilder.tsx
+│   │   │   │   ├── PersonaPage.tsx
+│   │   │   │   ├── personatodos.txt
+│   │   │   │   ├── ProfessionalTraderAlerts.tsx
+│   │   │   │   ├── ProfessionalTraderCalendar.tsx
+│   │   │   │   ├── ProfessionalTraderCalls.tsx
+│   │   │   │   ├── ProfessionalTraderCollaboration.tsx
+│   │   │   │   ├── ProfessionalTraderContentManagement.tsx
+│   │   │   │   ├── ProfessionalTraderDashboard.tsx
+│   │   │   │   ├── ProfessionalTraderDocuments.tsx
+│   │   │   │   ├── ProfessionalTraderProfile.tsx
+│   │   │   │   ├── ProjectManagerPersona.tsx
+│   │   │   │   ├── ScenarioBuilder.tsx
+│   │   │   │   ├── ScenarioBuilder.tsx.dedup-backup.1766901890889.bak
+│   │   │   │   ├── TeamBuilder.js
+│   │   │   │   ├── TestBuilder.tsx
+│   │   │   │   ├── TestScenarios.js
+│   │   │   │   ├── trainerUserJourney.tsx
+│   │   │   │   ├── UserJourney.tsx
+│   │   │   │   ├── UserJourneyManager.tsx
+│   │   │   │   ├── UserQuestionnaire.tsx
+│   │   │   │   ├── UXUIDesignerPersona.ts
+│   │   │   │   └── VideoEditorPersona.ts
+│   │   │   ├── profile
+│   │   │   │   ├── Profile.tsx
+│   │   │   │   ├── ProfilePage.tsx
+│   │   │   │   └── VerificationPage.tsx
+│   │   │   ├── projects
+│   │   │   │   ├── ProjectIdeaLifecycleComponent.tsx
+│   │   │   │   └── ProjectPlanningPage.tsx
+│   │   │   ├── searches
+│   │   │   │   ├── CriteriaEnums.ts
+│   │   │   │   ├── CriteriaOptions.tsx
+│   │   │   │   ├── CriteriaType.ts
+│   │   │   │   ├── Debounce.ts
+│   │   │   │   ├── DocumentSearch.tsx
+│   │   │   │   ├── EventFilterComponent.tsx
+│   │   │   │   ├── Filter.tsx
+│   │   │   │   ├── FilterCriteria.ts
+│   │   │   │   ├── FilteredEvents.tsx
+│   │   │   │   ├── FilterTasksRequest.tsx
+│   │   │   │   ├── ResearchFindings.ts
+│   │   │   │   ├── SearchComponent.tsx
+│   │   │   │   ├── SearchCriteria.tsx
+│   │   │   │   ├── SearchCriteria.tsx.dedup-backup.1766901890898.bak
+│   │   │   │   ├── SearchItems.tsx
+│   │   │   │   ├── SearchLibrary.tsx
+│   │   │   │   ├── SearchOptions.ts
+│   │   │   │   ├── TaskFilter.tsx
+│   │   │   │   ├── todo
+│   │   │   │   ├── UserSearch.tsx
+│   │   │   │   └── useSearchOptions.tsx
+│   │   │   ├── support
+│   │   │   │   └── UserSupportPage.tsx
+│   │   │   ├── tables
+│   │   │   │   ├── PaymentsTable.tsx
+│   │   │   │   └── TableComponent.tsx
+│   │   │   ├── tasks
+│   │   │   │   └── TaskPage.tsx
+│   │   │   ├── teams
+│   │   │   │   ├── TeamCreationConfirmationPage.tsx
+│   │   │   │   ├── TeamCreationQuestionnaire.tsx
+│   │   │   │   └── TeamManagementPage.tsx
+│   │   │   ├── tenant
+│   │   │   │   └── TenantManagementFeature.tsx
+│   │   │   ├── _app.tsx
+│   │   │   ├── _app.tsx.dedup-backup.1766901890401.bak
+│   │   │   ├── AccessDenied.tsx
+│   │   │   ├── ExtendedAppLogic.tsx
+│   │   │   ├── index.tsx
+│   │   │   ├── MyAppWrapper.tsx
+│   │   │   ├── Paging.ts
+│   │   │   ├── SupportResponse.tsx
+│   │   │   ├── Unauthorized.tsx
+│   │   │   ├── upload.html
+│   │   │   └── YourApp.tsx
+│   │   ├── payment
+│   │   │   ├── initCryptoPayments.tsx
+│   │   │   ├── PaymentForm.tsx
+│   │   │   ├── PaymentGateways.tsx
+│   │   │   ├── PaymentProcess.tsx
+│   │   │   ├── Payments.tsx
+│   │   │   ├── Transaction.ts
+│   │   │   └── TransactionHistory.tsx
+│   │   ├── permissions
+│   │   │   ├── AccessControlEntry.ts
+│   │   │   ├── AccessControlRule.ts
+│   │   │   ├── assignPermissions.ts
+│   │   │   ├── BlockchainPermissions.ts
+│   │   │   ├── Permission.ts
+│   │   │   ├── PermissionEnums.ts
+│   │   │   ├── PermissionManager.ts
+│   │   │   ├── RoleAssignment.ts
+│   │   │   ├── TeamMemberPermissionsImpl.ts
+│   │   │   ├── ValidationStatus.ts
+│   │   │   └── VisibilityLevel.ts
+│   │   ├── phases
+│   │   │   ├── steps
+│   │   │   │   ├── trading
+│   │   │   │   │   ├── TradingAssetsStep.tsx
+│   │   │   │   │   ├── TradingBasicInfoStep.tsx
+│   │   │   │   │   ├── TradingReviewStep.tsx
+│   │   │   │   │   └── TradingSummaryStep.tsx
+│   │   │   │   ├── ReviewSteps.tsx
+│   │   │   │   ├── ReviewSteps.tsx.dedup-backup.1766901890902.bak
+│   │   │   │   ├── steps.tsx
+│   │   │   │   └── SummaryStep.tsx
+│   │   │   └── VideoLifecyclePhase.ts
+│   │   ├── platform
+│   │   │   └── styles
+│   │   │       ├── design-tokens.ts
+│   │   │       ├── EnhancedThemeContextType.tsx
+│   │   │       └── theme-provider.tsx
+│   │   ├── plugins
+│   │   │   └── PluginManager.ts
+│   │   ├── products
+│   │   │   ├── Product.tsx
+│   │   │   └── YourProductContentType.tsx
+│   │   ├── projects
+│   │   │   ├── DataAnalysisPhase
+│   │   │   │   ├── AnalyzeData
+│   │   │   │   │   ├── AnalyzeData.styles.ts
+│   │   │   │   │   └── AnalyzeData.tsx
+│   │   │   │   ├── DataPreview
+│   │   │   │   │   ├── DataPreview.styles.ts
+│   │   │   │   │   ├── DataPreview.test.tsx
+│   │   │   │   │   └── DataPreview.tsx
+│   │   │   │   ├── DataProcessing
+│   │   │   │   │   ├── Blog.styles.ts
+│   │   │   │   │   ├── calculateMetrics.ts
+│   │   │   │   │   ├── DataProcessing.styles.ts
+│   │   │   │   │   ├── DataStoreMethods.ts
+│   │   │   │   │   └── processData.tsx
+│   │   │   │   ├── HypothesisTesting
+│   │   │   │   │   └── HypothesisTesting.tsx
+│   │   │   │   ├── ActionManager.tsx
+│   │   │   │   ├── AnalyticsTool.ts
+│   │   │   │   ├── DataAnalysis.ts
+│   │   │   │   ├── DataAnalysisPhase.test.ts
+│   │   │   │   ├── DataAnalysisPhase.tsx
+│   │   │   │   ├── DataAnalysisResult.ts
+│   │   │   │   ├── DataAnalysisSection.jsx
+│   │   │   │   └── sendToAnalytics.tsx
+│   │   │   ├── projectManagement
+│   │   │   │   ├── ClearingTimer.tsx
+│   │   │   │   ├── MainApplicationLogic.tsx
+│   │   │   │   ├── ProjectManagement.tsx
+│   │   │   │   ├── ProjectManagementApp.tsx
+│   │   │   │   ├── ProjectManagementApp.tsx.dedup-backup.1766901890905.bak
+│   │   │   │   ├── ProjectManagementFeatures.ts
+│   │   │   │   ├── ProjectManagementSimulation.tsx
+│   │   │   │   ├── ProjectManagementSimulator.ts
+│   │   │   │   ├── ProjectManager.tsx
+│   │   │   │   ├── ProjectManager.tsx.dedup-backup.1766901890907.bak
+│   │   │   │   ├── ProjectPhaseComponent.tsx
+│   │   │   │   ├── ProjectPhaseService.ts.ts
+│   │   │   │   ├── ProjectProgress.tsx
+│   │   │   │   ├── ProjectProgressBar.tsx
+│   │   │   │   ├── ProjectTimeline.tsx
+│   │   │   │   ├── RemovingEventListeners.tsx
+│   │   │   │   ├── TaskProgress.tsx
+│   │   │   │   ├── TaskProgressBar.tsx
+│   │   │   │   ├── TeamProgress.tsx
+│   │   │   │   ├── TeamProgressBar.tsx
+│   │   │   │   ├── TodoProgress.tsx
+│   │   │   │   └── TodoProgressBar.tsx
+│   │   │   ├── EpidemiologicalModeling.tsx
+│   │   │   ├── IdentifiedNeed.tsx
+│   │   │   ├── JobDescription.ts
+│   │   │   ├── PersonaPhase.tsx
+│   │   │   ├── PopulationDynamicsSimulation.tsx
+│   │   │   ├── PostLaunchActivitiesManager.tsx
+│   │   │   ├── RefactoringRebrandingPhase.tsx
+│   │   │   ├── TaskManagementPhase.tsx
+│   │   │   ├── TeamBuildingPhase.tsx
+│   │   │   └── UpdateProjectDetails.tsx
+│   │   ├── prompts
+│   │   │   ├── DynamicPromptHookGenerator.tsx
+│   │   │   ├── DynamicPromptingLogic.tsx
+│   │   │   ├── EnterprisePrompt.tsx
+│   │   │   ├── features.txt
+│   │   │   ├── promptGenerator.ts
+│   │   │   ├── PromptPage.tsx
+│   │   │   ├── PromptSystem.tsx
+│   │   │   ├── PromptViewer.tsx
+│   │   │   └── TeamCreationConfirmationPage.tsx
+│   │   ├── quality
+│   │   │   └── reports
+│   │   │       ├── ImportStatistics..ts
+│   │   │       └── TableFormatter.ts
+│   │   ├── repositories
+│   │   │   ├── IndexedDBRepository.ts
+│   │   │   ├── PouchRepository.ts
+│   │   │   └── SqlRepository.ts
+│   │   ├── routing
+│   │   │   ├── FuzzyMatch.ts
+│   │   │   └── FuzzyMatch.ts.dedup-backup.1766901890913.bak
+│   │   ├── scripts
+│   │   │   ├── analyze-ts-errors.mjs
+│   │   │   ├── analyzeDependencies.ts
+│   │   │   ├── analyzeDuplicates.ts
+│   │   │   ├── ApiSynchronizationScript.ts
+│   │   │   ├── ApplicationSetupScript.ts
+│   │   │   ├── check-export.ts
+│   │   │   ├── cleanup-compiled.js
+│   │   │   ├── ComponentPatternDetector.ts
+│   │   │   ├── convertAnalysisToDoc.js
+│   │   │   ├── detect-type-import-mismatches.ts
+│   │   │   ├── detect-type-mismatches.ts
+│   │   │   ├── devCorrectionRoadmap.ts
+│   │   │   ├── generate-commands-doc.ts
+│   │   │   ├── generateRoadmaps.ts
+│   │   │   ├── generateTree.ts
+│   │   │   ├── makeRoadmapsFromAnalysis.ts
+│   │   │   ├── makeRoadmapsFromAnalysis.ts.dedup-backup.1766901890915.bak
+│   │   │   ├── printFilePatches.ts
+│   │   │   ├── test-ts-resolution.ts
+│   │   │   └── update-mappers.ts
+│   │   ├── security
+│   │   │   └── clientEncrypt.ts
+│   │   ├── server
+│   │   │   ├── auth
+│   │   │   │   ├── AdminLogin.ts
+│   │   │   │   ├── AppRouter.tsx
+│   │   │   │   ├── AuthClientService.ts
+│   │   │   │   ├── AuthComponent.tsx
+│   │   │   │   ├── AuthServerService.ts
+│   │   │   │   ├── AuthServerService.ts.dedup-backup.1766901890918.bak
+│   │   │   │   ├── AuthService.ts
+│   │   │   │   ├── authToken.ts
+│   │   │   │   ├── BasicAuthService.ts
+│   │   │   │   ├── getAuthToken.ts
+│   │   │   │   └── login.ts
+│   │   │   ├── database
+│   │   │   │   ├── payloads
+│   │   │   │   │   └── projectSubscriptionPayload.ts
+│   │   │   │   ├── storage
+│   │   │   │   │   ├── DataStoreComponent.tsx
+│   │   │   │   │   └── StorageManager.tsx
+│   │   │   │   ├── BackendStructure.ts
+│   │   │   │   ├── baseMeta.ts
+│   │   │   │   ├── CalendarActionPayload.ts
+│   │   │   │   ├── Connection.ts
+│   │   │   │   ├── Connection.ts.dedup-backup.1766901890921.bak
+│   │   │   │   ├── CustomDataProvider.tsx
+│   │   │   │   ├── DataBaseMethods.ts
+│   │   │   │   ├── DatabaseOperations.ts
+│   │   │   │   ├── DatabasePool.ts
+│   │   │   │   ├── DatabaseService.ts
+│   │   │   │   ├── DatabaseServiceFactory.ts
+│   │   │   │   ├── hasTokenExpired.ts
+│   │   │   │   ├── JwtPayload.ts
+│   │   │   │   ├── loadDraftFromDatabase.tsx
+│   │   │   │   ├── metadataFactory.ts
+│   │   │   │   ├── MysqlDatabaseService.tsx
+│   │   │   │   ├── Payload.tsx
+│   │   │   │   ├── payloadUtils.ts
+│   │   │   │   ├── Pool.tsx
+│   │   │   │   ├── PostgresDatabaseService.tsx
+│   │   │   │   └── sanitizeDatabase.ts
+│   │   │   ├── development
+│   │   │   │   └── authenticateWithWix.ts
+│   │   │   ├── metadata
+│   │   │   ├── repository
+│   │   │   │   ├── CacheDataRepository.ts
+│   │   │   │   ├── entityMapper.ts
+│   │   │   │   ├── mappers.ts
+│   │   │   │   ├── Repository.ts
+│   │   │   │   ├── roadmapMapper.ts
+│   │   │   │   ├── secureMappers.ts
+│   │   │   │   ├── SensitiveUserFieldst.ts
+│   │   │   │   ├── userMapper.ts
+│   │   │   │   ├── UserRepo.ts
+│   │   │   │   └── versionMapper.ts
+│   │   │   ├── security
+│   │   │   │   ├── validation
+│   │   │   │   ├── AuthValidation.ts
+│   │   │   │   ├── axiosInstance.ts
+│   │   │   │   ├── BiometricAuthentication.ts
+│   │   │   │   ├── csrfTokenGenerator.js
+│   │   │   │   ├── DataPrivacyRule.ts
+│   │   │   │   ├── decryptedData.ts
+│   │   │   │   ├── decryptedData.ts.dedup-backup.1766901890926.bak
+│   │   │   │   ├── decryptionKey.ts
+│   │   │   │   ├── DOMPurify.ts
+│   │   │   │   ├── encryptedData.tsx
+│   │   │   │   ├── Encryption.ts
+│   │   │   │   ├── encryptString.ts
+│   │   │   │   ├── Firewalls.ts
+│   │   │   │   ├── getPermissions.ts
+│   │   │   │   ├── IdentityManagement.ts
+│   │   │   │   ├── IncidentResponsePlan.ts
+│   │   │   │   ├── IntrusionDetectionSystem.ts
+│   │   │   │   ├── MultiFactorAuthentication.ts
+│   │   │   │   ├── NetworkSegmentation.ts
+│   │   │   │   ├── PenetrationTesting.ts
+│   │   │   │   ├── SecureDevelopmentLifecycle.ts
+│   │   │   │   ├── SecureField.ts
+│   │   │   │   ├── SecureFieldManager.ts
+│   │   │   │   ├── SecureSocketLayer.ts
+│   │   │   │   ├── SecurityAudit.ts
+│   │   │   │   ├── SecurityConfiguration.ts
+│   │   │   │   ├── SecurityFeatureEnum.ts
+│   │   │   │   ├── SecurityInformationEventManagement.ts
+│   │   │   │   ├── SecurityMeasureLogger.tsx
+│   │   │   │   ├── SecurityMeasures.ts
+│   │   │   │   ├── SecurityPolicies.ts
+│   │   │   │   ├── SecurityTraining.ts
+│   │   │   │   ├── SSL.ts
+│   │   │   │   ├── ThreatModeling.ts
+│   │   │   │   ├── TokenActions.tsx
+│   │   │   │   ├── validateTheme.ts
+│   │   │   │   ├── validationRulesCode.ts
+│   │   │   │   ├── VPN.ts
+│   │   │   │   └── VulnerabilityAssessment.ts
+│   │   │   ├── snapshots
+│   │   │   │   ├── createServerSnapshotStoreOptions.ts
+│   │   │   │   ├── ServerPayloadHandlers.ts
+│   │   │   │   └── ServerSnapshotTypes.ts
+│   │   │   ├── utils
+│   │   │   │   ├── appStructureServer.ts
+│   │   │   │   └── appStructureServer.ts.dedup-backup.1766901890927.bak
+│   │   │   ├── CacheManager.ts
+│   │   │   ├── configHelper.ts
+│   │   │   ├── ContentLoggerServer.ts
+│   │   │   ├── documents.ts
+│   │   │   ├── fsOperations.ts
+│   │   │   ├── GenerateComponent.tsx
+│   │   │   ├── JwtConfig.ts
+│   │   │   ├── route.ts
+│   │   │   ├── server.ts
+│   │   │   ├── ServerConfigurationService.ts
+│   │   │   ├── ServerDocumentGenerator.ts
+│   │   │   ├── serverFileSystem.ts
+│   │   │   └── traverseFrontend.ts
+│   │   ├── services
+│   │   │   ├── AffiliateMarketingService.ts
+│   │   │   ├── apiComponentService.ts
+│   │   │   ├── AppTreeExplorer.tsx
+│   │   │   ├── AppTreeService.ts
+│   │   │   ├── BackgroundService.ts
+│   │   │   ├── ChatEventService.ts
+│   │   │   ├── ConfigurationService.ts
+│   │   │   ├── ConfirmationService.ts
+│   │   │   ├── ConsoleConfirmationService.ts
+│   │   │   ├── CryptoIntegrationService.ts
+│   │   │   ├── CryptoIntegrationService.ts.dedup-backup.1766901890929.bak
+│   │   │   ├── dataAnalysisOrchestrator.ts
+│   │   │   ├── dataAnalysisPhase.test.ts
+│   │   │   ├── dataAnalysisService.ts
+│   │   │   ├── documentService.ts
+│   │   │   ├── encryptionService.ts
+│   │   │   ├── EventService.tsx
+│   │   │   ├── FileApiService.tsx
+│   │   │   ├── FileConfirmationService.ts
+│   │   │   ├── FileTreeService.ts
+│   │   │   ├── GeolocationService.tsx
+│   │   │   ├── HybridSyncService.ts
+│   │   │   ├── identityService.ts
+│   │   │   ├── InitApp.ts
+│   │   │   ├── InteractiveConfirmationService.ts
+│   │   │   ├── MusicService.tsx
+│   │   │   ├── NFTService.ts
+│   │   │   ├── NotificationManagerService.ts
+│   │   │   ├── NotificationService.tsx
+│   │   │   ├── PremiumFeatures.tsx
+│   │   │   ├── PresentationService.ts
+│   │   │   ├── roadmapService.ts
+│   │   │   ├── roadmapService.ts.dedup-backup.1766901890932.bak
+│   │   │   ├── stakeholderRoadmap.ts
+│   │   │   ├── TaskService.ts
+│   │   │   ├── teamService.ts
+│   │   │   ├── unauthorizedService.ts
+│   │   │   └── verificationService.ts
+│   │   ├── settings
+│   │   │   ├── AppSettings.ts
+│   │   │   ├── CalendarSettings.ts
+│   │   │   ├── CalendarSettingsEnum.ts
+│   │   │   ├── configureSecuritySettings.ts
+│   │   │   ├── CustomAction.ts
+│   │   │   ├── CustomActionEngine.ts
+│   │   │   ├── EscalationAction.ts
+│   │   │   ├── EscalationCondition.ts
+│   │   │   ├── PrivacySettings.ts
+│   │   │   ├── Reminder.ts
+│   │   │   ├── ReminderCondition.ts
+│   │   │   ├── ReminderConditionEngine.ts
+│   │   │   ├── saveSecuritySettings.ts
+│   │   │   ├── SecuritySettings.tsx
+│   │   │   ├── SortCriteria.tsx
+│   │   │   └── UserSettingsManager.ts
+│   │   ├── shared
+│   │   │   ├── drawingLibrary.d.ts
+│   │   │   ├── DynamicErrorBoundary.tsx
+│   │   │   ├── ErrorBoundary.tsx
+│   │   │   ├── ErrorBoundaryProvider.tsx
+│   │   │   ├── ErrorHandler.ts
+│   │   │   ├── sharedError.ts
+│   │   │   ├── sharedErrorHandling.d.ts
+│   │   │   └── SharedMetadata.ts
+│   │   ├── shoppingCenter
+│   │   │   ├── shopping_config
+│   │   │   │   └── AffiliateMarketingConfig.ts
+│   │   │   ├── DynamicStoreGenerator.tsx
+│   │   │   ├── ShippingOption.ts
+│   │   │   ├── Shop.tsx
+│   │   │   ├── ShoppingCenterConfig.ts
+│   │   │   └── useGenerateStore.tsx
+│   │   ├── simulate
+│   │   │   └── simulateFetch.ts
+│   │   ├── snapshots
+│   │   │   ├── mappings
+│   │   │   │   └── mapToSnapshotStore.tsx
+│   │   │   ├── methods
+│   │   │   │   ├── actionMethods.ts
+│   │   │   │   ├── advancedTransform.ts
+│   │   │   │   ├── batchMethods.ts
+│   │   │   │   ├── commonDataStoreMethods.ts
+│   │   │   │   ├── configMethods.ts
+│   │   │   │   ├── containerMethods.ts
+│   │   │   │   ├── dataMethods.ts
+│   │   │   │   ├── DataProcessingImplementation.ts
+│   │   │   │   ├── debugMethods.ts
+│   │   │   │   ├── fetchMethods.ts
+│   │   │   │   ├── FilterMethods.ts
+│   │   │   │   ├── lifecycleMethods.ts
+│   │   │   │   ├── lifecycleMethods.ts.dedup-backup.1766901891199.bak
+│   │   │   │   ├── mappingMethods.ts
+│   │   │   │   ├── methodBinder.ts
+│   │   │   │   ├── SearchMethods.ts
+│   │   │   │   ├── snapshotMethods.ts
+│   │   │   │   ├── snapshotMethods.ts.dedup-backup.1766901891202.bak
+│   │   │   │   ├── subscriptionMethods.ts
+│   │   │   │   ├── subscriptionMethods.ts.dedup-backup.1766907871302.bak
+│   │   │   │   ├── successFailureMethods.ts
+│   │   │   │   ├── transformMethods.ts
+│   │   │   │   ├── utilMethods.ts
+│   │   │   │   ├── validationMethods.ts
+│   │   │   │   └── versionMethods.ts
+│   │   │   ├── operations
+│   │   │   │   └── useSnapshotOperations.ts
+│   │   │   ├── params
+│   │   │   ├──  SecurityService.ts
+│   │   │   ├── addToSnapshotList.tsx
+│   │   │   ├── batchResult.ts
+│   │   │   ├── configOption.tsx
+│   │   │   ├── ConfigurationManagement.ts
+│   │   │   ├── convertMetadata.ts
+│   │   │   ├── convertSnapshot.ts
+│   │   │   ├── convertSnapshot.ts.dedup-backup.1766901891170.bak
+│   │   │   ├── convertSnapshotContainer.ts
+│   │   │   ├── convertSnapshotMethods.ts
+│   │   │   ├── convertSnapshotsArray.ts
+│   │   │   ├── convertSnapshotsToRecord.ts
+│   │   │   ├── convertSnapshotStoreToStorage.ts
+│   │   │   ├── convertSnapshotToItem.ts
+│   │   │   ├── ConvertSnapshotUnion.tsx
+│   │   │   ├── convertSubscriptionPayloadToSubscriber.ts
+│   │   │   ├── convertToLocalStorageSnapshotStore.ts
+│   │   │   ├── convertToSnapshotStoreConfig.ts
+│   │   │   ├── CoreSnapshot.tsx
+│   │   │   ├── CoreSnapshot.tsx.dedup-backup.1766901890935.bak
+│   │   │   ├── createBaseSnapshot.ts
+│   │   │   ├── createInitializedSnapshot.ts
+│   │   │   ├── createOptions.ts
+│   │   │   ├── createSnapshot.ts
+│   │   │   ├── createSnapshotExample.ts
+│   │   │   ├── createSnapshotManager.ts
+│   │   │   ├── createSnapshotOptions.ts
+│   │   │   ├── createSnapshots.ts
+│   │   │   ├── createSnapshotStoreMap.ts
+│   │   │   ├── createSnapshotStoreOptions.ts
+│   │   │   ├── createStoreConfig.tsx
+│   │   │   ├── CustomPayload.ts
+│   │   │   ├── CustomSnapshot.ts
+│   │   │   ├── defaultDataStoreMethods.ts
+│   │   │   ├── defaultDataStoreMethods.ts.dedup-backup.1766907871300.bak
+│   │   │   ├── defaultSnapshotBuilder.ts
+│   │   │   ├── defaultSnapshotSubscribeFunctions.ts
+│   │   │   ├── defaultSubscribeToSnapshots.ts
+│   │   │   ├── DefaultValueForField.ts
+│   │   │   ├── defineConfig.ts
+│   │   │   ├── DocumentSearch.tsx
+│   │   │   ├── FetchableDataStore.ts
+│   │   │   ├── fetchInitialSnapshotData.ts
+│   │   │   ├── FetchSnapshotPayload.ts
+│   │   │   ├── fetchSnapshotsForCategory.ts
+│   │   │   ├── FetchSnapshotStorePayload.ts
+│   │   │   ├── getAllSnapshots.ts
+│   │   │   ├── getCurrentSnapshotConfigOptions.tsx
+│   │   │   ├── getCurrentSnapshotConfigOptions.tsx.dedup-backup.1766901891184.bak
+│   │   │   ├── getDefaultSnapshot.ts
+│   │   │   ├── getDefaultValueForField.tsx
+│   │   │   ├── getSnapshotConfig.ts
+│   │   │   ├── getSnapshotDelegate.tsx
+│   │   │   ├── getSnapshotDifference.ts
+│   │   │   ├── getSnapshotEntries.ts
+│   │   │   ├── handleSnapshotOperation.ts
+│   │   │   ├── handleSnapshotStoreOperation.ts
+│   │   │   ├── index.ts
+│   │   │   ├── InitializableWithData.tsx
+│   │   │   ├── InitializedSnapshotTypes.ts
+│   │   │   ├── InitializedStateExample.ts
+│   │   │   ├── isCompatibleTempData.ts
+│   │   │   ├── isValidFileCategory.ts
+│   │   │   ├── isValidMeta.ts
+│   │   │   ├── LocalStorageSnapshotStore.tsx
+│   │   │   ├── LocalStorageSnapshotStore.tsx.dedup-backup.1766901890938.bak
+│   │   │   ├── newStoreUtils.ts
+│   │   │   ├── processSnapshotConfigs.ts
+│   │   │   ├── refreshUI.ts
+│   │   │   ├── responsetUtils.ts
+│   │   │   ├── RetrieveSnapshotData.tsx
+│   │   │   ├── safeCastSnapshotStore.ts
+│   │   │   ├── SampleSnapshot.ts
+│   │   │   ├── sampleSnapshotInstance.ts
+│   │   │   ├── sampleSnapshotInstance.ts.dedup-backup.1766901891209.bak
+│   │   │   ├── SnapshohtDevConfigs.ts
+│   │   │   ├── Snapshot.tsx
+│   │   │   ├── Snapshot.tsx.dedup-backup.1766901890942.bak
+│   │   │   ├── SnapshotActionType.ts
+│   │   │   ├── snapshotBuilder.ts
+│   │   │   ├── SnapshotCategoryManager.tsx
+│   │   │   ├── SnapshotConfig.ts
+│   │   │   ├── SnapshotConfig.ts.dedup-backup.1766901890946.bak
+│   │   │   ├── SnapshotConfigBuilder.ts
+│   │   │   ├── snapshotConfigData.ts
+│   │   │   ├── SnapshotConfigProps.ts
+│   │   │   ├── SnapshotConfiguration.ts
+│   │   │   ├── SnapshotConfigurationPatterns.md
+│   │   │   ├── SnapshotContainer.ts
+│   │   │   ├── SnapshotContainerComponent.tsx
+│   │   │   ├── snapshotContainerUtils.ts
+│   │   │   ├── snapshotContainerUtils.ts.dedup-backup.1766901891211.bak
+│   │   │   ├── SnapshotContent.ts
+│   │   │   ├── SnapshotCore.ts
+│   │   │   ├── snapshotCreation.ts
+│   │   │   ├── SnapshotData.ts
+│   │   │   ├── SnapshotDataParams.ts
+│   │   │   ├── SnapshotDataParams.ts.dedup-backup.1766901890951.bak
+│   │   │   ├── snapshotDefaults.ts
+│   │   │   ├── snapshotDelegate.ts
+│   │   │   ├── SnapshotErrorHandling.tsx
+│   │   │   ├── SnapshotEvents.ts
+│   │   │   ├── SnapshotGetters.ts
+│   │   │   ├── snapshotHandlers.ts
+│   │   │   ├── snapshotHandlers.ts.dedup-backup.1766901891214.bak
+│   │   │   ├── SnapshotHandling.ts
+│   │   │   ├── SnapshotIdentity.ts
+│   │   │   ├── SnapshotImplementation.ts
+│   │   │   ├── SnapshotInitialization.ts
+│   │   │   ├── SnapshotList.test.tsx
+│   │   │   ├── SnapshotList.tsx
+│   │   │   ├── SnapshotManagement.ts
+│   │   │   ├── SnapshotManagerOptions.ts
+│   │   │   ├── SnapshotMap.ts
+│   │   │   ├── SnapshotMethods.ts
+│   │   │   ├── snapshotOperations.ts
+│   │   │   ├── SnapshotOptions.tsx
+│   │   │   ├── snapshots.ts
+│   │   │   ├── SnapshotSecurity.ts
+│   │   │   ├── SnapshotStor_brreakup.md
+│   │   │   ├── snapshotStorageOptionsInstance.ts
+│   │   │   ├── snapshotStorageOptionsInstance.ts.dedup-backup.1766901891281.bak
+│   │   │   ├── SnapshotStore.tsx
+│   │   │   ├── SnapshotStore.tsx.dedup-backup.1766901890956.bak
+│   │   │   ├── SnapshotStoreComponent.ts
+│   │   │   ├── SnapshotStoreConfig.ts
+│   │   │   ├── SnapshotStoreConfig.ts.dedup-backup.1766901890967.bak
+│   │   │   ├── SnapshotStoreConfigComponent.tsx
+│   │   │   ├── snapshotStoreConfigInstance.ts
+│   │   │   ├── snapshotStoreConfigInstance.ts.dedup-backup.1766901891348.bak
+│   │   │   ├── SnapshotStoreContainer.ts
+│   │   │   ├── SnapshotStoreDataResponse.ts
+│   │   │   ├── SnapshotStoreDelegate.ts
+│   │   │   ├── SnapshotStoreMethods.ts
+│   │   │   ├── SnapshotStoreOptions.ts
+│   │   │   ├── SnapshotStoreOptions.ts.dedup-backup.1766901891066.bak
+│   │   │   ├── SnapshotStoreProps.ts
+│   │   │   ├── SnapshotStoreProps.ts.dedup-backup.1766901891083.bak
+│   │   │   ├── SnapshotStoreProps.ts.dedup-backup.1766907871295.bak
+│   │   │   ├── SnapshotStorePublicMethods.ts
+│   │   │   ├── SnapshotStoreReference.tsx
+│   │   │   ├── SnapshotStoreSubset.ts
+│   │   │   ├── SnapshotStoreSubset.ts.dedup-backup.1766901891088.bak
+│   │   │   ├── SnapshotSubscriberManagement.ts
+│   │   │   ├── snapshotSuccessMethods.ts
+│   │   │   ├── snapshotTaskMap.ts
+│   │   │   ├── snapshotTrigger.ts
+│   │   │   ├── SnapshotType.ts
+│   │   │   ├── SnapshotTypeDefs.ts
+│   │   │   ├── snapshotValidationUtils.ts
+│   │   │   ├── SnapshotVersioning.ts
+│   │   │   ├── SnapshotVersioning.ts.dedup-backup.1766901891092.bak
+│   │   │   ├── SnapshotVersionManagment.md
+│   │   │   ├── SnapshotWithCriteria.ts
+│   │   │   ├── SnapshotWithCriteria.ts.dedup-backup.1766901891153.bak
+│   │   │   ├── SubscribeToSnapshotsPayload.ts
+│   │   │   ├── SubscriptionManager.ts
+│   │   │   ├── TaskSnapshotStore.ts
+│   │   │   ├── transformDataToSnapshot.ts
+│   │   │   ├── transformSnapshotConfig.tsx
+│   │   │   ├── transformSnapshotsToStores.tsx
+│   │   │   ├── transformStoreConfigOptions.ts
+│   │   │   ├── UpdateSnapshotParams.ts
+│   │   │   ├── updateSubscribersAndSnapshots.ts
+│   │   │   ├── updateUIWithSnapshotStore.tsx
+│   │   │   ├── userSnapshotData.ts
+│   │   │   ├── useSnapshotHandler.ts
+│   │   │   ├── useSnapshotStore.tsx
+│   │   │   ├── useSnapshotVersioningSystem.ts
+│   │   │   └── ValidationRule.ts
+│   │   ├── socialMedia
+│   │   │   ├── FacebookIntegration.ts
+│   │   │   ├── generateIntegration.ts
+│   │   │   ├── InstagramIntegration.ts
+│   │   │   ├── TikTokIntegration.ts
+│   │   │   ├── TwitterIntegration.ts
+│   │   │   └── YouTubeIntegration.ts
+│   │   ├── src
+│   │   │   └── app
+│   │   │       └── scripts
+│   │   ├── state
+│   │   │   ├── context
+│   │   │   │   ├── AppContext.tsx
+│   │   │   │   ├── AppContextBridge.ts
+│   │   │   │   ├── AppContextHelper.ts
+│   │   │   │   ├── AuthContext.tsx
+│   │   │   │   ├── CollaborationContext.tsx
+│   │   │   │   ├── ContentContext.tsx
+│   │   │   │   ├── ContentContext.tsx.dedup-backup.1766901891354.bak
+│   │   │   │   ├── DashboardContext.tsx
+│   │   │   │   ├── DatabaseContext.ts
+│   │   │   │   ├── DataContext.tsx
+│   │   │   │   ├── DynamicPromptContext.tsx
+│   │   │   │   ├── FeatureContext.tsx
+│   │   │   │   ├── NavigationContext.tsx
+│   │   │   │   ├── NavigationContextState.ts
+│   │   │   │   ├── NavigationContextState.ts.dedup-backup.1766901891356.bak
+│   │   │   │   ├── NotificationContext.tsx
+│   │   │   │   ├── PhaseActivityContext.tsx
+│   │   │   │   ├── SearchContext.tsx
+│   │   │   │   ├── SnapshotContext.tsx
+│   │   │   │   ├── SnapshotContext.tsx.dedup-backup.1766901891360.bak
+│   │   │   │   ├── SnapshotStoreContextType.ts
+│   │   │   │   ├── StepContext.tsx
+│   │   │   │   ├── UIContext.tsx
+│   │   │   │   ├── UIContext.tsx.dedup-backup.1766901891362.bak
+│   │   │   │   └── UserContext.tsx
+│   │   │   ├── hybrid
+│   │   │   │   ├── ProjectManagerStore.ts
+│   │   │   │   └── SettingsManagerStore.ts
+│   │   │   ├── mobx
+│   │   │   │   ├── mobx_react.d.tsx
+│   │   │   │   └── reactions.tsx
+│   │   │   ├── redux
+│   │   │   │   ├── actions
+│   │   │   │   │   ├── preferences
+│   │   │   │   │   ├── DetailsListActions.ts
+│   │   │   │   │   └── MarkerActions.ts
+│   │   │   │   ├── sagas
+│   │   │   │   │   ├── personaSagas
+│   │   │   │   │   ├── preferences
+│   │   │   │   │   ├── watchers
+│   │   │   │   │   ├── apiSagas.ts
+│   │   │   │   │   ├── authorizationSagas.ts
+│   │   │   │   │   ├── clientSaga.ts
+│   │   │   │   │   ├── collaborationSagas.ts
+│   │   │   │   │   ├── communicationSagas.ts
+│   │   │   │   │   ├── componentSagas.ts
+│   │   │   │   │   ├── dataAnalysisSagas.tsx
+│   │   │   │   │   ├── dataFrameSaga.ts
+│   │   │   │   │   ├── dataSaga.ts
+│   │   │   │   │   ├── documentSagas.ts
+│   │   │   │   │   ├── errorHandlingSagas.ts
+│   │   │   │   │   ├── featureSaga.ts
+│   │   │   │   │   ├── fileSagas.ts
+│   │   │   │   │   ├── markerSagas.ts
+│   │   │   │   │   ├── notificationSaga.ts
+│   │   │   │   │   ├── projectSagas.ts
+│   │   │   │   │   ├── promptSagas.ts
+│   │   │   │   │   ├── randomWalk.ts
+│   │   │   │   │   ├── randomWalkSagas.ts
+│   │   │   │   │   ├── snapshotSagas.ts
+│   │   │   │   │   ├── syncSagas.ts
+│   │   │   │   │   ├── taskSagas.ts
+│   │   │   │   │   ├── ThemeNotificationHelpers.ts
+│   │   │   │   │   ├── ThemeSettingsSagas.ts
+│   │   │   │   │   ├── todoSagas.ts
+│   │   │   │   │   ├── toolbarSagas.ts
+│   │   │   │   │   ├── UndoRedoSaga.ts
+│   │   │   │   │   ├── userPreferencesSaga.ts
+│   │   │   │   │   ├── userRoleSagas.ts
+│   │   │   │   │   ├── userSagas.ts
+│   │   │   │   │   ├── validationSagas.ts
+│   │   │   │   │   ├── videoSagas.ts
+│   │   │   │   │   └── VideoViewer.tsx
+│   │   │   │   ├── slices
+│   │   │   │   │   ├── AntivirusSoftware.ts
+│   │   │   │   │   ├── ApiSlice.ts
+│   │   │   │   │   ├── AppSlice.ts
+│   │   │   │   │   ├── AppSlice.ts.dedup-backup.1766901891369.bak
+│   │   │   │   │   ├── AuthorizationSlice.tsx
+│   │   │   │   │   ├── AuthSlice.ts
+│   │   │   │   │   ├── BlogSlice.ts
+│   │   │   │   │   ├── CalendarEventCollaboratorsState.tsx
+│   │   │   │   │   ├── CalendarSlice.tsx
+│   │   │   │   │   ├── CallSlice.ts
+│   │   │   │   │   ├── ChatSlice.ts
+│   │   │   │   │   ├── CollaborationSlice.ts
+│   │   │   │   │   ├── ComponentSlice.ts
+│   │   │   │   │   ├── ContentSlice.ts
+│   │   │   │   │   ├── ContentSlice.ts.dedup-backup.1766901891372.bak
+│   │   │   │   │   ├── CryptoSlice.tsx
+│   │   │   │   │   ├── DataAnalysisSlice.ts
+│   │   │   │   │   ├── DataBackup.ts
+│   │   │   │   │   ├── DataFrameSlice.ts
+│   │   │   │   │   ├── DataSlice.ts
+│   │   │   │   │   ├── DocumentSlice.test.tsx
+│   │   │   │   │   ├── DocumentSlice.tsx
+│   │   │   │   │   ├── DocumentSlice.tsx.dedup-backup.1766901891376.bak
+│   │   │   │   │   ├── DrawingSlice.ts
+│   │   │   │   │   ├── DynamicComponentSlice.ts
+│   │   │   │   │   ├── EntitySlice.ts
+│   │   │   │   │   ├── ErrorSlice.ts
+│   │   │   │   │   ├── EventSlice.ts
+│   │   │   │   │   ├── FilteredEventsSlice.ts
+│   │   │   │   │   ├── FilterSlice.ts
+│   │   │   │   │   ├── globalSlice.ts
+│   │   │   │   │   ├── HistorySlice.ts
+│   │   │   │   │   ├── InvitationData.ts
+│   │   │   │   │   ├── LanguageSlice.ts
+│   │   │   │   │   ├── LogSlice.ts
+│   │   │   │   │   ├── MeetingNotificationSlice.ts
+│   │   │   │   │   ├── MeetingSlice.ts
+│   │   │   │   │   ├── NofiticationsSlice.tsx
+│   │   │   │   │   ├── NotificationSlice.ts
+│   │   │   │   │   ├── pagingSlice.tsx
+│   │   │   │   │   ├── participantSlice.ts
+│   │   │   │   │   ├── phaseActivitySlice.ts
+│   │   │   │   │   ├── phaseSlice.ts
+│   │   │   │   │   ├── ProjectFeedbackSlice.tsx
+│   │   │   │   │   ├── ProjectManagerSlice.ts
+│   │   │   │   │   ├── ProjectOwnerSlice.ts
+│   │   │   │   │   ├── ProjectSlice.ts
+│   │   │   │   │   ├── RandomWalkManagerSlice.ts
+│   │   │   │   │   ├── RealtimeDataSlice.ts
+│   │   │   │   │   ├── RootSlice.ts
+│   │   │   │   │   ├── SecureBoot.ts
+│   │   │   │   │   ├── SecurityEventSlice.ts
+│   │   │   │   │   ├── SettingsSlice.ts
+│   │   │   │   │   ├── SidebarSlice.tsx
+│   │   │   │   │   ├── SnapshotSlice.tsx
+│   │   │   │   │   ├── SnapshotSlice.tsx.dedup-backup.1766901891384.bak
+│   │   │   │   │   ├── syncSlice.ts
+│   │   │   │   │   ├── TaskSlice.ts
+│   │   │   │   │   ├── TaskSlice.ts.dedup-backup.1766907871305.bak
+│   │   │   │   │   ├── TeamSlice.ts
+│   │   │   │   │   ├── ThemeSlice.ts
+│   │   │   │   │   ├── TodoSlice.ts
+│   │   │   │   │   ├── toolbarSlice.ts
+│   │   │   │   │   ├── TrackerSlice.tsx
+│   │   │   │   │   ├── UndoRedoSlice.ts
+│   │   │   │   │   ├── UserFeedback.ts
+│   │   │   │   │   ├── UserSlice.ts
+│   │   │   │   │   ├── UserSlice.ts.dedup-backup.1766901891387.bak
+│   │   │   │   │   ├── UserSpportSlice.ts
+│   │   │   │   │   ├── UserSupportFeedbackPreferencesSlice.ts
+│   │   │   │   │   ├── useTagManagerSlice.ts
+│   │   │   │   │   ├── VersionSlice.ts
+│   │   │   │   │   └── VideoSlice.ts
+│   │   │   │   ├── ActionGenerator.tsx
+│   │   │   │   ├── ReducerGenerator.tsx
+│   │   │   │   ├── RootSagas.ts
+│   │   │   │   └── SliceGenerator.tsx
+│   │   │   ├── stores
+│   │   │   │   ├── hooks
+│   │   │   │   │   └── useProjectManager.ts
+│   │   │   │   ├── mobxStores
+│   │   │   │   │   └── FlaskDataStore.ts
+│   │   │   │   ├── UserPreferences
+│   │   │   │   │   ├── modules
+│   │   │   │   │   ├── TeamBuildingSettings.ts
+│   │   │   │   │   └── UserPreferencesStore.ts
+│   │   │   │   ├── AppCacheManagerStore.ts
+│   │   │   │   ├── AppCacheManagerStore.ts.dedup-backup.1766901891390.bak
+│   │   │   │   ├── AppStore.ts
+│   │   │   │   ├── AquaStore.ts
+│   │   │   │   ├── ArticleStore.ts
+│   │   │   │   ├── AssignBaseStore.tsx
+│   │   │   │   ├── AssignEventStore.tsx
+│   │   │   │   ├── AssignTaskStore.tsx
+│   │   │   │   ├── AssignTeamMemberStore.tsx
+│   │   │   │   ├── AuthorizationStore.ts
+│   │   │   │   ├── AuthStore.ts
+│   │   │   │   ├── BrowserCheckStore.ts
+│   │   │   │   ├── CalendarEventAlternative.ts
+│   │   │   │   ├── CalendarManagerStore.spec.ts
+│   │   │   │   ├── CalendarManagerStore.tsx
+│   │   │   │   ├── CalendarManagerStore.tsx.dedup-backup.1766901891394.bak
+│   │   │   │   ├── CalendarSettingsPage.tsx
+│   │   │   │   ├── CalendarStore.tsx
+│   │   │   │   ├── ChatEvent.ts
+│   │   │   │   ├── CollaborationBoardStore.ts
+│   │   │   │   ├── CollaborationBoardStore.tsx
+│   │   │   │   ├── CollaborationBoardStore.tsx.dedup-backup.1766901891396.bak
+│   │   │   │   ├── CollaborationStore.ts
+│   │   │   │   ├── CommonEvent.ts
+│   │   │   │   ├── ContentStore.ts
+│   │   │   │   ├── ControlPanelStore.tsx
+│   │   │   │   ├── Core Snapshot Properties.md
+│   │   │   │   ├── CryptoStore.ts
+│   │   │   │   ├── DataStore.ts
+│   │   │   │   ├── DataStore.ts.dedup-backup.1766901891398.bak
+│   │   │   │   ├── DataStore.ts.dedup-backup.1766907871308.bak
+│   │   │   │   ├── DetailsListStore.ts
+│   │   │   │   ├── DetailsListStore.ts.dedup-backup.1766901891404.bak
+│   │   │   │   ├── DocumentStore.ts
+│   │   │   │   ├── DocumentStore.ts.dedup-backup.1766901891407.bak
+│   │   │   │   ├── ErrorStore.ts
+│   │   │   │   ├── ErrorStore.ts.dedup-backup.1766901891408.bak
+│   │   │   │   ├── featureA.tsx
+│   │   │   │   ├── featureB.tsx
+│   │   │   │   ├── FeatureStore.ts
+│   │   │   │   ├── FilterStore.ts
+│   │   │   │   ├── HistoryStore.tsx
+│   │   │   │   ├── IconStore.ts
+│   │   │   │   ├── ListItem.ts
+│   │   │   │   ├── LoginFormStore.ts
+│   │   │   │   ├── MobXEntityStore.tsx
+│   │   │   │   ├── MobXEntityStore.tsx.dedup-backup.1766901891410.bak
+│   │   │   │   ├── NotificationServiceClass.ts
+│   │   │   │   ├── NotificationServiceClass.ts.dedup-backup.1766901891411.bak
+│   │   │   │   ├── NotificationStore.tsx
+│   │   │   │   ├── NotificationStore.tsx.dedup-backup.1766901891412.bak
+│   │   │   │   ├── PaginationStore.ts
+│   │   │   │   ├── PhaseActivityStore.ts
+│   │   │   │   ├── PhaseStore.tsx
+│   │   │   │   ├── presentationStore.ts
+│   │   │   │   ├── ProjectStore.ts
+│   │   │   │   ├── ProjectStore.ts.dedup-backup.1766901891416.bak
+│   │   │   │   ├── RootStoreComponent.tsx
+│   │   │   │   ├── RootStores.ts
+│   │   │   │   ├── Scopes.ts
+│   │   │   │   ├── SettingsStore.ts
+│   │   │   │   ├── StoreGenerator.tsx
+│   │   │   │   ├── StoreKeyGenerator.ts
+│   │   │   │   ├── StoreProvider.tsx
+│   │   │   │   ├── TaskStore.tsx
+│   │   │   │   ├── TeamStore.tsx
+│   │   │   │   ├── TenantStore.ts
+│   │   │   │   ├── ThemeStore.ts
+│   │   │   │   ├── TodoStore.ts
+│   │   │   │   ├── TodoStore.ts.dedup-backup.1766901891418.bak
+│   │   │   │   ├── ToolbarStore.ts
+│   │   │   │   ├── TrackerStore.ts
+│   │   │   │   ├── UISlice.ts
+│   │   │   │   ├── UIStore.ts
+│   │   │   │   ├── UIStore.ts.dedup-backup.1766901891420.bak
+│   │   │   │   ├── UndoRedoStore.ts
+│   │   │   │   ├── useAppDispatch.ts
+│   │   │   │   ├── UserPresentationsStore.ts
+│   │   │   │   ├── UserStore.ts
+│   │   │   │   └── VideoStore.ts
+│   │   │   ├── AquaState.ts
+│   │   │   ├── BrowserBehaviorManager.ts
+│   │   │   ├── DataState.ts
+│   │   │   ├── detectBrowserSpecific.ts
+│   │   │   ├── ErrorState.ts
+│   │   │   ├── featureStateManagement.ts
+│   │   │   ├── hydrateSnapshot.ts
+│   │   │   ├── persistSnapshot.ts
+│   │   │   ├── useEditorState.ts
+│   │   │   └── useEditorState.ts.dedup-backup.1766901891422.bak
+│   │   ├── styling
+│   │   ├── subscribers
+│   │   │   ├── Subscriber.tsx
+│   │   │   ├── SubscriberCollection.ts
+│   │   │   └── subscribeToSnapshotsImplementation.ts
+│   │   ├── subscriptions
+│   │   │   ├── ClientSubscriber.ts
+│   │   │   ├── subscriberTypeGuads.ts
+│   │   │   ├── Subscription.tsx
+│   │   │   ├── SubscriptionLevel.ts
+│   │   │   ├── SubscriptionPlan.ts
+│   │   │   ├── SubscriptionService.tsx
+│   │   │   ├── subscriptionServiceInstance.ts
+│   │   │   └── useSnapshotSubscriptions.ts
+│   │   ├── tests
+│   │   │   └── dataAnalysisPhase.test.ts
+│   │   ├── todo
+│   │   │   └── todos.txt
+│   │   ├── todos
+│   │   │   ├── tasks
+│   │   │   │   ├── DataProcessingTask.tsx
+│   │   │   │   └── DataSetModel.ts
+│   │   │   ├── FetchTodos.ts
+│   │   │   ├── Todo.ts
+│   │   │   ├── TodoComponent.tsx
+│   │   │   ├── TodoItem.tsx
+│   │   │   ├── TodoList.tsx
+│   │   │   └── TodoService.ts
+│   │   ├── tokens
+│   │   │   ├── DocumentActions.ts
+│   │   │   └── TokenActions.tsx
+│   │   ├── trading
+│   │   │   ├── PortfolioUpdatesLastUpdated.ts
+│   │   │   ├── TradeIdea.ts
+│   │   │   ├── TradeIdea.ts.dedup-backup.1766901891426.bak
+│   │   │   ├── Trades.tsx
+│   │   │   └── TradingStrategy.ts
+│   │   ├── ts
+│   │   │   ├── clipboard.tsx
+│   │   │   ├── DynamicTextArea.tsx
+│   │   │   ├── EventDataService.tsx
+│   │   │   ├── ScheduleEventDashboard.tsx
+│   │   │   └── ScheduleEventModal.tsx
+│   │   ├── typings
+│   │   │   ├── categories
+│   │   │   │   ├── AnalyticsEndpoints.ts
+│   │   │   │   ├── ApiConfigEndpoints.ts
+│   │   │   │   ├── ApiWebBaseEndpoints.ts
+│   │   │   │   ├── AuthEndpoints.ts
+│   │   │   │   ├── BatchEndpoints.ts
+│   │   │   │   ├── BlogsEndpoints.ts
+│   │   │   │   ├── CalendarEndpoints.ts
+│   │   │   │   ├── CategoryEndpoints.ts
+│   │   │   │   ├── ChatEndpoints.ts
+│   │   │   │   ├── ClientEndpoints.ts
+│   │   │   │   ├── CollaborationToolsEndpoints.ts
+│   │   │   │   ├── CommentsEndpoints.ts
+│   │   │   │   ├── CommunicationEndpoints.ts
+│   │   │   │   ├── CommunityInteractionEndpoints.ts
+│   │   │   │   ├── ContentEndpoints.ts
+│   │   │   │   ├── CryptoEndpoints.ts
+│   │   │   │   ├── DataAnalysisEndpoints.ts
+│   │   │   │   ├── DatabaseEndpoints.ts
+│   │   │   │   ├── DataEndpoints.ts
+│   │   │   │   ├── DataProvidersEndpoints.ts
+│   │   │   │   ├── DelegatesEndpoints.ts
+│   │   │   │   ├── DetailsEndpoints.ts
+│   │   │   │   ├── DevEndpoints.ts
+│   │   │   │   ├── DexEndpoints.ts
+│   │   │   │   ├── DocumentEndpoints.ts
+│   │   │   │   ├── DonationsEndpoints.ts
+│   │   │   │   ├── DrawingEndpoints.ts
+│   │   │   │   ├── ExternalAuthEndpoints.ts
+│   │   │   │   ├── FeedbackEndpoints.ts
+│   │   │   │   ├── FilesEndpoints.ts
+│   │   │   │   ├── FilteringEndpoints.ts
+│   │   │   │   ├── FreelancersEndpoints.ts
+│   │   │   │   ├── GeneratorsEndpoints.ts
+│   │   │   │   ├── GlobalCollaborationEndpoints.ts
+│   │   │   │   ├── HighlightsEndpoints.ts
+│   │   │   │   ├── LoggingEndpoints.ts
+│   │   │   │   ├── LogsEndpoints.ts
+│   │   │   │   ├── MarkerEndpoints.ts
+│   │   │   │   ├── MessagesEndpoints.ts
+│   │   │   │   ├── ModeratorsEndpoints.ts
+│   │   │   │   ├── MonetizationEndpoints.ts
+│   │   │   │   ├── NewsEndpoints.ts
+│   │   │   │   ├── NotesEndpoints.ts
+│   │   │   │   ├── ParameterCustomizationEndpoints.ts
+│   │   │   │   ├── ParticipantsEndpoints.ts
+│   │   │   │   ├── PaymentEndpoints.ts
+│   │   │   │   ├── PersonasEndpoints.ts
+│   │   │   │   ├── PhasesEndpoints.ts
+│   │   │   │   ├── ProjectManagementEndpoints.ts
+│   │   │   │   ├── ProjectOwnerEndpoints.ts
+│   │   │   │   ├── ProjectsEndpoints.ts
+│   │   │   │   ├── RandomWalkEndpoints.ts
+│   │   │   │   ├── RealtimeEndpoints.ts
+│   │   │   │   ├── RegistrationEndpoints.ts
+│   │   │   │   ├── ReportsEndpoints.ts
+│   │   │   │   ├── ScreenSharingEndpoints.ts
+│   │   │   │   ├── SearchingEndpoints.ts
+│   │   │   │   ├── SecurityEndpoints.ts
+│   │   │   │   ├── SnapshotsEndpoints.ts
+│   │   │   │   ├── SortingEndpoints.ts
+│   │   │   │   ├── StateGovCitiesEndpoints.ts
+│   │   │   │   ├── TasksEndpoints.ts
+│   │   │   │   ├── TeamManagementEndpoints.ts
+│   │   │   │   ├── TeamsEndpoints.ts
+│   │   │   │   ├── ThemeEndpoints.ts
+│   │   │   │   ├── TodosEndpoints.ts
+│   │   │   │   ├── ToolbarEndpoints.ts
+│   │   │   │   ├── TradingEndpoints.ts
+│   │   │   │   ├── UiEndpoints.ts
+│   │   │   │   ├── UiSettingsEndpoints.ts
+│   │   │   │   ├── UserManagementEndpoints.ts
+│   │   │   │   ├── UserRolesEndpoints.ts
+│   │   │   │   ├── UserRolesNFTEndpoints.ts
+│   │   │   │   ├── UsersEndpoints.ts
+│   │   │   │   ├── UserSettingsEndpoints.ts
+│   │   │   │   ├── VersionEndpoints.ts
+│   │   │   │   ├── VideosEndpoints.ts
+│   │   │   │   └── WebEndpoints.ts
+│   │   │   ├── cryptoTypes
+│   │   │   │   ├── BlockchainAsset.ts
+│   │   │   │   └── SmartContractInteraction.ts
+│   │   │   ├── entities
+│   │   │   │   ├── AdminUserEntity.ts
+│   │   │   │   ├── ApiEntity.ts
+│   │   │   │   ├── AppEntity.ts
+│   │   │   │   ├── AppMetadataEntity.ts
+│   │   │   │   ├── ArticleEntity.ts
+│   │   │   │   ├── AssignEntity.ts
+│   │   │   │   ├── AuthEntity.ts
+│   │   │   │   ├── BlogEntity.ts
+│   │   │   │   ├── CalendarEntity.ts
+│   │   │   │   ├── ChatEntity.ts
+│   │   │   │   ├── ChatRoomEntity.ts
+│   │   │   │   ├── CollaboratorEntity.ts
+│   │   │   │   ├── CommonEntities.ts
+│   │   │   │   ├── ConfigEntity.ts
+│   │   │   │   ├── ContentEntity.ts
+│   │   │   │   ├── CourseEntity.ts
+│   │   │   │   ├── DataEntity.ts
+│   │   │   │   ├── DetailsEntity.ts
+│   │   │   │   ├── DetailsEntity.ts.dedup-backup.1766901891439.bak
+│   │   │   │   ├── DocumentBuilderEntity.ts
+│   │   │   │   ├── DocumentEntity.ts
+│   │   │   │   ├── DrawingEntity.ts
+│   │   │   │   ├── EntityConversionRules.ts
+│   │   │   │   ├── EntityConverter.ts
+│   │   │   │   ├── EventEntity.ts
+│   │   │   │   ├── ExampleEntity.ts
+│   │   │   │   ├── ExtendedDappEntity.ts
+│   │   │   │   ├── FileEntity.ts
+│   │   │   │   ├── FileEntity.ts.dedup-backup.1766901891454.bak
+│   │   │   │   ├── FilterEntity.ts
+│   │   │   │   ├── LessonEntity.ts
+│   │   │   │   ├── LogEntity.ts
+│   │   │   │   ├── MeetingEntity.ts
+│   │   │   │   ├── MemberEntity.ts
+│   │   │   │   ├── MessageEntity.ts
+│   │   │   │   ├── MetaEntity.ts
+│   │   │   │   ├── NoteEntity.ts
+│   │   │   │   ├── NotificationEntity.ts
+│   │   │   │   ├── PhaseEntity.ts
+│   │   │   │   ├── ProductEntity.ts
+│   │   │   │   ├── ProductEntity.ts.dedup-backup.1766901891455.bak
+│   │   │   │   ├── ProjectEntity.ts
+│   │   │   │   ├── ProjectManagementEntity.ts
+│   │   │   │   ├── ProjectManagerEntity.ts
+│   │   │   │   ├── ProjectManagerEntity.ts.dedup-backup.1766901891458.bak
+│   │   │   │   ├── RealtimeDataEntity.ts
+│   │   │   │   ├── SenderEntity.ts
+│   │   │   │   ├── SnapshotContainerEntity.ts
+│   │   │   │   ├── SnapshotEntity.ts
+│   │   │   │   ├── SnapshotStorageOptionsEntity.ts
+│   │   │   │   ├── StorePropEntity.ts
+│   │   │   │   ├── SubscriberEntity.ts
+│   │   │   │   ├── SubscriptionEntity.ts
+│   │   │   │   ├── TagEntity.ts
+│   │   │   │   ├── TaskEntity.ts
+│   │   │   │   ├── TeamEntity.ts
+│   │   │   │   ├── TrackerEntity.ts
+│   │   │   │   ├── UserEntity.ts
+│   │   │   │   ├── UserEntity.ts.dedup-backup.1766901891459.bak
+│   │   │   │   ├── VersionEntity.ts
+│   │   │   │   ├── VersionHistoryEntity.ts
+│   │   │   │   └── VideoEntity.ts
+│   │   │   ├── eventHandlers
+│   │   │   │   ├── appEventHandlers.ts
+│   │   │   │   ├── AsyncEventHandler.ts
+│   │   │   │   ├── AsyncEventHandler.ts.dedup-backup.1766901891461.bak
+│   │   │   │   ├── domEventHandlers.ts
+│   │   │   │   ├── DynamicEventHandlerExample.tsx
+│   │   │   │   ├── EventHandlerConfigManager.ts
+│   │   │   │   ├── eventTypes.ts
+│   │   │   │   ├── factoryHandlers.ts
+│   │   │   │   ├── factoryHandlers.ts.dedup-backup.1766901891465.bak
+│   │   │   │   ├── gestureHandlers.ts
+│   │   │   │   ├── SpecializedHandlers.ts
+│   │   │   │   └── SpecializedHandlers.ts.dedup-backup.1766901891462.bak
+│   │   │   ├── file
+│   │   │   │   └── fileTypes.tsx
+│   │   │   ├── phases
+│   │   │   │   └── dataAnalysisTypes.ts
+│   │   │   ├── typeguards
+│   │   │   │   ├── dataStoreTypeGuards.ts
+│   │   │   │   ├── dataStoreTypeGuards.ts.dedup-backup.1766901891588.bak
+│   │   │   │   └── isYourSettingsResponseType.ts
+│   │   │   ├── videoTypes
+│   │   │   │   ├── Video.ts
+│   │   │   │   ├── VideoChannel.ts
+│   │   │   │   └── VideoConfiguration.ts
+│   │   │   ├── AnalysisNode.ts
+│   │   │   ├── AnalysisType.ts
+│   │   │   ├── apiTypes.ts
+│   │   │   ├── appDevelopmentActionsTypes.ts
+│   │   │   ├── appEventTypes.ts
+│   │   │   ├── appTypes.ts
+│   │   │   ├── attachmentTypeGroups.ts
+│   │   │   ├── authTypes.ts
+│   │   │   ├── baseResponseTypes.ts
+│   │   │   ├── BaseTypes.ts
+│   │   │   ├── BaseTypes.ts.dedup-backup.1766901891428.bak
+│   │   │   ├── blogTypes.ts
+│   │   │   ├── contentTypes.ts
+│   │   │   ├── convertSnapshotEvents.ts
+│   │   │   ├── correctionTypes.ts
+│   │   │   ├── database.ts
+│   │   │   ├── determineType.ts
+│   │   │   ├── documentTypes.ts
+│   │   │   ├── DomainObject.ts
+│   │   │   ├── exchangeTypes.ts
+│   │   │   ├── externalApisTypes.ts
+│   │   │   ├── hasTypeContext.ts
+│   │   │   ├── itemTypes.ts
+│   │   │   ├── meetingTypes.ts
+│   │   │   ├── metadataTypes.ts
+│   │   │   ├── milestoneTypes.ts
+│   │   │   ├── milestoneTypes.ts.dedup-backup.1766901891467.bak
+│   │   │   ├── persistenceTypes.ts
+│   │   │   ├── phaseTypes.ts
+│   │   │   ├── projectManagerTypes.ts
+│   │   │   ├── projectTypes.ts
+│   │   │   ├── promptTypes.ts
+│   │   │   ├── PropTypes.ts
+│   │   │   ├── realtimeTypes.ts
+│   │   │   ├── registrationTypes.ts
+│   │   │   ├── reportTypeGuards.ts
+│   │   │   ├── reportTypeGuards.ts.dedup-backup.1766901891469.bak
+│   │   │   ├── responseTypes.ts
+│   │   │   ├── roadmap.ts
+│   │   │   ├── securityMeasureTypes.ts
+│   │   │   ├── snapshotTypes.ts
+│   │   │   ├── StateType.ts
+│   │   │   ├── stepTypes.tsx
+│   │   │   ├── stepTypes.tsx.dedup-backup.1766901891484.bak
+│   │   │   ├── storageTypes.ts
+│   │   │   ├── supportTypes.ts
+│   │   │   ├── taskTypes.ts
+│   │   │   ├── teamTypes.ts
+│   │   │   ├── timeoutTypes.ts
+│   │   │   ├── UnifiedSystemType.ts
+│   │   │   ├── userTypes.ts
+│   │   │   ├── YourSpecificSnapshotType.ts
+│   │   │   ├── YourSpecificSnapshotType.ts.dedup-backup.1766901891429.bak
+│   │   │   └── YourSpecificSnapshotType.ts.dedup-backup.1766907871313.bak
+│   │   ├── users
+│   │   │   ├── preferences
+│   │   │   │   ├── handleNotificationPreferences.ts
+│   │   │   │   └── UserPreference.tsx
+│   │   │   ├── tenant
+│   │   │   ├── userJourney
+│   │   │   │   ├── ConceptDevelopment.tsx
+│   │   │   │   ├── ConceptValidation.tsx
+│   │   │   │   ├── IdeaCreationPhase.tsx
+│   │   │   │   ├── IdeaLifecycle.tsx
+│   │   │   │   ├── IdeationPhase.tsx
+│   │   │   │   ├── IdeaValidation.tsx
+│   │   │   │   ├── ProofOfConcept.tsx
+│   │   │   │   ├── RequirementsGathering.tsx
+│   │   │   │   └── TeamBuildingPhaseManagement.tsx
+│   │   │   ├── ActivityLog.tsx
+│   │   │   ├── APIUI.ts
+│   │   │   ├── APIUI.ts.dedup-backup.1766901891664.bak
+│   │   │   ├── Contact.ts
+│   │   │   ├── createSystemMessage.ts
+│   │   │   ├── DataPreview.tsx
+│   │   │   ├── featureSlice.ts
+│   │   │   ├── Ideas.ts
+│   │   │   ├── overview.txt
+│   │   │   ├── PermissionsEditor.tsx
+│   │   │   ├── SenderTypes.ts
+│   │   │   ├── SocialLinks.ts
+│   │   │   ├── todos.txt
+│   │   │   └── User.tsx
+│   │   ├── versions
+│   │   │   ├── AccessHistory.ts
+│   │   │   ├── AppVersion.ts
+│   │   │   ├── AppVersionToVersionAdapter.ts
+│   │   │   ├── BlogPostHistory.tsx
+│   │   │   ├── BumpVersionOptions.ts
+│   │   │   ├── createLatestVersion.ts
+│   │   │   ├── createVersionInfo.ts
+│   │   │   ├── DocumentVersion.ts
+│   │   │   ├── SearchHistory.ts
+│   │   │   ├── Version.ts
+│   │   │   ├── Version.ts.dedup-backup.1766901891770.bak
+│   │   │   ├── versionConvertors.ts
+│   │   │   ├── versionConvertors.ts.dedup-backup.1766901891787.bak
+│   │   │   ├── VersionData.ts
+│   │   │   ├── VersionGenerator.tsx
+│   │   │   └── VersionGenerator.tsx.dedup-backup.1766901891786.bak
+│   │   ├── video
+│   │   │   └── layout
+│   │   ├── BrowserCheck.tsx
+│   │   ├── DynamicIntroTooltip.tsx
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.module.css
+│   │   ├── page.tsx
+│   │   ├── RootLayout.tsx
+│   │   └── thunks.ts
+│   ├── cli
+│   │   ├── combinedRoadmap.ts
+│   │   ├── roadmapCLI.ts
+│   │   ├── roadmapOutline.ts
+│   │   └── TODOroadmapCLI.md
+│   ├── documentation
+│   │   ├── app
+│   │   │   └── AppVersion.test.ts
+│   │   ├── architecture
+│   │   │   └── hierarchyDiagram.md
+│   │   ├── features
+│   │   │   └── FeatureRequirements.md
+│   │   ├── formats
+│   │   │   └── format_calendar__as_XLSX.md
+│   │   ├── handlers
+│   │   │   └── domEventHandlers.example.md
+│   │   ├── privateDocs
+│   │   │   ├── API_Endpoints_Documentation.md
+│   │   │   ├── company_targets.md
+│   │   │   ├── nft.md
+│   │   │   ├── offer.md
+│   │   │   ├── privacy-policy.md
+│   │   │   ├── SnapshotSubscriberManagement.md
+│   │   │   ├── terms-of-service.md
+│   │   │   └── tree-view.md
+│   │   ├── projectManagement
+│   │   │   └── ProjectManagementApp.md
+│   │   ├── roadmap
+│   │   │   └── ReminderSystemRodadmap.md
+│   │   ├── scenarios
+│   │   │   └── calendar_event_scenarios.md
+│   │   ├── snapshots
+│   │   │   └── SnapshotContext.md
+│   │   ├── tempates
+│   │   │   └── Feature-Template-MobX-Redux-and-React-Integration.md
+│   │   ├── tests
+│   │   │   └── TestCases.md
+│   │   ├── todo
+│   │   │   └── todo_docs.txt
+│   │   ├── affiliate_marketing_service.md
+│   │   ├── AnimatedComponentDocumentation.md
+│   │   ├── AppVersion.md
+│   │   ├── CategoryApiServiceDoc.md
+│   │   ├── CLI-COMMANDS.md
+│   │   ├── CodeAnalysisReport.md
+│   │   ├── contributing.md
+│   │   ├── CoreRules.md
+│   │   ├── CourseBuilderSystemDocumentation.md
+│   │   ├── DEV_COMMANDS.md
+│   │   ├── dev_setup.md
+│   │   ├── DEV_WORKFLOW_REFERENCE.md
+│   │   ├── document_options.md
+│   │   ├── DynamicHookGeneratorDocumentation.md
+│   │   ├── Endpoints.md
+│   │   ├── enterprise_prompt.md
+│   │   ├── featureStateManagement.md
+│   │   ├── FetchOptions.md
+│   │   ├── frontend_document_config.md
+│   │   ├── generate_preset_percentages.md
+│   │   ├── getting_started.md
+│   │   ├── how_to_contribute.md
+│   │   ├── introduction.md
+│   │   ├── Link_HATEOAS.md
+│   │   ├── loggingMiddleware.md
+│   │   ├── Middleware-System-Overview.md
+│   │   ├── mobX_Store_Documentation.md
+│   │   ├── NOTIFICATION_USAGE_GUIDE.md
+│   │   ├── NotificationManagerComponent.md
+│   │   ├── persistenceMiddleware.md
+│   │   ├── phaseHooks.md
+│   │   ├── pnpm_actions.md
+│   │   ├── Project State-Management-and-Integration.md
+│   │   ├── project-structure-redux-and-mobx.md
+│   │   ├── project-tree-prompts.md
+│   │   ├── ProjectLogger.md
+│   │   ├── README.md
+│   │   ├── Redux_Saga_Documentation.md
+│   │   ├── regex-helpers.md
+│   │   ├── reinstalling_node_modules.md
+│   │   ├── RoadmapGenerationCLI.md
+│   │   ├── RootLayoutSystem.md
+│   │   ├── separation_of_concerns.md
+│   │   ├── STARTHERE_MyApp.md
+│   │   ├── state-management-patterns.md
+│   │   ├── ts-error-debug-commands.md
+│   │   ├── TypeScript-Error-Analysis-&-Phase-System-Commands-Guide.md
+│   │   ├── typeScript-error-analysis-&-phase-system.md
+│   │   ├── user_journey_managing_resources_collaboration_system.md
+│   │   ├── Video.md
+│   │   └── workflow-systems.md
+│   ├── utils
+│   │   ├── cache
+│   │   │   ├── AppCacheManager.tsx
+│   │   │   ├── AppCacheManagerExtended.tsx
+│   │   │   ├── BackendCacheManager.tsx
+│   │   │   ├── CacheUtils.ts
+│   │   │   ├── CacheWriteOptions.ts
+│   │   │   ├── FrontendCacheInteraction.tsx
+│   │   │   ├── FrontendCacheInteraction.tsx.dedup-backup.1766901891793.bak
+│   │   │   ├── FrontendCacheManager.tsx
+│   │   │   ├── GenerateCacheComponent.tsx
+│   │   │   ├── IntegratedCacheManager.ts
+│   │   │   └── InternalCache.ts
+│   │   ├── storage
+│   │   │   ├── SnapshotStorage.ts
+│   │   │   └── StoragService.ts
+│   │   ├── trading
+│   │   │   └── TradingUtils.js
+│   │   ├── typeguards
+│   │   │   └── dataTypesGuards.ts
+│   │   ├── videos
+│   │   │   ├── displayVideoOptionsMenu.ts
+│   │   │   ├── openPrivacySettingsMenu.ts
+│   │   │   ├── openVideoOptionsMenu.ts
+│   │   │   ├── VideoFeatures.ts
+│   │   │   └── VideoUtils.ts
+│   │   ├── web3
+│   │   │   ├── contracts
+│   │   │   │   └── NFT
+│   │   │   │       ├── DID
+│   │   │   │       └── NFTContract.sol
+│   │   │   ├── crossPlatformLayer
+│   │   │   │   └── platform
+│   │   │   │       ├── reactNative
+│   │   │   │       ├── web
+│   │   │   │       └── DAppAdapter.tsx
+│   │   │   ├── dAppAdapter
+│   │   │   │   ├── functionality
+│   │   │   │   │   ├── AnalyticsIntegration.tsx
+│   │   │   │   │   └── RealtimeUpdates.tsx
+│   │   │   │   ├── src
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── AdapterContent.tsx
+│   │   │   │   ├── AdapterManagement.tsx
+│   │   │   │   ├── DApp.tsx
+│   │   │   │   ├── DAppAdapterConfig.ts
+│   │   │   │   └── IPFS.tsx
+│   │   │   ├── fluenceProtocoIntegration
+│   │   │   │   ├── src
+│   │   │   │   │   └── fluence
+│   │   │   │   └── FluenceConnection.ts
+│   │   │   ├── pluginSystem
+│   │   │   │   ├── plugins
+│   │   │   │   │   ├── custom.ts
+│   │   │   │   │   ├── fluencePlugin.ts
+│   │   │   │   │   ├── loader.ts
+│   │   │   │   │   └── PluginInterface.tsx
+│   │   │   │   └── src
+│   │   │   ├── webConfigs
+│   │   │   │   └── aqua
+│   │   │   │       ├── AquaConfig.tsx
+│   │   │   │       └── AquaConfig.tsx.dedup-backup.1766901891800.bak
+│   │   │   ├── applicationUtils.tsx
+│   │   │   ├── asyncFunction.ts
+│   │   │   ├── automatedDecisionMakingUtils.ts
+│   │   │   ├── CallButton.tsx
+│   │   │   ├── cleanEmptyStrings.ts
+│   │   │   ├── commonUtils.ts
+│   │   │   ├── createMessage.ts
+│   │   │   ├── createSnapshotStore.ts
+│   │   │   ├── credentialUtils.ts
+│   │   │   ├── dataAnalysisUtils.ts
+│   │   │   ├── debugInfoUtils.tsx
+│   │   │   ├── DIDManager.ts
+│   │   │   ├── DIDProfile.tsx
+│   │   │   ├── didUtils.ts
+│   │   │   ├── drawingUtils.ts
+│   │   │   ├── fileUtils.ts
+│   │   │   ├── getSecureSubscriberId.ts
+│   │   │   └── useAqua.ts
+│   │   ├── appStructureClient.ts
+│   │   ├── assignNoteUtils.ts
+│   │   ├── BatchProcessingAndCache.ts
+│   │   ├── BuildErrorHandler.ts
+│   │   ├── CalendarUtils.ts
+│   │   ├── CallControlPanel.tsx
+│   │   ├── chartUtils.ts
+│   │   ├── ChatSettingsPanelUtils.ts
+│   │   ├── CleanupUtil.ts
+│   │   ├── compression.ts
+│   │   ├── constants.ts
+│   │   ├── ControlPanel.tsx
+│   │   ├── credentialConstants.ts
+│   │   ├── didConstants.ts
+│   │   ├── DuplicateDetector.ts
+│   │   ├── DynamicClassManager.tsx
+│   │   ├── DynamicComponentWrapper.tsx
+│   │   ├── DynamicNamingConventions.tsx
+│   │   ├── emitPanOffsetUpdate.ts
+│   │   ├── EmojiPickerUtils.tsx
+│   │   ├── encryptionUtils.ts
+│   │   ├── endpointMerger.ts
+│   │   ├── ErrorManager.ts
+│   │   ├── ErrorReporter.ts
+│   │   ├── ethereumUtils.ts
+│   │   ├── EventUtils.ts
+│   │   ├── EventUtils.ts.dedup-backup.1766901891789.bak
+│   │   ├── fileCategoryUtils.ts
+│   │   ├── fileHeaderManager.ts
+│   │   ├── FileUploadModalUtils.ts
+│   │   ├── GenerateCacheLogic.ts
+│   │   ├── generateSecretKey.js
+│   │   ├── GenerateTimeStampUtilsUtils.ts
+│   │   ├── GeolocationServiceUtils.ts
+│   │   ├── handleBatchTakeSnapshotsUtils.ts
+│   │   ├── handleFileChangesUtils.ts
+│   │   ├── hypothesisTesting.ts
+│   │   ├── import-deduplicator.ts
+│   │   ├── integrateMachineLearningUtilities.ts
+│   │   ├── isBrowser.ts
+│   │   ├── isDataRecentEnough.ts
+│   │   ├── isNullOrUndefinedUtil.ts
+│   │   ├── logDataHelpers.ts
+│   │   ├── mergeConfigurations.ts
+│   │   ├── metadataUtils.ts
+│   │   ├── MyPromise.jsx
+│   │   ├── positionUtils.ts
+│   │   ├── processDEXDataUtils.ts
+│   │   ├── RandomWalk.tsx
+│   │   ├── ReadAndWriteCache.tsx
+│   │   ├── Reporting.tsx
+│   │   ├── reportUtils.ts
+│   │   ├── resetAppState.ts
+│   │   ├── retrieveSnapshotData.ts
+│   │   ├── setThresholdUtils.ts
+│   │   ├── setUserData.ts
+│   │   ├── shuffleArray.ts
+│   │   ├── snapshotUtils.tsx
+│   │   ├── snapshotValidators.ts
+│   │   ├── SubscriberUtils.ts
+│   │   ├── syncEndpointsWithExternalServicesUtils.ts
+│   │   ├── TaskHhandler.ts
+│   │   ├── tempDataUtils.ts
+│   │   ├── TokenUtils.ts
+│   │   ├── urlBuilder.ts
+│   │   ├── urlGenerator.ts
+│   │   ├── versionUtils.ts
+│   │   ├── withSharedProps.tsx
+│   │   └── YourClass.ts
+│   ├── index.ts
+│   ├── LazyLoadScript.tsx
+│   ├── serviceWorker.ts
+│   └── test-phase.ts
+├── temp-old-backups
+├── web
+├── analysis.json
+├── babel.config.js
+├── check-imports.cjs
+├── check-imports.mjs
+├── check-structure.mjs
+├── css-loader.mjs
+├── debug-babel.js
+├── debug-babel.ts
+├── debug-esm-imports.mjs
+├── debug-import.cjs
+├── debug-roadmaps.ts
+├── debug-roadmaps.ts.dedup-backup.1766901888905.bak
+├── debug-tsx.mjs
+├── debug-typescript-errors.ts
+├── deep-import-search.mjs
+├── diagnose.mjs
+├── excel4node.d.ts
+├── extensions.txt
+├── find-bad-app-import.mjs
+├── find-css-imports.mjs
+├── find-draft-js-imports.ts
+├── fix-all-state-imports.mjs
+├── fix-imports.js
+├── fix-snapshot-imports.mjs
+├── fix-state-imports.mjs
+├── jest.config.js
+├── metro.config.js
+├── mock-draft-js.mjs
+├── next-env.d.ts
+├── next.config.mjs
+├── package.json
+├── pnpm-lock.yaml
+├── project-tree.json
+├── project-tree.json.zip
+├── project-tree.txt
+├── react-speech-recognition.d.ts
+├── restore-original-imports.mjs
+├── rollup.config.mjs
+├── run-corrections.cjs
+├── run-report-tests.ts
+├── run-scan.mjs
+├── run-with-paths.mjs
+├── simple-import-scanner.cjs
+├── simple-import-scanner.js
+├── standalone-import-scanner.ts
+├── test-correctiongen.js
+├── test-fix.js
+├── test-imports.js
+├── test-imports.mjs
+├── test-importsummary.js
+├── test-path-resolution.mjs
+├── test-reports-now.ts
+├── trace-imports.mjs
+├── ts-errors-latest.json
+├── ts-errors-quick.json
+├── tsconfig.json
+├── tsconfig.scripts.json
+├── tsconfig.tsbuildinfo
+├── vite.config.ts
+├── vitest.config.js
+└── webpack.config.js

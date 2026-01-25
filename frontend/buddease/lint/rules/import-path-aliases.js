@@ -1,0 +1,1 @@
+../../scripts/bin/misc/import-path-aliases.js

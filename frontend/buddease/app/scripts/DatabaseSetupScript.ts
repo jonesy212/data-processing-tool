@@ -1,0 +1,1 @@
+../../scripts/typescript/infrastructure/DatabaseSetupScript.ts

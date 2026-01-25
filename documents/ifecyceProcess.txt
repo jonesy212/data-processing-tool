@@ -1,0 +1,31 @@
+│   ├── Onboarding
+....
+
+│   ├── IdeaLifecycle.md
+|   │   ├── Concept(s).md
+
+│   ├── TeamBuilding.md
+|   │   ├── RequirementsGathering.md
+        
+|   │   ├── ConceptValidation.md
+|   │   ├── ProofOfConcept.md
+     
+
+│   ├── Ideation.md
+|   │   ├── ConceptDevelopment.md
+
+
+    
+│  │   ├── ProjectPlanning.md
+│  │   ├── Prototyping.md
+│  │   ├── Testing.md
+│  │   ├── Research.md
+│  │   ├── Release.md
+│  │   ├── Feedback.md
+│  │   ├── Iteration.md
+│  │   └── Retrospective.md
+│   ├── TaskManagement.md
+│    │   ├── Launch.md
+│    │   ├── DataAnalysis.md
+│    │   ├── RefactoringRebranding.md
+│    │   └── CollaborationSettings.md

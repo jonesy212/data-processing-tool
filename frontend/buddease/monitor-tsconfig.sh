@@ -1,0 +1,1 @@
+scripts/typescript/config/monitor-tsconfig.sh

@@ -1,0 +1,1 @@
+// sharedErrorHandling.d.ts

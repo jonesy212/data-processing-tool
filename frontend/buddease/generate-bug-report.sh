@@ -1,0 +1,1 @@
+scripts/shell/dev/generate-bug-report.sh

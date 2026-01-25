@@ -1,0 +1,1 @@
+scripts/bin/misc/mock-draft-js.mjs

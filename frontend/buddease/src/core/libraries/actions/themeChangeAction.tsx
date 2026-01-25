@@ -1,0 +1,34 @@
+// themeChangeAction.tsx
+import type { BrandingSettings } from '@/core/branding/BrandingSettings';
+import type { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
+import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
+import { createAction } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
+
+
+
+// Define the action types
+export const THEME_CHANGE = 'theme/change';
+export const SET_FONT_SIZE = 'theme/setFontSize';
+export const APPLY_THEME_FROM_SERVER = 'theme/applyFromServer';
+export const APPLY_THEME = 'theme/apply';
+export const APPLY_FONT_STYLES = 'theme/applyFontStyles';
+export const APPLY_COLOR_SCHEME = 'theme/applyColorScheme';
+export const APPLY_COLORS = 'theme/applyColors';
+
+// Define the action creators
+export const themeChangeAction = createAction<BrandingSettings>(THEME_CHANGE);
+export const setFontSizeAction = createAction<string>(SET_FONT_SIZE);
+export const applyThemeFromServerAction = createAction<void>(APPLY_THEME_FROM_SERVER);
+export const applyThemeAction = createAction<BrandingSettings>(APPLY_THEME);
+export const applyFontStylesAction = createAction<DocumentFormattingOptions>(APPLY_FONT_STYLES);
+export const applyColorSchemeAction = createAction<string>(APPLY_COLOR_SCHEME);
+export const applyColorsAction = createAction<ColorSwatchProps[]>(APPLY_COLORS);
+
+// Add more actions as needed
+
+const dispatch = useDispatch()
+
+const handleThemeChange = (brandingSettings: BrandingSettings) => {
+    dispatch(themeChangeAction(brandingSettings));
+  };

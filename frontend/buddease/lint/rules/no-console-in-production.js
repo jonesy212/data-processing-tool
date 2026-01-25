@@ -1,0 +1,1 @@
+../../scripts/bin/misc/no-console-in-production.js

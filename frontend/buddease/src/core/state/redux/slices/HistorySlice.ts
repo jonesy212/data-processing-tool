@@ -1,0 +1,23 @@
+// HistorySlice.ts
+// Assuming your historySlice looks something like this:
+import { HistoryItem } from '@/core/state/redux/sagas/UndoRedoSaga';
+import { createSlice } from '@reduxjs/toolkit';
+
+interface HistoryState {
+  history: HistoryItem[]; // Assuming HistoryItem is the type of items in your history
+}
+
+const initialState: HistoryState = {
+  history: [],
+};
+
+export const useHistorySlice = createSlice({
+  name: 'history',
+  initialState,
+  reducers: {
+    // Define reducers for modifying history if needed
+  },
+});
+
+export const { /* Reducers */ } = useHistorySlice.actions;
+export default useHistorySlice.reducer;

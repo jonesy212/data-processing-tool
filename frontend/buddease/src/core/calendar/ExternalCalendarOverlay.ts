@@ -1,0 +1,21 @@
+// ExternalCalendarOverlay.ts
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
+
+interface ExternalCalendarOverlay {
+    id: string; // Unique identifier for the overlay
+    name: string; // Name of the overlay
+    color: string; // Color code or name used to represent the overlay
+    visibility: boolean; // Indicates whether the overlay is currently visible
+    events: CalendarEvent[]; // Array of calendar events associated with the overlay
+    options: {
+      // ...
+      additionalOptions: readonly string[] | string | number | any[] | undefined;
+      additionalDocumentOptions: DocumentOptions
+      additionalOptionsLabel: string;
+      
+      // ...
+  };
+}
+  
+  export default ExternalCalendarOverlay;

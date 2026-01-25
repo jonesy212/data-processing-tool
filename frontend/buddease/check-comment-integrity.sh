@@ -1,0 +1,1 @@
+scripts/typescript/file-management/check-comment-integrity.sh

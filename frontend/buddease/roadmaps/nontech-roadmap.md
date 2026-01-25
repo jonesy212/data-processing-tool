@@ -1,0 +1,637 @@
+# Product Roadmap - Feature Overview
+📋 User Prompt: Project structure analysis
+🕒 Generated: 2025-12-10T02:55:19.762Z
+
+## 📊 Executive Summary
+- **User Interfaces**: 104 pages, 336 components
+- **Backend Services**: 111 API endpoints, 2 services
+- **Data Structures**: 33 models
+- **Interactive Features**: 16 custom hooks
+
+## 🖥️ User-Facing Features
+
+### Pages & Screens
+- CalendarEventViewingDetails
+- MonthView
+- CalendarView
+- WeekView
+- YearView
+- DefaultCalendarEventViewingDetails
+- CommunicationPage
+- FrontendStructureViewer
+- MultimediaContentCustomization
+- RegistrationPhase
+- SearchPage
+- MeetingSchedulerViewerToolbar
+- AccessDenied
+- ExtendedAppLogic
+- BlogGenerator
+- BlogGroup
+- BlogManager
+- BlogOverview
+- BlogPostComponent
+- BlogPostList
+- BlogShare
+- GroupRenderer
+- NotificationDisplay
+- ChatPage
+- CollaborationPage
+- CollaborationSettings
+- CollaborationToolsToolbar
+- CommunityProjectsPage
+- ConfirmationPage
+- TradingConfirmationPage
+- ContentCreationPage
+- CourseLearningPhase
+- CoursePlanningPhase
+- CourseSetupPhase
+- RiskAssessmentPage
+- BugComments
+- BugFilter
+- BugList
+- BugSort
+- ChatDashboard
+- ClientDesignDashboard
+- CollaborationPanel
+- DashboardLoader
+- DesignDashboard
+- EnhancedTreeView
+- EnhancedTreeNode
+- FileContentViewer
+- RealTimeDashboardPage
+- ServerDesignDashboard
+- VisualFlowDashboard
+- EmailConfirmationPhaseComponent
+- PlanningPhase
+- ChangePasswordForm
+- DynamicForm
+- FeedbackForm
+- FormControl
+- FormInputComponent
+- FormUI
+- LoginForm
+- PreviewForm
+- ProjectCreationForm
+- FormInput
+- DropdownMenu
+- TextInput
+- Index
+- AnimatedDashboard
+- CommonLayout
+- DashboardLayout
+- LayoutProvider
+- Layout
+- FeatureImplementationSubPhase
+- InitialSetupSubPhase
+- QuestionnairePage
+- RegistrationPhaseComponent
+- AccountInfoStep
+- PersonalDetailsStep
+- ConfirmationStep
+- CryptoEnthusiastCalendar
+- CryptoEnthusiastDocuments
+- CryptoEnthusiastTraderInfo
+- ProfessionalTraderAlerts
+- ProfessionalTraderCalendar
+- ProfessionalTraderCalls
+- ProfessionalTraderCollaboration
+- ProfessionalTraderContentManagement
+- ProfessionalTraderDashboard
+- ProfessionalTraderProfile
+- ProjectManagerPersona
+- UserQuestionnaire
+- PersonaPanel
+- Profile
+- FilterComponent
+- FilterTasksRequest
+- SearchComponent
+- SearchCriteriaComponent
+- SearchItems
+- TaskFilterComponent
+- TeamCreationConfirmationPage
+- TeamCreationQuestionnaire
+- PromptPage
+- PromptViewer
+- AnalysisView
+- MarketplacePage
+- VideoViewer
+
+### Interactive Components
+- DatePickerComponent
+- SharedButton
+- CustomTemplateBuilder
+- ImageUploader
+- VideoUploader
+- WebpageBuilder
+- LazyLoadScript
+- BroswerCheck
+- DynamicIntroTooltip
+- RootLayout
+- ClickableList
+- TaskAssignmentSnapshot
+- CollaborationBoardStore
+- CardFrame
+- DashboardConfigCard
+- DummyCard
+- DummyCardLoader
+- OrganizedCardLoader
+- EmailCard
+- FileCard
+- FolderCard
+- ImageCard
+- LoginCard
+- PersonaCard
+- CardGenerator
+- TextCard
+- SwingCard
+- FileUploadModal
+- FileUploadModalLauncher
+- AppProviders
+- DynamicComponentsProvider
+- LazyIcon
+- LazyLoadedImage
+- AuthProvider
+- AdminDashboard
+- AdminDashboardWithDynamicNaming
+- BlogComponent
+- AttachmentsAndLinks
+- CalendarProvider
+- CalendarMonth
+- DatePicker
+- DayOfWeek
+- EventDetailsComponent
+- GuestInvitations
+- SyncWithExternalCalendars
+- ChatCard
+- ChartComponent
+- ConfirmationModal
+- ChatComponent
+- ChatMessage
+- ChatNotification
+- ChatRoomComponent
+- ChatRoomProvider
+- ChatRoom
+- ChatUserList
+- ChatWithFeedback
+- EnhancedGroupChatDashboard
+- GroupChatMessage
+- EmailSetupForm
+- ActivityFeedComponent
+- CommunityDetails
+- BackendConfigComponent
+- ConfigurationServiceComponent
+- DetermineFileType
+- FrontendConfigComponent
+- LayoutCustomization
+- CustomBox
+- TextBox
+- ToggleSwitchContainer
+- TeamProvider
+- ContributionItem
+- CryptoSectionToolbar
+- CryptoTransaction
+- OrderBook
+- DatabaseMigrationUI
+- DocumentBuilderConfigComponent
+- DocumentFormattingOptionsComponent
+- EditorWithPrompt
+- ProjectManagementToolbar
+- VideoToolbar
+- Toolbar
+- ToolbarList
+- ToolbarItem
+- ToolbarOptionsComponent
+- EventCategory
+- EventManager
+- EventSentiment
+- FormElementStyles
+- WebIcon
+- BlogList
+- DetailsList
+- PhaseList
+- ProjectList
+- TaskList
+- TaskProjectListings
+- TeamList
+- TodoList
+- UserList
+- BlogAndContentEditor
+- ContentDetails
+- ContentDetailsListItem
+- ContentItemComponent
+- ContentList
+- ContentToolbar
+- SharedDashboardContent
+- BugDetails
+- CalendarDetails
+- DataFilterForm
+- DataProcessingComponent
+- Details
+- ProgressDataComponent
+- SearchResultItem
+- SentimentAnalysis
+- UpdatedEventDetailsComponent
+- VideoDetails
+- ECommerceIntegration
+- FileManager
+- integrateComponents
+- RealTimeChart
+- RealTimeDataCollection
+- RealTimeVisualization
+- RealtimeDataComponent
+- TaskForm
+- TeamComponent
+- TeamDetails
+- DraggableIndicator
+- LoadingIndicator
+- LoadingSpinner
+- ProgressBar
+- TaskTrackingComponent
+- LiveStream
+- Notification
+- CustomNotification
+- NotificationComponent
+- FeedbackManagementProvider
+- IdeationPhaseComponent
+- ScenarioBuilderPhase
+- TaskLoop
+- TradingPreferencesStep
+- TwoFactorSetupPhase
+- CollaborationDisplay
+- CollaborationSettingsPhase
+- CallsConferences
+- CryptoEnthusiastCalls
+- CryptoTradingPhase
+- DoYourOwnResearch
+- EnthusiastProfile
+- FollowTraders
+- RiskAssessment
+- TraderTypesSelection
+- VerificationProcess
+- LaunchPhase
+- ProfileSetupPhase
+- WelcomePhase
+- PostLaunchActivitiesPhase
+- AnalysisStep
+- PreferencesStep
+- TeamBasicInfoStep
+- TeamMembersStep
+- TeamPreferencesStep
+- TeamSummaryStep
+- ProductLaunchDetails
+- PromptComponent
+- Link
+- HATEOASLinks
+- ProtectedRoute
+- renderContent
+- RouteGuard
+- SearchBar
+- SearchResultComponent
+- Share
+- SharingOptions
+- BasicInfoStep
+- GenericStepContainer
+- TaskSortComponent
+- BasicStopwatchComponent
+- CustomizableTimersComponent
+- MultiPhaseTimerComponent
+- PomodoroTechniqueComponent
+- ProgressiveTimerComponent
+- ScheduledTimersComponent
+- TeamCollaborationTimerComponent
+- Accessibility
+- StaticAccessibleComponent
+- DynamicAccessibleComponent
+- AccessibleComponent
+- AnimationsAndTransitions
+- StaticComponent
+- DynamicComponent
+- AnimatedContent
+- ColorPalette
+- ColorPicker
+- DynamicDocumentedComponent
+- StaticDocumentedComponent
+- Documentation
+- DynamicColorPalette
+- DynamicIconsAndImages
+- StaticIcon
+- StaticImage
+- Icon
+- Image
+- DynamicSpacingAndLayout
+- DynamicTypography
+- Palette
+- ResponsiveDesign
+- UsageExamplesBox
+- SubscriptionComponent
+- TeamManagerComponent
+- ConfigureTenantComponent
+- TradeDataComponent
+- UserRolesEditor
+- PlaybackControls
+- VideoEditingPanel
+- VideoPlayer
+- VideoPlayerToolbar
+- WhiteboardCanvas
+- ComponentConfigProvider
+- MainConfig
+- FrontendStructureComponent
+- RenderContent
+- DataVersionsComponent
+- ContentItemSelection
+- ContentEditing
+- ContentCreation
+- ContentOrganization
+- ContentPublishing
+- DashboardComponent
+- DashboardFramework
+- LoadAquaState
+- LoadFluenceState
+- DraggablePhaseCard
+- PricingDashboard
+- RecruiterSeekerDashboard
+- DocumentSnapshotStore
+- DynamicContent
+- DynamicTable
+- DocumentBuilder
+- FeedbackLoop
+- NotificationProvider
+- SupportTicketComponent
+- UserSupportPhaseComponent
+- Tools
+- ChatSettingsModal
+- OtherModal
+- ModalGenerator
+- NavigationManager
+- NavigationMenu
+- YourComponentUI
+- CustomizationOptions
+- FullscreenControls
+- LayoutControls
+- RootLayoutContent
+- AnimationDial
+- DraggableAnimation
+- DynamicSelectionControls
+- FadeInAnimation
+- RotateAnimation
+- SlideUpAnimation
+- AnimatedComponent
+- Checkbox
+- ClearFiltersButton
+- Dropdown
+- RadioButton
+- SortableTableHeaders
+- ToggleSwitch
+- ThemeManagerServiceProvider
+- Sidebar
+- ToolbarItemsProvider
+- ContentRenderer
+- DynamicRenderer
+- UIComponentRenderer
+- EnhancedUIComponentRenderer
+- CustomSlider
+- ReusableButton
+- onCancel
+- onLogicalAnd
+- SubmitButton
+- onSubmit
+- DynamicRouteComponent
+- ThemeProvider
+- AddContent
+- DetailsProvider
+- PhaseManager
+- ProjectDetailsComponents
+- PaymentProcess
+- ReviewStep
+- SummaryStep
+- TradingAssetsStep
+- TradingBasicInfoStep
+- TradingReviewStep
+- TradingSummaryStep
+- EnhancedThemeProvider
+- AnalyzeData
+- DataAnalysisPhase
+- HypothesisTesting
+- EpidemiologicalModeling
+- PopulationDynamicsSimulation
+- RefactoringRebrandingPhase
+- TaskManagementManager
+- TeamBuildingPhase
+- UpdatedProjectDetails
+- ProjectManagementSimulation
+- ProjectManagerComponent
+- ProjectProgress
+- ProjectProgressBar
+- EventListenerComponent
+- TaskProgress
+- TaskProgressBar
+- TodoProgress
+- TodoProgressBar
+- PromptSystem
+- AuthComponent
+- SearchResultsPanel
+- ErrorBoundaryProvider
+- SnapshotContainerComponent
+- SnapshotHandler
+- AppStoresProvider
+- CollaborationProvider
+- ContentProvider
+- DashboardProvider
+- DynamicPromptProvider
+- PhaseActivityProvider
+- SearchProvider
+- StepProvider
+- StoreProvider
+- UserProvider
+- TodoItem
+- DynamicTextArea
+- ScheduleEventModal
+- Clipboard
+- AppStepRenderer
+- FlexibleStep
+- DataPreview
+- UserDetails
+- IdeaCreationPhaseManager
+- IdeaLifecycle
+
+## ⚙️ System Capabilities
+
+### APIs & Integrations
+- ApiBackend.ts: 1 operations
+- ApiCalendar.ts: 9 operations
+- ApiClient.ts: 16 operations
+- ApiCollaboration.ts: 13 operations
+- ApiCommunicationService.ts: 8 operations
+- ApiConfigManager.ts: 4 operations
+- ApiConfigService.ts: 5 operations
+- ApiDashboard.ts: 1 operations
+- ApiData.ts: 11 operations
+- ApiDataAnalysis.ts: 1 operations
+- ApiDataProvider.ts: 9 operations
+- ApiDrawing.ts: 1 operations
+- ApiEvent.ts: 1 operations
+- ApiFiles.ts: 7 operations
+- ApiHighlightEvent.tsx: 2 operations
+- ApiLogs.ts: 1 operations
+- ApiMarkdown.ts: 1 operations
+- ApiMarker.ts: 3 operations
+- ApiMetadata.ts: 7 operations
+- ApiNote.ts: 2 operations
+- ApiStateGovCities.ts: 2 operations
+- ApiStore.ts: 5 operations
+- ApiToolbar.tsx: 4 operations
+- ApiUser.ts: 2 operations
+- ApiUserSettings.ts: 5 operations
+- BinanceAPI.ts: 1 operations
+- CategoryApi.ts: 10 operations
+- ChatApi.ts: 11 operations
+- ConfigManager.ts: 3 operations
+- CustomFetchEvent.ts: 2 operations
+- DataDashboardApi.ts: 1 operations
+- DatabaseClient.ts: 12 operations
+- FacebookAPI.ts: 1 operations
+- GenerateText.ts: 1 operations
+- InstagramAPI.ts: 5 operations
+- KuCoinAPI.ts: 1 operations
+- NotificationsService.ts: 1 operations
+- SecurityAPI.ts: 2 operations
+- SettingsAPI.ts: 1 operations
+- SnapshotApi.ts: 1 operations
+- TeamApi.ts: 7 operations
+- TwitterIntegrationAPI.ts: 2 operations
+- UsersApi.ts: 3 operations
+- YouTubeIntegrationAPI.ts: 2 operations
+- route.ts: 2 operations
+- appTreeApi.ts: 5 operations
+- route.ts: 2 operations
+- chatWebSocket.js: 1 operations
+- config.ts: 2 operations
+- csrf-token.js: 1 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- route.ts: 3 operations
+- route.ts: 2 operations
+- route.ts: 4 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- routes.ts: 2 operations
+- route.ts: 2 operations
+- generate.ts: 1 operations
+- encrypt.ts: 1 operations
+- endpointConfigurations.ts: 1 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- externalApiConfig.ts: 1 operations
+- fetchDataAnalysisAPI.ts: 3 operations
+- route.ts: 3 operations
+- generateComponent.ts: 1 operations
+- getEndpoint.ts: 1 operations
+- getSnapshotEndpoint.ts: 1 operations
+- authenticationHeaders.tsx: 1 operations
+- cacheHeaders.js: 1 operations
+- contentHeaders.js: 1 operations
+- requestHeaders.js: 1 operations
+- securityHeaders.js: 1 operations
+- processSnapshotData.ts: 1 operations
+- updateProgress.ts: 2 operations
+- ApiService.ts: 3 operations
+- ArchiveService.tsx: 3 operations
+- BaseApiService.ts: 2 operations
+- BugApiService.tsx: 2 operations
+- ContentApiService.ts: 13 operations
+- DetailsApiService.ts: 2 operations
+- DynamicEventHandlerService.tsx: 4 operations
+- FeedbackService.tsx: 1 operations
+- PhaseService.ts: 8 operations
+- PortfolioService.ts: 12 operations
+- PriceApiService.ts: 12 operations
+- SocialMediaIntegrationService.tsx: 2 operations
+- TreeDataService.ts: 2 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- route.ts: 2 operations
+- AppCacheManagerAPI.ts: 1 operations
+- VideoAPI.ts: 6 operations
+- AffiliateMarketingService.ts: 7 operations
+- AppTreeService.ts: 5 operations
+- ChatEventService.ts: 4 operations
+- ConfigurationService.ts: 24 operations
+- CryptoIntegrationService.ts: 3 operations
+- EventService.tsx: 19 operations
+- FileApiService.tsx: 10 operations
+- FileTreeService.ts: 3 operations
+- GeolocationService.tsx: 1 operations
+- PresentationService.ts: 3 operations
+- TaskService.ts: 4 operations
+- dataAnalysisService.ts: 4 operations
+- identityService.ts: 2 operations
+- teamService.ts: 4 operations
+
+### Business Logic
+- BackgroundService.ts: 2 functions
+- NotificationService.tsx: 1 functions
+
+## 🗄️ Data Models
+
+### Core Data Models
+
+### Shared Types
+- NavigationView
+- Channel
+- ChannelMember
+- ChannelMessage
+- DummyCardItemType
+- OrganizedCardItemType
+- VisualizationType
+- PromptOption
+- PromptType
+- GroupChat
+- FeatureToggle
+- FeatureToggleStore
+- TaskHistoryEntry
+- TaskHistoryStore
+- CollaborationOptions
+- TeamCollaborationAnalysis
+- CommunicationOption
+- RealTimeCollaborationTool
+- ProjectManagementFeature
+- DataAnalysisTool
+- CommunityEngagementFeature
+- MonetizationAndIncentiveOption
+- VisualizationResult
+- Decision
+- Payload
+- AuthenticationProvider
+- CustomAuthProvider
+- BrainstormingSettings
+- CalendarDisplaySettings
+- CollaborationPreferences
+- LearningPreferences
+- MeetingsSettings
+- ProjectManagementSettings
+
+## 📅 Implementation Timeline
+
+### Sprint 1-2: Core Foundation
+- Essential data structures
+- Basic user interface
+- Core API endpoints
+
+### Sprint 3-4: Feature Development
+- Complete user workflows
+- Advanced components
+- Service integrations
+
+### Sprint 5-6: Enhancement & Scale
+- Performance optimization
+- Advanced features
+- Analytics & monitoring
+
+## 🎯 Implementation Priorities
+1. Core data structures & API contracts
+2. Primary user interfaces & workflows
+3. Essential backend services & business logic
+4. System integration & data flow
+5. Advanced features & optimizations

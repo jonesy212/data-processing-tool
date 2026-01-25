@@ -1,0 +1,1 @@
+../../scripts/shell/backup/sync-configs-with-backup.js

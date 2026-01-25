@@ -1,0 +1,52 @@
+Alabama: Alabama.gov
+Alaska: Alaska.gov
+Arizona: AZ.gov
+Arkansas: Arkansas.gov
+California: CA.gov
+Colorado: Colorado.gov
+Connecticut: CT.gov
+Delaware: Delaware.gov
+Florida: MyFlorida.com
+Georgia: Georgia.gov
+Hawaii: Hawaii.gov
+Idaho: Idaho.gov
+Illinois: Illinois.gov
+Indiana: IN.gov
+Iowa: Iowa.gov
+Kansas: Kansas.gov
+Kentucky: Kentucky.gov
+Louisiana: Louisiana.gov
+Maine: Maine.gov
+Maryland: Maryland.gov
+Massachusetts: Mass.gov
+Michigan: Michigan.gov
+Minnesota: MN.gov
+Mississippi: Mississippi.gov
+Missouri: MO.gov
+Montana: MT.gov
+Nebraska: Nebraska.gov
+Nevada: NV.gov
+New Hampshire: NH.gov
+New Jersey: NJ.gov
+New Mexico: NewMexico.gov
+New York: NY.gov
+North Carolina: NC.gov
+North Dakota: ND.gov
+Ohio: Ohio.gov
+Oklahoma: OK.gov
+Oregon: Oregon.gov
+Pennsylvania: PA.gov
+Rhode Island: RI.gov
+South Carolina: SC.gov
+South Dakota: SD.gov
+Tennessee: TN.gov
+Texas: Texas.gov
+Utah: Utah.gov
+Vermont: Vermont.gov
+Virginia: Virginia.gov
+Washington: Access Washington
+West Virginia: WV.gov
+Wisconsin: Wisconsin.gov
+Wyoming: Wyoming.gov
+
+These websites are the official portals for accessing government services and information for each respective state in the United States. You can navigate these websites to find directories of elected officials, government agencies, and public records.

@@ -1,0 +1,81 @@
+/* navigation_system.css */
+.navigation-manager {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem;
+}
+
+.navigation-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.nav-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-menu-item.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.voice-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.phase-navigation-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.phase-button {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  text-align: left;
+}
+
+.phase-button.active {
+  border-color: #007bff;
+  background: #e7f3ff;
+}

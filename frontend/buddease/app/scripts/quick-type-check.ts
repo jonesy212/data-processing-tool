@@ -1,0 +1,1 @@
+../../scripts/typescript/misc/quick-type-check.ts

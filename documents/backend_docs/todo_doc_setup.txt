@@ -1,0 +1,250 @@
+/backend_docs
+├── Makefile
+├── README.md
+├── api
+│   ├── api.md
+│   ├── api_versions
+│   └── get_api_data.md
+├── authentication
+│   ├── auth.md
+│   └── auth.py
+├── blueprint_routes
+│   ├── auth
+│   │   ├── auth_routes.md
+│   │   ├── change_password.md
+│   │   ├── deactivate_account.md
+│   │   ├── decode_and_verify_token.md
+│   │   ├── email_verification.md
+│   │   ├── forgot_password.md
+│   │   ├── reactivate_account.md
+│   │   ├── resend_verification_email.md
+│   │   ├── reset_password.md
+│   │   ├── update_profile.md
+│   │   └── verify_email.md
+│   ├── authorization
+│   │   └── oauth_.md
+│   ├── company
+│   │   ├── company_recruiter_routes.md
+│   │   └── company_routes.md
+│   ├── login_routes.md
+│   ├── recruiter_profile_routes.md
+│   ├── register_routes.md
+│   ├── tasks
+│   │   └── task_routes.md
+│   ├── todos
+│   │   └── todo_routes.md
+│   ├── upload_routes.md
+│   └── user
+│       └── user_routes.md
+├── cache
+│   └── generate_cache_key.md
+├── configs
+│   ├── config.md
+│   ├── dev_config.md
+│   ├── log_config.md
+│   ├── prod_config.md
+│   └── prod_config_template.md
+├── dashboard
+│   └── dashboard.md
+├── data_analysis
+│   └── analyze_data.md
+├── database
+│   ├── extensions.md
+│   ├── generate_fake_data.md
+│   ├── generators
+│   │   ├── async_generate_data.md
+│   │   ├── async_generate_route.md
+│   │   ├── dashboard_data_generator.md
+│   │   └── typescript
+│   │       ├── category.md
+│   │       ├── generate_and_insert_fake_data_for_models.md
+│   │       ├── generate_typescript_code.md
+│   │       └── run_draft.md
+│   ├── init_db.md
+│   └── mock_db
+│       └── users_db.md
+├── datapreview
+│   └── data_preview.md
+├── dataprocessing
+│   └── data_processing.md
+├── dataset
+│   ├── dataset_upload.md
+│   └── handle_uploaded_dataset.md
+├── deployment.md
+├── documents
+│   ├── blueprint_routes
+│   │   └── user_routes.md
+│   └── conf.md
+├── errorhandling
+│   └── error_handling.md
+├── handlers
+│   ├── async_web3_handler.md
+│   ├── fluence_aqua_handler.md
+│   └── web3_handlers
+│       ├── social_media.md
+│       └── web3.md
+├── hypothesis_testing
+│   └── perform_hypothesis_test.md
+├── instance
+│   └── data.md
+├── logging_system
+│   ├── activity_monitor
+│   │   ├── calculate_time_since_last_change.md
+│   │   ├── conditions.md
+│   │   ├── get_active_task_count.md
+│   │   ├── get_cpu_usage.md
+│   │   ├── get_current_weather.md
+│   │   ├── get_incoming_request_rate.md
+│   │   ├── memory_usage.md
+│   │   └── time_since_last_interaction.md
+│   ├── audit_logger.md
+│   ├── data_processing_ log_data_processing_logger.md
+│   ├── error_logger.md
+│   ├── flake8_handlers.md
+│   ├── generate_logger.md
+│   ├── log_todos.md
+│   ├── logger_config.md
+│   ├── logger_handlers.md
+│   ├── logger_rules.md
+│   ├── logging.md
+│   ├── navigation_logger.md
+│   ├── performance_logger.md
+│   ├── session_logger.md
+│   ├── smart_contract_changes_logger.md
+│   ├── todo
+│   ├── trackers
+│   │   ├── task_tracker.md
+│   │   ├── team_tracker.md
+│   │   └── user_tracker.md
+│   ├── usage_logger.md
+│   └── web3_wallet
+│       ├── # gas_fees_changes_logger.md
+│       ├── Web3LoggerGenerator.md
+│       ├── blockchain_scalability_changes_logger.md
+│       ├── consensus_algorithm_changes_logger.md
+│       ├── cross_chain_compatibility_changes_logger.md
+│       ├── cross_platform_changes_logger.md
+│       ├── dapp_changes_logger.md
+│       ├── eip_changes_logger.md
+│       ├── generic_changes_logger.md
+│       ├── governance_mechanism_changes_logger.md
+│       ├── ipfs_integration_changes_logger.md
+│       ├── node_upgrade_changes_logger.md
+│       ├── oracle_integration_changes_logger.md
+│       ├── privacy_features_changes_logger.md
+│       ├── security_audits_changes_logger.md
+│       ├── smart_contract_standards_changes_logger.md
+│       ├── token_standards_changes_logger.md
+│       ├── token_swap_mechanism_changes_logger.md
+│       ├── wallet_integration_changes_logger.md
+│       └── web3_libraries_changes_logger.md
+├── main.md
+├── make.bat
+├── migrations
+│   ├── README
+│   ├── env.md
+│   ├── alembic.ini
+│   ├── env.md
+│   ├── script.md
+│   └── versions
+│       ├── 6f17dd1c46c2_initial_migration.md
+│       └── env.md
+├── models
+│   ├── dataset.md
+│   └── user.md
+├── mvp_testing.md
+├── notes.md
+├── outline.md
+├── permissions
+│   └── has_permissions.md
+├── preprocessing
+│   ├── apply_log_transformation.md
+│   ├── bin_categorical_data.md
+│   ├── bin_numeric_data.md
+│   ├── clean_transformed_data.md
+│   ├── convert_to_lowercase.md
+│   ├── create_binary_flags.md
+│   ├── create_interaction_terms.md
+│   ├── encode_data.md
+│   ├── extract_date_component.md
+│   ├── extract_time_based_features.md
+│   ├── feature_engineering.md
+│   ├── feature_scaling.md
+│   ├── handle_missing_values.md
+│   ├── memory_reduction.md
+│   ├── polynomial_features.md
+│   ├── preprocessing_steps.md
+│   ├── remove_duplicates.md
+│   ├── remove_outliers_task.md
+│   ├── remove_special_characters.md
+│   ├── remove_white_spaces.md
+│   ├── scaling_and_normalization.md
+│   ├── text_length_feature.md
+│   └── tokenize_text.md
+├── rate_limiting
+│   ├── api_limiter.md
+│   ├── login_limiter.md
+│   ├── password_limiter.md
+│   ├── rate_limits.md
+│   ├── search_request_limiter.md
+│   └── upload_limiter.md
+├── requirements.md
+├── script_commands
+│   ├── celery_module.md
+│   ├── commands.md
+│   ├── manage.md
+│   ├── other_scripts.md
+│   └── task_runner.md
+├── security
+│   └── CSRF_protection.md
+├── session
+│   └── session_timeout.md
+├── source
+│   ├── _static
+│   ├── _templates
+│   ├── conf.md
+│   └── index.md
+├── state
+│   ├── state_error_handling
+│   │   ├── error_handling.md
+│   │   ├── error_handling_build_integration.md
+│   │   ├── error_handling_code_generation.md
+│   │   ├── error_handling_config_options.md
+│   │   ├── error_handling_metadata_extraction.md
+│   │   ├── error_handling_naming_conventions.md
+│   │   ├── error_handling_project_analysis.md
+│   │   └── error_handling_template_engine.md
+│   ├── stores
+│   │   ├── build_integration.md
+│   │   ├── code_generation.md
+│   │   ├── generate_store.md
+│   │   ├── metadata_extraction.md
+│   │   └── template_engine.md
+│   └── todo.md
+├── testing
+│   └── unit_test.md
+├── todos
+│   ├── hooks.md
+│   ├── todo.md
+│   └── todo_management
+│       ├── async_generate_todo.md
+│       └── log_todo.md
+├── utils
+│   ├── find_models.md
+│   ├── system_utils
+│   │   ├── generate_html_from_tsx.md
+│   │   └── generate_readme.md
+│   └── user_utils
+│       ├── tasks_module.md
+│       └── tier_system.md
+├── versioning
+│   ├── aqua
+│   │   └── aqua_generator.md
+│   ├── fluence
+│   │   └── fluence_generator.md
+│   ├── todo.md
+│   ├── version_generator.md
+│   └── web3
+│       └── web3_generator.md
+├── web3
+└── wsgi.md

@@ -1,0 +1,1 @@
+scripts/typescript/file-management/smart-fix-comments.sh

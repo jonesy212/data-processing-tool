@@ -1,0 +1,1 @@
+scripts/typescript/file-management/fix-generate-tree-comments.sh

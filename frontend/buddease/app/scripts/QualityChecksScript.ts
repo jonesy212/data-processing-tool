@@ -1,0 +1,1 @@
+../../scripts/typescript/code-generation/QualityChecksScript.ts

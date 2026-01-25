@@ -1,0 +1,382 @@
+#!/usr/bin/env node
+
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import type { 
+    FixResult, 
+    TypeImportError
+} from '@/app/scripts/types/import-fixes';
+
+// Helper to safely get error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else if (typeof error === 'string') {
+    return error;
+  } else {
+    return String(error);
+  }
+}
+
+
+
+function showTimeSavings(fixesCount: number) {
+  const MANUAL_TIME_PER_FIX = 15; // seconds
+  const AUTOMATED_TIME_PER_FIX = 0.5; // seconds
+  
+  const manualTime = fixesCount * MANUAL_TIME_PER_FIX;
+  const automatedTime = fixesCount * AUTOMATED_TIME_PER_FIX;
+  const timeSaved = manualTime - automatedTime;
+  
+  console.log('\n⏱️  TIME SAVINGS ESTIMATE:');
+  console.log('='.repeat(40));
+  console.log(`Manual time: ${Math.round(manualTime / 60)} minutes`);
+  console.log(`Automated time: ${Math.round(automatedTime)} seconds`);
+  console.log(`Time saved: ${Math.round(timeSaved / 60)} minutes`);
+  console.log(`Efficiency: ${Math.round(manualTime / automatedTime)}x faster!`);
+}
+
+function captureAllTypeErrors(): TypeImportError[] {
+  console.log('🔍 Running TypeScript compiler to capture ALL type-only import errors...\n');
+  
+  const errors: TypeImportError[] = [];
+  
+  try {
+    // Run tsc and capture all output
+    const output = execSync('pnpm exec tsc --noEmit --skipLibCheck 2>&1', {
+      encoding: 'utf8',
+      stdio: 'pipe'
+    }).toString();
+    
+    const lines = output.split('\n');
+    
+    // Pattern: "'BaseDataEntity' is a type and must be imported using a type-only import"
+    const errorPattern = /'([^']+)' is a type and must be imported using a type-only import/;
+    const filePattern = /([^\(\s]+)\((\d+),(\d+)\):/;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const errorMatch = line.match(errorPattern);
+      
+      if (errorMatch) {
+        const typeName = errorMatch[1];
+        
+        // Look backward for file location
+        for (let j = Math.max(0, i - 3); j < i; j++) {
+          const fileMatch = lines[j].match(filePattern);
+          if (fileMatch) {
+            const [, file, lineNum, column] = fileMatch;
+            errors.push({
+              typeName,
+              file: path.resolve(process.cwd(), file),
+              line: parseInt(lineNum),
+              column: parseInt(column)
+            });
+            break;
+          }
+        }
+      }
+    }
+    
+    console.log(`📊 Found ${errors.length} type-only import errors\n`);
+    
+  } catch (error) {
+    console.log('⚠️  Error running TypeScript compiler:', getErrorMessage(error));
+    
+    // Fallback: use grep to find likely type imports
+    console.log('\n🔍 Falling back to pattern matching...');
+    const commonTypes = [
+      'BaseDataEntity', 'BaseDataRoot', 'DefaultExcludedFields', 'DefaultMeta',
+      'UnifiedMetadata', 'StructuredMetadata', 'Attachment', 'SharedMetadata',
+      'EventManager', 'InitializedState'
+    ];
+    
+    for (const typeName of commonTypes) {
+      try {
+        const stdout = execSync(
+          `grep -rn "import.*${typeName}.*from" src/ --include="*.ts" --include="*.tsx" | grep -v "import type" || true`,
+          { encoding: 'utf8' }
+        ).toString();
+        
+        const lines = stdout.split('\n').filter(Boolean);
+        lines.forEach(line => {
+          const [filePath, lineNumStr, ...rest] = line.split(':');
+          errors.push({
+            typeName,
+            file: filePath,
+            line: parseInt(lineNumStr) || 1,
+            importStatement: rest.join(':').trim()
+          });
+        });
+      } catch (e) {
+        // Continue
+      }
+    }
+  }
+  
+  return errors;
+}
+
+function findImportStatements(errors: TypeImportError[]): TypeImportError[] {
+  console.log('🔍 Finding import statements for each error...\n');
+  
+  const results: TypeImportError[] = [];
+  
+  for (const error of errors) {
+    try {
+      const fileContent = fs.readFileSync(error.file, 'utf8');
+      const lines = fileContent.split('\n');
+      
+      if (error.line && error.line <= lines.length) {
+        const targetLine = lines[error.line - 1];
+        
+        // Try to find the import statement (might span multiple lines)
+        let importStatement = targetLine;
+        let importLine = error.line - 1;
+        
+        // Look backward for start of import
+        while (importLine > 0 && !lines[importLine].trim().startsWith('import')) {
+          importLine--;
+        }
+        
+        // Look forward for end of import
+        let endLine = importLine;
+        while (endLine < lines.length && !lines[endLine].trim().endsWith(';')) {
+          endLine++;
+        }
+        
+        // Combine multi-line import
+        importStatement = lines.slice(importLine, endLine + 1).join(' ').replace(/\s+/g, ' ');
+        
+        if (importStatement.includes(`import`) && importStatement.includes(error.typeName)) {
+          results.push({
+            ...error,
+            importStatement,
+            line: importLine + 1 // Start line of the import
+          });
+          
+          console.log(`📄 ${path.basename(error.file)}:${error.line}`);
+          console.log(`   Type: ${error.typeName}`);
+          console.log(`   Import: ${importStatement.substring(0, 80)}${importStatement.length > 80 ? '...' : ''}`);
+        }
+      }
+    } catch (fileError) {
+      console.log(`❌ Could not read ${error.file}:`, getErrorMessage(fileError));
+    }
+  }
+  
+  return results;
+}
+
+function generateFixes(errors: TypeImportError[]): FixResult[] {
+  console.log('\n🔧 Generating fixes...\n');
+  
+  const fixes: FixResult[] = [];
+  const processedFiles = new Set<string>();
+  
+  for (const error of errors) {
+    if (!error.importStatement) continue;
+    
+    let fixedImport = error.importStatement;
+    
+    // Fix 1: Change regular import to type import
+    if (fixedImport.includes('import {') && !fixedImport.includes('import type {')) {
+      fixedImport = fixedImport.replace('import {', 'import type {');
+    }
+    // Fix 2: Change default import to type import
+    else if (fixedImport.startsWith(`import ${error.typeName} from`) && 
+             !fixedImport.startsWith(`import type ${error.typeName} from`)) {
+      fixedImport = fixedImport.replace('import ', 'import type ');
+    }
+    
+    if (fixedImport !== error.importStatement) {
+      fixes.push({
+        file: error.file,
+        original: error.importStatement,
+        fixed: fixedImport,
+        success: true,
+        line: error.line || 1
+      });
+      
+      if (!processedFiles.has(error.file)) {
+        console.log(`📝 ${path.basename(error.file)}:`);
+        processedFiles.add(error.file);
+      }
+      
+      console.log(`   Line ${error.line}: ${error.typeName}`);
+      console.log(`   ${error.importStatement.substring(0, 60)}${error.importStatement.length > 60 ? '...' : ''}`);
+      console.log(`   → ${fixedImport.substring(0, 60)}${fixedImport.length > 60 ? '...' : ''}`);
+      console.log('');
+    }
+  }
+  
+  return fixes;
+}
+
+function applyFixes(fixes: FixResult[], dryRun: boolean = false) {
+  console.log(`\n${dryRun ? '🔍 DRY RUN' : '🔧 APPLYING FIXES'}`);
+  console.log('=' .repeat(50));
+  
+  const fixesByFile = new Map<string, FixResult[]>();
+  
+  // Group fixes by file
+  fixes.forEach(fix => {
+    if (!fixesByFile.has(fix.file)) {
+      fixesByFile.set(fix.file, []);
+    }
+    fixesByFile.get(fix.file)!.push(fix);
+  });
+  
+  let totalApplied = 0;
+  let totalFailed = 0;
+  
+  for (const [filePath, fileFixes] of fixesByFile) {
+    try {
+      const relativePath = path.relative(process.cwd(), filePath);
+      console.log(`\n📄 ${relativePath}: ${fileFixes.length} fix${fileFixes.length > 1 ? 'es' : ''}`);
+      
+      if (!dryRun) {
+        // Create backup
+        const backupPath = `${filePath}.backup-${Date.now()}`;
+        const content = fs.readFileSync(filePath, 'utf8');
+        fs.writeFileSync(backupPath, content, 'utf8');
+        console.log(`   💾 Backup: ${backupPath}`);
+      }
+      
+      if (!dryRun) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        let lines = content.split('\n');
+        
+        // Sort fixes by line number (descending) to avoid line shifting issues
+        const sortedFixes = [...fileFixes].sort((a, b) => (b.line || 0) - (a.line || 0));
+        
+        for (const fix of sortedFixes) {
+          const lineIndex = fix.line - 1;
+          if (lineIndex >= 0 && lineIndex < lines.length) {
+            // Find the actual import line (might be multi-line)
+            let importStart = lineIndex;
+            while (importStart > 0 && !lines[importStart].trim().startsWith('import')) {
+              importStart--;
+            }
+            
+            let importEnd = importStart;
+            while (importEnd < lines.length && !lines[importEnd].trim().endsWith(';')) {
+              importEnd++;
+            }
+            
+            // Reconstruct the import to compare
+            const actualImport = lines.slice(importStart, importEnd + 1).join(' ').replace(/\s+/g, ' ');
+            
+            if (actualImport === fix.original) {
+              // Replace the import lines
+              const fixedLines = fix.fixed.split(';')[0].split('{').join('{\n').split('}').join('\n}').split(',');
+              // Simple implementation - just replace the first line
+              lines[importStart] = fix.fixed.split('\n')[0] || fix.fixed;
+              totalApplied++;
+              console.log(`   ✅ Line ${fix.line}: Fixed`);
+            } else {
+              console.log(`   ⚠️  Line ${fix.line}: Import doesn't match expected pattern`);
+              console.log(`      Expected: ${fix.original.substring(0, 60)}...`);
+              console.log(`      Found: ${actualImport.substring(0, 60)}...`);
+              totalFailed++;
+            }
+          }
+        }
+        
+        // Write changes
+        fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
+      }
+      
+    } catch (error) {
+      console.log(`   ❌ Error:`, getErrorMessage(error));
+      totalFailed += fileFixes.length;
+    }
+  }
+  
+  console.log('\n📊 SUMMARY:');
+  console.log(`   Total files: ${fixesByFile.size}`);
+  console.log(`   Total fixes: ${fixes.length}`);
+  if (!dryRun) {
+    console.log(`   Applied: ${totalApplied}`);
+    console.log(`   Failed: ${totalFailed}`);
+  } else {
+    console.log(`   Would apply: ${fixes.length} fixes`);
+  }
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const dryRun = args.includes('--dry-run') || args.includes('--dryrun');
+  const quickMode = args.includes('--quick');
+  
+  console.log('🚀 Type-Only Import Fixer');
+  console.log('=========================\n');
+  
+  if (dryRun) {
+    console.log('🔍 DRY RUN MODE - No changes will be made\n');
+  }
+  
+  if (quickMode) {
+    console.log('⚡ QUICK MODE - Using pattern matching only\n');
+  }
+  
+  try {
+    // Step 1: Capture errors
+    const errors = captureAllTypeErrors();
+    
+    if (errors.length === 0) {
+      console.log('✅ No type-only import errors found!');
+      return;
+    }
+    
+    // Step 2: Find import statements
+    const errorsWithImports = quickMode ? errors : findImportStatements(errors);
+    
+    // Step 3: Generate fixes
+    const fixes = generateFixes(errorsWithImports);
+    
+    if (fixes.length === 0) {
+      console.log('✅ No fixes needed (or all imports are already correct)');
+      return;
+    }
+    
+    // Step 4: Apply fixes
+    applyFixes(fixes, dryRun);
+    showTimeSavings(fixes.length);
+
+    if (!dryRun) {
+      console.log('\n🔍 Verifying fixes...');
+      try {
+        const stdout = execSync('pnpm exec tsc --noEmit --skipLibCheck 2>&1 | grep -c "is a type and must be imported" || true', {
+          encoding: 'utf8'
+        }).toString();
+        const remainingErrors = parseInt(stdout.trim()) || 0;
+        console.log(`📊 Remaining type-only import errors: ${remainingErrors}`);
+        
+        if (remainingErrors > 0) {
+          console.log('\n⚠️  Some errors remain. You may need to:');
+          console.log('   1. Run the fixer again');
+          console.log('   2. Check for edge cases manually');
+          console.log('   3. Look for default imports that need attention');
+        } else {
+          console.log('\n🎉 All type-only import errors fixed!');
+        }
+      } catch (e) {
+        console.log('⚠️  Could not verify fixes automatically');
+      }
+    }
+    
+  } catch (error) {
+    console.error('❌ Error:', getErrorMessage(error));
+    process.exit(1);
+  }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch(error => {
+    console.error('Fatal error:', getErrorMessage(error));
+    process.exit(1);
+  });
+}
+

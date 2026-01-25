@@ -1,0 +1,26 @@
+src/
+|-- components/
+|   |-- UserManagement/
+|   |-- RoleAssignment/
+|   |-- PermissionManagement/
+|-- services/
+|   |-- NFTService.ts
+|   |-- RoleService.ts
+|   |-- PermissionService.ts
+|-- utils/
+|   |-- NFTUtils.ts
+|   |-- RoleUtils.ts
+|   |-- PermissionUtils.ts
+|-- tests/
+|   |-- UserManagement.test.ts
+|   |-- RoleAssignment.test.ts
+|   |-- PermissionManagement.test.ts
+|   |-- NFTService.test.ts
+|   |-- RoleService.test.ts
+|   |-- PermissionService.test.ts
+|-- models/
+|   |-- User.ts
+|   |-- Role.ts
+|   |-- Permission.ts
+|   |-- NFT.ts
+|-- index.tsus

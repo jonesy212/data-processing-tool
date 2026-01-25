@@ -1,0 +1,32 @@
+// debugInfoUtils.tsx
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+
+export function addDebugInfo<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  configs: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  configId: string,
+  message: string,
+  operation?: string
+): void {
+  for (const config of configs) {
+    if (config.id === configId) {
+      config.debugInfo = {
+        message,
+        timestamp: new Date().toISOString(),
+        operation,
+      };
+      console.log(`Debug info added: ${message}`);
+      return;
+    }
+  }
+  console.warn(`No config found with ID: ${configId}`);
+}

@@ -1,0 +1,160 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Ignore compiled files
+*.class
+*.o
+*.pyc
+
+# Ignore temporary files
+*~
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Ignore build output
+/dist/
+
+# Ignore environment-specific files
+.env
+
+# Ignore editor-specific files
+.vscode/
+
+# Ignore logs
+logs/
+
+# Ignore specific files added in this commit
+tsconfig.json
+
+# pnpm-lock.yaml
+
+# Ignore all .py files
+*.py
+
+/frontend/buddease/src/app/components/documents/privateDocs
+
+# ============= BACKUP FILES =============
+# Smart Backup System
+.smart-backups/
+.smart-backup-config.local.json
+*.backup.*
+*.backup-*
+*.bak
+.bak/
+
+# Migration backups
+.migration-backups/
+.migration-reports/
+
+# Backup directories
+.comment-fix-backups/
+.type-import-backups/
+.import-fix-backups/
+
+# Temporary backup files
+backup-*
+*.backup
+
+# Configuration backup files
+tsconfig.*.backup.*
+package.json.backup.*
+*.config.backup.*
+
+# Script backup files
+scripts/**/*.backup.*
+
+# Missing comment backup files
+*.missing-comment-backup.*
+*.missing-comment-backup-*
+
+# Permanent safe points
+.permanent-safe-points/
+
+# ============= REPORTS =============
+reports/
+*.report.*
+*.summary.*
+
+# Import fix reports
+*-import-fixes-*.md
+*-import-summary-*.txt
+*-type-import-fixes-*.md
+core-type-import-fixes-*.md
+interface-import-fixes-*.md
+
+# ============= TEST FILES =============
+# Temporary test files
+test-*
+*-test.*
+
+# TypeScript/JavaScript test files
+test-*.ts
+test-*.js
+test-*.mjs
+test-*.tsx
+test-*.jsx
+
+# ============= TEMPORARY FILES =============
+tmp/
+temp/
+.tmp/
+.temp/
+*.tmp
+*.temp
+
+# Temporary analysis files
+*.analysis.*
+*.scan.*
+*.fix.*
+
+# Generated analysis
+*.generated.*
+
+# ============= MISSING COMMENT BACKUPS =============
+*.missing-comment-backup.*
+*.missing-comment-backup-*
+
+# ============= REPORTS =============
+reports/
+*.report.*
+*.summary.*
+*-import-fixes-*.md
+*-import-summary-*.txt
+*-type-import-fixes-*.md
+
+# ============= TEST/SCRATCH FILES =============
+test-*
+*-test.*
+test-headers/

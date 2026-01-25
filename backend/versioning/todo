@@ -1,0 +1,23 @@
+logging_system/
+|-- web3_logger/
+|   |-- smart_contract_changes_logger.py
+|   |-- dapp_changes_logger.py
+|   |-- consensus_algorithm_changes_logger.py
+|   |-- gas_fees
+_changes_logger.py
+|   |-- blockchain_scalability_changes_logger.py
+|   |-- token_standards_changes_logger.py
+|   |-- web3_libraries_changes_logger.py
+|   |-- oracle_integration_changes_logger.py
+|   |-- cross_chain_compatibility_changes_logger.py
+|   |-- governance_mechanism_changes_logger.py
+|   |-- security_audits_changes_logger.py
+|   |-- wallet_integration_changes_logger.py
+|   |-- node_upgrade_changes_logger.py
+|   |-- ipfs_integration_changes_logger.py
+|   |-- privacy_features_changes_logger.py
+|   |-- cross_platform_changes_logger.py
+|   |-- smart_contract_standards_changes_logger.py
+|   |-- token_swap_mechanism_changes_logger.py
+|   |-- eip_changes_logger.py
+|   |-- generic_changes_logger.py

@@ -1,0 +1,1 @@
+../../../scripts/typescript/config/react-native.config.js

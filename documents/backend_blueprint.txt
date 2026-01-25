@@ -1,0 +1,285 @@
+docs
+├── backend_docs
+│   ├── api
+│   │   ├── api.md
+│   │   └── api_versions.md
+│   ├── authentication
+│   │   ├── auth.rst
+│   │   └── auth.py
+│   ├── blueprint_routes
+│   │   ├── change_password.rst
+│   │   └── user_bp.rst
+│   ├── cache
+│   │   └── caching_api.rst
+│   ├── configs
+│   │   ├── api_config.rst
+│   │   ├── comprehensive_api_config.rst
+│   │   ├── config.rst
+│   │   ├── dev_config.rst
+│   │   ├── log_config.rst
+│   │   └── prod_config_template.rst
+│   ├── database
+│   │   ├── extensions.rst
+│   │   ├── generate_fake_data.rst
+│   │   ├── generators
+│   │   │   ├── async_generate_data.rst
+│   │   │   ├── async_generate_route.rst
+│   │   │   ├── dashboard_data_generator.rst
+│   │   │   └── typescript
+│   │   │       ├── category.rst
+│   │   │       ├── generate_and_insert_fake_data_for_models.rst
+│   │   │       ├── generate_interfaces.rst
+│   │   │       ├── generate_typescript_code.rst
+│   │   │       └── run_draft.rst
+│   │   ├── init_db.rst
+│   │   ├── mock_db
+│   │   │   └── users_db.rst
+│   │   ├── update_notification_settings_db.rst
+│   │   └── validation
+│   │       └── validate_notification_settings.rst
+│   ├── deployment.rst
+│   ├── documents
+│   │   ├── backend_docs
+│   │   │   ├── api
+│   │   │   │   ├── api.md
+│   │   │   │   └── api_versions.md
+│   │   │   └── contributing.md
+│   │   ├── conf.py
+│   │   ├── conflict_resolution.rst
+│   │   ├── create_document.rst
+│   │   ├── document.rst
+│   │   ├── document_locking.rst
+│   │   ├── document_version.rst
+│   │   ├── frontend_docs
+│   │   └── offline_editing_manager.rst
+│   ├── errorhandling
+│   │   └── error_handling.rst
+│   ├── handlers
+│   │   ├── FluenceAquaIntegration.rst
+│   │   ├── async_web3_handler.rst
+│   │   ├── fluence_aqua_handler.rst
+│   │   └── web3_handlers
+│   │       ├── social_media.rst
+│   │       └── web3.rst
+│   ├── hooks
+│   │   ├── hook_converter.rst
+│   │   └── user_code.rst
+│   ├── hypothesis_testing
+│   │   └── perform_hypothesis_test.rst
+│   ├── instance.rst
+│   ├── logging_system
+│   │   ├── activity_monitor
+│   │   │   ├── calculate_time_since_last_change.rst
+│   │   │   ├── conditions.rst
+│   │   │   ├── get_active_task_count.rst
+│   │   │   ├── get_cpu_usage.rst
+│   │   │   ├── get_current_weather.rst
+│   │   │   ├── get_incoming_request_rate.rst
+│   │   │   ├── memory_usage.rst
+│   │   │   └── time_since_last_interaction.rst
+│   │   ├── audit_logger.rst
+│   │   ├── data_processing_ log_data_processing_logger.rst
+│   │   ├── error_logger.rst
+│   │   ├── flake8_handlers.rst
+│   │   ├── flake8_plugin.rst
+│   │   ├── generate_logger.rst
+│   │   ├── log_todos.rst
+│   │   ├── logger_config.rst
+│   │   ├── logger_handlers.rst
+│   │   ├── logger_rules.rst
+│   │   ├── navigation_logger.rst
+│   │   ├── performance_logger.rst
+│   │   ├── session_logger.rst
+│   │   ├── smart_contract_changes_logger.rst
+│   │   ├── todo
+│   │   ├── trackers
+│   │   │   ├── task_tracker.rst
+│   │   │   ├── team_tracker.rst
+│   │   │   └── user_tracker.rst
+│   │   ├── usage_logger.rst
+│   │   ├── warning_events.rst
+│   │   └── web3_wallet
+│   │       ├── blockchain_scalability_changes_logger.rst
+│   │       ├── consensus_algorithm_changes_logger.rst
+│   │       ├── cross_chain_compatibility_changes_logger.rst
+│   │       ├── cross_platform_changes_logger.rst
+│   │       ├── dapp_changes_logger.rst
+│   │       ├── eip_changes_logger.rst
+│   │       ├── generic_changes_logger.rst
+│   │       ├── governance_mechanism_changes_logger.rst
+│   │       ├── ipfs_integration_changes_logger.rst
+│   │       ├── node_upgrade_changes_logger.rst
+│   │       ├── oracle_integration_changes_logger.rst
+│   │       ├── privacy_features_changes_logger.rst
+│   │       ├── security_audits_changes_logger.rst
+│   │       ├── smart_contract_standards_changes_logger.rst
+│   │       ├── token_standards_changes_logger.rst
+│   │       ├── token_swap_mechanism_changes_logger.rst
+│   │       ├── wallet_integration_changes_logger.rst
+│   │       └── web3_libraries_changes_logger.rst
+│   ├── main.rst
+│   ├── make.bat
+│   ├── middleware.rst
+│   ├── migrations
+│   │   ├── README
+│   │   ├── alembic.ini
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions
+│   │       ├── 6f17dd1c46c2_initial_migration.rst
+│   │       └── __pycache__
+│   │           └── 6f17dd1c46c2_initial_migration.cpython-310.pyc
+│   ├── models
+│   │   ├── company
+│   │   │   ├── company.rst
+│   │   │   └── company_recruiters.rst
+│   │   ├── dataset.rst
+│   │   ├── execution_log.rst
+│   │   ├── processing_logs.rst
+│   │   ├── project
+│   │   │   └── project.rst
+│   │   ├── security
+│   │   │   └── token_owner.rst
+│   │   ├── task
+│   │   │   ├── async_tasks.rst
+│   │   │   ├── data_processing_task.rst
+│   │   │   ├── task.rst
+│   │   │   └── task_history.rst
+│   │   ├── team
+│   │   │   ├── team.rst
+│   │   │   └── todo.txt
+│   │   ├── user
+│   │   │   ├── __init__.rst
+│   │   │   ├── get_remote_address.rst
+│   │   │   ├── user.rst
+│   │   │   ├── user_activity_log.rst
+│   │   │   ├── user_feedback.rst
+│   │   │   ├── user_history.rst
+│   │   │   ├── user_settings.rst
+│   │   │   └── user_support.rst
+│   │   └── user_types
+│   │       ├── job_seeker.rst
+│   │       └── recruiter_profile.rst
+│   ├── mvp_testing.rst
+│   ├── notes.txt
+│   ├── outline.txt
+│   ├── pagiation
+│   │   └── get_pagiation_users.rst
+│   ├── patches
+│   │   └── react-scripts+4.0.3.patch.ts
+│   ├── permissions
+│   │   └── has_permissions.rst
+│   ├── pnpm-lock.yaml
+│   ├── preprocessing
+│   │   ├── apply_log_transformation.rst
+│   │   ├── bin_categorical_data.rst
+│   │   ├── bin_numeric_data.rst
+│   │   ├── clean_transformed_data.rst
+│   │   ├── convert_to_lowercase.rst
+│   │   ├── create_binary_flags.rst
+│   │   ├── create_interaction_terms.rst
+│   │   ├── encode_data.rst
+│   │   ├── extract_date_component.rst
+│   │   ├── extract_time_based_features.rst
+│   │   ├── feature_engineering.rst
+│   │   ├── feature_scaling.rst
+│   │   ├── handle_missing_values.rst
+│   │   ├── memory_reduction.rst
+│   │   ├── polynomial_features.rst
+│   │   ├── preprocessing_steps.rst
+│   │   ├── remove_duplicates.rst
+│   │   ├── remove_outliers_task.rst
+│   │   ├── remove_special_characters.rst
+│   │   ├── scaling_and_normalization.rst
+│   │   ├── text_length_feature.rst
+│   │   └── tokenize_text.rst
+│   ├── rate_limiting
+│   │   ├── api_limiter.rst
+│   │   ├── login_limiter.rst
+│   │   ├── password_limiter.rst
+│   │   ├── rate_limits.rst
+│   │   ├── search_request_limiter.rst
+│   │   └── upload_limiter.rst
+│   ├── requirements.txt
+│   ├── script_commands
+│   │   ├── celery_module.rst
+│   │   ├── commands.rst
+│   │   ├── manage.rst
+│   │   ├── other_scripts.rst
+│   │   └── task_runner.rst
+│   ├── security
+│   │   └── CSRF_protection.rst
+│   ├── session
+│   │   └── session_timeout.rst
+│   ├── source
+│   │   ├── _static
+│   │   ├── _templates
+│   │   ├── conf.rst
+│   │   └── index.rst
+│   ├── state
+│   │   ├── state_error_handling
+│   │   │   ├── error_handling.rst
+│   │   │   ├── error_handling_build_integration.rst
+│   │   │   ├── error_handling_code_generation.rst
+│   │   │   ├── error_handling_config_options.rst
+│   │   │   ├── error_handling_metadata_extraction.rst
+│   │   │   ├── error_handling_naming_conventions.rst
+│   │   │   ├── error_handling_project_analysis.rst
+│   │   │   └── error_handling_template_engine.rst
+│   │   ├── stores
+│   │   │   ├── build_integration.rst
+│   │   │   ├── code_generation.rst
+│   │   │   ├── generate_store.rst
+│   │   │   ├── metadata_extraction.rst
+│   │   │   └── template_engine.rst
+│   │   └── todo
+│   ├── testing
+│   │   ├── base_generator_unit_test.rst
+│   │   ├── compression_test
+│   │   └── unit_test.rst
+│   ├── todo.sql
+│   ├── todos
+│   │   ├── hooks.rst
+│   │   ├── todo
+│   │   ├── todo.rst
+│   │   └── todo_management
+│   │       ├── __init__.rst
+│   │       ├── async_generate_todo.rst
+│   │       └── log_todo.rst
+│   ├── utils
+│   │   ├── compression_system
+│   │   │   ├── decompression
+│   │   │   ├── src
+│   │   │   ├── todo
+│   │   │   └── utils
+│   │   ├── determine_file_type.rst
+│   │   ├── find_models.rst
+│   │   ├── system_utils
+│   │   │   ├── generate_html_from_tsx.rst
+│   │   │   └── generate_readme.rst
+│   │   └── user_utils
+│   │   │   ├── permissions.rst
+│   │   │   ├── tasks_module.rst
+│   │   |   ├── permissions.rst
+│   │   │   ├── tasks_module.rst
+│   │   │   └── tier_system.rst
+│   │   ├── versioning
+│   │   │   ├── aqua
+│   │   │   │   ├── aqua_generator.rst
+│   │   │   │   └── protocol.rst
+│   │   │   ├── cache_manager.rst
+│   │   │   ├── fluence
+│   │   │   │   └── fluence_generator.rst
+│   │   │   ├── main.rst
+│   │   │   ├── simultaneous_edits.rst
+│   │   │   ├── synchronize_cache_from_frontend.rst
+│   │   │   ├── test_cache_manager.rst
+│   │   │   ├── todo.rst
+│   │   │   ├── version_generator.rst
+│   │   │   ├── versioning_system.rst
+│   │   │   └── web3
+│   │   │       └── web3_generator.rst
+│   │   ├── web3
+│   │   │   ├── web3.rst
+│   │   │   └── web3.py
+│   │   ├── wsgi.rst

@@ -1,0 +1,1 @@
+scripts/typescript/testing/test-path-resolution.mjs

@@ -1,0 +1,1 @@
+scripts/shell/build/capture-type-errors.sh

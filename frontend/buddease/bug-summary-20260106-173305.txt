@@ -1,0 +1,20 @@
+# BUG SUMMARY
+# Generated: Tue Jan  6 17:37:53 CST 2026
+#
+Total files scanned: 0
+Buggy files: 0
+Buggy lines: 0
+Total lines scanned: 0
+Bug density: 0.00%
+
+Top files by bug count:
+Bug lines:   Line 643: // with TypeScript keyword --
+Bug lines:   Line 614: // with TypeScript keyword --
+Bug lines:   Line 270: // with TypeScript keyword --
+Bug lines:   Line 1: // ... from (not a sentence) --
+Bug lines:   Line 187: // with TypeScript keyword --
+Bug lines:   Line 1787: // with TypeScript keyword --
+Bug lines:   Line 1206: // with TypeScript keyword --
+Bug lines:   Line 1051: // with TypeScript keyword --
+Bug count: 8 Bug lines:   Line 2: // ... from (not a sentence)
+Bug count: 6 Bug lines:   Line 785: // with TypeScript keyword

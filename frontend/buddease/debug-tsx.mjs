@@ -1,0 +1,1 @@
+scripts/typescript/code-quality/debug-tsx.mjs

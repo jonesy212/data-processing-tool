@@ -1,0 +1,108 @@
+// DataSetModel.ts
+import type { Team } from "@/core/components/teams/Team";
+import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { ModifiedDate } from "@/core/documents/DocType";
+import type { DocumentPath } from "@/core/documents/DocumentPath";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { Content } from "@/core/models/content/AddContent";
+import type { BaseData, Data } from '@/core/models/data/Data';
+import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";
+import type { DocumentBase } from '@/core/state/stores/DocumentStore';
+import type { PhaseTypeEnums } from '@/core/state/stores/DocumentStore';
+import type { AllTypes } from "@/core/typings/PropTypes";
+
+
+interface DatasetModel<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends DocumentBase<T, K> {
+  filePathOrUrl?: string;
+  uploadedBy: string; // Assuming this is the user ID
+  uploadedAt?: string; // Assuming the date is sent as a string
+  tagsOrCategories: string; // Comma-separated list or JSON array
+  format: string;
+  visibility: AllTypes;
+  url?: string |undefined;
+  // Add other fields as needed
+  type?: AllTypes;
+
+  // Relationships
+  uploadedByTeamId: number | null; // Assuming this is the team ID
+  uploadedByTeam: Team | null; // Assuming you have a Team interface
+  all?: string | null;
+  lastModifiedDate: ModifiedDate | undefined;
+  lastModifiedBy: string; // Assuming this is the user ID
+  lastModifiedByTeamId?: number | null; // Assuming this is the team ID
+  lastModifiedByTeam?: Team | null;
+  filePath?: DocumentPath<T, K, Meta>;
+  tags?: string[] | TagsRecord<T>; 
+  createdBy: string | undefined;
+  updatedBy: string;
+  documents: WritableDraft<DocumentObject<T, K, Meta>>[];
+  createdAt: string | Date | undefined;
+  updatedAt?: string | Date; 
+  selectedDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Specify type arguments for DocumentData
+  selectedDocuments?: DocumentData<T, K>[];
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  phaseType: PhaseTypeEnums
+  // Optional: Add other relationships as needed
+}
+
+// Example usage:
+const dataset: DatasetModel<Data<BaseData>> = {
+  id: 1,
+  name: "Example Dataset",
+  title: "Example Dataset",
+  description: "An example dataset",
+  filePathOrUrl: "/datasets/example.csv",
+  uploadedBy: '1',
+  uploadedAt: "2023-01-01T12:00:00Z",
+  tagsOrCategories: "tag1, tag2",
+  format: "csv",
+  visibility: "private",
+  uploadedByTeamId: 1,
+  uploadedByTeam: null,
+  type: "url",
+
+  phaseType: ProgressPhase.Draft,
+  url: "https://example.com/datasets/example.csv",
+  lastModifiedDate: {
+    value: new Date("2023-01-01T12:00:00Z"),
+    isModified: false,
+  } as ModifiedDate,
+  lastModifiedBy: "user1",
+  tags: {},
+  createdBy: "",
+  updatedBy: "",
+  selectedDocument: null,
+  all: null,
+  documents: [],
+  createdAt: undefined,
+  content: {
+    id: undefined,
+    title: "",
+    description: "",
+    subscriberId: "",
+    category: undefined,
+    categoryProperties: undefined,
+    timestamp: "",
+    length: 0,
+    items: [],
+    data: undefined,
+    contentItems: [],
+    schema: {},
+    apiEndpoint, apiKey, timeout, retryAttempts,
+
+  }
+
+};export { dataset };
+export type { DatasetModel };
+

@@ -1,0 +1,1 @@
+../../scripts/typescript/misc/step-by-step-fixer.ts

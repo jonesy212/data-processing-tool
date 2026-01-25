@@ -1,0 +1,1 @@
+../../scripts/shell/backup/compare-comments-backup.sh

@@ -1,0 +1,50 @@
+// autosaveDrawing.ts
+// Import necessary dependencies
+
+import { saveDrawingToDatabase } from '@/core/api/ApiDrawing';
+import { Tracker } from '@/core/models/tracker/Tracker';
+import type { WritableDraft } from '@/core/state/redux/ReducerGenerator';
+import type { TrackerAttachment, TrackerEntity, TrackerExcludedFields, TrackerIncludedFields, TrackerK, TrackerMeta } from '@/core/typings/entities/TrackerEntity';
+  
+  // Define the Draw type representing the structure of a drawing
+  type Draw = {
+      id: number;
+      content: string;
+      // Add more properties as needed
+  };
+
+  // Function to perform autosave of the drawing
+  const autosaveDrawing = async (drawing: WritableDraft<Tracker<TrackerEntity, TrackerK,  TrackerMeta,  TrackerAttachment, TrackerIncludedFields,  TrackerExcludedFields>>[]): Promise<boolean> => {
+    try {
+      // Check if drawing content is provided
+      if (!drawing) {
+        console.log("Drawing content is missing. Autosave skipped.");
+        return false; // Autosave skipped, return false
+      }
+
+      // Log start of autosave process
+      console.log("Autosaving drawing content...");
+
+      // Save drawing content to database
+      const autosaveResult = await saveDrawingToDatabase(drawing);
+
+      // Check if the autosave was successful
+      if (autosaveResult) {
+        console.log("Drawing content saved successfully.");
+        return true;
+      } else {
+        throw new Error("Failed to save drawing content.");
+      }
+    } catch (error: any) {
+      // Handle any errors that occur during autosave
+      console.error("Autosave failed:", error.message);
+      // Return false to indicate autosave failure
+      return false;
+    }
+  };
+
+
+  // Export the function for external use
+  export { autosaveDrawing };
+export type { Draw };
+

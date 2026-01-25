@@ -1,0 +1,1 @@
+scripts/typescript/config/next.config.mjs

@@ -1,0 +1,1 @@
+scripts/shell/setup/init-app.sh

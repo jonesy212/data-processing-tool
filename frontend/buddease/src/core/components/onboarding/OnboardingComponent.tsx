@@ -1,0 +1,34 @@
+// OnboardingComponent.tsx
+import OnboardingManager from '@/core/pages/onboarding/OnboardingManager';
+import introJs from 'intro.js';
+import React, { useEffect } from 'react';
+
+const OnboardingComponent: React.FC = () => {
+  useEffect(() => {
+    const intro = introJs();
+    intro.setOptions({
+      steps: [
+        {
+          element: '#step1',
+          intro: 'Welcome to the onboarding tutorial! This is step 1.',
+        },
+        // Add more steps as needed
+      ],
+    });
+    intro.start();
+
+    return () => {
+      intro.exit(true);
+    };
+  }, []);
+
+  return (
+    <div>
+      <div id="step1">Onboarding Step 1 Content</div>
+      <OnboardingManager />
+      {/* Add more content and steps */}
+    </div>
+  );
+};
+
+export default OnboardingComponent;

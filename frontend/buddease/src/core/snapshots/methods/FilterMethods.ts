@@ -1,0 +1,131 @@
+// FilterMethods.ts
+
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { StatusType } from '@/core/models/data/StatusType';
+import { Tag } from '@/core/models/tracker/Tag';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotItem } from '@/core/snapshots/SnapshotList';
+import SnapshotStore from "@/core/snapshots/SnapshotStore";
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+
+export const FilterMethods = {
+  getSnapshots: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category: string,
+    data: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): void {
+    this.executeDelegateMethod?.('getSnapshots', category, data);
+  },
+
+  findSnapshot: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    predicate: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean
+  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    return this.executeDelegateMethod?.('findSnapshot', predicate);
+  },
+
+  filterSnapshotsByStatus: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    status: StatusType
+  ): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return this.executeDelegateMethod?.('filterSnapshotsByStatus', status) || [];
+  },
+
+  filterSnapshotsByCategory: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category: Category
+  ): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return this.executeDelegateMethod?.('filterSnapshotsByCategory', category) || [];
+  },
+
+  filterSnapshotsByTag: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    tag: Tag<T>
+  ): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return this.executeDelegateMethod?.('filterSnapshotsByTag', tag) || [];
+  },
+
+  getSnapshotItems: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotId?: string,
+    category?: Category,
+    callback?: (items: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void
+  ): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[] | undefined {
+    return this.executeDelegateMethod?.('getSnapshotItems', snapshots, snapshotId, category, callback);
+  },
+
+  getSnapshotListByCriteria: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    criteria: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    return this.executeDelegateMethod?.('getSnapshotListByCriteria', criteria) || Promise.resolve([]);
+  },
+
+  getSnapshotCategory: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    id: string
+  ): Category | undefined {
+    return this.executeDelegateMethod?.('getSnapshotCategory', id);
+  }
+};

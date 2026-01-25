@@ -1,0 +1,46 @@
+// SharedMetadata.ts
+import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { SchemaField } from '@/core/config/metadata/SchemaField';
+import type { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from '@/core/config/MetaDataOptions';
+import type { CoreMetadata } from '@/core/config/MetadataStateManager';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { SharedRelationshipData } from '@/core/models/data/Data';
+import { Permission } from '@/core/permissions/Permission';
+import { RolePermissions } from '@/core/server/security/getPermissions';
+import { Version } from '@/core/versions/Version';
+import { VersionHistory } from '@/core/versions/VersionData';
+
+interface SharedMetadata<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Omit<CoreMetadata<T, K>, 'schema'>,
+    Partial<VersionMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    Partial<ConfigMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    Partial<StatusMetadata>,
+    SharedRelationshipData<K> {
+  version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
+  lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+  latestVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  isActive?: boolean; 
+  metadataConfig?: Record<string, any>; 
+  appPermissions?: AppStructurePermissions[]; 
+  permissions?: string[] | Permission[]; 
+  rolePermissions?: RolePermissions;
+  customFields?: Record<string, any>; 
+  baseUrl?: string; 
+  category?: Category;
+  currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  currentMeta?: Meta;
+  previousMeta?: Meta;
+  schema?: Record<string, SchemaField>;
+}
+
+
+export type { SharedMetadata };

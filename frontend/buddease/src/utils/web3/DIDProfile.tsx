@@ -1,0 +1,1 @@
+../../../scripts/typescript/utils/DIDProfile.ts

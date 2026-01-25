@@ -1,0 +1,1 @@
+scripts/bin/misc/find-bad-app-import.mjs
