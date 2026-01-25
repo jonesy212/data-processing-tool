@@ -1,7 +1,7 @@
 <!-- corrections for API --->
 What You're Removing:
 
-**Direct axiosInstance imports: No more import axiosInstance from '@/app/api/csrfToken'**
+**Direct axiosInstance imports: No more import axiosInstance from '@/core/api/csrfToken'**
 
 Manual HTTP calls: No more await axiosInstance.get(), await axiosInstance.post(), etc.
 
