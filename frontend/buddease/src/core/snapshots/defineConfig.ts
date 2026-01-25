@@ -1,6 +1,6 @@
 // defineConfig.ts
 
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import { K, Meta, T } from '@/core/models/data/dataStoreMethods';
 import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
 import type { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';

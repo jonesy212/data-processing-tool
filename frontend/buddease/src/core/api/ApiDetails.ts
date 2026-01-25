@@ -5,7 +5,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 import ApiService from '@/core/api/service/ApiService';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useDetailsContext } from '@/core/models/data/DetailsContext';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import type { DetailsItem } from '@/core/state/stores/DetailsListStore';

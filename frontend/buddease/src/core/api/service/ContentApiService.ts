@@ -1,7 +1,7 @@
 // ContentApiService.ts
 app/api/contentApiService.ts
 import internalApiService from '@/core/api/ApiClient';
-import {
+import type { ContentBulkOperationResponse, ContentCreateRequest, ContentListResponseType, ContentResponseType, ContentSearchParams, ContentUpdateRequest } from '@/core/typings/contentTypes';
     ContentBulkOperationResponse,
     ContentCreateRequest,
     ContentListResponseType,

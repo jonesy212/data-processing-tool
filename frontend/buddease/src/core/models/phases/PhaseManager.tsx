@@ -1,14 +1,17 @@
 // PhaseManager.tsx
 import Stopwatch from "@/core/calendar/Stopwatch";
-import type { fetchUserAreaDimensions, UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { fetchUserAreaDimensions } from "@/core/config/MetaDataOptions";
+import type {  UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import { useState } from 'react';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import useAsyncHookLinker from "@/core/hooks/useAsyncHookLinker";
-import { Phase } from "@/core/models/phases/Phase";
+import type { Phase } from "@/core/models/phases/Phase";
 import { HierarchicalPhaseExecutor } from "@/core/models/phases/PhaseSystem"; // Your hierarchical system
 import type { PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta, PhaseT } from "@/core/typings/entities/PhaseEntity";
-import { createMilestone, isMilestoneOverdue, Milestone } from "@/core/typings/milestoneTypes";
+import { createMilestone, isMilestoneOverdue } from "@/core/typings/milestoneTypes";
+import type {  Milestone } from "@/core/typings/milestoneTypes";
 import { useEffect } from 'react';
 
 // Add this interface for styled-jsx support

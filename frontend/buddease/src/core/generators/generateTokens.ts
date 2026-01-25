@@ -1,6 +1,6 @@
 // generateTokens.ts
 import { Scope } from '@/core/state/stores/Scopes';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import * as jwt from 'jsonwebtoken';
 
 interface TokenOptions {

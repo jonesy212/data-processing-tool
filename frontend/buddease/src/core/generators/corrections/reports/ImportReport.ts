@@ -1,6 +1,7 @@
 // ImportReport.ts
 import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
-import type { ImportFix, ParsedImport } from '@/core/generators/corrections/ImportFixServicies';
+import type { ParsedImport } from '@/core/generators/corrections/ImportFixServicies';
+import type { ImportFix } from '@/app/scripts/import-fix-types';
 import fs from 'fs';
 import path from 'path';
 

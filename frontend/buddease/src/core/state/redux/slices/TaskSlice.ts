@@ -3,23 +3,21 @@ import { updateTaskPositionAPI } from '@/core/api/TasksApi';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { TagEntity } from '@/core/typings/entities/TagEntity';
-import type { UserEntity } from '@/core/typings/entities/UserEntity';
-
-import { ScheduledData } from "@/core/calendar/ScheduledData";
-import { Task } from "@/core/components/models/tasks/Task";
+import type { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] | User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/core/typings/entities/UserEntity';
+import type { User } from "@/core/users/User";
+import type { ScheduledData } from "@/core/calendar/ScheduledData";
+import type { Task } from "@/core/components/models/tasks/Task";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { PriorityTypeEnum } from "@/core/models/data/StatusType";
-import { Tag } from "@/core/models/tracker/Tag";
+import type { Tag } from "@/core/models/tracker/Tag";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
-import { MobXRootState } from "@/core/state/stores/RootStores";
+import type { MobXRootState } from "@/core/state/stores/RootStores";
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
-import {
-    PayloadAction,
-    ThunkAction,
-    createSlice,
-} from "@reduxjs/toolkit";
+import type { PayloadAction, ThunkAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+
 import { produce } from "immer";
 import { updateTask } from "./CollaborationSlice";
 // Inside the function where `notify` is used
@@ -70,15 +68,15 @@ const initialState: TaskState = {
     console.log(id);
     console.log("delete task");
   },
-  taskTitle: "",
-  taskDescription: "",
+  tags: [],
   status: "",
   dueDate: null,
-  priority: PriorityTypeEnum.Low,
+  taskTitle: "",
   taskStatus: "",
-  entitiesLoaded: {},
-  tags: [],
   draggingTaskId: "",
+  taskDescription: "",
+  entitiesLoaded: {},
+  priority: PriorityTypeEnum.Low,
 };
 
 export const updateTaskPositionAsync = (

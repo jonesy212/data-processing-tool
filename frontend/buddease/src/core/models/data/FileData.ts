@@ -3,7 +3,7 @@
 import { ScheduledData } from '@/core/calendar/ScheduledData';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
 // Define the interface for FileData
 interface FileData<

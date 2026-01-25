@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { ProjectLogger } from '@/core/dataIntegration/projectIntegration/ProjectLogger';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { AllStatus, StatusType } from '@/core/models/data/StatusType';
+import type { AllStatus, StatusType } from '@/core/models/data/StatusType';
 import { Member } from '@/core/models/members/Member';
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

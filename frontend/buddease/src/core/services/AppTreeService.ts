@@ -3,8 +3,9 @@
 import appTreeApiService from '@/core/api/appTreeApi';
 import DirectoryExplorer from '@/core/pages/dashboards/DirectoryExplorer';
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';
-import { FileTreeNode, FileTreeService } from '@/core/services/FileTreeService';
-import { DocumentTree } from "@/core/users/User";
+import { FileTreeService } from '@/core/services/FileTreeService';
+import type { FileTreeNode } from '@/core/services/FileTreeService';
+import type { DocumentTree } from "@/core/users/User";
 
 export class AppTreeService {
   private projectAnalyzer: ProjectTreeAnalyzer;

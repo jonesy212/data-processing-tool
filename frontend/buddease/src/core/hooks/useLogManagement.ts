@@ -1,9 +1,9 @@
 // useLogManagement.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { TradeAction } from '@/core/components/crypto/CryptoPortfolio';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { getFromLocalStorage, saveToLocalStorage } from '@/core/hooks/useLocalStorage';
-import {
+import type { TradeLogger } from '@/core/logging/TradeLogger';
     TradeLogger
 } from '@/core/logging/Logger';
 import { useNotification } from '@/core/state/context/NotificationContext';

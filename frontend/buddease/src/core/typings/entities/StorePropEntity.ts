@@ -1,11 +1,13 @@
 // StorePropEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { SnapshotOperationType } from "@/core/snapshots/index";
+import type { InitializedState } from '@/core/state/stores/DataStore';
 import type { Data } from '@/core/models/data/Data';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
@@ -133,10 +135,10 @@ const baseStoreProps: SnapshotStoreProps<
     }
   },
   storeProps: [],
-  core: '',
-  security: '',
-  storage: '',
-  isExpired: '',
+  core: {} as CoreSnapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+  security: {} as SnapshotSecurity,
+  storage: {} as SnapshotStorage<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+  isExpired: undefined,
 
 };
 
@@ -145,7 +147,7 @@ const baseStoreProps: SnapshotStoreProps<
 export type {
     StorePropAttachment, StorePropEntity, StorePropExcludedFields,
     StorePropIncludedFields, StorePropK,
-    StorePropMeta
+    StorePropMeta, StorePropEntityTemplate
 };
 
 

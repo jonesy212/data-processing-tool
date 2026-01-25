@@ -1,15 +1,15 @@
 // useNotificationSystem.ts
 
-import type { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { NotificationType } from '@/core/state/context/NotificationContext';
-
+import type { DocumentOptions, Style } from '@/core/documents/DocumentOptions';
+import type { NotificationType } from '@/core/state/context/NotificationContext';
+import type { NotificationOptions } from '@/core/state/context/NotificationContext'
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import type { Data } from '@/core/models/data/Data';
 import { displayToast, showErrorMessage, showToast } from '@/core/models/display/ShowToast';
-import { LogData } from "@/core/models/LogData";
+import type { LogData } from "@/core/models/LogData";
 import ErrorHandler from '@/core/shared/ErrorHandler';
 import type { SendStatus } from '@/core/state/redux/slices/NofiticationsSlice';
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
@@ -185,7 +185,7 @@ export interface NotificationSystem<
 }
 
 export const useNotificationSystem = <
-  T extends BaseDataEntity = any,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -194,6 +194,7 @@ export const useNotificationSystem = <
 >(): NotificationSystem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const notificationsRef = useRef<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([]);
   const nextIdRef = useRef(1);
+  const defaultNotificationOptions: NotificationOptions = {};
 
   const generateId = useCallback((): string => {
     return `notification-${nextIdRef.current++}-${Date.now()}`;
@@ -203,7 +204,7 @@ export const useNotificationSystem = <
     // Core notification method - enhanced with all properties
   const notify = useCallback((
     message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     const notificationId = generateId();
     const {
@@ -288,7 +289,7 @@ export const useNotificationSystem = <
   // Enhanced notification method for complex content
   const showEnhancedNotification = useCallback((
     content: any, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     const message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       content: typeof content === 'string' ? content : JSON.stringify(content),
@@ -305,7 +306,7 @@ export const useNotificationSystem = <
   const showDataNotification = useCallback((
     dataId: string, 
     message: string, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     return notify(message, {
       ...options,
@@ -318,7 +319,7 @@ export const useNotificationSystem = <
   const showStyledNotification = useCallback((
     message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     style: Style,
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     return notify(message, {
       ...options,
@@ -359,14 +360,14 @@ export const useNotificationSystem = <
   // Batch operations
   const showBatchSuccess = useCallback((
     messages: (string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[], 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string[] => {
     return messages.map(message => showSuccess(message, options));
   }, [showSuccess]);
 
   const showBatchErrors = useCallback((
     errors: (string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[], 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string[] => {
     return errors.map(error => showError(error, options));
   }, [showError]);
@@ -375,7 +376,7 @@ export const useNotificationSystem = <
   const showSnapshotSuccess = useCallback((
     snapshotId: string, 
     operation: string, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     const message: Message = {
       content: `Snapshot ${snapshotId} ${operation} successfully`,
@@ -388,7 +389,7 @@ export const useNotificationSystem = <
     snapshotId: string, 
     operation: string, 
     error: Error, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     const message: Message = {
       content: `Failed to ${operation} snapshot ${snapshotId}: ${error.message}`,
@@ -399,7 +400,7 @@ export const useNotificationSystem = <
 
   const showRecoveryAttempt = useCallback((
     attemptNumber: number, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     const message: Partial<Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
       content: `Recovery attempt ${attemptNumber} in progress...`,
@@ -466,7 +467,7 @@ export const useNotificationSystem = <
   const handleError = useCallback((
     error: Error, 
     context?: string, 
-    options: NotificationOptions = {}
+    options: NotificationOptions = defaultNotificationOptions
   ): string => {
     const errorMessage = context ? `Error in ${context}: ${error.message}` : error.message;
     

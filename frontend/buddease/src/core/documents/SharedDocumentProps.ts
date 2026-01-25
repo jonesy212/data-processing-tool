@@ -1,13 +1,13 @@
 // SharedDocumentProps.ts
 
-import { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
+import type { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from "@/core/documents/DocType";
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { ModifiedDate } from "@/core/documents/DocType";
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
 import { DocumentPhase } from '@/core/models/phases/DocumentPhase';
 import { Phase } from '@/core/models/phases/Phase';

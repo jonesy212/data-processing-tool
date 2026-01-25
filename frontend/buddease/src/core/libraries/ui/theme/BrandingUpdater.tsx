@@ -1,6 +1,6 @@
 // BrandingUpdater.tsx
 
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import RandomWalkSuggestions from '@/core/hooks/userInterface/RandomWalkSuggestions';
 import type { Data } from '@/core/models/data/Data';
 import configServiceInstance from '@/core/services/ConfigurationService';

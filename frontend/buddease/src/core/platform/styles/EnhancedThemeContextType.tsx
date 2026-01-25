@@ -1,6 +1,7 @@
 // EnhancedThemeContextType.tsx
 
-import { Theme, ThemeEnum } from '@/core/libraries/ui/theme/Theme';
+import type { ThemeEnum } from '@/core/libraries/ui/theme/Theme';
+import { Theme } from '@/core/libraries/ui/theme/Theme';
 import { defaultTokens, DesignTokens, themeToDesignTokens } from '@/core/platform/styles/design-tokens';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 

@@ -15,7 +15,8 @@ import type { SendStatus } from "@/core/state/redux/slices/NofiticationsSlice";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import type { AppCalendarEvent } from '@/core/typings/meetingTypes';
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import React from "react";
 import { useDispatch } from "react-redux";
 

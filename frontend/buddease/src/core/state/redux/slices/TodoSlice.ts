@@ -1,11 +1,14 @@
 // TodoSlice.ts
-import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
+import type { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import type { PaginationOptions } from '@/core/pages/searches/SearchOptions';
-import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
-import type { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@/core/state/redux/slices/EntitySlice';
-import { Todo } from '@/core/todos/Todo';
+import type { WritableDraft } from '@/core/state/redux/ReducerGenerator';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { EntityState } from '@/core/state/redux/slices/EntitySlice';
+import { createEntityAdapter } from '@/core/state/redux/slices/EntitySlice';
+import type { Todo } from '@/core/todos/Todo';
+import { createSlice } from '@reduxjs/toolkit';
 
-export interface TodoManagerState extends EntityState<WritableDraft<Todo>, string>  {
+export interface TodoManagerState extends EntityState {
   todos: Todo[]; // List of todos
   ids: string[];
   selectedTodo: Todo | null; // Currently selected todo

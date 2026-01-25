@@ -1,5 +1,5 @@
 // determineType.ts
-import { determineFileTypeAPI } from "@/core/api/ApiFiles";
+import type { determineFileTypeAPI } from "@/core/api/ApiFiles";
 import loadFile from "@/core/documents/FileLoadOptions";
 
 export const determineType = async (filePath: string) => {

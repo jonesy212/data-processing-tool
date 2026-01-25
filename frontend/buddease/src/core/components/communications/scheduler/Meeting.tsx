@@ -2,8 +2,8 @@
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Todo } from "@/core/todos/Todo";
-import { UserData } from "@/core/users/User";
+import type { Todo } from "@/core/todos/Todo";
+import type { UserData } from "@/core/users/User";
 
 export interface Meeting<
   T extends BaseDataEntity, 

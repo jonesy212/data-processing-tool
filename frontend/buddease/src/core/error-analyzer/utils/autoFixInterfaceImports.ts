@@ -1,7 +1,8 @@
 // autoFixInterfaceImports.ts
 import fs from 'fs';
 import path from 'path';
-import { ASTParserUtils, TypeInfo } from '@/core/error-analyzer/utils/ASTParserUtils';
+import type { TypeInfo } from '@/core/error-analyzer/utils/ASTParserUtils';
+import { ASTParserUtils } from '@/core/error-analyzer/utils/ASTParserUtils';
 
 export async function autoFixInterfaceImports(projectRoot: string, files: string[]) {
     const parser = new ASTParserUtils(projectRoot);

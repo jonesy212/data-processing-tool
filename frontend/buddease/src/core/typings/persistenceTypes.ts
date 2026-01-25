@@ -73,7 +73,6 @@ export interface BackupMetadata<T = any> {
   version: string;
   entityName?: string;
   milestoneName?: string; // Optionally add this too
-  operation?: string; // And this
   tags?: string[]; // And this
   user?: string; // And this
   milestoneId?: string

@@ -1,1 +1,0 @@
-../../scripts/typescript/type-imports/fix-type-imports-with-backup.ts

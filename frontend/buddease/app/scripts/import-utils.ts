@@ -1,15 +1,10 @@
 // import-utils.ts
+import { ImportClassifier } from '@/app/scripts/import-classifier';
+import type { FixResult } from '@/app/scripts/import-fix-types'
+import { AMBIGUOUS_CASES, TYPE_PATTERNS, VALUE_PATTERNS } from '@/app/scripts/type-patterns';
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
-import type { 
-  FixResult, 
-  TypeImportError,
-  ImportFix,
-  ImportPattern
-} from '@/app/scripts/import-fixes';
-import { TYPE_PATTERNS, VALUE_PATTERNS, AMBIGUOUS_CASES } from '@/app/scripts/type-patterns'
-import { ImportClassifier } from '@/app/scripts/import-classifier';
 
 const classifier = new ImportClassifier();
 
@@ -36,10 +31,52 @@ export function sortFixesDescending(fixes: FixResult[]): FixResult[] {
   return [...fixes].sort((a, b) => (b.line || 0) - (a.line || 0));
 }
 
-export function shouldBeTypeImport(importName: string, allImports?: string[], sourcePath?: string): boolean {
-  return shouldBeTypeImportBasedOnNameAndContext(importName, sourcePath, allImports);
-}
 
+export function shouldBeTypeImport(name: string, allImports: string[] = [], fileContent?: string): boolean {
+  // Check naming patterns FIRST
+  if (/^(Props|Type|Interface|Config|Settings|Data|Entity|Meta|State|Options|Payload)$/i.test(name)) {
+    return true;
+  }
+  
+  if (/[A-Z][a-z]+(Type|Props|Interface|Config)$/.test(name)) {
+    return true;
+  }
+  
+  // If we have file content, check actual usage
+  if (fileContent) {
+    // Check if it's used as a type (pattern matching)
+    const typeUsagePatterns = [
+      new RegExp(`:\\s*${name}[\\s;<>,]`), // type annotation
+      new RegExp(`<${name}[\\s>]`), // generic parameter
+      new RegExp(`extends\\s+${name}\\b`), // extends clause
+      new RegExp(`implements\\s+${name}\\b`), // implements clause
+    ];
+    
+    // Check if it's used as a value
+    const valueUsagePatterns = [
+      new RegExp(`${name}\\(`), // function call
+      new RegExp(`${name}\\.`), // property access
+      new RegExp(`new\\s+${name}\\b`), // constructor
+      new RegExp(`<${name}[\\s/>]`), // JSX component
+    ];
+    
+    const hasTypeUsage = typeUsagePatterns.some(pattern => pattern.test(fileContent));
+    const hasValueUsage = valueUsagePatterns.some(pattern => pattern.test(fileContent));
+    
+    // If it has value usage, it's NOT a type-only import
+    if (hasValueUsage) {
+      return false;
+    }
+    
+    // If it has type usage but no value usage, it's a type-only import
+    if (hasTypeUsage) {
+      return true;
+    }
+  }
+  
+  // Default: if it starts with capital letter and we can't determine, assume type
+  return /^[A-Z]/.test(name);
+}
 
 export function analyzeImportStatement(importStatement: string): {
   typeImports: string[];
@@ -180,8 +217,15 @@ export async function resolveSourceFile(
         }
       }
     } catch (error: unknown) {
+    // Type guard to check if error has a message property
+    if (error instanceof Error) {
       console.warn('⚠️ Could not parse tsconfig.json:', error.message);
+    } else if (typeof error === 'string') {
+      console.warn('⚠️ Could not parse tsconfig.json:', error);
+    } else {
+      console.warn('⚠️ Could not parse tsconfig.json:', String(error));
     }
+  }
   }
 
   // Search recursively in the project
@@ -306,7 +350,8 @@ export async function getExportTypes(
     result.valueExports = [...new Set(result.valueExports)];
     
   } catch (error: unknown) {
-    console.warn(`⚠️ Could not analyze exports from ${sourcePath}:`, error.message);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.warn(`⚠️ Could not analyze exports from ${sourcePath}:`, errorMessage);
   }
   
   return result;
@@ -380,7 +425,8 @@ export async function shouldBeTypeImportWithEnhancedSourceCheck(
     }
   } catch (error: unknown) {
     // Fall back to pattern matching if source analysis fails
-    console.debug(`⚠️ Source analysis failed for ${name} from ${sourcePath}:`, error.message);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.debug(`⚠️ Source analysis failed for ${name} from ${sourcePath}:`, errorMessage);
   }
   
   // Default to pattern-based decision
@@ -585,36 +631,157 @@ export function fixImportStatement(importStatement: string): string {
   return importStatement; // No change needed
 }
 
-// For compatibility with original function that took importStatement and array of names
 export function shouldBeTypeImportBasedOnNameAndContext(
   name: string, 
   sourcePath?: string,
   allImports?: string[]
 ): boolean {
+  console.log(`🔍 Checking ${name} from ${sourcePath || 'unknown source'}`);
+  
   // ===== STEP 1: Check exact matches (highest priority) =====
-  if (TYPE_PATTERNS.exactMatches.has(name)) return true;
-  if (VALUE_PATTERNS.exactMatches.has(name)) return false;
+  if (TYPE_PATTERNS.exactMatches.has(name)) {
+    console.log(`   ✅ ${name} is in TYPE_PATTERNS.exactMatches`);
+    return true;
+  }
+  if (VALUE_PATTERNS.exactMatches.has(name)) {
+    console.log(`   ❌ ${name} is in VALUE_PATTERNS.exactMatches`);
+    return false;
+  }
   
   // ===== STEP 2: Check ambiguous cases with source context =====
   const ambiguousHandler = AMBIGUOUS_CASES.get(name);
   if (ambiguousHandler) {
-    return ambiguousHandler(sourcePath);
+    const result = ambiguousHandler(sourcePath);
+    console.log(`   ${result ? '✅' : '❌'} ${name} handled by AMBIGUOUS_CASES: ${result}`);
+    return result;
   }
   
-  // ===== STEP 3: Check value patterns (avoid false positives) =====
+  // ===== STEP 3: Special handling for Redux Toolkit imports =====
+  if (sourcePath && (sourcePath.includes('@reduxjs/toolkit') || sourcePath.includes('redux'))) {
+    console.log(`🔍 Special handling for Redux Toolkit import: ${name}`);
+    
+    // Redux Toolkit types (should be imported as type)
+    const reduxTypes = [
+      'PayloadAction', 'Action', 'Reducer', 'Middleware', 'Store', 'Dispatch',
+      'ThunkAction', 'AnyAction', 'State', 'Slice', 'CaseReducer',
+      'PrepareAction', 'ActionCreatorWithPayload', 'ActionCreatorWithoutPayload',
+      'ActionCreatorWithPreparedPayload', 'SerializableMiddleware'
+    ];
+    
+    // Redux Toolkit values (runtime exports)
+    const reduxValues = [
+      'createSlice', 'createReducer', 'configureStore', 'createAsyncThunk',
+      'combineReducers', 'createAction', 'createEntityAdapter', 'getDefaultMiddleware'
+    ];
+    
+    if (reduxTypes.includes(name)) {
+      console.log(`   ✅ ${name} is a Redux Toolkit type`);
+      return true;
+    }
+    
+    if (reduxValues.includes(name)) {
+      console.log(`   ❌ ${name} is a Redux Toolkit runtime export`);
+      return false;
+    }
+    
+    // Pattern-based for Redux imports
+    if (name.endsWith('Action') || name.endsWith('Reducer') || name.endsWith('State') || name.endsWith('Slice')) {
+      console.log(`   ✅ ${name} looks like a Redux type (pattern match)`);
+      return true;
+    }
+  }
+  
+  // ===== STEP 4: Special handling for MobX imports =====
+  if (sourcePath && (sourcePath.includes('mobx') || sourcePath.includes('mobx-react'))) {
+    console.log(`🔍 Special handling for MobX import: ${name}`);
+    
+    // MobX runtime exports (functions/decorators)
+    const mobxRuntime = [
+      'observable', 'makeObservable', 'makeAutoObservable', 'autorun',
+      'reaction', 'when', 'computed', 'action', 'runInAction', 'flow',
+      'toJS', 'isObservable', 'isObservableArray', 'isObservableObject',
+      'isObservableMap', 'isObservableSet', 'isComputed', 'isAction'
+    ];
+    
+    // MobX types (interfaces)
+    const mobxTypes = [
+      'IObservableArray', 'IObservableValue', 'IObservableObject',
+      'IReactionDisposer', 'IAutorunOptions', 'IReactionOptions',
+      'IComputedValue', 'IComputedValueOptions', 'ObservableMap',
+      'ObservableSet', 'Reaction', 'Autorun', 'When', 'Computed'
+    ];
+    
+    // Check if it's a MobX store class (from your architecture)
+    const mobxStores = ['RootStore', 'ProjectStore', 'TaskStore', 'UserStore', 
+                        'CalendarStore', 'SnapshotStore'];
+    
+    if (mobxTypes.includes(name)) {
+      console.log(`   ✅ ${name} is a MobX type`);
+      return true;
+    }
+    
+    if (mobxRuntime.includes(name)) {
+      console.log(`   ❌ ${name} is a MobX runtime function`);
+      return false;
+    }
+    
+    if (mobxStores.includes(name)) {
+      console.log(`   ❌ ${name} is a MobX store class`);
+      return false;
+    }
+    
+    // Pattern-based for MobX
+    if (name.startsWith('I') && /[A-Z]/.test(name[1])) {
+      console.log(`   ✅ ${name} looks like a MobX interface (starts with I)`);
+      return true;
+    }
+  }
+  
+  // ===== STEP 5: Special handling for Axios imports =====
+  if (sourcePath && (sourcePath.includes('axios') || sourcePath === 'axios')) {
+    console.log(`🔍 Special handling for Axios import: ${name}`);
+    
+    const axiosTypes = ['AxiosResponse', 'AxiosRequestConfig', 'AxiosInstance', 'AxiosStatic', 'AxiosPromise'];
+    const axiosValues = ['default', 'axios', 'create'];
+    
+    // AxiosError is special - can be both
+    if (name === 'AxiosError') {
+      console.log(`   ⚠️  AxiosError is ambiguous - defaulting to type import`);
+      return true; // Default to type since it's more commonly used as a type
+    }
+    
+    if (axiosTypes.includes(name)) {
+      console.log(`   ✅ ${name} is an Axios type`);
+      return true;
+    }
+    
+    if (axiosValues.includes(name)) {
+      console.log(`   ❌ ${name} is an Axios runtime export`);
+      return false;
+    }
+  }
+  
+  // ===== STEP 6: Check value patterns (avoid false positives) =====
   const matchesValuePattern = 
     VALUE_PATTERNS.prefixes.some(pattern => pattern.test(name)) ||
     VALUE_PATTERNS.suffixes.some(pattern => pattern.test(name));
   
-  if (matchesValuePattern) return false;
+  if (matchesValuePattern) {
+    console.log(`   ❌ ${name} matches VALUE_PATTERNS`);
+    return false;
+  }
   
-  // ===== STEP 4: Check type patterns =====
+  // ===== STEP 7: Check type patterns =====
   const matchesTypePattern = 
     TYPE_PATTERNS.suffixes.some(pattern => pattern.test(name)) ||
     TYPE_PATTERNS.prefixes.some(pattern => pattern.test(name)) ||
     TYPE_PATTERNS.fullMatch.some(pattern => pattern.test(name));
   
-  // ===== STEP 5: Source file context analysis =====
+  if (matchesTypePattern) {
+    console.log(`   ✅ ${name} matches TYPE_PATTERNS`);
+  }
+  
+  // ===== STEP 8: Source file context analysis =====
   if (sourcePath) {
     const fileName = sourcePath.split('/').pop()?.replace(/\.[^.]+$/, '') || '';
     
@@ -633,6 +800,7 @@ export function shouldBeTypeImportBasedOnNameAndContext(
     
     const isTypeFile = typeFilePatterns.some(pattern => pattern.test(fileName));
     if (isTypeFile && matchesTypePattern) {
+      console.log(`   ✅ ${name} is from type file and matches patterns`);
       return true;
     }
     
@@ -653,6 +821,7 @@ export function shouldBeTypeImportBasedOnNameAndContext(
     
     const isRuntimeFile = runtimeFilePatterns.some(pattern => pattern.test(fileName));
     if (isRuntimeFile) {
+      console.log(`   ❌ ${name} is from runtime file`);
       // Even if it matches type patterns, be conservative for runtime files
       return false;
     }
@@ -668,6 +837,7 @@ export function shouldBeTypeImportBasedOnNameAndContext(
     ].some(keyword => sourcePath.includes(keyword));
     
     if (sourceHasTypeKeywords && matchesTypePattern) {
+      console.log(`   ✅ ${name} from type-related path and matches patterns`);
       return true;
     }
     
@@ -684,16 +854,18 @@ export function shouldBeTypeImportBasedOnNameAndContext(
     ].some(keyword => sourcePath.includes(keyword));
     
     if (sourceHasRuntimeKeywords) {
+      console.log(`   ❌ ${name} from runtime-related path`);
       return false;
     }
   }
   
-  // ===== STEP 6: Check for single capital letters (T, K, V - TypeScript generics) =====
+  // ===== STEP 9: Check for single capital letters (T, K, V - TypeScript generics) =====
   if (/^[A-Z]$/.test(name)) {
+    console.log(`   ✅ ${name} is a generic type parameter`);
     return true; // Single capital letters are almost always type parameters
   }
   
-  // ===== STEP 7: Check import statement context (if provided) =====
+  // ===== STEP 10: Check import statement context (if provided) =====
   if (allImports && allImports.length > 0) {
     // If ALL imports in the statement match type patterns, it's likely a type-only import
     const allAreTypePatterns = allImports.every(importName => 
@@ -702,6 +874,7 @@ export function shouldBeTypeImportBasedOnNameAndContext(
     );
     
     if (allAreTypePatterns) {
+      console.log(`   ✅ All imports in statement are type patterns`);
       return true;
     }
     
@@ -712,20 +885,35 @@ export function shouldBeTypeImportBasedOnNameAndContext(
     );
     
     if (hasClearValue) {
+      console.log(`   ❌ Statement has clear value imports`);
       return false;
     }
   }
   
-  // ===== STEP 8: Final decision =====
+  // ===== STEP 11: Final decision =====
   // If it matches type patterns and we haven't found reasons against it
   if (matchesTypePattern) {
+    console.log(`   ✅ Final decision: matches TYPE_PATTERNS`);
     return true;
   }
   
+  // ===== STEP 12: Handle potentially unused imports (conservative approach) =====
+  // Note: These imports might be unused now but could be needed in future development.
+  // We take a conservative approach - keep them as they are and don't change import type
+  // unless we're certain. Unused imports that aren't causing errors should be left
+  // for the developer to clean up manually.
+  const isLikelyUnused = false; // Could add logic here if needed
+
+  // Final conservative default: if we can't determine, default to NOT type-only
+  // This prevents breaking working code that might use the import in ways we can't detect
+  if (!matchesTypePattern && !matchesValuePattern) {
+    console.log(`   ⚠️  ${name} - ambiguous, defaulting to value import (conservative)`);
+    return false;
+  }
   // Default: conservative approach
+  console.log(`   ❌ Final decision: default conservative (not a type)`);
   return false;
 }
-
 
 export function extractImportNames(importStatement: string): string[] {
   if (!importStatement.includes('import')) return [];

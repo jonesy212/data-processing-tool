@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Phase, PhaseData } from '@/core/models/phases/Phase';
-import { BackupRecord } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { BackupRecord } from '@/core/error-analyzer/phases/PhaseBackupSystem';
 import { useCallback, useState } from 'react';
 
 

@@ -1,6 +1,7 @@
 // useSecureDocumentId.ts
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
-import UserRoles, { UserRoleEnum } from '@/core/models/UserRoles';
+import type { UserRoleEnum } from '@/core/models/UserRoles';
+import UserRoles from '@/core/models/UserRoles';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { DocumentNode } from '@/core/users/User';
 import { useEffect, useState } from 'react';

@@ -1,0 +1,10 @@
+# .github/workflows/main.yml
+- name: Type Relationship Analysis
+  run: pnpm analyze:relationships --fail-on-critical
+
+- name: Check for Circular Dependencies
+  run: |
+    if pnpm analyze:relationships --pattern circular | grep -q "CRITICAL"; then
+      echo "Circular type dependencies detected!"
+      exit 1
+    fi

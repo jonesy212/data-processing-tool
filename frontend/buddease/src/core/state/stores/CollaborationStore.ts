@@ -1,7 +1,8 @@
 // CollaborationStore.ts
-import { ExtendedCalendarEvent } from "@/core/calendar/CalendarEventTimingOptimization";
+import type { ExtendedCalendarEvent } from "@/core/calendar/CalendarEventTimingOptimization";
 import { useAuth } from '@/core/state/context/AuthContext';
-import { AssignBaseStore, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
+import type { AssignBaseStore } from "@/core/state/stores/AssignBaseStore";
+import { useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
 import { useAssignEventStore } from "@/core/state/stores/AssignEventStore";
 import { useAssignTeamMemberStore } from "@/core/state/stores/AssignTeamMemberStore";
 import { makeAutoObservable } from "mobx";

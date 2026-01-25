@@ -4,7 +4,7 @@ import { handleApiError } from "@/core/api/ApiLogs";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import type { FileType } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";
 import { VersionData } from "@/core/versions/VersionData";
 import { AxiosError, AxiosResponse } from "axios";

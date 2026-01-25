@@ -1,9 +1,9 @@
 // Report.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
 import type { BaseEntityProperties } from '@/core/documents/RelatedProps';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 
 export interface BaseReport extends BaseEntityProperties {
   id: number;

@@ -5,7 +5,7 @@ import processSnapshotList from "@/core/generators/processSnapshotList";
 import SnapshotListGenerator from "@/core/generators/SnapshotListGenerator";
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import type { Data } from "@/core/models/data/Data";
-import { Phase } from '@/core/models/phases/Phase';
+import type { Phase } from '@/core/models/phases/Phase';
 import { updateCallback } from "@/core/pages/blog/UpdateCallbackUtils";
 import { authToken } from "@/core/server/auth/authToken";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
@@ -13,12 +13,11 @@ import SnapshotList from "@/core/snapshots/SnapshotList";
 import snapshotStore from "@/core/snapshots/SnapshotStore";
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
-import {
-    DataAnalysisAction,
-    DataAnalysisDispatch,
-} from "@/core/typings/phases/dataAnalysisTypes";
+import type { DataAnalysisAction } from '@/core/typings/phases/dataAnalysisTypes';
+import type { DataAnalysisDispatch } from '@/core/typings/phases/dataAnalysisTypes';
+
 import { shuffleArray } from "@/utils/shuffleArray";
-import { Dispatch } from "@reduxjs/toolkit";
+import type { Dispatch } from "@reduxjs/toolkit";
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

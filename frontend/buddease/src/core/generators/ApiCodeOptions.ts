@@ -1,5 +1,5 @@
 // ApiCodeOptions.ts
-import type { ApiMethod } from "./ApiCodeGenerator";
+import type { ApiMethod } from "@/core/generators/ApiCodeGenerator";
 
 export interface ApiCodeOptions {
   authenticationToken?: string; // Optional authentication token

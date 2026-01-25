@@ -1,5 +1,5 @@
 // DetailsListStore.ts
-import type { DataDetails } from '@/core/models/data/Data';
+import '@/core/models/data/Data';
 import type { Team } from "@/core/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 
@@ -7,7 +7,6 @@ import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import type { Message } from '@/core/generators/GenerateChatInterfaces';
-import type { BaseData, Data } from '@/core/models/data/Data';
 import type { Phase, PhaseData } from "@/core/models/phases/Phase";
 import type { Progress } from "@/core/models/tracker/ProgressBar";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
@@ -44,7 +43,7 @@ import type { TeamMember } from "@/core/models/teams/TeamMembers";
 import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 
 import type { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
-import type { data, SnapshotConfig, SnapshotDataType } from "@/core/snapshots/SnapshotWithCriteria";
+import type { data, SnapshotConfig, SnapshotDataType } from "@/core/snapshots/SnapshotConfig";
 
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
@@ -55,7 +54,7 @@ import type { createSnapshotStoreOptions } from "@/core/typings/YourSpecificSnap
 
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 
 const { notify } = useNotification();
 

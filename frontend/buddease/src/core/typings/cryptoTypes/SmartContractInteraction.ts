@@ -1,7 +1,8 @@
 // SmartContractInteraction.ts
-import { SubscriptionTypeEnum } from "@/core/models/data/StatusType";
-import { BaseTransaction, Transaction } from "@/core/payment/Transaction";
-import { AccessList, Signature } from "ethers";
+import type { SubscriptionTypeEnum } from "@/core/models/data/StatusType";
+import type { BaseTransaction, Transaction } from "@/core/payment/Transaction";
+import type { AccessList } from 'ethers';
+import { Signature } from 'ethers';
 
 interface SmartContractInteraction {
   id: string | null;

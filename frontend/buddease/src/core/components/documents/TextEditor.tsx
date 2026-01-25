@@ -1,12 +1,13 @@
 // TextEditor.tsx
 import type { ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
-import {
+import type { DocumentBuilderConfig } from '@/core/config/DocumentBuilderConfig';
+import type { getDefaultDocumentBuilderConfig } from '@/core/config/DocumentBuilderConfig';
     DocumentBuilderConfig,
     getDefaultDocumentBuilderConfig,
 } from "@/core/config/DocumentBuilderConfig";
 import type { getToolbarOptions } from '@/core/documents/getToolbarOptions';
 import DynamicTextArea from "@/core/ts/DynamicTextArea";
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import { useEffect, useState } from "react";
 import Quill from "react-quill";
 

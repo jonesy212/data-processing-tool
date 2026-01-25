@@ -1,7 +1,7 @@
 // DocumentOptions.ts
 
 import { CustomStyle } from '@/core/api/service/ApiService';
-import {
+import type { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
     CodingLanguageEnum,
     LanguageEnum,
 } from "@/core/communications/LanguageEnum";
@@ -12,14 +12,15 @@ import type { MetadataEntriesType, StructuredMetadata } from "@/core/config/Stru
 import { UserSettings } from "@/core/config/UserSettings";
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import { DataVersions } from "@/core/configs/DataVersionsConfig";
-import { ModifiedDate } from "@/core/documents/DocType";
-import { NoteAnimationOptions, NoteOptions } from "@/core/documents/NoteData";
-import { DocumentAnimationOptions } from "@/core/documents/SharedDocumentProps";
+import type { ModifiedDate } from "@/core/documents/DocType";
+import type { NoteAnimationOptions, NoteOptions } from "@/core/documents/NoteData";
+import type { DocumentAnimationOptions } from "@/core/documents/SharedDocumentProps";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { computeChecksum, DocumentData, RevisionOptions } from "@/core/documents/editing/DocumentBuilder";
+import type { computeChecksum, DocumentData, RevisionOptions } from "@/core/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
 import type { Data } from '@/core/models/data/Data';
-import {
+import type { BorderStyle, DocumentSize, PrivacySettingEnum, ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
+import { Layout } from '@/core/models/data/StatusType';
     BorderStyle,
     DocumentSize,
     Layout,
@@ -29,7 +30,7 @@ import {
 import { Phase } from '@/core/models/phases/Phase';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import BackendStructure from '@/core/server/database/BackendStructure';
-import { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
+import type { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
 import { Document } from "@/core/state/stores/DocumentStore";
 import { AllTypes } from '@/core/typings/PropTypes';
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";

@@ -1,6 +1,7 @@
 // DocumentSlice.test.tsx
-import { RootState } from '@/core/state/redux/slices/RootSlice';
-import { configureStore, EnhancedStore, UnknownAction } from '@reduxjs/toolkit';
+import type { RootState } from '@/core/state/redux/slices/RootSlice';
+import type { UnknownAction } from '@reduxjs/toolkit';
+import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import type { ThunkDispatch } from 'redux-thunk';
 import thunk from 'redux-thunk';
 

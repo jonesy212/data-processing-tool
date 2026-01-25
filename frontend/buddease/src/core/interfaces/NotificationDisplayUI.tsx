@@ -2,7 +2,7 @@
 import NotificationComponent from '@/core/components/notifications/NotificationComponent';
 import { useThemeConfig } from '@/core/hooks/userInterface/ThemeConfigContext';
 import { selectNotifications } from '@/core/state/redux/slices/NofiticationsSlice';
-import { NotificationProps } from '@/core/typings/PropTypes';
+import type { NotificationProps } from '@/core/typings/PropTypes';
 import React from 'react';
 import { useSelector } from 'react-redux';
 

@@ -1,5 +1,5 @@
 // AquaState.ts
-import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import type { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 
 export interface AquaSession {
   id: string;

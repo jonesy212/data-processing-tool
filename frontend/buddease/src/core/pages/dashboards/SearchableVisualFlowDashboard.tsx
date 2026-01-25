@@ -2,7 +2,7 @@
 
 import TreeView from '@/core/pages/dashboards/TreeView'; // Assuming you have the TreeView component
 import VisualFlowDashboard from '@/core/pages/dashboards/VisualFlowDashboard';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import React, { useState } from 'react';
 
 const SearchableVisualFlowDashboard: React.FC = () => {

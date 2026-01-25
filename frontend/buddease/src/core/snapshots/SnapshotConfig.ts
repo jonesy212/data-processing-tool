@@ -18,7 +18,8 @@ import {
 } from "@/core/libraries/categories/determineFileCategory";
 import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData, Data, DataDetails } from '@/core/models/data/Data';
-import {
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from '@/core/models/data/StatusType';
+import type { StatusType } from '@/core/models/data/StatusType';
     StatusType,
     SubscriberTypeEnum,
     SubscriptionTypeEnum
@@ -61,7 +62,7 @@ import type {
     Snapshots,
     SnapshotUnion,
 } from '@/core/snapshots/LocalStorageSnapshotStore';
-import {
+import type { Snapshot } from '@/core/snapshots/Snapshot';
     Snapshot
 } from '@/core/snapshots/Snapshot';
 import type { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";

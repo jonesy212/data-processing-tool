@@ -2,8 +2,8 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { AppBaseParams } from '@/core/typings/entities/AppEntity';
-import { ExchangeAttachment, ExchangeEntity, ExchangeExcludedFields, ExchangeIncludedFields, ExchangeK, ExchangeMeta, OrderBookEntity } from '../typings/exchangeTypes';
+import type { AppBaseParams } from '@/core/typings/entities/AppEntity';
+import '@/core/typings/exchangeTypes';
 
 
 export class ClientSubscriber<

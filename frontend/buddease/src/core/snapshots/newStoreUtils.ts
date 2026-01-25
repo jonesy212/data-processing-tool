@@ -1,24 +1,24 @@
 // newStoreUtils.ts
 import type { SnapshotOperation, SnapshotOperationType } from "@/core/actions/SnapshotActions";
 import { snapshotApi } from '@/core/api/SnapshotApi';
-import { ExcludedFields } from '@/core/components/routing/Fields';
+import type { ExcludedFields } from '@/core/components/routing/Fields';
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotManager, useSnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { CreateSnapshotStoresPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import '@/core/hooks/useSnapshotManager';
+import type { CreateSnapshotStoresPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { snapshot, Snapshot } from "@/core/snapshots/Snapshot";
-import type { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import '@/core/snapshots/Snapshot';
+import type { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotData';
 import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { subscribeToSnapshot, subscribeToSnapshots } from "@/core/snapshots/snapshotHandlers";
 import SnapshotManagerOptions from "@/core/snapshots/SnapshotManagerOptions";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { EventRecord } from '@/core/state/stores/DataStore';
 import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
 

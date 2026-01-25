@@ -3,7 +3,7 @@ dataProcessingTaskInterfaces.tsx
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { UserExcludedFields, UserIncludedFields } from '@/core/typings//entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 
 export interface DataProcessingTask<
   T extends BaseDataEntity = UserEntity,

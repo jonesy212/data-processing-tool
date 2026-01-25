@@ -1,7 +1,7 @@
 // SafePhaseExecutor.ts
 import { Phase } from '@/core/models/phases/Phase';
 import { Milestone } from '@/core/typings/milestoneTypes';
-import { BackupRecord, PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import '@/core/error-analyzer/phases/PhaseBackupSystem';
 import { AutosaveLogActions } from "@/core/actions/AutosaveLogActions";
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import VersionGenerator, { getCurrentAppInfo } from '@/core/versions/VersionGenerator';

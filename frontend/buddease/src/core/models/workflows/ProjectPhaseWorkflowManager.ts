@@ -2,17 +2,16 @@
 // ProjectPhaseWorkflowManager.ts
 // Integrated with generateRoadmaps for comprehensive project management
 
-import type { WorkflowTransition, TransitionEvaluationContext } from '@/core/typings/workflows/WorkflowTransition';
-import type { FixResult, TypeImportError } from '@/app/scripts/types/import-fixes';
-import type { ProjectPhase, TeamAllocation } from '@/core/models/phases/PhaseManager';
+import type { WorkflowTransition, TransitionEvaluationContext } from '@/core/models/phases/WorkflowTransition';
+import type { FixResult, ImportFix } from '@/app/scripts/import-utils'
+import type { ProjectPhase, TeamAllocation } from '@/core/projects/projectManagement/ProjectManager';
 import type { CryptoPortfolioMetrics } from '@/core/crypto/PortfolioManager';
-import type { ProjectStructure, DomainStructure } from '@/core/scripts/generateRoadmaps';
+import '@/core/config/appStructure/DomainStructure';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
 // Import the roadmap generator
-import { generateRoadmaps, categorizeProjectStructure } from '@/core/scripts/generateRoadmaps';
 
 // ========== TYPES ==========
 export interface PhaseWorkflowTransition extends WorkflowTransition {

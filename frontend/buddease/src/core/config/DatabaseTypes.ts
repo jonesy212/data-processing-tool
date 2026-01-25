@@ -1,6 +1,6 @@
 // DatabaseTypes.ts
 // Frontend-safe types and interfaces only - NO pg imports!
-import { DatabaseConfig } from '@/core/config/DatabaseConfig';
+import type { DatabaseConfig } from '@/core/config/DatabaseConfig';
 
 interface DatabaseQuery {
   query: string;

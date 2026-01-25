@@ -1,5 +1,5 @@
 // themeChangeAction.tsx
-import { BrandingSettings } from '@/core/branding/BrandingSettings';
+import type { BrandingSettings } from '@/core/branding/BrandingSettings';
 import type { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
 import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
 import { createAction } from '@reduxjs/toolkit';

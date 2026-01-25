@@ -1,7 +1,7 @@
 // PromptSystem.tsx
 /// <reference types="react-speech-recognition" />
 
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { generateDynamicPrompts } from '@/core/prompts/promptGenerator';
 import React, { useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';

@@ -5,7 +5,7 @@ import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { CategoryKeys } from "@/core/libraries/categories/CategoryManager";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 
 type CategoryIdentifier = string | symbol;

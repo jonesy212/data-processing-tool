@@ -1,6 +1,7 @@
 // TeamMemberPermissionsImpl.ts
 import { TeamMemberPermissions } from '@/core/models/teams/TeamMembers';
-import { MemberPermission, Permission, TeamPermission } from '@/core/permissions/Permission';
+import type { MemberPermission, TeamPermission } from '@/core/permissions/Permission';
+import { Permission } from '@/core/permissions/Permission';
 
 class TeamMemberPermissionsImpl implements TeamMemberPermissions {
   constructor(

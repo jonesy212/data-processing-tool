@@ -1,7 +1,7 @@
 // DynamicIntroTooltip.tsx
 
 import React, { useEffect } from 'react';
-import type { Step, Options } from 'intro.js';
+import type { Step, Options } from '@/core/hooks/useStepNavigation';
 import IntroJs from 'intro.js';
 
 export interface IntroStep {

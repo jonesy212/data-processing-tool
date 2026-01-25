@@ -5,7 +5,7 @@ import * as IdeaLifecycleAPI from "@/core/api/IdeaLifecycleAPI";
 import axiosInstance from '@/core/api/csrfToken';
 
 
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { IdeaLifecyclePhase } from "@/core/models/phases/PhaseManager";
 import IdeaValidation from "@/core/users/userJourney/IdeaValidation";
 import ProofOfConcept from "@/core/users/userJourney/ProofOfConcept";

@@ -5,7 +5,8 @@ import { Sender } from '@/core/components/communications/CommunicationPage';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Tag } from "@/core/models/tracker/Tag";
-import { User, UserData } from "@/core/users/User";
+import type { UserData } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
 interface Message<
   T extends BaseDataEntity,

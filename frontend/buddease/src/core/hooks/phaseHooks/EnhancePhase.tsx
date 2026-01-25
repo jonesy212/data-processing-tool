@@ -2,7 +2,7 @@
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
 import type { PhaseHookConfig } from "@/core/hooks/phaseHooks/PhaseHooks";
 import usePhaseHooks, { createPhaseHook, idleTimeoutDuration } from "@/core/hooks/phaseHooks/PhaseHooks";
-import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
+import type { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
 import { useState } from "react";
 
 const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {

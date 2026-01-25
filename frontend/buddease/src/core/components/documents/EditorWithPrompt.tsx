@@ -6,7 +6,7 @@ import type { ToolbarOptionsProps } from "@/core/components/documents/ToolbarOpt
 import { Prompt } from "@/core/prompts/PromptPage";
 import PromptSystem from "@/core/prompts/PromptSystem";
 import { generatePrompt } from "@/core/prompts/promptGenerator";
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import TextEditor from "./TextEditor"; // Assuming the correct path
 
 interface EditorWithPromptProps {

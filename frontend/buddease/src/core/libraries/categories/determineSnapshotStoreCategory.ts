@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 function determineSnapshotStoreCategory<
   T extends BaseDataEntity,
   K extends T = T,

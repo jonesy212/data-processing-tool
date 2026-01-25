@@ -14,7 +14,7 @@ import { getAllSnapshotEntries } from "@/core/snapshots/getSnapshotEntries";
 import { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { CorrectionCategory } from '@/core/typings/correctionTypes';
 import { convertSnapshotToMap } from "@/core/typings/YourSpecificSnapshotType";
 import { ExtendedVersionData } from '@/core/versions/VersionData';

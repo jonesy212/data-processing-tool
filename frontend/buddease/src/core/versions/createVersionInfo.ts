@@ -5,9 +5,9 @@ import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { Data } from '@/core/models/data/Data';
-import { TagsRecord } from '@/core/models/tracker/Tag';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
@@ -17,7 +17,7 @@ import type { DefaultSnapshotTypes, SnapshotAttachment, SnapshotEntity, Snapshot
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
 import { convertSnapshotContainerToStore } from "@/core/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/core/versions/createLatestVersion';
-import { VersionData, VersionHistory } from "@/core/versions/VersionData";
+import type { VersionData, VersionHistory } from "@/core/versions/VersionData";
 import { default as Version, default as VersionImpl } from "./Version";
 
 const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;

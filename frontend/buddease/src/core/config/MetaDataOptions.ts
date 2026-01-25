@@ -1,44 +1,45 @@
 // MetaDataOptions.ts
 import type { dynamicMeetingMetadata, MeetingMetadata } from '@/core/calendar/ScheduledData';
 import { LanguageEnum } from '@/core/communications/LanguageEnum';
-import { Task } from '@/core/components/models/tasks/Task';
-import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
+import type { Task } from '@/core/components/models/tasks/Task';
+import type { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
 import type { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { SchemaField } from '@/core/config/metadata/SchemaField';
+import type { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { CoreMetadata } from '@/core/config/MetadataStateManager';
 import type { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/core/config/StructuredMetadata';
 import { useMeta } from '@/core/config/useMeta';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { BaseEntityProperties } from "@/core/documents/RelatedProps";
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { ChangeLogEntry } from '@/core/logging/ChangeLogEntry';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { ChangeLogEntry } from '@/core/logging/ChangeLogEntry';
 import type { Data, SharedRelationshipData } from '@/core/models/data/Data';
-import { StatusType } from '@/core/models/data/StatusType';
+import type { StatusType } from '@/core/models/data/StatusType';
 import type { taskMetadata } from '@/core/models/data/TaskMetadata';
-import { PhaseMeta } from '@/core/models/phases/Phase';
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { PriorityValue } from '@/core/pages/searches/CriteriaType';
-import { TransactionData } from '@/core/payment/Transaction';
-import { Permission } from '@/core/permissions/Permission';
+import type { PhaseMeta } from '@/core/models/phases/Phase';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { PriorityValue } from '@/core/pages/searches/CriteriaType';
+import type { TransactionData } from '@/core/payment/Transaction';
+import type { Permission } from '@/core/permissions/Permission';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
-import { SimulatedDataSource } from '@/core/snapshots/createSnapshotOptions';
+import type { SimulatedDataSource } from '@/core/snapshots/createSnapshotOptions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
-
+import type { BackupMetadata } from '@/core/typings/persistenceTypes'
 import type { InitializedState } from "@/core/state/stores/DataStore";
 import type { AllStatus } from '@/core/state/stores/DetailsListStore';
-import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
+import type { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import type { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
 import type { FileMetadata } from '@/core/typings/file/fileTypes';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/core/versions/createLatestVersion';
-import { Version, version, versionData, default as VersionImpl } from '@/core/versions/Version';
-import { SharedVersioning, VersionData, VersionHistory } from "@/core/versions/VersionData";
+import type { Version } from '@/core/versions/Version';
+import { version, versionData, default as VersionImpl } from '@/core/versions/Version';
+import type { SharedVersioning, VersionData, VersionHistory } from "@/core/versions/VersionData";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 import { category } from '@/utils/snapshotUtils';
 
@@ -331,7 +332,7 @@ type UnifiedMetadata<
   isCompressed?: boolean;
   config?: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   createdBy?: string;
-  metadata: BackupMetadata; 
+  metadata?: BackupMetadata<T>; 
 };
 
 

@@ -2,8 +2,9 @@
 import { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { MeetingNotificationState } from "@/core/state/redux/slices/MeetingNotificationSlice";
-import { User } from "@/core/users/User";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { User } from "@/core/users/User";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 // Define interface for meeting-related state
 interface MeetingState {

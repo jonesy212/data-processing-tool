@@ -9,11 +9,12 @@ import { Version } from '@/core/versions/Version';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { SharedRelationshipData } from '@/core/models/data/Data';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
-import { UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
 
 import type { createEventManager } from "@/core/state/stores/DataStore";
 import { HistoryEntry } from '@/core/state/stores/HistoryStore';
-import {
+import type { EventAttachment, EventEntity, EventMeta } from '@/core/typings/entities/EventEntity';
+import { EventExcludedFields, EventIncludedFields, EventK } from '@/core/typings/entities/EventEntity';
     EventAttachment,
     EventEntity,
     EventExcludedFields,
@@ -21,7 +22,7 @@ import {
     EventK,
     EventMeta
 } from '@/core/typings/entities/EventEntity';
-import {
+import type { VersionHistoryAttachment, VersionHistoryEntity, VersionHistoryExcludedFields, VersionHistoryIncludedFields, VersionHistoryK, VersionHistoryMeta } from '@/core/typings/entities/VersionHistoryEntity';
     VersionHistoryAttachment,
     VersionHistoryEntity,
     VersionHistoryExcludedFields,
@@ -63,13 +64,14 @@ interface MyMetaState<
   timestamp: string | number | Date | undefined;
 }
 
-Client-side type definitions
+// Client-side type definitions
 type BaseDataWithAttachment = BaseDataEntity;
 type BaseType = BaseDataEntity;
 type ExtendedType = BaseDataEntity &
   UserConfig<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> & 
   UserData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
-Client-side constants
+
+// Client-side constants
 const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
 const lastUpdated: VersionHistory<VersionHistoryEntity, VersionHistoryK, VersionHistoryMeta, VersionHistoryAttachment, VersionHistoryExcludedFields, VersionHistoryIncludedFields> = {

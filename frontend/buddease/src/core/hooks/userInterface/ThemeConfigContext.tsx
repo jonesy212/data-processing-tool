@@ -1,7 +1,7 @@
 // ThemeConfigContext.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
+import type { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
 import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 import YourClass from "@/utils/YourClass";
 import React, { createContext, useContext, useState } from "react";

@@ -3,24 +3,25 @@ import * as snapshotApi from "@/core/api/SnapshotApi";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { SnapshotDataParams } from '@/core/snapshots/SnapshotDataParams';
 
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import type { Snapshot, SnapshotDataType } from '@/core/snapshots/Snapshot';
+import type { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import type { SnapshotStoreMethods, SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreMethods";
+import type { SnapshotStoreMethods, SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 
 import type { createSnapshotStoreOptions } from "@/core/snapshots/createSnapshotStoreOptions";
 import type { SnapshotOperation, SnapshotOperationType } from "@/core/snapshots/index";
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore, useDataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { Subscription } from "@/core/subscriptions/Subscription";
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { Subscription } from "@/core/subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "@/core/typings/YourSpecificSnapshotType";
 import SnapshotStore from "./SnapshotStore";
 

@@ -3,7 +3,8 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ListGenerator from '@/core/generators/ListGenerator';
 import type { CollaborationOptions } from '@/core/interfaces/options/CollaborationOptions';
-import { CommonData, Customizations } from '@/core/models/CommonData';
+import type { CommonData } from '@/core/models/CommonData';
+import { Customizations } from '@/core/models/CommonData';
 import type { Data } from '@/core/models/data/Data';
 import { CommonEvent } from '@/core/state/stores/CommonEvent';
 import type { DetailsItem } from '@/core/state/stores/DetailsListStore';

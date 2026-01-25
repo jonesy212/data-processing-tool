@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
-import { SnapshotContainer, SnapshotData } from "@/core/snapshots/SnapshotContainer";
+import { SnapshotContainer, SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 
 export const ContainerMethodsImplementation = {

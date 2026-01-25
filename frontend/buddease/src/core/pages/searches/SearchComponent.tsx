@@ -1,7 +1,8 @@
 // SearchComponent.tsx
-import { ModifiedDate } from "@/core/documents/DocType";
-import { DocumentOptions, getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { ModifiedDate } from "@/core/documents/DocType";
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import type { Data } from '@/core/models/data/Data';
 import { useSearch } from '@/core/state/context/SearchContext';
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";

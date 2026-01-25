@@ -3,27 +3,27 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Member } from "@/core/models/members/Member";
-import { CustomPhaseHooks, Phase, PhaseData } from '@/core/models/phases/Phase';
-import { Project } from '@/core/models/projects/Project';
+import type { Member } from "@/core/models/members/Member";
+import type { CustomPhaseHooks, Phase, PhaseData } from '@/core/models/phases/Phase';
+import type { Project } from '@/core/models/projects/Project';
 import type { Task } from "@/core/models/tasks/Task";
 import type { UserRole } from "@/core/models/UserRole";
 import UserRoles from "@/core/models/UserRoles";
 import { Persona } from "@/core/pages/personas/Persona";
-import { Permission } from '@/core/permissions/Permission';
-import { Product } from '@/core/products/Product';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Product } from '@/core/products/Product';
+import type { Permission } from '@/core/permissions/Permission';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { AuditRecord } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { PhaseMeta } from '@/core/typings/entities/PhaseEntity';
-import { ProjectBudget } from '@/core/typings/projectTypes';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { AuditRecord } from '@/core/subscribers/Subscriber';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { PhaseMeta } from '@/core/typings/entities/PhaseEntity';
+import type { ProjectBudget } from '@/core/typings/projectTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
   // Only include fields that are fundamentally part of the entity data model
@@ -164,7 +164,7 @@ const emptyMemberData: MemberData<
   
   hasQuota: false, // Should be boolean, not string
   processingTasks: [], // Should be array, not string
-
+  latestVersion: latestVersion,
   budget: {
     total: 0,
     used: 0,
@@ -232,7 +232,6 @@ const createDefaultMemberData = (
   status: baseData.status || 'active'
 });
 
-export default MemberData;
 
 export type {
     MemberApplyFieldFilters, MemberAttachment, MemberBaseParams, MemberData, MemberEntity, MemberExcludedFields,
@@ -241,7 +240,5 @@ export type {
     MemberSnapshotData, MemberSnapshotsArray, MemberSnapshotStore, MemberSnapshotStoreConfig, MemberSnapshotWithCriteria, MemberStructuredMetadata, MemberSubscriberCollection, MemberUnifiedMetadata
 };
 
-    export {
-        createDefaultMemberData, emptyMemberData
-    };
+export { createDefaultMemberData, emptyMemberData  };
 

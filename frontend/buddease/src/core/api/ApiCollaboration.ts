@@ -3,7 +3,7 @@
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { CollaborationLogger } from '@/core/logging/Logger';
 import { useNotification } from '@/core/state/context/NotificationContext';
 

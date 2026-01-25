@@ -1,6 +1,6 @@
 // DocumentPhase.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import { ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
+import type { ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
 import type { TagsRecord } from '@/core/models/tracker/Tag';
 
 // ---------------------------

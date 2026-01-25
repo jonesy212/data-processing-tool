@@ -7,6 +7,11 @@ export type CustomNotificationType =
   | "custom_notification_type_2"
   | "custom_notification_type_3";
 
+export type FixNotificationType = 
+  | 'rollback'
+  | 'main-operation'
+  | 'completion' 
+
 export type MessageNotificationStatusType =
   | "sent"
   | "delivered"

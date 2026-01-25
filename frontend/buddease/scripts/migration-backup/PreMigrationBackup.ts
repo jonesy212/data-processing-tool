@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { execSync } from 'child_process';
-
+import { getErrorMessage } from '@/src/utils/error-handling'
 interface MigrationBackup {
   id: string;
   timestamp: Date;
@@ -72,27 +72,28 @@ class PreMigrationBackup {
   
   private findScriptFiles(rootDir: string = '.'): FileStructure[] {
     const scriptFiles: FileStructure[] = [];
+
+  const scanDirectory = (dir: string, depth = 0) => {
+    if (depth > 6) return; // Limit recursion depth
     
-    const scanDirectory = (dir: string, depth = 0) => {
-      if (depth > 6) return; // Limit recursion depth
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
       
-      try {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
         
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          
-          // Skip backup directories and node_modules
-          if (entry.name.includes('backup') || 
-              entry.name === 'node_modules' || 
-              entry.name === '.git' ||
-              entry.name.startsWith('.')) {
-            continue;
-          }
-          
-          if (entry.isDirectory()) {
-            scanDirectory(fullPath, depth + 1);
-          } else if (entry.isFile()) {
+        // Skip backup directories and node_modules
+        if (entry.name.includes('backup') || 
+            entry.name === 'node_modules' || 
+            entry.name === '.git' ||
+            entry.name.startsWith('.')) {
+          continue;
+        }
+        
+        if (entry.isDirectory()) {
+          scanDirectory(fullPath, depth + 1);
+        } else if (entry.isFile()) {
+          try {
             if (this.isScriptFile(fullPath)) {
               const stats = fs.statSync(fullPath);
               const checksum = this.calculateChecksum(fullPath);
@@ -106,16 +107,19 @@ class PreMigrationBackup {
                 backupLocation: this.getBackupLocation(fullPath)
               });
             }
+          } catch (fileError) {
+            console.warn(`⚠️ Could not process file ${fullPath}:`, getErrorMessage(fileError));
           }
         }
-      } catch (error) {
-        console.warn(`⚠️ Could not scan ${dir}:`, error.message);
       }
-    };
-    
-    scanDirectory(rootDir);
-    return scriptFiles;
-  }
+    } catch (error) {
+      console.warn(`⚠️ Could not scan ${dir}:`, getErrorMessage(error));
+    }
+  };
+  
+  scanDirectory(rootDir);
+  return scriptFiles;
+}
   
   private getBackupLocation(originalPath: string): string {
     // Convert original path to backup path
@@ -150,7 +154,7 @@ class PreMigrationBackup {
           console.log(`  📄 Backed up ${backedUp} files...`);
         }
       } catch (error) {
-        console.warn(`⚠️ Failed to backup ${file.path}:`, error.message);
+        console.warn(`⚠️ Failed to backup ${file.path}:`, getErrorMessage(error));
       }
     }
     
@@ -326,7 +330,7 @@ echo "📁 Check .migration-backups/${manifest.id}/rollback.log for details"
           failed++;
         }
       } catch (error) {
-        console.error(`❌ Failed to restore ${file.originalLocation}:`, error.message);
+        console.error(`❌ Failed to restore ${file.originalLocation}:`, getErrorMessage(error));
         failed++;
       }
     }
@@ -417,7 +421,7 @@ Failed: ${failed} files
         fs.rmSync(backupPath, { recursive: true, force: true });
         console.log(`  ✅ Deleted: ${backup.name}`);
       } catch (error) {
-        console.warn(`  ❌ Failed to delete ${backup.name}:`, error.message);
+        console.warn(`  ❌ Failed to delete ${backup.name}:`, getErrorMessage(error));
       }
     }
   }

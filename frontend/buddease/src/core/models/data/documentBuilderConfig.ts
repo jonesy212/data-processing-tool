@@ -1,10 +1,11 @@
 // documentBuilderConfig.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/core/communications/LanguageEnum";
-import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
-import { LinksType } from "@/core/documents/DocumentOptions";
-import { DocumentSize, Layout } from "@/core/models/data/StatusType";
+import type { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
+import type { LinksType } from "@/core/documents/DocumentOptions";
+import type { DocumentSize } from '@/core/models/data/StatusType';
+import { Layout } from '@/core/models/data/StatusType';
 import type { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import { VersionData } from "@/core/versions/VersionData";
 import { ContentState } from "draft-js";
 

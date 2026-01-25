@@ -1,7 +1,7 @@
 // getConfigsApi.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { ipfsConfig } from '@/core/config/ipfsConfig';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentSize } from '@/core/models/data/StatusType';
 import { configServiceInstance } from '@/core/services/ConfigurationService';
 import { fluenceApiKey } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';

@@ -1,7 +1,7 @@
 // documentSagas.ts
 import { DocumentStatus } from "@/core/components/documents/types";
-import { headersConfig } from '@/core/components/shared/SharedHeaders';
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { headersConfig } from '@/core/components/shared/SharedHeaders';
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { DocumentActions } from "@/core/tokens/DocumentActions";
 import { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";

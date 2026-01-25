@@ -6,7 +6,7 @@ import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { EventHandler } from '@/core/typings/eventHandlers/eventTypes';
-import {
+import type { BatchSnapshotEvent, ErrorEvent, EventContext, SnapshotEvent, SubscriptionEvent } from '@/core/typings/snapshotTypes';
     BatchSnapshotEvent,
     ErrorEvent,
     EventContext,

@@ -7,20 +7,21 @@ import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { Category, SnapshotCategoryMethods } from '@/core/libraries/categories/generateCategoryProperties';
 import { Content } from "@/core/models/content/AddContent";
 import type { Data } from '@/core/models/data/Data';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import { createCompleteSnapshot } from '@/core/snapshots/createSnapshot';
-import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { Version } from "@/core/versions/Version";
 
 import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { TagsRecord } from '@/core/models/tracker/Tag';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotData, SnapshotRelationships } from "@/core/snapshots/SnapshotData";
 import { SnapshotMethods } from "@/core/snapshots/SnapshotMethods";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { InitializedConfig, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedConfig, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
 
 const API_BASE_URL = endpoints.snapshots

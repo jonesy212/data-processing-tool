@@ -1,7 +1,8 @@
 // ProtectedRoute.tsx
 import { useAuth } from '@/core/state/context/AuthContext';
 import React from 'react';
-import { LazyRouteFunction, Navigate, NonIndexRouteObject, RouteProps as ReactRouteProps, Route } from 'react-router-dom';
+import type { RouteProps as ReactRouteProps } from 'react-router-dom';
+import { LazyRouteFunction, Navigate, NonIndexRouteObject, Route } from 'react-router-dom';
 
 interface ProtectedRouteProps extends Omit<ReactRouteProps, 'component'> {
   component: React.ComponentType<any>;

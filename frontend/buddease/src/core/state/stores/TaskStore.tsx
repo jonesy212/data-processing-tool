@@ -10,14 +10,14 @@ import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 import { tasksDataSource } from '@/core/components/models/tasks/TaskDataSource';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { generateNewTask } from "@/core/generators/GenerateNewTask";
 import useApiManager from "@/core/hooks/dynamicHooks/useApiManager";
 import useSecureStoreId from "@/core/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { PriorityTypeEnum, TaskStatus } from "@/core/models/data/StatusType";
+import type { PriorityTypeEnum, TaskStatus } from "@/core/models/data/StatusType";
 import type { Task } from "@/core/models/tasks/Task";
 import FilterTasksRequest from "@/core/pages/searches/FilterTasksRequest";
 import { taskService } from "@/core/services/TaskService";
@@ -33,7 +33,7 @@ import { AssignTaskStore, useAssignTaskStore } from "@/core/state/stores/AssignT
 import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { Todo } from "@/core/todos/Todo";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";

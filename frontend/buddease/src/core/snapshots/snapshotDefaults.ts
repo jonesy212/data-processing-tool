@@ -1,7 +1,7 @@
 // snapshotDefaults.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
 function defaultTransformDelegate<

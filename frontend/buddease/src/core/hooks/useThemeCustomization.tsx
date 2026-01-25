@@ -1,9 +1,11 @@
 // useThemeCustomization.tsx
-import {
+import type { NotificationState } from '@/core/state/redux/slices/NotificationSlice';
+import type { initialNotificationState } from '@/core/state/redux/slices/NotificationSlice';
     NotificationState,
     initialNotificationState,
 } from "@/core/state/redux/slices/NotificationSlice";
-import {
+import type { ThemeState } from '@/core/state/redux/slices/ThemeSlice';
+import type { initialThemeState } from '@/core/state/redux/slices/ThemeSlice';
     ThemeState,
     initialThemeState,
 } from "@/core/state/redux/slices/ThemeSlice";

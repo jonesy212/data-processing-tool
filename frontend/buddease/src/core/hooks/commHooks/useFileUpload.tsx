@@ -2,14 +2,15 @@
 import CustomFile from "@/core//documents/File";
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { headersConfig } from '@/core/components/shared/SharedHeaders';
+import type { headersConfig } from '@/core/components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { FileLogger } from "@/core/logging/Logger";
 import { generateCSRFToken } from "@/core/server/security/csrfTokenGenerator";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { ChangeEvent, useState } from "react";
+import type { ChangeEvent } from 'react';
+import { useState } from 'react';
 
 // Don't call hooks conditionally or outside of components
 const { notify } = useNotification();

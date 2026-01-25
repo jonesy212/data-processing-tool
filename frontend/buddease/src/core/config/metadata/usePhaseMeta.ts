@@ -4,7 +4,7 @@ import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { createMeta } from "@/core/config/metadata/createMeta";
 import type { createMetadata } from '@/core/config/metadata/createMetadata';
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useEffect } from 'react';
 

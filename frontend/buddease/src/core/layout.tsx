@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { BaseData } from "@/core/models/data/Data";
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
@@ -15,8 +15,8 @@ import type { AppEntity, AppSnapshot } from '@/core/typings/entities/AppEntity';
 import type { AppStructuredMetadata, AppUnifiedMetadata } from "@/core/typings/entities/AppMetadataEntity";
 import React from "react";
 import RootLayout from './RootLayout';
-import { version } from "./versions/Version";
-import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/createLatestVersion";
+import { version } from "@/core/versions/Version";
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/core/versions/createLatestVersion";
 
 
 const area = fetchUserAreaDimensions().toString()

@@ -8,7 +8,8 @@ import { UserRoleEnum } from '@/core/models/UserRoles';
 import type { Task } from '@/core/models/tasks/Task';
 import { Persona } from "@/core/pages/personas/Persona";
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
-import {
+import type { MemberAttachment, MemberData, MemberEntity, MemberMeta } from '@/core/typings/entities/MemberEntity';
+import { MemberExcludedFields, MemberIncludedFields, MemberK } from '@/core/typings/entities/MemberEntity';
     MemberAttachment,
     MemberData,
     MemberEntity,
@@ -18,7 +19,7 @@ import {
     MemberMeta,
 } from '@/core/typings/entities/MemberEntity';
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 
 
 export interface Member<

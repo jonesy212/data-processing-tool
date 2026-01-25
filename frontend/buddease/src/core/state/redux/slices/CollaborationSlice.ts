@@ -3,37 +3,37 @@ import UserService, {
     userId,
     userService,
 } from "@/core/api/ApiUser";
-import { Communication } from "@/core/components/communications/CommunicationPage";
-import { Meeting } from "@/core/components/communications/scheduler/Meeting";
+import type { Communication } from "@/core/components/communications/CommunicationPage";
+import type { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import CommunityContribution from "@/core/components/crypto/CommunityContribution";
-import { CryptoHolding } from "@/core/components/crypto/CryptoHolding";
+import type { CryptoHolding } from "@/core/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/core/components/crypto/CryptoTransaction";
-import { Task } from "@/core/components/models/tasks/Task";
-import { Whiteboard } from "@/core/components/whiteboard/Whiteboard";
+import type { Task } from "@/core/components/models/tasks/Task";
+import type { Whiteboard } from "@/core/components/whiteboard/Whiteboard";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { DocumentBuilderOptions } from "@/core/documents/DocumentOptions";
 import DocumentPermissions from '@/core/documents/DocumentPermissions';
-import { Change } from "@/core/documents/NoteData";
+import type { Change } from "@/core/documents/NoteData";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { mergeChanges } from "@/core/documents/editing/autosave";
-import { Feedback } from "@/core/features/support/Feedback";
+import type { Feedback } from "@/core/features/support/Feedback";
 import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { K, Meta, T } from '@/core/models/data/dataStoreMethods';
-import { Member } from '@/core/models/members/Member';
-import { Project } from '@/core/models/projects/Project';
-import { Progress } from "@/core/models/tracker/ProgressBar";
+import type { Member } from '@/core/models/members/Member';
+import type { Project } from '@/core/models/projects/Project';
+import type { Progress } from "@/core/models/tracker/ProgressBar";
 import CollaborationSettings from "@/core/pages/community/CollaborationSettings";
-import { MentorshipRequest } from "@/core/pages/community/MentorshipRequest";
-import { Participant } from '@/core/pages/management/ParticipantManagementPage';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import Milestone from '@/core/state/redux/slices/CalendarSlice';
+import type { MentorshipRequest } from "@/core/pages/community/MentorshipRequest";
+import type { Participant } from '@/core/pages/management/ParticipantManagementPage';
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { Milestone } from '@/core/state/redux/slices/CalendarSlice';
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { Document } from "@/core/state/stores/DocumentStore";
+import type { Document } from "@/core/state/stores/DocumentStore";
 import { useUIManager } from "@/core/state/stores/UISlice";
-import { Todo } from "@/core/todos/Todo";
-import {
+import type { Todo } from "@/core/todos/Todo";
+import type { 
     CollaboratorAttachment,
     CollaboratorEntity,
     CollaboratorExcludedFields,
@@ -41,10 +41,11 @@ import {
     CollaboratorK,
     CollaboratorMeta
 } from '@/core/typings/entities/CollaboratorEntity';
-import { SecurityMeasure } from '@/core/typings/securityMeasureTypes';
-import { Idea } from "@/core/users/Ideas";
-import { VersionData } from "@/core/versions/VersionData";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { SecurityMeasure } from '@/core/typings/securityMeasureTypes';
+import type { Idea } from "@/core/users/Ideas";
+import type { VersionData } from "@/core/versions/VersionData";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface Resource {
   id: string;
@@ -59,7 +60,7 @@ enum ResourceType {
   Document,
   Image,
   Link,
-  Other,
+  Other
 }
 
 interface CollaborationState<
@@ -68,8 +69,9 @@ interface CollaborationState<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> {
-  sharedProjects: Project[];
+  IncludedFields extends keyof T = keyof T
+> {
+  sharedProjects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   sharedMeetings: Meeting<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   participants: Participant[]
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -153,7 +155,7 @@ const initialState: CollaborationState<CollaboratorEntity,
     documentData: {
       content: {},
       title: "",
-      lastModifiedDate: { value: new Date(), isModified: false },
+      lastModifiedDate: { value: new Date(), isModified: false } as ModifiedDate,
       id: "0",
       _id: "",
       topics: [],
@@ -168,11 +170,23 @@ const initialState: CollaborationState<CollaboratorEntity,
       folderPath: "",
       visibility: "public",
       previousMetadata: undefined,
-      currentMetadata: {},
+      currentMetadata: {} as UnifiedMetadata<CollaboratorEntity,
+  CollaboratorK,
+  CollaboratorMeta,
+  CollaboratorAttachment,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields
+>,
       accessHistory: [],
       version: null,
       permissions: {} as DocumentPermissions,
-      versionData: {} as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      versionData: {} as VersionData<CollaboratorEntity,
+  CollaboratorK,
+  CollaboratorMeta,
+  CollaboratorAttachment,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields
+>,
     },
     uiManager: {} as ReturnType<typeof useUIManager>,
     userService: new UserService(),
@@ -186,7 +200,13 @@ const initialState: CollaborationState<CollaboratorEntity,
 };
 const handleCommunicationChange = (
   state: WritableDraft<CollaborationState<T, K, Meta>>,
-  action: PayloadAction<WritableDraft<Communication>>
+  action: PayloadAction<Communication<CollaboratorEntity,
+  CollaboratorK,
+  CollaboratorMeta,
+  CollaboratorAttachment,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields
+>>
 ) => {
   switch (action.type) {
     case "add":

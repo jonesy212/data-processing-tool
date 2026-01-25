@@ -1,18 +1,19 @@
 // DrawingEntity.ts
 import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Content } from '@/core/models/content/AddContent';
-import { Filter } from '@/core/pages/searches/SearchOptions';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Content } from '@/core/models/content/AddContent';
+import type { Filter } from '@/core/pages/searches/SearchOptions';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { BlendMode, DrawingElement, Shadow } from '@/core/state/redux/slices/DrawingSlice';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { BlendMode, DrawingElement } from '@/core/state/redux/slices/DrawingSlice';
+import type { Shadow } from '@/core/state/redux/slices/DrawingSlice';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 // Core Drawing Entity with all properties from Shape, LayerEffect, etc.
 export interface DrawingEntity extends BaseDataEntity {

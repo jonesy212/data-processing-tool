@@ -8,20 +8,20 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition, PriorityTypeEnum } from '@/core/models/data/StatusType';
-import { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
+import type { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
 import { convertResponseToSnapshot } from "@/core/snapshots/InitializedSnapshotTypes";
 import type { Snapshot } from "@/core/snapshots/Snapshot";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { InitializedSnapshot } from "@/core/snapshots/SnapshotStoreOptions";
+import type { InitializedSnapshot } from "@/core/snapshots/SnapshotStoreOptions";
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 import { isSnapshotStore, isYourResponseType } from "@/core/typings/YourSpecificSnapshotType";
 import type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { isSnapshot } from "@/utils/snapshotUtils";
-import { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 
 const dispatch = useDispatch();

@@ -7,7 +7,7 @@ import type { Data } from '@/core/models/data/Data';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { EventData } from "@/core/state/stores/AssignEventStore";
-import { AllTypes } from "@/core/typings/PropTypes";
+import type { AllTypes } from "@/core/typings/PropTypes";
 
 interface BaseRealtimeData<
   T extends BaseDataEntity,

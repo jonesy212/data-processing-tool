@@ -2,8 +2,8 @@
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CommonData } from "@/core/models/CommonData";
-import { UserData, VisualizationData } from "@/core/users/User";
+import type { CommonData } from "@/core/models/CommonData";
+import type { UserData, VisualizationData } from "@/core/users/User";
 
 interface Product<
   T extends BaseDataEntity,

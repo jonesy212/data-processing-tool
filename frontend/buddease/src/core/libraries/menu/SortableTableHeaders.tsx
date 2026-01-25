@@ -1,6 +1,6 @@
 // SortableTableHeaders.tsx
-import { HeadersConfig } from '@/core/api/headers/HeadersConfig';
-import { headersConfig } from '@/core/components/shared/SharedHeaders';
+import type { HeadersConfig } from '@/core/api/headers/HeadersConfig';
+import type { headersConfig } from '@/core/components/shared/SharedHeaders';
 import React from "react";
 
 interface Header {

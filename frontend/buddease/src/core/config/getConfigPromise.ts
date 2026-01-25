@@ -1,7 +1,7 @@
 // getConfigPromise.ts
 import type { BaseData } from '@/core/models/data/Data';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
 import type { createDataStore } from '@/core/state/stores/DataStore';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -9,7 +9,7 @@ import type { createBaseDataEntity } from '@/core/config/createBaseDataEntity';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { createSnapshotStoreMap } from '@/core/snapshots/createSnapshotStoreMap';
 import { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotContextType } from '@/core/state/context/SnapshotContext';
+import type { SnapshotContextType } from '@/core/state/context/SnapshotContext';
 
 export function getConfigPromise<
   T extends BaseData<any>, 

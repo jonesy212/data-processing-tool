@@ -2,7 +2,8 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Course } from '@/core/documents/editing/CourseBuilder';
-import {
+import type { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedProps';
+import { SharedStatusFlags } from '@/core/documents/RelatedProps';
     BaseEntityProperties,
     SharedIdentifiers,
     SharedStatusFlags,

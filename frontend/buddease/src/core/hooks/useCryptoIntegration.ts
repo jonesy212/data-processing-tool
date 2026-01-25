@@ -2,7 +2,7 @@
 import { environmentAwareEndpointManager } from '@/core/config/endpoints/EnvironmentAwareEndpointManager';
 import internalApiService from '@/core/api/ApiClient';
 import { cryptoIntegrationService } from '@/core/services/CryptoIntegrationService';
-import type { CryptoPortfolio } from '@/core/services/CryptoIntegrationService';
+import type { CryptoPortfolio } from '@/core/components/crypto/CryptoPortfolio';
 import { useEffect, useState } from 'react';
 
 export const useCryptoIntegration = (userId: number) => {

@@ -10,7 +10,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata, UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { VersionData } from '@/core/versions/VersionData';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";

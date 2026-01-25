@@ -2,7 +2,7 @@
 import type { ContentItem } from '@/core/components/models/content/ContentItem';
 import ContentItemComponent from '@/core/components/models/content/ContentItem';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { StatusType } from '@/core/models/data/StatusType';
+import type { StatusType } from '@/core/models/data/StatusType';
 import { Phase } from "@/core/models/phases/Phase";
 import { Persona } from '@/core/pages/personas/Persona';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
@@ -17,7 +17,8 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UserRoles from '@/core/models/UserRoles';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import {
+import type { AppContentEntity, ContentAttachment, ContentMeta } from '@/core/typings/entities/ContentEntity';
+import { ContentExcludedFields, ContentIncludedFields, ContentK } from '@/core/typings/entities/ContentEntity';
     AppContentEntity,
     ContentAttachment,
     ContentExcludedFields,

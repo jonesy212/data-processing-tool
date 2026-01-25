@@ -18,7 +18,8 @@ import { TaskPhase } from '@/core/components/phases/TaskPhaseEnum';
 import TaskProcess from "@/core/components/phases/TaskProcess";
 import TradingProcess from "@/core/components/phases/TradingProcess";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import {
+import type { ContentCreation, ContentEditing, ContentOrganization, ContentPublishing } from '@/core/content/ContentMaintenance';
+import { ContentItemSelection } from '@/core/content/ContentMaintenance';
     ContentCreation,
     ContentEditing,
     ContentItemSelection,
@@ -27,7 +28,7 @@ import {
 } from "@/core/content/ContentMaintenance";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UserSupportPhase from "@/core/features/support/UserSupportPhaseComponent";
-import {
+import type { DevelopmentPhaseEnum, ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
     DevelopmentPhaseEnum,
     ProjectPhaseTypeEnum,
 } from "@/core/models/data/StatusType";
@@ -39,7 +40,8 @@ import WelcomePage from "@/core/pages/onboarding/WelcomePage";
 import { DataAnalysisSubPhase } from "@/core/projects/DataAnalysisPhase/DataAnalysisPhase";
 import { TaskManagementPhase } from "@/core/projects/TaskManagementPhase";
 import { useAuth } from '@/core/state/context/AuthContext';
-import { User, UserData } from "@/core/users/User";
+import type { UserData } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import IdeaCreationPhase from "@/core/users/userJourney/IdeaCreationPhase";
 import IdeationPhase from "@/core/users/userJourney/IdeationPhase";
 import axios from "axios";

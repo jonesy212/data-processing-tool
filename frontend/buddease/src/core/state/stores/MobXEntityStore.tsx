@@ -1,19 +1,19 @@
 // MobXEntityStore.tsx
 
 import type { GlobalStateActions } from '@/core/actions/GlobalStateActions';
-import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
+import type { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UserSettings } from '@/core/config/UserSettings';
+import type { UserSettings } from '@/core/config/UserSettings';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import type { DocumentAnimationOptions } from '@/core/documents/SharedDocumentProps';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import { DesignSystemConfig } from '@/core/libraries/ui/theme/MapProperties';
+import type { DesignSystemConfig } from '@/core/libraries/ui/theme/MapProperties';
 import type { BaseData } from '@/core/models/data/Data';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import Version from '@/core/versions/Version';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
 import * as docx from 'docx';

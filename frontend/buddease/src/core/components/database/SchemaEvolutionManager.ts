@@ -1,17 +1,18 @@
 // SchemaEvolutionManager.ts
 // Types for Entity Relationships & Constraints
-import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/core/components/database/SchemaEvolutionManager';
-import {
+import '@/core/components/database/SchemaEvolutionManager';
+import type {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { ValidationRule } from '@/core/snapshots/ValidationRule';
-import { BackendDatabaseService, DatabaseType } from '@/core/typings/database';
+import type { ValidationRule } from '@/core/snapshots/ValidationRule';;
+import type { DatabaseType } from '@/core/server/database/DatabaseServiceFactory';
+import { BackendDatabaseService } from '@/core/typings/database';;
 
-import { DatabaseMigrationDefinition } from '@/core/components/database/MigrationSystem';
+import type { DatabaseMigrationDefinition } from '@/core/components/database/MigrationSystem';;
 
 export interface MigrationEvent {
   type: 'start' | 'progress' | 'error' | 'warning' | 'complete' | 'rollback';

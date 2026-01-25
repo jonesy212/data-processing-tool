@@ -1,7 +1,7 @@
 // useLifecycle.ts.ts
 hooks/useLifecycle.ts
 import { LifecycleManager } from '@/core/hooks/phases/LifecycleManager';
-import { LifecycleConfig } from '@/core/hooks/phases/lifecycles';
+import type { LifecycleConfig } from '@/core/hooks/phases/lifecycles';
 import { useCallback, useState } from 'react';
 
 export const useLifecycle = (config: LifecycleConfig) => {

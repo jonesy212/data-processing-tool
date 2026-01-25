@@ -3,14 +3,14 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
+import type { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
-import { CustomPhaseHooks, Phase, PhaseData } from "@/core/models/phases/Phase";
+import type { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
+import type { CustomPhaseHooks, Phase, PhaseData } from "@/core/models/phases/Phase";
 import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
 
 
-Phase-specific type parameters
+// Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
 type PhaseK = PhaseEntity;
 type PhaseMeta = DefaultMeta<PhaseEntity, PhaseK>;
@@ -110,7 +110,7 @@ const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault =
   ...options
 } as PhaseDefault);
 
-Empty/default phase
+// Empty/default phase
 const emptyPhase: PhaseDefault = createDefaultPhase();
 
 

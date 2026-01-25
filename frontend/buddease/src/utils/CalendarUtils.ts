@@ -4,7 +4,7 @@ import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { CalendarEventWithCriteria } from '@/core/pages/searches/FilterCriteria';
 import { SnapshotStore } from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
 
 /* ============================================================

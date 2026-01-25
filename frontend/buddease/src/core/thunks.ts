@@ -9,7 +9,7 @@ import { SimulatedDataSource } from '@/core/snapshots/createSnapshotOptions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 ;
 
 // --- Enhanced delegate helper with SimulatedDataSource support ---

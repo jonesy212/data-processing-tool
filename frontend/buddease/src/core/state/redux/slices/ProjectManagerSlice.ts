@@ -1,14 +1,15 @@
 // ProjectManagerSlice.ts
-import { Task } from "@/core/components/models/tasks/Task";
+import type { Task } from "@/core/components/models/tasks/Task";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { Project } from '@/core/models/projects/Project';
-import { Progress } from "@/core/models/tracker/ProgressBar";
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { Project } from '@/core/models/projects/Project';
+import type { Progress } from "@/core/models/tracker/ProgressBar";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import Milestone from "@/core/state/redux/slices/CalendarSlice";
+import type { Milestone } from "@/core/state/redux/slices/CalendarSlice";
 import type { ProjectState } from "@/core/state/redux/slices/ProjectSlice";
 import type { ProjectManagementAttachment, ProjectManagementEntity, ProjectManagementExcludedFields, ProjectManagementIncludedFields, ProjectManagementK, ProjectManagementMeta } from '@/core/typings/entities/ProjectManagementEntity';
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 

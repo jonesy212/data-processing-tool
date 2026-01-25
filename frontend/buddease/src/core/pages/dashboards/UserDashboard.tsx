@@ -1,7 +1,7 @@
 // UserDashboard.tsx
 import ProjectTimelineDashboard from '@/core/dashboards/ProjectTimelineDashboard';
 import { useAuth } from '@/core/state/context/AuthContext';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import React from 'react';
 import { Link } from 'react-router-dom';
 

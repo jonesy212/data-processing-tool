@@ -1,7 +1,8 @@
-  // autosaveDrawing.ts
-  // Import necessary dependencies
-  import { saveDrawingToDatabase } from '@/core/api/ApiDrawing';
-import Tracker from '@/core/components/models/tracker/Tracker';
+// autosaveDrawing.ts
+// Import necessary dependencies
+
+import { saveDrawingToDatabase } from '@/core/api/ApiDrawing';
+import { Tracker } from '@/core/models/tracker/Tracker';
 import type { WritableDraft } from '@/core/state/redux/ReducerGenerator';
 import type { TrackerAttachment, TrackerEntity, TrackerExcludedFields, TrackerIncludedFields, TrackerK, TrackerMeta } from '@/core/typings/entities/TrackerEntity';
   

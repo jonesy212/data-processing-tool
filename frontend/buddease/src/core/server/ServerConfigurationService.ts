@@ -1,9 +1,9 @@
 // ServerConfigurationService.ts
 app/server/ServerConfigurationService.ts
-import { SystemConfigs, createSystemConfigs } from "@/core/api/systemConfigs";
-import { UserConfigs } from "@/core/api/userConfigs";
-import { backendConfig } from "@/core/config/BackendConfig";
-import { frontendConfig } from "@/core/config/FrontendConfig";
+import type { SystemConfigs, createSystemConfigs } from "@/core/api/systemConfigs";
+import type { UserConfigs } from "@/core/api/userConfigs";
+import type { backendConfig } from "@/core/config/BackendConfig";
+import type { frontendConfig } from "@/core/config/FrontendConfig";
 import { userPreferences } from "@/core/config/UserPreferences";
 import userSettings from '@/core/config/UserSettings';
 import dataVersions from '@/core/configs/DataVersionsConfig';

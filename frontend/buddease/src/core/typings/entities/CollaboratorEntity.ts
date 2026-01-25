@@ -1,5 +1,5 @@
 // CollaboratorEntity.ts
-import { Collaborator } from '@/core/collaborators/Collaborator';
+import type { Collaborator } from '@/core/collaborators/Collaborator';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 // Define the actual CollaboratorEntity interface

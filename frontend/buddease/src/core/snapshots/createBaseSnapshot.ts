@@ -3,9 +3,9 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
-import { Version } from '@/core/versions/Version';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
+import type { Version } from '@/core/versions/Version';
 
 interface BaseSnapshotProps<
   T extends BaseDataEntity,

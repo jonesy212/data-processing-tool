@@ -1,8 +1,8 @@
 // SnapshotContent.ts
-import { ContentItem } from "@/core/cards/DummyCardLoader";
+import type { ContentItem } from "@/core/cards/DummyCardLoader";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Snapshot, SnapshotData } from '@/core/snapshots/Snapshot';
+import type { Snapshot, SnapshotData } from '@/core/snapshots/SnapshotData';
 
 export interface SnapshotContent <  T extends BaseDataEntity,
   K extends T = T,

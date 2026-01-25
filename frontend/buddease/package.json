@@ -78,7 +78,7 @@
     "scripts:list": "tsx scripts/unified/UnifiedScriptManager.ts list",
     "scripts:run": "tsx scripts/unified/UnifiedScriptManager.ts run",
     "scripts:workflow": "tsx scripts/unified/UnifiedScriptManager.ts workflow",
-    "cleanup:duplicates": "bash scripts/cleanup-duplicates.sh",
+    "cleanup:duplicates:bash": "bash scripts/cleanup-duplicates.sh",
     "cleanup:duplicates": "tsx scripts/cleanup-duplicates.ts cleanup",
     "post-migration:cleanup": "pnpm cleanup:duplicates && pnpm migration:cleanup 5",
     
@@ -133,8 +133,7 @@
     "ci:build": "pnpm build:all",
     "ci:quality": "pnpm analyze:all --fail-on-issues && pnpm analyze:ts-output --min-confidence 70",
     "diagnose:line332": "node src/app/scripts/diagnose-line-specific.js",
-    "fix:snapshots-first": "pnpm tsc:analyze-snapshots && pnpm analyze:snapshots",
-    "fix:with-diagnosis": "pnpm tsc:diagnose-line332 && pnpm analyze:snapshots",
+    
     "tsc:analyze-snapshots": "node src/core/scripts/analyze-snapshots-tsc.mjs",
     "tsc:diagnose-line332": "node src/app/scripts/diagnose-line-specific.js",
     "tsc:fix-generics": "node src/app/scripts/auto-fix-generics.js",
@@ -187,10 +186,31 @@
     "debug:file": "tsx app/scripts/debug-ts-error.ts --file",
     "debug:all": "pnpm debug:ts-error && pnpm debug:ts-analysis",
     "debug:quick": "pnpm debug:ts-analysis",
+
     "fix-ts1109": "tsx src/app/scripts/fix-ts1109.ts",
     "ts:strict": "tsc --noEmit --isolatedModules --verbatimModuleSyntax",
     "ts:check": "tsc --noEmit",
     "ts:strictest": "tsc --noEmit --isolatedModules --verbatimModuleSyntax --strict --noImplicitAny",
+    
+    "analyze:interfaces": "tsx scripts/phase-suggestion-system.ts analyze interfaces",
+    "analyze:interfaces:circular": "tsx scripts/phase-suggestion-system.ts analyze interfaces --detect-circular",
+    "analyze:interfaces:permissions": "tsx scripts/phase-suggestion-system.ts analyze interfaces --validate-permissions",
+    "fix:interfaces": "tsx scripts/phase-suggestion-system.ts fix --category interfaces",
+    "fix:interface-inheritance": "tsx scripts/phase-suggestion-system.ts fix --category interface-inheritance",
+   
+    "fix:imports:types": "tsx app/scripts/fix-all-type-imports.ts",
+    "fix:imports:mixed": "tsx app/scripts/fix-mixed-type-imports.ts",
+    "fix:imports:namespace": "tsx app/scripts/fix-type-imports-with-backup.ts --namespace-only",
+    "fix:imports:unified": "tsx app/scripts/unified-type-import-fixer.ts",
+    "fix:imports:file": "tsx app/scripts/unified-import-fix.ts",
+    "fix:imports:verify": "tsx app/scripts/verify-imports.ts",
+    
+    "fix:imports:all": "pnpm fix:imports:types && pnpm fix:imports:mixed && pnpm fix:imports:verify",
+    "fix:imports:dry-run": "pnpm fix:imports:types --dry-run && pnpm fix:imports:mixed --dry-run",
+    
+    "cleanup:backups": "rm -rf .type-import-backups .type-import-rollback .unified-type-fixes",
+
+
     "fix:ts-errors": "pnpm analyze:ts-output && echo 'Check ./reports/ for fix recommendations'",
     "fix:ts-errors:critical": "pnpm analyze:ts-output && echo 'Check ./reports/ for critical fixes'",
     "fix:ts-errors:file": "pnpm analyze:ts-errors:file ./ts-errors.json --output ./analysis",
@@ -204,8 +224,18 @@
     "fix-imports:force": "tsx app/scripts/fix-imports.ts --force",
     "fix-imports:debug": "tsx app/scripts/fix-imports.ts --test",
     "fix:filename-cases": "tsx app/scripts/fixFilenameCases.ts",
+    "fix:headers:conservative": "tsx scripts/fixFilenameCases.ts",
+    "fix:headers:conservative:dry-run": "tsx scripts/fixFilenameCases.ts --dry-run",
+    
     "fix:headers": "tsx scripts/fix-all-headers.ts",
     "fix:headers:dry-run": "tsx scripts/fix-all-headers.ts --dry-run",
+    "fix:headers:all": "pnpm run fix:headers:conservative && pnpm run fix:headers",
+
+    "analyze:relationships": "tsx scripts/phase-suggestion-system.ts analyze relationships",
+    "analyze:relationships:circular": "tsx scripts/phase-suggestion-system.ts analyze relationships --pattern circular",
+    "fix:relationships": "tsx scripts/phase-suggestion-system.ts fix --category relationship",
+    "fix:relationships:circular": "tsx scripts/phase-suggestion-system.ts fix --category relationship --pattern circular",
+    "fix:relationships:simplify": "tsx scripts/phase-suggestion-system.ts fix --category relationship --simplify-generics",
     "fix:headers:file": "bash -c 'tsx scripts/fix-all-headers.ts \"$@\"' --",
     "fix:headers:file-dry": "bash -c 'tsx scripts/fix-all-headers.ts --dry-run \"$@\"' --",
     "fix:filename-cases:dry-run": "tsx app/scripts/fixFilenameCases.ts --dry-run",
@@ -254,6 +284,32 @@
     "analyze:import-errors": "node core/scripts/analyze-import-errors.cjs",
     "analyze:import-errors:verbose": "node core/scripts/analyze-import-errors.cjs --verbose",
     "analyze:import-errors:summary": "node core/scripts/analyze-import-errors.cjs --summary",
+    
+    "analyze:css-coverage": "tsx scripts/phase-suggestion-system.ts analyze css --report",
+    "analyze:css-coverage:by-folder": "tsx scripts/phase-suggestion-system.ts analyze css --by-folder",
+    "analyze:css-coverage:by-file": "tsx scripts/phase-suggestion-system.ts analyze css --by-file",
+    "fix:css-imports": "tsx scripts/phase-suggestion-system.ts fix --category css",
+    "phase:foundation": "tsx scripts/phase-suggestion-system.ts analyze foundation",
+    "phase:foundation:fix": "tsx scripts/phase-suggestion-system.ts fix --category config --category types",
+    "phase:foundation:verify": "tsx scripts/phase-suggestion-system.ts verify --phase foundation",
+  
+    "phase:state": "tsx scripts/phase-suggestion-system.ts analyze state",
+    "phase:state:fix": "tsx scripts/phase-suggestion-system.ts fix --category mobx-redux",
+    "phase:state:verify": "tsx scripts/phase-suggestion-system.ts verify --phase state",
+  
+    "phase:data": "tsx scripts/phase-suggestion-system.ts analyze data",
+    "phase:data:fix": "tsx scripts/phase-suggestion-system.ts fix --category api --category middleware",
+    "phase:data:verify": "tsx scripts/phase-suggestion-system.ts verify --phase data",
+  
+    "phase:ui": "tsx scripts/phase-suggestion-system.ts analyze ui",
+    "phase:ui:fix": "tsx scripts/phase-suggestion-system.ts fix --category component",
+    "phase:ui:verify": "tsx scripts/phase-suggestion-system.ts verify --phase ui",
+  
+    "dev:suggest": "tsx scripts/phase-suggestion-system.ts interactive",
+    "dev:analyze": "tsx scripts/phase-suggestion-system.ts analyze --report",
+    "dev:fix:all": "run-s phase:foundation:fix phase:state:fix phase:data:fix phase:ui:fix",
+    "dev:verify": "tsx scripts/phase-suggestion-system.ts verify --generate-report --suggest-next-steps", 
+
     "test:imports": "pnpm type-check && pnpm analyze:all",
     "test:unit": "vitest run --coverage --watchAll=false",
     "test:integration": "vitest run --config vitest.integration.config.ts",
@@ -350,8 +406,6 @@
     "analyze:ts-visual": "pnpm fix:strategy",
     "ts:heatmap": "pnpm fix:strategy",
     "fix:navigate": "tsx src/app/error-analyzer/enhanced-cli.ts navigate",
-    "fix:folder": "tsx src/app/error-analyzer/enhanced-cli.ts fix:folder",
-    "fix:connections": "tsx src/app/error-analyzer/enhanced-cli.ts fix:connections",
     "fix:confidence": "tsx src/app/error-analyzer/enhanced-cli.ts fix:confidence",
     "imports:fix": "tsx scripts/typescript/import-management/fix-imports.ts",
     "imports:fix-interface": "tsx scripts/typescript/import-management/fix-interface-imports.ts",
@@ -378,11 +432,45 @@
     "deploy:safe": "pnpm smart:production-backup 'Pre-Deploy' && pnpm deploy",
     "check:types": "tsc --noEmit --skipLibCheck 2>&1 | grep 'is a type' || true",
     "check:types:count": "tsc --noEmit --skipLibCheck 2>&1 | grep -c 'is a type' || true",
-    "verify:namespace": "npx tsc --noEmit --isolatedModules --verbatimModuleSyntax 2>&1 | grep \"'*' is a type\" || echo '✅ No namespace import issues'",
-    "fix:imports": "tsx scripts/safe-fixer.ts --session-id \"$(bash scripts/backup-helpers.sh generate_timestamp short)\"",
+   
     "fix:imports:quick": "pnpm fix:interface-imports:safe && pnpm fix:types:quick",
-    "fix:imports:complete": "pnpm fix:interface-imports:all --apply && pnpm fix:types",
-    "fix:imports:dry": "pnpm fix:interface-imports:preview && pnpm fix:types:dry",
+    "fix:imports:complete": "pnpm fix:interface-imports:all --apply && pnpm fix:file:mixed && pnpm fix-imports:safe && pnpm imports:deduplicate && pnpm check:type-imports",
+
+    
+    "analyze:hotspots:3": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts discover --threshold=3",
+    "analyze:hotspots:report": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts report > reports/hotspots.json",
+    
+  
+
+    
+    
+    "analyze:hotspots": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts discover",
+    "analyze:hotspots:5": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts discover --threshold=5",
+    "analyze:hotspots:10": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts discover --threshold=10",
+    
+    
+    "fix:folder": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts fix:folder",
+    "fix:project": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts fix:project",
+    
+    
+    
+    
+    "fix:hotspots": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts discover --threshold=5 --auto-fix",
+    "fix:dry-run": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts fix:project --dry-run",
+    
+    
+    "fix:folder:hotspot": "tsx scripts/typescript/import-management/analyze-error-hotspots.ts fix:folder",
+    
+    "ts:strategy": "tsx src/app/error-analyzer/enhanced-cli.ts strategy",
+    "ts:navigate": "tsx src/app/error-analyzer/enhanced-cli.ts navigate",
+    "fix:folder:strategy": "tsx src/app/error-analyzer/enhanced-cli.ts fix:folder",
+    "fix:connections": "tsx src/app/error-analyzer/enhanced-cli.ts fix:connections",
+    
+    "fix:file": "tsx app/scripts/unified-import-fix.ts",
+
+    "hotspots:report": "tsx app/scripts/typescript/import-management/analyze-error-hotspots.ts report > reports/hotspots-$(date +%Y%m%d-%H%M%S).json",    
+    
+    
     "fix:imports-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus imports",
     "fix:types-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus types",
     "fix:patterns-only": "tsx src/core/error-analyzer/phases/SmartBackupPhaseSystem.ts dev-fix --focus patterns",
@@ -513,7 +601,12 @@
     "test:ts-analyzer": "echo '[{\"resource\":\"test.ts\",\"code\":\"2304\",\"message\":\"Test error\",\"startLineNumber\":1,\"severity\":8}]' | pnpm analyze:ts-errors:stdin --quiet",
     "ts:test-phase": "tsx src/test-phase.ts",
     "fix:types:clear": "tsx app/scripts/type-import-fixer-with-backup.ts",
-    "fix:types:preview": "tsx app/scripts/type-import-fixer-with-backup.ts --dry-run",
+        "fix:types:tsc": "tsx app/scripts/fix-type-imports-with-backup.ts",
+    "fix:types:tsc:preview": "tsx app/scripts/fix-type-imports-with-backup.ts --dry-run",
+        "fix:types:custom": "tsx app/scripts/type-import-fixer-with-backup.ts",
+    "fix:types:custom:preview": "tsx app/scripts/type-import-fixer-with-backup.ts --dry-run",
+    
+    "fix:types:preview": "npm run fix:types:tsc:preview && npm run fix:types:custom:preview",
     "analyze:snapshots": "PLATFORM=web pnpm generate:corrections:snapshots",
     "analyze:critical": "PLATFORM=web pnpm generate:corrections:critical",
     "analyze:quick-fixes": "PLATFORM=web pnpm generate:corrections:quick",
@@ -649,19 +742,23 @@
     "verify:strategic": "tsx src/app/scripts/strategic-verify.ts",
     "verify:all": "pnpm verify:strategic && pnpm error:countdown",
     "health:check": "pnpm ts:strict && pnpm lint",
-    
     "health:quick": "tsc --noEmit 2>&1 | grep -q 'error TS' && echo '❌ Errors' || echo '✅ OK'",
-    "fix:types": "tsx src/app/error-analyzer/type-import-fixer.ts",
+    
+    "fix:types:imports": "tsx scripts/typescript/type-imports/unified-type-import-fixer.ts --fix-imports",
+    
     "fix:all:types": "tsx app/scripts/fix-mixed-type-imports.ts && tsx app/scripts/fix-interface-imports.ts safe",
-    "fix:file:all": "tsx app/scripts/fix-all-for-file.ts",
+    "fix:file:all": "tsx app/scripts/unified-import-fix.ts",
     "fix:file:mixed": "tsx app/scripts/fix-mixed-type-imports.ts",
     "fix:file:types": "tsx app/scripts/fix-interface-imports.ts target",
     "fix:file:interface": "tsx app/scripts/fix-interface-imports.ts target",
     "path": "tsx app/scripts/unified-type-import-fixer.ts",
+   
+    "fix:snapshots-first": "pnpm tsc:analyze-snapshots && pnpm analyze:snapshots",
+    "fix:with-diagnosis": "pnpm tsc:diagnose-line332 && pnpm analyze:snapshots",
+    "fix:types:all": "tsx app/scripts/fix-type-imports-with-backup.ts",
+
     "fix:types:quick": "tsx app/scripts/fix-all-type-imports.ts --quick",
-    "fix:types:namespace": "tsx app/scripts/fix-type-imports-with-backup.ts --namespace-only",
     "fix:types:namespace:dry": "tsx app/scripts/fix-type-imports-with-backup.ts --namespace-only --dry-run",
-    "verify:types": "tsx app/scripts/verify-namespace-imports.ts",
     "imports:deduplicate": "tsx app/scripts/deduplicate-imports.ts deduplicate",
     "imports:cleanup": "pnpm run imports:analyze && pnpm run imports:deduplicate && pnpm run imports:stats",
     "fix-imports": "tsx app/scripts/fix-imports.ts --fix",
@@ -669,12 +766,8 @@
     "backup:types": "tsx app/scripts/fix-type-imports-with-backup.ts",
     "backup:types:list": "tsx app/scripts/fix-type-imports-with-backup.ts --list",
     "backup:types:rollback": "tsx app/scripts/fix-type-imports-with-backup.ts --rollback",
-    "fix:types:comprehensive": "echo '⚠️ DEPRECATED: Use pnpm fix:types'; pnpm fix:types",
-    "fix:types:all": "echo '⚠️ DEPRECATED: Use pnpm fix:types'; pnpm fix:types",
-    "fix:types:dry": "tsx app/scripts/unified-type-import-fixer.ts --dry-run",
-    "fix:types:analyzer:dry": "tsx src/app/error-analyzer/type-import-fixer.ts --dry-run",
-    
-    "fix:types:mixed": "tsx app/scripts/fix-mixed-type-imports.ts",
+
+    "fix:types:analyzer:dry": "tsx app/scripts/unified-type-import-fixer.ts --dry-run",
     "fix:types:mixed:dry": "tsx app/scripts/fix-mixed-type-imports.ts --dry-run",
     
     "fix:types:regular": "echo '⚠️ DEPRECATED: Use pnpm fix:types'; pnpm fix:types",
@@ -682,10 +775,36 @@
     "fix:types:comprehensive-dry": "echo '⚠️ DEPRECATED: Use pnpm fix:types:dry'; pnpm fix:types:dry",
     "fix:types:comprehensive-quick": "echo '⚠️ DEPRECATED: Use pnpm fix:types:quick'; pnpm fix:types:quick",
     "fix:types:regular:dry": "echo '⚠️ DEPRECATED: Use pnpm fix:types:dry'; pnpm fix:types:dry",
-    "organized:fix:types": "tsx scripts/typescript/type-imports/unified-fixer.ts",
-    "organized:fix:types:dry": "tsx scripts/typescript/type-imports/unified-fixer.ts --dry-run",
+    "fix:redux": "tsx app/scripts/fix-redux-imports.ts",
+    "fix:file:redux": "tsx app/scripts/fix-redux-imports.ts target",
+
+    "fix:types": "tsx scripts/typescript/type-imports/unified-type-import-fixer.ts",
+    "fix:types:dry": "pnpm fix:types --dry-run",
+    "fix:types:namespace": "pnpm fix:types --namespace-only",
+    "fix:types:mixed": "pnpm fix:types --mixed-only",
+    "fix:types:general": "pnpm fix:types --general-only",
+    "fix:file:dry": "pnpm fix:file --dry-run",
+    "fix:file:quick": "pnpm fix:file --skip-general",
+    "fix:imports": "tsx app/scripts/fix-imports.ts --fix",
+    "fix:imports:dry": "tsx app/scripts/fix-imports.ts --dry-run",
+    "fix:imports:safe": "tsx app/scripts/fix-imports.ts --safe",
+
+    "verify:types": "tsx scripts/typescript/type-imports/verify-imports.ts",
+    "verify:namespace": "tsx scripts/typescript/type-imports/verify-namespace-imports.ts",
+    
+    
+    "deduplicate:imports": "tsx app/scripts/deduplicate-imports.ts deduplicate",
+    "find:hotspots": "tsx app/scripts/find-error-hotspots.ts",
+    "fix:plan": "tsx app/scripts/fix-priority-planner.ts",
+    
+    
+    "cleanup:imports": "pnpm deduplicate:imports && pnpm fix:imports:safe",
+    
+    "fix:types:comprehensive": "echo '⚠️ DEPRECATED: Use pnpm fix:types' && pnpm fix:types",
+    "organized:fix:types": "pnpm fix:types",
+    "organized:fix:types:dry": "pnpm fix:types:dry",
+    "organized:fix:types:mixed": "pnpm fix:types:mixed",
     "organized:fix:types:namespace": "tsx scripts/typescript/type-imports/namespace-fixer.ts --namespace-only",
-    "organized:fix:types:mixed": "tsx scripts/typescript/type-imports/mixed-import-fixer.ts",
     "organized:verify:types": "tsx scripts/typescript/type-imports/verify-imports.ts",
     "organized:imports:deduplicate": "tsx scripts/typescript/import-management/deduplicate-imports.ts",
     "organized:imports:cleanup": "tsx scripts/typescript/import-management/import-cleanup.ts",
@@ -700,10 +819,8 @@
     "destination": "typescript/type-imports/unified-type-import-fixer.ts",
     "error-countdown": "tsx app/scripts/error-countdown.ts",
     "prepare": "husky",
-    "find:hotspots": "tsx app/scripts/find-error-hotspots.ts",
     "error:hotspots": "tsx app/scripts/find-error-hotspots.ts",
     "plan:fixes": "tsx app/scripts/fix-priority-planner.ts",
-    "fix:plan": "tsx app/scripts/fix-priority-planner.ts",
     "fix:step-by-step": "tsx app/scripts/step-by-step-fixer.ts",
     "fix:guided": "tsx app/scripts/step-by-step-fixer.ts",
     "fix:workflow": "pnpm error:hotspots && pnpm fix:plan && pnpm fix:guided"

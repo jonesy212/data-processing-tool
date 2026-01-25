@@ -1,5 +1,6 @@
 // SafeParseData.ts
-import { parseData, ParsedData } from '@/core/dataIntegration/parseData';
+import type { ParsedData } from '@/core/dataIntegration/parseData';
+import { parseData } from '@/core/dataIntegration/parseData';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { sanitizeComments } from '@/core/models/cypto/SanitizationFunctions';
 import type { BaseData } from '@/core/models/data/Data';

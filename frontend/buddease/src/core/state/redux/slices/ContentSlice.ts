@@ -4,7 +4,8 @@ import * as ApiTask from "@/core/api/TasksApi";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { TaskDetails } from '@/core/models/tasks/Task';
-import {
+import type { ContentAttachment, ContentEntity, ContentMeta } from '@/core/typings/entities/ContentEntity';
+import { ContentExcludedFields, ContentIncludedFields, ContentK } from '@/core/typings/entities/ContentEntity';
     ContentAttachment,
     ContentEntity,
     ContentExcludedFields,
@@ -20,7 +21,7 @@ import ImportTasksPayload from "@/core/components/models/tasks/ImportTasksPayloa
 import { Task } from "@/core/components/models/tasks/Task";
 import { TaskSort } from "@/core/components/sort/TaskSort";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import useWebNotifications from "@/core/hooks/commHooks/useWebNotifications";
 import { ContentLogger } from "@/core/logging/Logger";
@@ -35,17 +36,19 @@ import {
 import { Phase } from "@/core/models/phases/Phase";
 import ExportTasksPayload from "@/core/models/tasks/ExportTasksPayload";
 import { SortCriteria } from "@/core/settings/SortCriteria";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { ProjectManagerStore } from '@/core/state/hybrid/ProjectManagerStore';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import { VideoData } from "@/core/typings/videoTypes/Video";
-import { Idea, IdeationSession } from "@/core/users/Ideas";
-import { User } from "@/core/users/User";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { IdeationSession } from '@/core/users/Ideas';
+import { Idea } from '@/core/users/Ideas';
+import type { User } from "@/core/users/User";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();

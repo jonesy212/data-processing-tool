@@ -1,16 +1,15 @@
 // UserPresentationsStore.ts
 
-import CalendarEventTimingOptimization, {
-    ExtendedCalendarEvent,
-} from "@/core/calendar/CalendarEventTimingOptimization";
+import CalendarEventTimingOptimization from "@/core/calendar/CalendarEventTimingOptimization";
+import type {ExtendedCalendarEvent } from "@/core/calendar/CalendarEventTimingOptimization";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import { useAssignEventStore } from "@/core/state/stores/AssignEventStore";
-import { Todo } from "@/core/todos/Todo";
-import { User } from "@/core/users/User";
+import type { Todo } from "@/core/todos/Todo";
+import type { User } from "@/core/users/User";
 
 export type PresentationEventAssignment =
   | BaseCustomEvent
@@ -67,7 +66,7 @@ export interface UserPresentation<
     oldUserId: CalendarEventTimingOptimization,
     newUserId: PresentationEventAssignment
   ) => void;
-  assignEvent: (eventId: string, userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  assignEvent: (eventId: string, userId: string) => void;
   assignedUsers: Record<string, string[]>;
   assignedEvents: Record<
     string,

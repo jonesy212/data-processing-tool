@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { useEffect, useState } from 'react';
 
 

@@ -1,17 +1,18 @@
 // FilterSlice.ts
-import {
+import type {
     CodingLanguageEnum,
     LanguageEnum,
 } from "@/core/communications/LanguageEnum";
 import FormatEnum from "@/core/components/form/FormatEnum";
-import { ContentManagementPhaseEnum } from "@/core/components/phases/ContentManagementPhase";
-import { FeedbackPhaseEnum } from "@/core/components/phases/FeedbackPhase";
-import { TaskPhaseEnum } from "@/core/components/phases/TaskProcess";
-import { TenantManagementPhaseEnum } from "@/core/components/phases/TenantManagementPhase";
-import { FileTypeEnum } from "@/core/documents/FileType";
-import { MessageType } from "@/core/generators/MessaageType";
+import type { ContentManagementPhaseEnum } from '@/core/components/phases/ContentManagementPhase';;
+import type { FeedbackPhaseEnum } from '@/core/components/phases/FeedbackPhase';;
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';;
+import type { TaskPhaseEnum } from '@/core/components/phases/TaskProcess';;
+import type { TenantManagementPhaseEnum } from '@/core/components/phases/TenantManagementPhase';;
+import type { FileTypeEnum } from '@/core/documents/FileType';;
+import type { MessageType } from '@/core/generators/MessaageType';;
 import AnimationTypeEnum from "@/core/libraries/animations/AnimationLibrary";
-import { StatusTrackable, Timestamped } from "@/core/models/CommonData";
+import type { StatusTrackable, Timestamped } from "@/core/models/CommonData";
 import {
     BookmarkStatus,
     CalendarStatus,
@@ -28,16 +29,15 @@ import {
     TeamStatus,
     TodoStatus,
 } from "@/core/models/data/StatusType";
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-
-import { PriorityValue } from '@/core/pages/searches/CriteriaType';
-
-import { SecurityFeatureEnum } from "@/core/server/security/SecurityFeatureEnum";
-import {
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { PriorityValue } from '@/core/pages/searches/CriteriaType';
+import type { SecurityFeatureEnum } from '@/core/server/security/SecurityFeatureEnum';;
+import type {
     DocumentTypeEnum
 } from "@/core/typings/documentTypes";
-import { IdeaCreationPhaseEnum } from "@/core/users/userJourney/IdeaCreationPhase";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { IdeaCreationPhaseEnum } from '@/core/users/userJourney/IdeaCreationPhase';;
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';;
 
 interface FilterState extends Timestamped, StatusTrackable {
   startDate?: Date;

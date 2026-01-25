@@ -45,22 +45,49 @@ class UnifiedHeaderFixer {
   private async fixFile(filePath: string, dryRun: boolean): Promise<void> {
     console.log(`📄 Processing: ${path.relative(process.cwd(), filePath)}`);
     
-    // Step 1: Fix incorrect/duplicate filename comments
-    const step1Changed = this.fixIncorrectCommentsInFile(filePath, dryRun);
+    // Use the main fixer first (handles shebangs, comments, duplicates)
+    const analysis = await this.fixer.analyzeFile(filePath);
+    const mainFixerChanges = await this.fixer.fixFile(analysis, dryRun);
     
-    // Step 2: Run filename case fixer logic (without creating new instance)
-    const step2Changed = await this.applyFilenameCaseFixes(filePath, dryRun);
+    // Then apply additional specific fixes
+    const additionalChanges = this.fixSpecificIssues(filePath, dryRun);
     
-    // Step 3: Ensure consistent headers
-    const step3Changed = !dryRun && FileHeaderManager.ensureFilenameComment(filePath);
-    
-    const totalChanges = [step1Changed, step2Changed, step3Changed].filter(Boolean).length;
-    
-    if (totalChanges > 0) {
-      console.log(`   ✅ Fixed ${totalChanges} issue(s)`);
+    if (mainFixerChanges || additionalChanges) {
+      console.log(`   ✅ Fixed issues`);
+      if (mainFixerChanges) console.log(`      - ${mainFixerChanges}`);
     } else {
       console.log(`   ✅ No changes needed`);
     }
+  }
+
+
+
+  private fixSpecificIssues(filePath: string, dryRun: boolean): boolean {
+    // Only fix issues that the main fixer doesn't handle:
+    // 1. Bare filename lines without "//"
+    // 2. Ensure consistent format
+    const content = fs.readFileSync(filePath, 'utf8');
+    const lines = content.split('\n');
+    const actualFilename = path.basename(filePath);
+    
+    let changed = false;
+    
+    // Remove bare filename lines (main fixer might miss some edge cases)
+    const newLines = lines.filter(line => {
+      const trimmed = line.trim();
+      // Don't remove if it's a comment or has other content
+      if (trimmed === actualFilename && !trimmed.startsWith('//')) {
+        changed = true;
+        return false;
+      }
+      return true;
+    });
+    
+    if (changed && !dryRun) {
+      fs.writeFileSync(filePath, newLines.join('\n'), 'utf8');
+    }
+    
+    return changed;
   }
 
   /**
@@ -299,6 +326,23 @@ Fixes ALL filename/header issues in one command:
 2. Bare filename lines (without //)
 3. Missing filename comments
 4. Standardizes header format
+
+📋 Header Fixer Strategy:
+-------------------------
+This is the AGGRESSIVE fixer:
+• All conservative fixes (shebangs, comments, duplicates)
+• Removes bare filename lines (without "//")
+• Ensures consistent formatting
+• Uses both FilenameCaseFixer and FileHeaderManager
+
+For conservative fixes only (safer),
+use: pnpm run fix:headers:conservative
+
+Recommended workflow:
+  1. pnpm run fix:headers:conservative:dry-run  # See safe changes
+  2. pnpm run fix:headers:conservative          # Apply safe fixes
+  3. pnpm run fix:headers:dry-run               # See additional fixes
+  4. pnpm run fix:headers                       # Complete cleanup
 
 Usage:
   tsx scripts/fix-all-headers.ts [options] [file-or-directory]

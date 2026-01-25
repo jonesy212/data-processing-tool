@@ -12,7 +12,7 @@ import CommunityProjectsPage from "@/core/pages/community/CommunityProjectsPage"
 import TeamProgressBar from "@/core/projects/projectManagement/TeamProgressBar";
 import { useSearch } from "@/core/state/context/SearchContext";
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
-import { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
+import type { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
 import { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import { ContentState } from "draft-js";
 import React, { useState } from "react";

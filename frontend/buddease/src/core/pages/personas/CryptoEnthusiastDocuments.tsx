@@ -1,6 +1,7 @@
 // CryptoEnthusiastDocuments.tsx
 import { updateDocumentInDatabase } from "@/core/config/database/updateDocumentInDatabase";
-import { DocumentOptions, getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { DocumentStatusEnum } from "@/core/server/ServerDocumentGenerator";

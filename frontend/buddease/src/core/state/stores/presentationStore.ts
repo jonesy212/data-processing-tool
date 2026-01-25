@@ -1,14 +1,14 @@
 // presentationStore.ts
-import { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
-import { headersConfig } from "@/core/components/shared/SharedHeaders";
-import { Presentation } from "@/core/documents/editing/Presentation";
+import type { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
+import type { headersConfig } from "@/core/components/shared/SharedHeaders";
+import type { Presentation } from "@/core/documents/editing/Presentation";
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { AssignBaseStore } from "@/core/state/stores/AssignBaseStore";
-import { AssignTaskStore } from "@/core/state/stores/AssignTaskStore";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { AssignBaseStore } from "@/core/state/stores/AssignBaseStore";
+import type { AssignTaskStore } from "@/core/state/stores/AssignTaskStore";
 import { useAssignTeamMemberStore } from "@/core/state/stores/AssignTeamMemberStore";
 import { userManagerStore } from "@/core/state/stores/UserStore";
-import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 

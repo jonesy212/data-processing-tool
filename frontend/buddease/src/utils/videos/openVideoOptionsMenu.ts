@@ -1,7 +1,7 @@
 // openVideoOptionsMenu.ts
 import { VideoActions } from '@/core/actions/VideoActions';
 import VideoAPI from '@/core/api/videos/VideoAPI';
-import { VideoOptions } from '@/core/cards/modal/ChatSettingsModal';
+import type { VideoOptions } from '@/core/cards/modal/ChatSettingsModal';
 import { ChatRoomContext, useChatRoom } from '@/core/components/communications/chat/ChatRoomContext';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import { showToast } from '@/core/models/display/ShowToast';

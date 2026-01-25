@@ -5,7 +5,8 @@ import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { FilterCriteria } from "@/core/pages/searches/FilterCriteria";
 import { SearchCriteria } from "@/core/pages/searches/SearchCriteria";
 import SortCriteria from "@/core/settings/SortCriteria";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { useDispatch } from "react-redux";
 import InvitationData from "./InvitationData";
 

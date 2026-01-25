@@ -2,7 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import {
+import type { ComponentPatternAnalysis } from '@/core/shared/pattern-types';
+import { ComponentPatternMetrics } from '@/core/shared/pattern-types';
   ComponentPatternAnalysis,
   ComponentPatternMetrics
 } from '@/core/shared/pattern-types';

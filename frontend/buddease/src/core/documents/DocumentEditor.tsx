@@ -7,13 +7,13 @@ import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { UserSettings } from '@/core/config/UserSettings';
 import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
 import { ModifiedDate } from '@/core/documents/DocType';
-import { DocumentOptions, getDocumentPhase } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions, getDocumentPhase } from '@/core/documents/DocumentOptions';
 import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import DocumentBuilder from '@/core/documents/editing/DocumentBuilder';
 import { options } from '@/core/generators/GenerateUniqueIds';
 import { setCurrentPhase } from '@/core/hooks/phaseHooks/EnhancePhase';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
-import {
+import type { BorderStyle, DocumentSize, ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
     BorderStyle,
     DocumentSize,
     ProjectPhaseTypeEnum,
@@ -21,7 +21,7 @@ import {
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import BackendStructure from '@/core/server/database/BackendStructure';
 import { DocumentObject } from '@/core/state/redux/slices/DocumentSlice';
-import { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
+import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
 import useEditorState from '@/core/state/useEditorState';
 import { DocumentActions } from '@/core/tokens/DocumentActions';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
@@ -32,7 +32,8 @@ import AppVersionImpl, {
 } from '@/core/versions/AppVersion';
 import { VersionImpl } from '@/core/versions/Version';
 import { VersionData } from '@/core/versions/VersionData';
-import { ContentState, Editor, EditorState } from 'draft-js';
+import type { ContentState, EditorState } from 'draft-js';
+import { Editor } from 'draft-js';
 import { IHydrateResult } from 'mobx-persist';
 import React, { SetStateAction, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

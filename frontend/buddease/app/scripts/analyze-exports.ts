@@ -31,7 +31,11 @@ function findTypeScriptFiles(dir: string): string[] {
       }
     }
   } catch (error) {
-    console.warn(`⚠️ Could not scan ${dir}:`, error.message);
+    if (error instanceof Error) {
+      console.warn(`⚠️ Could not scan ${dir}:`, String(error));
+    } else {
+      console.warn(`⚠️ Could not scan ${dir}:`, String(error));
+    }
   }
   
   return files;
@@ -115,7 +119,11 @@ function analyzeFileExports(filePath: string): {
     visit(sourceFile);
     
   } catch (error) {
-    console.warn(`⚠️ Could not analyze ${filePath}:`, error.message);
+    if (error instanceof Error) {
+      console.warn(`⚠️ Could not analyze ${filePath}:`, String(error));
+    } else {
+      console.warn(`⚠️ Could not analyze ${filePath}:`, String(error));
+    }
   }
   
   return { runtimeExports, typeOnlyExports };

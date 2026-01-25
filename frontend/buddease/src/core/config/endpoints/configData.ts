@@ -7,7 +7,7 @@ import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
 import appDetailsConfig from '@/core/config/endpoints/appDetailsConfig';
 import dataVersions from "@/core/configs/DataVersionsConfig";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { database } from "@/core/generators/GenerateDatabase";
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import Logger from "@/core/logging/Logger";
@@ -84,7 +84,7 @@ const version = new Version({
   buildVersions: undefined    // optional
 });
 // Include currentAppVersion in a comment or documentation to indicate its purpose
-For example:
+// For example:
 // The current version of the application is stored in currentAppVersion constant.
 
 const projectPath = getAppPath(newVersionNumber, appVersion); // Get the project path dynamically

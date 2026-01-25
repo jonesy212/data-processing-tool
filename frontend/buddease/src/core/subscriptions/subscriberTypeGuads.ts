@@ -1,12 +1,12 @@
 // subscriberTypeGuads.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 import type { SnapshotStoreOptions } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { SnapshotData, SnapshotsArray } from "@/core/snapshots/SnapshotData";
+import { SnapshotData, SnapshotsArray } from "@/core/snapshots/LocalStorageSnapshotStore";
 import { SnapshotSubscriberManagement } from "@/core/snapshots/SnapshotSubscriberManagement";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 

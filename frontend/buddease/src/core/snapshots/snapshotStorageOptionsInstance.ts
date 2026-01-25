@@ -34,7 +34,8 @@ import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore"
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { Callback, MultipleEventsCallbacks } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import { MultipleEventsCallbacks } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/core/subscriptions/Subscription';
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';

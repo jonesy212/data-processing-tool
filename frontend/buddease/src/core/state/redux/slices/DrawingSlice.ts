@@ -8,8 +8,10 @@ import  type { TrackerProps } from '@/core/models/tracker/Tracker';
 import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import type { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/core/typings/entities/DrawingEntity';
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RefObject, useEffect, useRef } from "react";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { useEffect, useRef } from "react";
+import type { RefObject } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -26,12 +28,12 @@ import {
 } from "@/core/hooks/useLocalStorage";
 import { useDrag } from "@/core/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/core/libraries/animations/DraggableAnimation/useText";
-import { Content } from "@/core/models/content/AddContent";
+import type { Content } from "@/core/models/content/AddContent";
 import type { SharedRelationshipData } from '@/core/models/data/Data';
-import { K } from '@/core/models/data/dataStoreMethods';
-import FileData from "@/core/models/data/FileData";
-import { ContentItem } from "@/core/state/stores/ContentStore";
-import Milestone from "@/core/typings/milestoneTypes";
+import type { K } from '@/core/models/data/dataStoreMethods';
+import type { FileData } from "@/core/models/data/FileData";
+import type { ContentItem } from "@/core/state/stores/ContentStore";
+import type { Milestone } from "@/core/typings/milestoneTypes";
 
 
 type AppFileData = FileData<

@@ -4,7 +4,7 @@ import { endpointPreferences } from "@/core/api/ApiPreferencesEndpoints";
 import { NotificationPreferences } from "@/core/cards/modal/ChatSettingsModal";
 import { UserPreferences } from "@/core/config/UserPreferences";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 
 type ApiUserPreferences = {

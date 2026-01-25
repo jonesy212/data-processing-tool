@@ -6,7 +6,7 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { WrappedU } from "@/core/snapshots/isCompatibleTempData";
-import {
+import type { SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
     SnapshotsArray,
     SnapshotsObject
 } from "@/core/snapshots/LocalStorageSnapshotStore";

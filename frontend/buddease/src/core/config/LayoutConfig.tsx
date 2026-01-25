@@ -4,7 +4,7 @@ import responsiveDesignStore from "@/core/components/styling/ResponsiveDesign";
 import type { DocxGenerator, DocxGeneratorOptions } from "@/core/generators/docxGenerator";
 import DesignDashboard from "@/core/pages/dashboards/DesignDashboard";
 import BackendStructure from "@/core/server/database/BackendStructure";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import FrontendStructure from "./appStructure/FrontendStructure";
 // Define your layout configuration
 export const layoutConfig = async () => {

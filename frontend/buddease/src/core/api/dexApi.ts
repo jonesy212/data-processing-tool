@@ -4,7 +4,7 @@ import {
     handleApiErrorAndNotify,
 } from "@/core/api/ApiData";
 import DEXData from "@/core/models/data/DEXData";
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from "axios";
 
 // Function to fetch DEX data

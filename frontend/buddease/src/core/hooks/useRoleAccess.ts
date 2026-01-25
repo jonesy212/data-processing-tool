@@ -1,7 +1,7 @@
 // useRoleAccess.ts
 hooks/useRoleAccess.ts
 
-import type { Attachment, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/documents/attachment/Attachment";
+import type { Attachment, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import '@/core/models/UserRoles';
 import { useAuth } from "@/core/state/context/AuthContext";
 import React from 'react';

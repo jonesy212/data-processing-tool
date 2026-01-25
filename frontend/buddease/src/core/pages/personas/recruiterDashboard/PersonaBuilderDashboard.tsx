@@ -2,12 +2,12 @@
 import axios from "axios"; // Import Axios library
 import { useEffect, useState } from 'react';
 
-import { OrganizedCardLoaderProps } from "@/core/cards/DummyCardLoader";
+import type { OrganizedCardLoaderProps } from "@/core/cards/DummyCardLoader";
 import { PersonaCard } from "@/core/cards/PersonaCard";
 import DetailsList from "@/core/components/lists/DetailsList";
 import DetailsProps from "@/core/components/models/data/Details";
 import DetailsListItem from "@/core/components/models/data/DetailsListItem";
-import {
+import type { SupportedData } from '@/core/models/CommonData';
     SupportedData,
 } from "@/core/models/CommonData";
 import type { Data } from '@/core/models/data/Data';

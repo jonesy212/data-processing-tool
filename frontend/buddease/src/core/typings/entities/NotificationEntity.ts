@@ -3,15 +3,16 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+
 // 1. Base entity
 type NotificationEntity = BaseDataEntity;
 

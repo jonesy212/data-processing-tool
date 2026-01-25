@@ -1,8 +1,9 @@
 // AuthServerService.ts
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import { ClientDatabaseService } from '@/core/config/DatabaseTypes';
 import { generateToken } from '@/core/generators/generateTokens';
-import { AuthenticationProvider, BaseAuthService } from '@/core/server/auth/BasicAuthService';
+import type { AuthenticationProvider } from '@/core/server/auth/BasicAuthService';
+import { BaseAuthService } from '@/core/server/auth/BasicAuthService';
 import { DatabaseServiceFactory } from '@/core/server/database/DatabaseServiceFactory';
 import { JWT_SECRET } from '@/core/server/JwtConfig';
 import { LoginResult } from '@/core/typings/authTypes';

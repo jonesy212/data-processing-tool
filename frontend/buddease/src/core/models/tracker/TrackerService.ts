@@ -1,5 +1,5 @@
 // TrackerService.ts
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import Tracker from "./Tracker";
 
 class TrackerService {

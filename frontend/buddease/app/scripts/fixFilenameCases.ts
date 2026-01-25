@@ -652,7 +652,7 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run') || args.includes('-d');
   const help = args.includes('--help') || args.includes('-h');
-  const forceShebang = args.includes('--force-shebang'); // Optional flag to force shebang check
+  const forceShebang = args.includes('--force-shebang');
   
   // Get all non-option arguments as file paths
   const fileArgs = args.filter(arg => !arg.startsWith('--') && !arg.startsWith('-'));
@@ -670,18 +670,22 @@ Options:
   --force-shebang    Force shebang check (use cautiously)
   [files...]         Specific files or directories to fix
 
+📋 Header Fixer Strategy:
+-------------------------
+This is the CONSERVATIVE fixer:
+• Safe shebang additions (CLI scripts only)
+• Fixing filename comments (exact matches only)
+• Removing duplicate headers
+• NEVER renames files (preserves all filename casing)
+
+For complete cleanup including bare filename removal,
+use the aggressive fixer: pnpm run fix:headers
+
 Examples:
   tsx app/scripts/fixFilenameCases.ts --dry-run
   tsx app/scripts/fixFilenameCases.ts --dry-run src/utils/fluencePlugin.ts
   tsx app/scripts/fixFilenameCases.ts src/utils/fluencePlugin.ts
   tsx app/scripts/fixFilenameCases.ts src/scripts/  # All files in scripts folder
-
-Features:
-  ✓ Adds filename comments matching EXACT filename
-  ✓ Updates moved file paths in existing comments  
-  ✓ Adds #!/usr/bin/env tsx shebangs ONLY to actual CLI scripts
-  ✓ Removes duplicate headers
-  ✗ NEVER renames files (preserves all filename casing)
 
 Shebang Rules (very conservative):
   • Only files in /scripts/, /cli/, /bin/ folders

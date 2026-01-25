@@ -2,7 +2,7 @@
 import { userService } from '@/core/api/ApiUser';
 import type { UserRole } from "@/core/models/UserRole";
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
 class UserManagement {
  

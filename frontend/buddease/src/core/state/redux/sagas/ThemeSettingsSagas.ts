@@ -1,6 +1,6 @@
 // ThemeSettingsSagas.ts
 import { ThemeActions } from "@/core/actions/ThemeActions";
-import { ValidationActionTypes, ValidationActions, validationSuccess } from "@/core/actions/ValidationActions";
+import type { ValidationActionTypes, ValidationActions, validationSuccess } from "@/core/actions/ValidationActions";
 import { handleApiErrorAndNotify } from "@/core/api/ApiData";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Theme } from "@/core/libraries/ui/theme/Theme";

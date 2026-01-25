@@ -2,7 +2,7 @@
 // Updated IdeaLifecycle component
 import { allLifecyclePhases } from '@/core/hooks/phases/lifecycles';
 import { useLifecycle } from '@/core/hooks/useLifecycle.ts';
-import { StepProps } from "@/core/phases/steps/steps";
+import type { StepProps } from "@/core/phases/steps/steps";
 import React from "react";
 import IdeaCreationPhaseManager from "./IdeaCreationPhase";
 import IdeaPhase from "./IdeationPhase";

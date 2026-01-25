@@ -3,7 +3,8 @@ import { AuthActions } from "@/core/actions/AuthActions";
 import { AuthorizationActions } from "@/core/actions/AuthorizationActions";
 import { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { AddData, RemoveData, UpdateDataDescription, UpdateDataDetails, UpdateDataStatus, UpdateDataTitle } from "./authorizationApi";
+import type { AddData, RemoveData, UpdateDataDetails } from './authorizationApi';
+import { UpdateDataDescription, UpdateDataStatus, UpdateDataTitle } from './authorizationApi';
 
 function* handleUpdateDataTitle(action: ReturnType<typeof AuthActions.updateDataTitle>): Generator<any, void, any> {
   try {

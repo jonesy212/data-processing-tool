@@ -1,7 +1,8 @@
 // ArchiveService.tsx
 
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { LocalStorageAdapter, PersistenceLayer } from '@/core/dataIntegration/persistenceLayer';
+import type { PersistenceLayer } from '@/core/dataIntegration/persistenceLayer';
+import { LocalStorageAdapter } from '@/core/dataIntegration/persistenceLayer';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import type { CloudStorageProvider, FileMetadata } from '@/core/interfaces/provider/CloudStorageProvider';

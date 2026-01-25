@@ -3,7 +3,7 @@ import { ProjectOwnerActions } from "@/core/actions/ProjectOwnerActions";
 import projectOwnerApiService from "@/core/api/ProjectOwnerApi";
 import { Team } from "@/core/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { ProjectType } from '@/core/models/projects/Project';
+import type { ProjectType } from '@/core/models/projects/Project';
 import { TeamMember } from '@/core/models/teams/TeamMembers';
 import { call, put, takeLatest } from "redux-saga/effects";
 

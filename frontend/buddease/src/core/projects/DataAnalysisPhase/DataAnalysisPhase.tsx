@@ -3,7 +3,7 @@ import Visualization from "@/core/hooks/userInterface/Visualization";
 import type { PhaseProps } from "@/core/pages/development/PlanningPhase";
 import { sendDataToBackend } from "@/core/services/dataAnalysisOrchestrator";
 import { useAuth } from '@/core/state/context/AuthContext';
-import {
+import type { DataAnalysisAction, DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
     DataAnalysisAction,
     DataAnalysisState,
 } from "@/core/typings/phases/dataAnalysisTypes";

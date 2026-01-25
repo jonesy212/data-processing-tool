@@ -7,7 +7,8 @@ import { Todo } from "@/core/todos/Todo";
 import TodoList from "@/core/todos/TodoList";
 import TodoProgress from "@/core/todos/TodoProgress";
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { CheckCircleOutlined, ExclamationCircleOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import type { PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from 'react';
 

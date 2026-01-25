@@ -7,8 +7,7 @@ import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from "@/core/api/endpointConfigurations";
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
 import type { DocumentFormattingOptions } from "@/core/components/documents/DocumentFormattingOptionsComponent";
-import { ToolbarOptionsComponent } from "@/core/components/documents/ToolbarOptions";
-import type { ToolbarOptionsProps } from "@/core/components/documents/ToolbarOptions";
+import type { ToolbarOptionsComponent } from '@/core/components/documents/ToolbarOptions';
 import { selectedmetadata } from "@/core/components/routing/MetadataComponent";
 import SharingOptions from "@/core/components/shared/SharingOptions";
 import type { Team } from "@/core/components/teams/Team";
@@ -20,12 +19,12 @@ import type { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import { frontendStructure } from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
 import { saveDocumentToDatabase } from "@/core/config/database/updateDocumentInDatabase";
-import type { useMetadata } from "@/core/config/useMetadata";
-import { ModifiedDate } from "@/core/documents/DocType";
+import { useMetadata } from "@/core/config/useMetadata";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import {
     getFormattedOptions
 } from "@/core/documents/DocumentCreationUtils";
-import type { DocumentOptions, DocumentSize } from "@/core/documents/DocumentOptions";
+import '@/core/models/data/StatusType';
 import type { DocumentPath } from "@/core/documents/DocumentPath";
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
 import type { FinancialReport, ResearchReport, TechnicalReport } from "@/core/documents/Report";
@@ -49,7 +48,6 @@ import type { Content } from "@/core/models/content/AddContent";
 import type { Data, TodoSubtasks } from '@/core/models/data/Data';
 import type { FileData } from "@/core/models/data/FileData";
 import type { FolderData } from "@/core/models/data/FolderData";
-import { PhaseDocumentEnum } from '@/core/models/data/StatusType';
 import type { DocumentPhase } from '@/core/models/phases/DocumentPhase';
 import type { Phase } from '@/core/models/phases/Phase';
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
@@ -60,7 +58,7 @@ import {
     addDocumentSuccess,
     DocumentObject
 } from "@/core/state/redux/slices/DocumentSlice";
-import { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
+import type { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import type { DocumentBase } from "@/core/state/stores/DocumentStore";
 import { useAppDispatch } from "@/core/state/stores/useAppDispatch";
@@ -74,15 +72,14 @@ import AccessHistory, {
     convertAccessRecordToHistory,
 } from "@/core/versions/AccessHistory";
 import AppVersionImpl from "@/core/versions/AppVersion";
-import VersionImpl from "@/core/versions/Version";
-import type { Version } from "@/core/versions/Version";
+import VersionImpl from '@/core/versions/Version';
 import type { VersionData } from "@/core/versions/VersionData";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 import { getMetadataFromPlainText } from "@/utils/metadataUtils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
-import {
+import 'draft-js';
     ContentState,
     Editor,
     EditorState,

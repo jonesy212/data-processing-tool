@@ -2,7 +2,7 @@
 import { enhancePromptWithEntities } from "@/core/intelligence/EventEmitterIntegration";
 import ProjectEventEmitter from '@/core/libraries/eventSystem/ProjectEventEmitter';
 import React, { useEffect, useState } from "react";
-import {
+import type { CalendarEventViewingDetailsProps, EventDetails } from '@/core/components/calendar/CalendarEventViewingDetails';
     CalendarEventViewingDetailsProps,
     EventDetails,
 } from "./CalendarEventViewingDetails";

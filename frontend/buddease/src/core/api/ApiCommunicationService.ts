@@ -5,7 +5,7 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationManagerService } from '@/core/services/NotificationManagerService';
 import { NotificationContainer } from '@/core/services/NotificationService';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';

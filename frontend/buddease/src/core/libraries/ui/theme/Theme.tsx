@@ -3,7 +3,8 @@
 import { BrandingSettings } from "@/core/branding/BrandingSettings";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import type { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
-import React, { SetStateAction } from "react";
+import type { SetStateAction } from 'react';
+import React from 'react';
 
 // Define the Theme interface
 enum ThemeEnum {

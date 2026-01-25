@@ -1,5 +1,6 @@
 // PromptComponent.tsx
-import { Prompt, PromptPageProps } from "@/core/prompts/PromptPage";
+import type { PromptPageProps } from '@/core/prompts/PromptPage';
+import { Prompt } from '@/core/prompts/PromptPage';
 import React from "react";
 
 interface PromptComponentProps {

@@ -2,7 +2,7 @@
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import { createMeta } from "@/core/config/metadata/createMeta";
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type {
     BaseEntityProperties,

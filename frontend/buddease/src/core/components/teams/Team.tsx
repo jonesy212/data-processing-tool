@@ -4,7 +4,7 @@ import { LanguageEnum } from "@/core/communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "@/core/components/notifications/Notification";
 import type { DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { FileTypeEnum } from "@/core/documents/FileType";
+import type { FileTypeEnum } from "@/core/documents/FileType";
 import useFiltering from "@/core/hooks/useFiltering";
 import { CommonData } from "@/core/models/CommonData";
 import type { BaseData } from "@/core/models/data/Data";
@@ -16,7 +16,8 @@ import type { SearchOptions } from "@/core/pages/searches/SearchOptions";
 import { SortCriteria } from "@/core/settings/SortCriteria";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { BaseDataEntity } from "@/core/snapshots/ValidationRule";
-import {
+import type { AppTeamEntity, TeamAttachment, TeamMeta } from '@/core/typings/entities/TeamEntity';
+import { TeamExcludedFields, TeamIncludedFields, TeamK } from '@/core/typings/entities/TeamEntity';
     AppTeamEntity,
     TeamAttachment,
     TeamExcludedFields,

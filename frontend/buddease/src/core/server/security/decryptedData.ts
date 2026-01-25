@@ -1,5 +1,5 @@
 // decryptedData.ts
-import { Encryption } from '@/core/server/security/Encryption';
+import type { Encryption } from '@/core/server/security/Encryption';
 import crypto from 'crypto';
 import type { CipherKey } from 'crypto'
 

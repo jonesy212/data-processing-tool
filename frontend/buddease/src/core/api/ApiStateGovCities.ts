@@ -2,7 +2,7 @@
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from "@/core/api/endpointConfigurations";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import type { Data } from '@/core/models/data/Data';
 import { useDetailsContext } from "@/core/models/data/DetailsContext";
 import { useNotification } from "@/core/state/context/NotificationContext";

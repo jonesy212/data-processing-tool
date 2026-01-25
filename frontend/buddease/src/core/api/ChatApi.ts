@@ -7,9 +7,9 @@ import Group from "@/core/components/communications/chat/Group";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { PrivacySettings } from "@/core/settings/PrivacySettings";
-import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
+import type { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
 import { uiStore } from '@/core/state/stores/UIStore';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { AxiosResponse } from "axios";
 
 interface AudioOptions {

@@ -4,7 +4,7 @@ import { UIActions } from "@/core/actions/UIActions";
 import UserService from '@/core/api/ApiUser';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/core/features/support/NotificationMessagesFactory";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import useNotificationBar from "@/core/hooks/commHooks/useNotificationBar";
 import useUIRealtimeData from '@/core/hooks/commHooks/useUIRealtimeData';
 import { createPhaseHook } from "@/core/hooks/phaseHooks/PhaseHooks";

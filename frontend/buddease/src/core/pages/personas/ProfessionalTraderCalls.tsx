@@ -6,7 +6,7 @@ import {
     TradingPlatform,
     tradingPlatforms,
 } from "@/core/components/crypto/TradingPlatform";
-import { TraderCallsProps } from "@/core/trading/Trades";
+import type { TraderCallsProps } from "@/core/trading/Trades";
 
 interface ProfessionalTraderCallsProps extends TraderCallsProps {
   // Define props here, if any

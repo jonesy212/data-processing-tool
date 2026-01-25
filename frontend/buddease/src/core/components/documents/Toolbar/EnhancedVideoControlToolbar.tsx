@@ -2,7 +2,7 @@
 import { ToolbarActions } from '@/core/actions/ToolbarActions';
 import { handleApiError } from '@/core/api/ApiLogs';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import ParticipantData from '@/core/hooks/dataHooks/RealtimeUpdatesComponent';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import type { RootState } from '@/core/state/redux/slices/RootSlice';

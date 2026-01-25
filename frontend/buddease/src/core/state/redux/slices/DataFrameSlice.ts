@@ -1,7 +1,8 @@
 // DataFrameSlice.ts
 import DataFrameAPI from "@/core/api/DataframeApi";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface DataFrameSliceState {
   dataFrames: DataFrameResponse[]; // Update to DataFrameResponse[]

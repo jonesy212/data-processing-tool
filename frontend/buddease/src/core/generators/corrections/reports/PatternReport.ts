@@ -4,7 +4,8 @@ import type { Correction } from '@/core/generators/corrections/CorrectionGenerat
 import fs from 'fs';
 import path from 'path';
 
-import {
+import type { BasePatternAnalysis, PatternOccurrence, PatternCompatibility, PatternTrend } from '@/core/generators/corrections/reports/PatternReport';
+import { PatternDetectionResult } from '@/core/shared/pattern-types';
   BasePatternAnalysis,
   PatternOccurrence,
   PatternDetectionResult,

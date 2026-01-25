@@ -3,8 +3,9 @@
 // import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 // import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 // import { BaseData, Data } from '@/core/models/data/Data';
-// import { Snapshot, Snapshots } from '@/core/snapshots/Snapshot'
-// import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
+// import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 // import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 // import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 

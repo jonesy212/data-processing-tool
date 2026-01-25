@@ -1,50 +1,51 @@
 // Data.tsx
-import { Label } from '@/core/branding/BrandingSettings';
-import { ScheduledData } from "@/core/calendar/ScheduledData";
-import { Collaborator } from "@/core/collaborators/Collaborator";
+import type { Label } from '@/core/branding/BrandingSettings';
+import type { ScheduledData } from "@/core/calendar/ScheduledData";
+import type { Collaborator } from "@/core/collaborators/Collaborator";
 import { CommonDetails } from "@/core/components/models/details/CommonDetails";
-import { HighlightColor } from "@/core/components/styling/Palette";
-import { Team } from "@/core/components/teams/Team";
-import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta
-} from '@/core/config/BaseConfig';
+import type { HighlightColor } from "@/core/components/styling/Palette";
+import type { Team } from "@/core/components/teams/Team";
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+
+
 import {
     fetchUserAreaDimensions,
+    
+} from "@/core/config/MetaDataOptions";
+import type {
+    
     UnifiedMetadata,
 } from "@/core/config/MetaDataOptions";
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
-import { ModuleType } from '@/core/config/UserPreferences';
+import { useMetadata } from "@/core/config/useMetadata";
+import type { ModuleType } from '@/core/config/UserPreferences';
 import userSettings from "@/core/config/UserSettings";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import {
+import type {
     SharedIdentifiers,
     SharedStatusFlags,
     SharedTimestamps,
 } from "@/core/documents/RelatedProps";
-import { NotificationSettings } from "@/core/features/support/NotificationSettings";
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { NotificationSettings } from "@/core/features/support/NotificationSettings";
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/core/hooks/dynamicHooks/createCustomTransaction";
-import { FakeData } from "@/core/intelligence/FakeDataGenerator";
+import type { FakeData } from "@/core/intelligence/FakeDataGenerator";
 import type { CollaborationOptions } from "@/core/interfaces/options/CollaborationOptions";
-import { Category, CategoryPropertyBundle } from '@/core/libraries/categories/generateCategoryProperties';
-import { Comment } from "@/core/models/comments/Comments";
-import { CommonData } from "@/core/models/CommonData";
-import { Content } from "@/core/models/content/AddContent";
-import { Member } from "@/core/models/members/Member";
-import { Phase } from "@/core/models/phases/Phase";
+import type { Comment } from "@/core/models/comments/Comments";
+import type { CommonData } from "@/core/models/CommonData";
+import type { Content } from "@/core/models/content/AddContent";
+import type { Member } from "@/core/models/members/Member";
+import type { Phase } from "@/core/models/phases/Phase";
 import type { Task } from "@/core/models/tasks/Task";
-import { TagsRecord } from '@/core/models/tracker/Tag';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
 import type { TrackerProps } from "@/core/models/tracker/Tracker";
 import UserRoles from "@/core/models/UserRoles";
 import { Persona } from "@/core/pages/personas/Persona";
 import PersonaTypeEnum from "@/core/pages/personas/PersonaBuilder";
-import { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
+import type { DataAnalysisResult } from "@/core/projects/DataAnalysisPhase/DataAnalysisResult";
 import { taskService } from "@/core/services/TaskService";
-import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
-import {
+import type { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
+import type {
     Snapshots,
     SnapshotsArray,
 } from "@/core/snapshots/LocalStorageSnapshotStore";
@@ -52,35 +53,36 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore, {
     SnapshotStoreReference,
 } from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
-import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
-import { ExtendedTodo } from "@/core/state/stores/AssignBaseStore";
-import { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { CustomComment } from "@/core/state/redux/slices/BlogSlice";
+import type { Stroke } from "@/core/state/redux/slices/DrawingSlice";
+import type { ExtendedTodo } from "@/core/state/stores/AssignBaseStore";
+import type { ReassignEventResponse } from "@/core/state/stores/AssignEventStore";
 import { AuthStore } from "@/core/state/stores/AuthStore";
 import BrowserCheckStore from "@/core/state/stores/BrowserCheckStore";
 import type { InitializedState } from '@/core/state/stores/DataStore';
 import type { AllStatus, DetailsItem } from "@/core/state/stores/DetailsListStore";
-import type { Todo, UserAssignee } from '@/core/todos/Todo';
-import TodoImpl from '@/core/todos/Todo';
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { CustomTransaction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
+
+
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { CustomTransaction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
 import type { AppStructuredMetadata, AppUnifiedMetadata } from '@/core/typings/entities/AppMetadataEntity';
 import type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/core/typings/entities/DataEntity';
-import { PhaseDefault } from '@/core/typings/phaseTypes';
-import { AllTypes } from "@/core/typings/PropTypes";
-import { VideoData } from "@/core/typings/videoTypes/Video";
-import { Idea } from "@/core/users/Ideas";
-import { User } from "@/core/users/User";
+import type { PhaseDefault } from '@/core/typings/phaseTypes';
+import type { AllTypes } from "@/core/typings/PropTypes";
+import type { VideoData } from "@/core/typings/videoTypes/Video";
+import type { Idea } from "@/core/users/Ideas";
+import type { User } from "@/core/users/User";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
-import { Version } from '@/core/versions/Version';
-import { VersionData } from "@/core/versions/VersionData";
+import type { Version } from '@/core/versions/Version';
+import type { VersionData } from "@/core/versions/VersionData";
 import { cleanEmptyStrings } from "@/utils/web3/cleanEmptyStrings";
-import { AxiosResponse } from "axios";
-import FileData from "./FileData";
-import {
+import type { AxiosResponse } from "axios";
+import type { FileData } from "./FileData";
+import type { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from './StatusType';
+import { type PriorityTypeEnum, StatusType } from './StatusType';
     PriorityTypeEnum,
     ProjectPhaseTypeEnum,
     StatusType,
@@ -247,7 +249,7 @@ interface BaseData<
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   text?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  category?: symbol | string | Category | undefined;
+  category?: Category;
   notificationTypes?: NotificationSettings;
   userConfig?: any; // Use UserConfigData<T, K, Meta>
   scheduled?: ScheduledData<T>;

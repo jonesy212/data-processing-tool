@@ -7,12 +7,12 @@ import { snapshotApi } from '@/core/api/SnapshotApi';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { currentAppVersion } from '@/core/api/headers/authenticationHeaders';
-import { headersConfig } from '@/core/components/shared/SharedHeaders';
+import type { headersConfig } from '@/core/components/shared/SharedHeaders';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import storeProps from '@/core/hooks/YourComponent';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
@@ -20,26 +20,27 @@ import { getCategoryProperties } from '@/core/libraries/categories/CategoryManag
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { allCategories } from '@/core/models/data/DataStructureCategories';
-import { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
+import type { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { MixedCriteria } from '@/core/pages/searches/CriteriaOptions';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData, SnapshotItem } from '@/core/snapshots/SnapshotList';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import { SnapshotData, SnapshotItem } from '@/core/snapshots/SnapshotData';
 import { SnapshotStoreMethods } from '@/core/snapshots/SnapshotStoreMethods';
 import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
-import { ConfigureSnapshotStorePayload } from "@/core/snapshots/SnapshotConfig";
+import type { ConfigureSnapshotStorePayload } from "@/core/snapshots/SnapshotConfig";
 
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import '@/core/snapshots/LocalStorageSnapshotStore';
 import { retrievedSnapshot } from "@/core/snapshots/RetrieveSnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import type { InitializedDataStore } from '@/core/snapshots/SnapshotStoreOptions';
@@ -66,7 +67,8 @@ import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
 import { getCurrentAppInfo } from '@/core/versions/VersionGenerator';
 import { createVersionInfo } from '@/core/versions/createVersionInfo';
-import { isSnapshot, isSnapshotOfType } from "@/utils/snapshotUtils";
+import { isSnapshot } from '@/utils/snapshotUtils';
+import type { isSnapshotOfType } from '@/utils/snapshotUtils';;
 import { AxiosResponse } from "axios";
 import { IHydrateResult } from 'mobx-persist';
 import { useContext } from 'react';

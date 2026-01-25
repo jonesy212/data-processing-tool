@@ -1,22 +1,22 @@
 // TeamStore.tsx
-import { SnapshotOperationType } from "@/core/actions/SnapshotActions";
+import type { SnapshotOperationType } from "@/core/actions/SnapshotActions";
 import { userService } from "@/core/api/ApiUser";
 import { videoService } from "@/core/api/ApiVideo";
 import teamManagementService from "@/core/api/TeamManagementApi";
-import { Team } from "@/core/components/teams/Team";
+import type { Team } from "@/core/components/teams/Team";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { Meta } from '@/core/models/data/dataStoreMethods';
-import { Phase } from '@/core/models/phases/Phase';
-import { Project } from "@/core/models/projects/Project";
-import { TeamData } from "@/core/models/teams/TeamData";
-import { TagsRecord } from '@/core/models/tracker/Tag';
+import type { Phase } from '@/core/models/phases/Phase';
+import type { Project } from "@/core/models/projects/Project";
+import type { TeamData } from "@/core/models/teams/TeamData";
+import type { TagsRecord } from '@/core/models/tracker/Tag';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
 
@@ -24,14 +24,12 @@ import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import SnapshotStoreConfigComponent from "@/core/snapshots/SnapshotStoreConfigComponent";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { VideoData } from '@/core/typings/videoTypes/Video';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { VideoData } from '@/core/typings/videoTypes/Video';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import {
-    AssignTeamMemberStore,
-    useAssignTeamMemberStore,
-} from "./AssignTeamMemberStore";
+import type { AssignTeamMemberStore } from "./AssignTeamMemberStore";
+import type { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 
 type CustomPhase<T extends BaseData<any>, K extends T> = Phase<CustomData<T, K>, BaseData<any>>;

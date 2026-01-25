@@ -19,7 +19,7 @@ import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
 import { coreData } from '@/core/models/data/Data';
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { Meta } from "@/core/models/data/dataStoreMethods";
-import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import type { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import type { Member } from '@/core/models/members/Member';
 import type { Phase } from '@/core/models/phases/Phase';
 import type { Task } from "@/core/models/tasks/Task";

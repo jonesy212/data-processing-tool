@@ -5,7 +5,8 @@ import type { Data } from '@/core/models/data/Data';
 import type { UserRole } from "@/core/models/UserRole";
 import { Persona } from "@/core/pages/personas/Persona";
 import { DataProcessingTask } from "@/core/todos/tasks/DataProcessingTask";
-import { User, UserData } from "@/core/users/User";
+import type { UserData } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import { createAction } from "@reduxjs/toolkit";
 
 export const UserActions = {

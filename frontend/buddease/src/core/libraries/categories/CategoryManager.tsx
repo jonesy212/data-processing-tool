@@ -1,6 +1,6 @@
 // CategoryManager.tsx
 import { allCategories } from '@/core/models/data/DataStructureCategories';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 
 
 type CategoryKeys = keyof typeof allCategories; 

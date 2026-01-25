@@ -1,9 +1,9 @@
 // SecurityConfiguration.ts
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 
 import LazyLoadScriptConfigImpl from '@/core/config/LazyLoadScriptConfig';
 import LoggerConfig from "@/core/config/LoggerConfig";
-import type { ApiConfig, ConfigurationOptions, ConfigurationService } from "@/core/services/ConfigurationService";
+import type { ApiConfig, ConfigurationOptions, ConfigurationService } from "@/core/api/ApiConfigService";
 
   // Define Security Configuration Interface
   export interface SecurityConfiguration {

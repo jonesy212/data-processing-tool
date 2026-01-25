@@ -1,9 +1,9 @@
 // ExchangeData.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SharedIdentifiers } from "@/core/documents/RelatedProps";
-import { SharedTimestamps } from "@/core/models/CommonData";
-import { ExchangeDataTypeEnum } from "@/core/models/cypto/exchangeIntegration";
+import type { SharedIdentifiers } from "@/core/documents/RelatedProps";
+import type { SharedTimestamps } from "@/core/models/CommonData";
+import type { ExchangeDataTypeEnum } from "@/core/models/cypto/exchangeIntegration";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 
 export interface ExchangeData<

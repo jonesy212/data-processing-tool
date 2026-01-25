@@ -23,7 +23,7 @@ import type { ValidationResult } from '@/core/components/database/SchemaEvolutio
 import { useNotification } from '@/core/state/context/NotificationContext';
 import type { Milestone } from '@/core/typings/milestoneTypes'
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
-import { DocumentTypeEnum } from "@/core/typings/documentTypes";
+import type { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import type { PhaseMeta } from '@/core/typings/phaseTypes';
 import type { FC } from "react";
 import type { AppStructuredMetadata, AppUnifiedMetadata } from '@/core/typings/entities/AppMetadataEntity';

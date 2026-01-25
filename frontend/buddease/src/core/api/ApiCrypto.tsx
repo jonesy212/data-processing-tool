@@ -4,7 +4,7 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { markTaskAsComplete, markTodoAsComplete } from '@/core/state/redux/slices/ApiSlice';
 

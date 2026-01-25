@@ -2,10 +2,10 @@
 // generateAllWorkflows.ts
 // Generates all workflow diagrams at once
 
-import { generateProjectPhaseWorkflow, generateProjectPhaseHTML } from './generateProjectPhaseWorkflow';
-import { generateTeamCollaborationWorkflow, generateTeamCollaborationHTML } from './generateTeamCollaborationWorkflow';
-import { generateCryptoWorkflow, generateCryptoHTML } from './generateCryptoWorkflow';
-import { generateCollaborativeWorkflow, generateCollaborativeHTML } from './generateCollaborativeWorkflow';
+import { generateProjectPhaseWorkflow, generateProjectPhaseHTML } from '@/core/generators/generateProjectPhaseWorkflow';
+import { generateTeamCollaborationWorkflow, generateTeamCollaborationHTML } from '@/core/generators/generateTeamCollaborationWorkflow';
+import { generateCryptoWorkflow, generateCryptoHTML } from '@/core/generators/generateCryptoWorkflow';
+import { generateCollaborativeWorkflow, generateCollaborativeHTML } from '@/core/generators/generateCollaborativeWorkflow';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

@@ -14,9 +14,8 @@ import type { NotificationType } from "@/core/features/support/UnifiedNotificati
 import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import type { LogEntry } from "@/core/hooks/useLogManagement";
 import type { NotificationData } from "@/core/hooks/useNotificationSystem";
-import {
-    NotificationPosition
-} from "@/core/models/data/StatusType";
+import type { NotificationPosition } from '@/core/models/data/StatusType';
+
 import type { LogData } from "@/core/models/LogData";
 import type { NotificationChannels } from "@/core/notifications/NotificationChannels";
 import NotificationStore from "@/core/state/stores/NotificationStore";
@@ -142,6 +141,7 @@ interface NotificationDataPayload<T = BaseDataRoot> {
     createdDate?: Date | string;
     lastModified?: Date | string;
   };
+  additionalOptions?: readonly string[] | string | number | any[] | undefined;
 }
 
 

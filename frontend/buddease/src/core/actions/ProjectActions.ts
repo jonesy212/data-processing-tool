@@ -1,10 +1,10 @@
 // ProjectActions.ts
-import { Phase } from '@/core/models/phases/Phase';
-import { Project, ProjectDetails } from "@/core/models/projects/Project";
+import type { Phase } from '@/core/models/phases/Phase';
+import type { Project, ProjectDetails } from "@/core/models/projects/Project";
 import type { Task } from "@/core/models/tasks/Task";
-import { Product } from "@/core/products/Product";
-import Milestone from "@/core/typings/milestoneTypes";
-import { User } from "@/core/users/User";
+import type { Product } from "@/core/products/Product";
+import type { Milestone } from "@/core/typings/milestoneTypes";
+import type { User } from "@/core/users/User";
 import { createAction } from "@reduxjs/toolkit";
 
 export const ProjectActions = {

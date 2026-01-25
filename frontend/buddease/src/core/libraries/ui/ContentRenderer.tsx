@@ -1,6 +1,6 @@
 // ContentRenderer.tsx
 import { isProject, isTask } from "@/core/libraries/ui/ContentHelpers";
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { Project, ProjectDetails } from '@/core/models/projects/Project';
 import type { Task } from "@/core/models/tasks/Task";
 import { Todo } from "@/core/todos/Todo";

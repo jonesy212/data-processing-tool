@@ -2,9 +2,9 @@
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CryptoData, ParsedData } from "@/core/dataIntegration/parseData";
-import { CommonData } from '@/core/models/CommonData';
-import { StatusType } from "@/core/models/data/StatusType";
-import { AllTypes } from '@/core/typings/PropTypes';
+import type { CommonData } from '@/core/models/CommonData';
+import type { StatusType } from "@/core/models/data/StatusType";
+import type { AllTypes } from '@/core/typings/PropTypes';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 

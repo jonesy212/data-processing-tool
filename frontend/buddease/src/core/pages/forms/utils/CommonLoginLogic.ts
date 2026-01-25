@@ -1,5 +1,5 @@
 // CommonLoginLogic.ts
-import { DashboardConfig } from '@/core/typings/authTypes';
+import type { DashboardConfig } from '@/core/typings/authTypes';
 
 type LoginResult = {
   success: boolean;

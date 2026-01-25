@@ -13,7 +13,7 @@ import { CommonData } from "@/core/models/CommonData";
 import { Exchange } from '@/core/models/cypto/Exchange';
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { ExchangeData } from "@/core/models/data/ExchangeData";
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { Member } from "@/core/models/members/Member";
 import {
     CustomPhaseHooks, Phase,
@@ -28,9 +28,10 @@ import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
 import { implementThen } from '@/core/state/stores/CommonEvent';
 import type { AllStatus } from '@/core/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/core/todos/Todo";
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
-import {
+import type { PhaseEntity, PhaseMeta } from '@/core/typings/phaseTypes';
+import { PhaseExcludedFields, PhaseExcludedFields, PhaseK } from '@/core/typings/phaseTypes';
     PhaseEntity,
     PhaseExcludedFields,
     PhaseK,
@@ -38,7 +39,7 @@ import {
 } from '@/core/typings/phaseTypes';
 import { VideoData } from '@/core/typings/videoTypes/Video';
 import { Idea } from "@/core/users/Ideas";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import type { ReactNode, useEffect, useState } from 'react';
 import React from 'react';
 

@@ -1,27 +1,28 @@
 // isCompatibleTempData.ts
-//isCompatibleTempData.ts
+
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData } from '@/core/models/data/Data';
-import { T } from '@/core/models/data/dataStoreMethods';
-import { TempData } from "@/core/models/data/TempData";
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { T } from '@/core/models/data/dataStoreMethods';
+import type { TempData } from "@/core/models/data/TempData";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { ConfigureSnapshotStorePayload } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import SnapshotStore from "./SnapshotStore";
+import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 type U = T;
-type WrappedU = U extends BaseDataEntity ? U : BaseData<U, U, StructuredMetadata<U, U>, Attachment>;
+type WrappedU = U extends BaseDataEntity ? U : BaseData<U, U, StructuredMetadata<U, U, DefaultMeta<T, K>, Attachment, never, string | number | symbol>, Attachment>;
 
 
 interface SnapshotConversionMethods<
@@ -69,12 +70,12 @@ interface SnapshotConversionMethods<
     snapshotId: string | number | null,
     snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,
     snapshotData: T,
-    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
     snapshotContainer?: T | undefined,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
     storeConfigs?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]

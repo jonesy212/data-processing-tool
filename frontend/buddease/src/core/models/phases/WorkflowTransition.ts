@@ -8,7 +8,7 @@ import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
 import type { FixHistoryEntry, ProgressMetrics, ProgressTracker } from '@/core/error-analyzer/ProgressTracker';
 import type { Progress, ProgressPhase } from '@/core/models/tracker/ProgressBar';
 import type { WorkflowStep } from '@/core/typings/entities/DocumentEntity';
-import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import type { PhaseBackupSystem } from '@/core/error-analyzer/phases/PhaseBackupSystem';
 import StorageService from '@/src/utils/storage/StorageService';
 
 // Create a storage service instance

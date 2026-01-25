@@ -1,7 +1,7 @@
 // TeamCreationManager.tsx
 import * as TeamAPI from "@/core/api/ApiTeam";
 import axiosInstance from "@/core/api/csrfToken";
-import { NotificationTypeEnum } from "@/core/features/support/UnifiedNotificationTypes";
+import type { NotificationTypeEnum } from "@/core/features/support/UnifiedNotificationTypes";
 import TeamCreationConfirmationPage from "@/core/pages/teams/TeamCreationConfirmationPage";
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { AxiosError } from 'axios';

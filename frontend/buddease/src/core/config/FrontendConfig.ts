@@ -1,5 +1,5 @@
 // FrontendConfig.ts
-import { ApiConfig, CacheConfig, RetryConfig } from "@/core/api/ApiConfigService";
+import type { ApiConfig, CacheConfig, RetryConfig } from "@/core/config/CacheConfig";
 
 interface FrontendConfig {
   appName: string;
@@ -49,6 +49,11 @@ export const frontendConfig: FrontendConfig = {
     maxAge: parseInt(process.env.FRONTEND_CACHE_MAX_AGE || "300000"), // Use process.env or default value, convert to number
     staleWhileRevalidate: parseInt(process.env.FRONTEND_CACHE_STALE_WHILE_REVALIDATE || "60000"), // Use process.env or default value, convert to number
     cacheKey: process.env.FRONTEND_CACHE_KEY || "frontend_cache_key", // Use process.env or default value
+    strategy: '',
+    ttl: '',
+    versioning: '',
+    invalidation: '',
+  
   },
   frontendSpecificProperty: process.env.FRONTEND_SPECIFIC_PROPERTY || "YourFrontendSpecificValue", // Use process.env or default value
 };

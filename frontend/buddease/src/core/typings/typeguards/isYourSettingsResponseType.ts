@@ -3,7 +3,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import { ParsedData } from '@/core/dataIntegration/parseData';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { AppEntity } from '@/core/typings/entities/AppEntity';
-import { YourResponseType, YourSettingsResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType, YourSettingsResponseType } from '@/core/typings/responseTypes';
 
 function isYourSettingsResponseType<
   T extends BaseDataEntity = AppEntity,

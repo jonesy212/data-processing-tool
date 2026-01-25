@@ -4,13 +4,15 @@ import createSnapshot, * as snapshotApi from '@/core/api/SnapshotApi';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category, generateCategoryProperties, isCategoryProperties } from '@/core/libraries/categories/generateCategoryProperties';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import { generateCategoryProperties, isCategoryProperties } from '@/core/libraries/categories/generateCategoryProperties';
 import { dataStoreMethods } from "@/core/models/data/dataStoreMethods";
-import { CategoryProperties, convertToCategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import { convertToCategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { criteria } from '@/core/pages/searches/FilterCriteria';
 import type { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import type { createSnapshotStoreConfig } from '@/core/snapshots/snapshotStoreConfigInstance';
@@ -20,13 +22,14 @@ import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore'
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { store } from '@/core/state/stores/useAppDispatch';
 import { payload } from '@/core/subscribers/Subscriber';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { SnapshotEvent } from '@/core/typings/snapshotTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { category, snapshotId } from '@/utils/snapshotUtils';
 import { callback } from 'chart.js/helpers';
 
 import { handleSnapshotOperation } from "@/core/snapshots/handleSnapshotOperation";
-import { Snapshot, snapshot } from '@/core/snapshots/Snapshot';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { snapshot } from '@/core/snapshots/Snapshot';
 
 // Subscription management logic
 

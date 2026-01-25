@@ -1,8 +1,9 @@
 // fix-imports.ts
 
+import type { ImportFix } from '@/app/scripts/import-fix-types';
 import { APP_SPECIFIC_RULES } from '@/core/error-analyzer/rules/app-specific-rules';
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
-import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports'
+import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports';
+import { ImportFixerService } from '@/core/generators/corrections/ImportFixServicies';
 import ImportDeduplicator, { runDeduplicationCLI } from '@/utils/import-deduplicator';
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -10,6 +11,7 @@ import path from 'path';
 import ts from 'typescript';
 import { ImportValidator } from './import-validator';
 import { SafeFixer } from './safe-fixer';
+
 const PROJECT_ROOT = process.cwd();
 const SRC_ROOT = path.join(PROJECT_ROOT, 'src');
 const importValidator = new ImportValidator(SRC_ROOT);
@@ -100,21 +102,42 @@ const KNOWN_ALIAS_ROOTS = [
   '@/hooks',
 ];
 
+
 function getAllSourceFiles(dir: string, acc: string[] = []): string[] {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const e of entries) {
-    const full = path.join(dir, e.name);
-    if (e.isDirectory()) {
-      if (!full.includes('node_modules') && !full.includes('dist')) {
-        getAllSourceFiles(full, acc);
-      }
-    } else if (/\.(ts|tsx|js|mjs)$/.test(full)) {
-      acc.push(full);
+  try {
+    // Check if directory exists
+    if (!fs.existsSync(dir)) {
+      console.warn(`⚠️  Directory not found: ${dir}`);
+      return acc;
     }
-  }
+    
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  return acc;
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      
+      // Skip if path doesn't exist
+      if (!fs.existsSync(full)) {
+        continue;
+      }
+      
+      if (e.isDirectory()) {
+        // Skip node_modules, dist, and other build directories
+        if (full.includes('node_modules') || full.includes('dist') || 
+            full.includes('.git') || full.includes('.next')) {
+          continue;
+        }
+        getAllSourceFiles(full, acc);
+      } else if (/\.(ts|tsx|js|mjs)$/.test(full)) {
+        acc.push(full);
+      }
+    }
+
+    return acc;
+  } catch (error) {
+    console.error(`❌ Error scanning directory ${dir}:`, error);
+    return acc;
+  }
 }
 
 // ---------------------
@@ -129,10 +152,25 @@ function getExportsCached(filePath: string, visited = new Set<string>()): string
 
   if (exportCache.has(resolved)) return exportCache.get(resolved)!;
 
-  const exports = getExports(resolved, visited);
-  exportCache.set(resolved, exports);
-  return exports;
+  // Check if file exists before trying to read exports
+  if (!fs.existsSync(resolved)) {
+    console.warn(`⚠️  File not found, skipping export analysis: ${resolved}`);
+    exportCache.set(resolved, []);
+    return [];
+  }
+
+  try {
+    const exports = getExports(resolved, visited);
+    exportCache.set(resolved, exports);
+    return exports;
+  } catch (error) {
+    console.warn(`⚠️  Could not analyze exports for ${resolved}:`, error);
+    exportCache.set(resolved, []);
+    return [];
+  }
 }
+
+
 
 // ---------------------
 // PRECOMPUTE ALL SOURCE FILES ONCE
@@ -140,6 +178,19 @@ function getExportsCached(filePath: string, visited = new Set<string>()): string
 const allSourceFiles = getAllSourceFiles(SRC_ROOT);
 allSourceFiles.forEach(file => getExportsCached(file));
 
+// Verify all files exist before caching exports
+const existingFiles = allSourceFiles.filter(fs.existsSync);
+if (existingFiles.length !== allSourceFiles.length) {
+  console.warn(`⚠️  ${allSourceFiles.length - existingFiles.length} files in list don't exist on disk`);
+}
+
+existingFiles.forEach(file => {
+  try {
+    getExportsCached(file);
+  } catch (error) {
+    console.warn(`⚠️  Failed to cache exports for ${file}:`, error);
+  }
+});
 // ---------------------
 // ENHANCED findFileExporting FUNCTION
 // ---------------------
@@ -562,6 +613,12 @@ function scanRuntimeImportFailures(): ImportIssue[] {
   const seenKeys = new Set<string>();
 
   for (const file of allSourceFiles) {
+    // DEFENSIVE CHECK: Skip if file doesn't exist
+    if (!fs.existsSync(file)) {
+      console.warn(`⚠️  Skipping non-existent file: ${file}`);
+      continue;
+    }
+    
     const content = fs.readFileSync(file, 'utf8');
     const lines = content.split('\n');
 

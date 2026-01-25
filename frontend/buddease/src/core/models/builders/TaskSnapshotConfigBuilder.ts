@@ -1,20 +1,20 @@
 // TaskSnapshotConfigBuilder.ts
 
-import { SnapshotConfigFactory } from '@/core/config/factory/SnapshotFactory';
+import type { SnapshotConfigFactory } from '@/core/config/factory/SnapshotFactory';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { EventStore } from '@/core/events/EventStore';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { StoreMethods } from '@/core/models/tasks/StoreMethods';
 import type { Task } from '@/core/models/tasks/Task';
 import { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { SnapshotConfigBuilder, SnapshotLifecycle } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotConfigBuilder, SnapshotLifecycle } from '@/core/snapshots/SnapshotConfigBuilder';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotSubscriberManagement } from '@/core/snapshots/SnapshotSubscriberManagement';
 import { SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
 
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
-import { tasksConfig } from '@/core/config/endpoints/tasksConfig';
+import type { tasksConfig } from '@/core/config/endpoints/tasksConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
 

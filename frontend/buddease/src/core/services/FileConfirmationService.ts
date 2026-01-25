@@ -1,6 +1,6 @@
 // FileConfirmationService.ts
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
-import { ConfirmationService } from '@/core/services/ConfirmationService';
+import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import type { ConfirmationService } from '@/core/services/ConfirmationService';
 import fs from 'fs';
 
 export class FileConfirmationService implements ConfirmationService {

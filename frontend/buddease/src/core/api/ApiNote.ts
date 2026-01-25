@@ -8,10 +8,10 @@ import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { ModifiedDate } from '@/core/documents/DocType';
 import type { NoteData } from '@/core/documents/NoteData';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import FolderData from '@/core/models/data/FolderData';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { FolderData} from '@/core/models/data/FolderData';
 import type { Tag } from '@/core/models/tracker/Tag';
-import { Encryption } from '@/core/server/security/Encryption';
+import type { Encryption } from '@/core/server/security/Encryption';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import type { NoteEntity, NoteK } from '@/core/typings/entities/NoteEntity';
 import type {

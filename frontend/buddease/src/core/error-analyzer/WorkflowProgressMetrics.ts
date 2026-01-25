@@ -8,7 +8,7 @@ import type {
     TransitionUIConfig,
     WorkflowTransition
 } from '@/core/models/phases/WorkflowTransition';
-import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import type { PhaseBackupSystem } from '@/core/error-analyzer/phases/PhaseBackupSystem';
 import { Progress } from '@/core/models/tracker/ProgressBar';
 import StorageService from '@/src/utils/storage/StorageService';
 // Create a storage service instance

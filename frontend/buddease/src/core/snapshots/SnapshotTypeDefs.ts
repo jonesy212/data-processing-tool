@@ -2,13 +2,14 @@
 import type { ExtractEntityTypes } from '@/core/typings/BaseTypes';
 
 
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
 } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import {
+import type { SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
     Snapshots,
     SnapshotsArray,
     SnapshotsObject

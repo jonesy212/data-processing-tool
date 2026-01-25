@@ -8,10 +8,10 @@ import { Subscriber } from '@/core/subscribers/Subscriber';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import { useCallback } from 'react';
 
-import {
+import type { 
     CreateOptions,
     FetchAllOptions,
     FetchOptions,

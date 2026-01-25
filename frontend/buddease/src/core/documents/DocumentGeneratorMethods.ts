@@ -9,23 +9,22 @@ import {
 import { allowedDiagramFormats } from "@/core/components/form/FormatEnum";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { loadDrawingFromDatabase } from "@/core/config/database/updateDocumentInDatabase";
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
-import { CustomPDFPage } from '@/core/documents/CustomPDFPage';
-import { ModifiedDate, ParsedData, YourPDFType } from "@/core/documents/DocType";
-import { DocumentOptions, getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
-import { DocumentPath } from '@/core/documents/DocumentPath';
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
-import { PDFDocument } from "@/core/documents/editing/PDFDocument";
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { CustomPDFPage } from '@/core/documents/CustomPDFPage';
+import type { ParsedData } from '@/core/dataIntegration/parseData';
+import { ModifiedDate, YourPDFType } from '@/core/dataIntegration/parseData';
+import type { DocumentPath } from '@/core/documents/DocumentPath';
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { PDFDocument } from "@/core/documents/editing/PDFDocument";
 import { parseCSV } from "@/core/documents/parseCSV";
 import { parseDocx } from "@/core/documents/parseDocx";
 import { parseExcel } from "@/core/documents/parseExcel";
-import { extractPDFContent, PDFData, pdfParser } from '@/core/documents/parsePDF';
+import type { PDFData } from '@/core/documents/parsePDF';
+import { extractPDFContent, pdfParser } from '@/core/documents/parsePDF';
 import { parseXML } from "@/core/documents/parseXML";
 import generateDraftJSON from "@/core/generators/generateDraftJSON";
-import {
-    Drawing,
-    generateDrawingJSON,
-} from "@/core/libraries/drawing/generateDrawingJSON";
+import type { Drawing } from '@/core/libraries/drawing/generateDrawingJSON';
+import { generateDrawingJSON } from '@/core/libraries/drawing/generateDrawingJSON';
 import { generatePresentationJSON } from "@/core/libraries/presentations/generatePresentationJSON";
 import { loadCryptoWatchlistFromDatabase } from "@/core/models/cypto/CryptoWatchlist";
 import { generateCryptoWatchlistJSON } from "@/core/models/cypto/generateCryptoWatchlistJSON";
@@ -33,14 +32,14 @@ import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import { fetchTextContentFromDatabase } from "@/core/server/database/DataBaseMethods";
 import loadDraftFromDatabase from "@/core/server/database/loadDraftFromDatabase";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";
-import {
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";
+import Papa from "papaparse";
+import type {
     CustomDocxtemplater,
     CustomPDFProxyPage,
     DocumentTypeEnum,
 } from "@/core/typings/documentTypes";
-import Papa from "papaparse";
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 

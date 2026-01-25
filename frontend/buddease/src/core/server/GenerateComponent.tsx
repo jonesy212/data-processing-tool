@@ -3,15 +3,15 @@ import { Label } from '@/core/branding/BrandingSettings';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { createMetaState } from '@/core/config/MetadataStateManager';
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
-import { ModifiedDate } from "@/core/documents/DocType";
+import { useMetadata } from "@/core/config/useMetadata";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import {
     getDefaultDocumentOptions,
     getDocumentPhase,
     mapDocumentToProjectPhase
 } from "@/core/documents/DocumentOptions";
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { Content } from '@/core/models/content/AddContent';
 import { AllCategoryValues } from "@/core/models/data/DataStructureCategories";
 import { DocumentSize } from "@/core/models/data/StatusType";

@@ -1,6 +1,6 @@
 // lifecycles.ts
 
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
@@ -8,7 +8,7 @@ import {
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Lesson } from "@/core/documents/editing/CourseBuilder";
 import { enhancedPhaseHook } from "@/core/hooks/phaseHooks/EnhancePhase";
-import { PhaseHookConfig } from "@/core/hooks/phaseHooks/PhaseHooks";
+import type { PhaseHookConfig } from "@/core/hooks/phaseHooks/PhaseHooks";
 import { getLastActivityTimeForPhase } from '@/core/hooks/phases/PhaseActivity';
 import { CustomPhaseHooks, Phase } from "@/core/models/phases/Phase";
 import { IdeaLifecyclePhase } from "@/core/models/phases/PhaseManager";

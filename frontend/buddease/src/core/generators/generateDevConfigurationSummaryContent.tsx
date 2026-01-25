@@ -1,6 +1,6 @@
 // generateDevConfigurationSummaryContent.tsx
 
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 
 /**
  * Generates executive summary content based on the provided cache data.

@@ -1,6 +1,6 @@
 // factoryHandlers.ts
-import { AppMessage } from '@/core/typings/entities/MessageEntity';
-import { ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
+import type { AppMessage } from '@/core/typings/entities/MessageEntity';
+import type { ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
 
 const isReactiveEventHandler = (
   handler: ReactiveEventHandler | EventListenerOrEventListenerObject

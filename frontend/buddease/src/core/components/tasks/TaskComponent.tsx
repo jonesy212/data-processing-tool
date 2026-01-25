@@ -7,7 +7,7 @@ import DataFilterForm from '@/core/components/models/data/DataFilterForm';
 import { Task } from '@/core/components/models/tasks/Task';
 import TaskForm from '@/core/components/models/tasks/TaskForm';
 import { NotificationPreferenceEnum } from '@/core/components/notifications/Notification';
-import { FileTypeEnum } from '@/core/documents/FileType';
+import type { FileTypeEnum } from '@/core/documents/FileType';
 import { Filter } from '@/core/pages/searches/Filter';
 import type { PaginationOptions, SearchOptions, SortingOption } from '@/core/pages/searches/SearchOptions';
 import {

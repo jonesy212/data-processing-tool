@@ -19,7 +19,7 @@ import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { configureSnapshot } from '@/core/snapshots/snapshotOperations';
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
+import type { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
 import type { InitializedData, SnapshotInstanceProps } from '@/core/snapshots/SnapshotStoreOptions';
 import type { storeProps } from "@/core/snapshots/SnapshotStoreProps";
 import type { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";

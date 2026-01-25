@@ -1,37 +1,38 @@
 // snapshotOperations.ts
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotOperation } from '@/core/actions/SnapshotActions';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotOperation } from '@/core/actions/SnapshotActions';
 import { snapshotApi } from '@/core/api/SnapshotApi';
 import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { SchemaField } from '@/core/config/metadata/SchemaField';
+import type { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Content } from '@/core/models/content/AddContent';
+import type { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+import type { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { Content } from '@/core/models/content/AddContent';
 import type { BaseData, Data } from '@/core/models/data/Data';
 import type { ProjectStateEnum } from '@/core/models/data/StatusType';
-import { Member } from '@/core/models/members/Member';
-import { ProjectType } from '@/core/models/projects/Project';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Member } from '@/core/models/members/Member';
+import type { ProjectType } from '@/core/models/projects/Project';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotItem } from '@/core/snapshots/SnapshotList';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import type { InitializedData, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
 import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
+import type { UpdateSnapshotParams } from '@/core/snapshots/UpdateSnapshotParams';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import type { InitializedState } from '@/core/state/stores/DataStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import {
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { 
     SnapshotAttachment,
     SnapshotEntity,
     SnapshotExcludedFields,
@@ -40,11 +41,11 @@ import {
     SnapshotMeta
 } from '@/core/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { SnapshotEvent } from '@/core/typings/snapshotTypes';
+import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { convertSnapshotContainerToStore } from '@/core/typings/YourSpecificSnapshotType';
 import { createVersionInfo } from '@/core/versions/createVersionInfo';
-import { Version } from '@/core/versions/Version';
-import { VersionData } from '@/core/versions/VersionData';
+import type { Version } from '@/core/versions/Version';
+import type { VersionData } from '@/core/versions/VersionData';
 
 
 interface SnapshotOperations<
@@ -823,7 +824,6 @@ const getSnapshot = <
         // Add the other required properties based on the StructuredMetadata interface
         // Check your actual interface definition for exact property names
         // For example:
-        metadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Use proper type based on your interface
         attachments: [] as AttachmentType[],
         excludedFields: [] as ExcludedFields[],
         includedFields: [] as IncludedFields[],
@@ -1092,7 +1092,7 @@ const configureSnapshot = <
 
 export {
     clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
-    getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots,
+    getSnapshotItems, handleSnapshot, mapSnapshots,
     takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };

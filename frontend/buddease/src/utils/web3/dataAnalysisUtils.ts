@@ -1,6 +1,6 @@
 // dataAnalysisUtils.ts
 import axiosInstance from '@/core/api/csrfToken';
-import { DataAnalysisDispatch } from '@/core/typings/phases/dataAnalysisTypes';
+import type { DataAnalysisDispatch } from '@/core/typings/phases/dataAnalysisTypes';
 
 export const fetchData = async (userId: string, dispatch: DataAnalysisDispatch) => {
     try {

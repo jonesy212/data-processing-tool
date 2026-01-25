@@ -1,12 +1,12 @@
 // FormBuilder.tsx
 
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 import DocumentBuilder from "@/core/documents/editing/DocumentBuilder";
-import { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
+import type { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
 import useFilePath from "@/core/hooks/useFilePath";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
-import { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
-import {
+import type { AlignmentOptions } from "@/core/state/redux/slices/toolbarSlice";
+import type { DocumentTypeEnum } from '@/core/typings/documents';
     DocumentTypeEnum
 } from "@/core/typings/documents";
 import AppVersionImpl from "@/core/versions/AppVersion";

@@ -1,0 +1,9 @@
+# .github/workflows/css-coverage.yml
+- name: Check CSS Coverage
+  run: pnpm analyze:css-coverage --fail-threshold 70
+  
+- name: Upload CSS Report
+  uses: actions/upload-artifact@v3
+  with:
+    name: css-coverage-report
+    path: reports/css-coverage-*.md

@@ -41,13 +41,14 @@ import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import CustomFile from '@/core/documents/File';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import useFileUpload from '@/core/hooks/commHooks/useFileUpload';
 import { TeamCollaborationAnalysis } from '@/core/interfaces/options/CollaborationOptions';
 import { Theme } from '@/core/libraries/ui/theme/Theme';
-import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from '@/core/models/data/EventContentAnalysis';
+import type { EventContentAnalysis, EventImpactAnalysis, ScheduleOptimization } from '@/core/models/data/EventContentAnalysis';
+import { EventContentValidationResults } from '@/core/models/data/EventContentAnalysis';
 import type { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/core/models/data/EventPriorityClassification';
 import {
     CalendarStatus,
@@ -68,9 +69,11 @@ import type { dispatchNotification, SendStatus } from '@/core/state/redux/slices
 import NotificationData from '@/core/state/redux/slices/NofiticationsSlice';
 import CalendarEventAlternative from '@/core/state/stores/CalendarEventAlternative';
 import type { AppCalendarEvent } from '@/core/typings/meetingTypes';
-import { CalendarMilestone, Milestone } from '@/core/typings/milestoneTypes';
-import { User } from '@/core/users/User';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { CalendarMilestone } from '@/core/typings/milestoneTypes';
+import { Milestone } from '@/core/typings/milestoneTypes';
+import type { User } from '@/core/users/User';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 import type { ChangeEvent } from 'react';
 import React from 'react';

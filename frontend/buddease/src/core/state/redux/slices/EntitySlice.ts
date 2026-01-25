@@ -2,7 +2,8 @@
 // Import necessary dependencies
 import axiosInstance from '@/core/api/csrfToken';
 import type { RootState } from '@/core/state/redux/slices/RootSlice';
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 
 // Define the entity interface
@@ -113,7 +114,7 @@ export const clearAllEntities = createAsyncThunk(
     }
 );
 
-Export types
+// Export types
 export type { EntityState };
 
 // Define selector functions to access the entity state

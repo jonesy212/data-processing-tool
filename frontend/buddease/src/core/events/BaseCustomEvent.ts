@@ -106,7 +106,7 @@ interface CustomEventExtension<
     BUBBLING_PHASE: 3;
 }
 
-Type assertion for compatibility
+// Type assertion for compatibility
 const CustomEventExtensionConstructor = CustomEvent as unknown as {
   new (type: string, eventInitDict?: EventInit): CustomEventExtension;
 };

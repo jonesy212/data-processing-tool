@@ -2,9 +2,9 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
-import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotCoreBase } from '@/core/snapshots/SnapshotData';
+import type { SnapshotCoreBase } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { Subscriber } from '@/core/subscribers/Subscriber';

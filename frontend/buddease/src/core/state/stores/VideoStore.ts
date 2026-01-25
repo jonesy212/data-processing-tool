@@ -1,14 +1,14 @@
 // VideoStore.ts
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { Label } from '@/core/branding/BrandingSettings';
+import type { Label } from '@/core/branding/BrandingSettings';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import type { BaseData } from '@/core/models/data/Data';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { Video, VideoData } from '@/core/typings/videoTypes/Video';
+import type { Video, VideoData } from '@/core/typings/videoTypes/Video';
 import { makeAutoObservable } from "mobx";
 import { useEffect, useState } from "react";
  

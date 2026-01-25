@@ -2,7 +2,7 @@
 'use client';
 
 import { ClientDocumentGenerator } from '@/core/libraries/cache/client/DocumentGenerator';
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 
 export default function DocumentCreator() {
   const handleCreateDocument = async () => {

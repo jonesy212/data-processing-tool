@@ -15,7 +15,7 @@ import ContentItemComponent, {
 } from "@/core/components/models/content/ContentItem";
 import responsiveDesignStore from "@/core/components/styling/ResponsiveDesign";
 import { ButtonGenerator } from "@/core/generators/GenerateButtons";
-import { DocxGeneratorOptions } from "@/core/generators/docxGenerator";
+import type { DocxGeneratorOptions } from "@/core/generators/docxGenerator";
 import {
     LayoutGeneratorProps,
     default as useLayoutGenerator,

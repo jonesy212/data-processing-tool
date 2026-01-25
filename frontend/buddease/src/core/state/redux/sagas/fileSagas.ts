@@ -1,23 +1,21 @@
 // fileSagas.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
 import internalApiService from '@/core/api/ApiClient';
-import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/core/components/configs/DetermineFileType';
+import type { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/core/api/ApiFiles';
 import { fetchDataFrame, removeFile, updateDataFrame } from '@/core/api/DataframeApi';
 import { DataActions } from '@/core/actions/DataActions';
 import { DataFrameActions } from '@/core/actions/DataFrameActions';
 import { FileActions } from '@/core/actions/FileActions';
-import { headersConfig } from '@/core/components/shared/SharedHeaders';
+import type { headersConfig } from '@/core/components/shared/SharedHeaders';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import type { Data } from '@/core/models/data/Data';
 import { updateDataTitle } from '@/core/snapshots/methods/dataMethods';
 import { fetchDataFrameSuccess } from '@/core/state/redux/slices/DataFrameSlice';
-import type { AxiosResponse } from 'axios';
-import axios from 'axios';
+import 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 const { handleError } = useErrorHandling();
 
-import { default as archiveFile, default as batchRemoveFiles, default as createFileVersion, default as determineFileType, default as exportFile, default as fetchFiles, default as fetchFileVersions, default as importFile, default as markFileAsComplete, default as receiveFileUpdate, default as requestAccessToFile, default as shareFile, default as startCollaborativeEdit, default as uploadFile } from '@/core/api/ApiFiles';
 
 
 // Import other unused imports

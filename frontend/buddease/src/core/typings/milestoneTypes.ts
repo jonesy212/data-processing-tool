@@ -8,7 +8,7 @@ import type {
     SharedStatusFlags,
     SharedTimestamps
 } from '@/core/documents/RelatedProps';
-import { StatusType } from '@/core/models/data/StatusType';
+import type { StatusType } from '@/core/models/data/StatusType';
 import type { Reminder } from '@/core/settings/Reminder';
 
 // -------------------- Core Milestone Interface --------------------

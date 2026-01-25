@@ -11,19 +11,22 @@ import type { Task } from "@/core/models/tasks/Task";
 import { ProfileAccessControl } from "@/core/pages/profile/Profile";
 import { BlockchainPermissions } from "@/core/permissions/BlockchainPermissions";
 import { PrivacySettings } from "@/core/settings/PrivacySettings";
-import { SecuritySettings } from '@/core/settings/SecuritySettings';
+import type { SecuritySettings } from '@/core/settings/SecuritySettings';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { Resource } from "@/core/state/redux/slices/CollaborationSlice";
 import { Deadline } from "@/core/state/redux/slices/ProjectSlice";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { AllTypes } from '@/core/typings/PropTypes';
-import { BaseResponseType } from '@/core/typings/baseResponseTypes';
+import type { AllTypes } from '@/core/typings/PropTypes';
+import type { BaseResponseType } from '@/core/typings/baseResponseTypes';
 import { BlockchainAsset } from "@/core/typings/cryptoTypes/BlockchainAsset";
-import { CustomTransaction, SmartContractInteraction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
+import type { CustomTransaction } from '@/core/typings/cryptoTypes/SmartContractInteraction';
+import { SmartContractInteraction } from '@/core/typings/cryptoTypes/SmartContractInteraction';
 import type { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { Address, Education, Employment, SocialLinks, User } from "@/core/users/User";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { SocialLinks } from '@/core/users/User';
+import { Address, Education, Employment, User } from '@/core/users/User';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 
 interface ActivityLogEntry {

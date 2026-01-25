@@ -1,11 +1,12 @@
 // createSystemMessage.ts
 import userSettings from '@/core/config/UserSettings';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import UserRoles from '@/core/models/UserRoles';
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import { ActivityStatus } from '@/core/pages/profile/Profile';
-import { ExtendedUser, User } from '@/core/users/User';
+import type { ExtendedUser } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import { DataSharingPreferences } from '@/core/settings/PrivacySettings';
 
 // Function to transform friends into the required format

@@ -1,5 +1,5 @@
 // DynamicImportTargetingSystem.ts
-import { ImportFixerService } from '../generators/corrections/ImportFixServicies';
+import { ImportFixerService } from '@/core/generators/corrections/ImportFixServicies';
 import { ImportExportAnalyzer, ImportExportIssue } from '@/core/error-analyzer/utils/ImportExportAnalyzer'
 import fs from 'fs';
 import path from 'path';

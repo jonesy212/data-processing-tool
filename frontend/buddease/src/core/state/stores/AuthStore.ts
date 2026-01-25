@@ -1,15 +1,15 @@
 // AuthStore.ts
-import { UserPreferences } from "@/core/config/UserPreferences";
-import { AuthenticationProvider } from '@/core/interfaces/provider/AuthenticationProvider';
-import { NFT } from '@/core/models/cypto/NFT';
+import type { UserPreferences } from "@/core/config/UserPreferences";
+import type { AuthenticationProvider } from '@/core/interfaces/provider/AuthenticationProvider';
+import type { NFT } from '@/core/models/cypto/NFT';
 import { UserRoleEnum } from '@/core/models/UserRoles';
-import { Permission } from "@/core/permissions/Permission";
+import type { Permission } from "@/core/permissions/Permission";
 import { hasTokenExpired } from "@/core/server/database/hasTokenExpired";
 import { verifyTokenScopes } from "@/core/server/database/JwtPayload";
-import { SecuritySettings } from '@/core/settings/SecuritySettings';
-import { SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
+import type { SecuritySettings } from '@/core/settings/SecuritySettings';
+import type { SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import * as jwt from 'jsonwebtoken'; // Assuming JWT is used for tokens
 import { makeAutoObservable } from "mobx";
 import { Scope } from "./Scopes";

@@ -1,5 +1,5 @@
 // ConsoleConfirmationService.ts
-import { ConfirmationService } from '@/core/services/ConfirmationService';
+import type { ConfirmationService } from '@/core/services/ConfirmationService';
 import path from 'path';
 
 export class ConsoleConfirmationService implements ConfirmationService {

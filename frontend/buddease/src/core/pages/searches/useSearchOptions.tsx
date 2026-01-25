@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { FilterActions } from '@/core/actions/FilterActions';
-import { searchOptions } from '@/core/pages/searches/SearchOptions';
+import type { searchOptions } from '@/core/pages/searches/SearchOptions';
 import { sortTasks } from '@/core/state/redux/slices/TaskSlice';
 
 import { NOTIFICATION_MESSAGES } from '@/core/features/support/NotificationMessages';

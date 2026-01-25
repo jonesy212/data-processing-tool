@@ -20,7 +20,7 @@ import { CustomMouseEvent } from "@/core/services/EventService";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { addMessage } from "@/core/state/redux/slices/ChatSlice";
 import { historyManagerStore } from "@/core/state/stores/HistoryStore";
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import { AxiosResponse } from "axios";
 import React from "react";
 import { useDispatch } from "react-redux";

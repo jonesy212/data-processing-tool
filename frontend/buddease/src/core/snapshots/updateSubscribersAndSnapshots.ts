@@ -5,7 +5,7 @@ import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { Subscription } from "@/core/subscriptions/Subscription";
 import { useParams } from "react-router-dom";
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import type { BaseData } from '@/core/models/data/Data';
 import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";
@@ -13,7 +13,8 @@ import type { NotificationTypeEnum, NotificationType } from '@/core/features/sup
 import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/utils/trading/TradingUtils";
 import { userId } from "@/core/api/ApiUser";
 import { triggerIncentives } from "@/utils/web3/applicationUtils";
-import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/core/interfaces/payload/payloadTypes'
+import type { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, SnapshotsArray } from '@/core/snapshots/Snapshot';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { K, T } from "@/core/models/data/dataStoreMethods";
 import SnapshotStore from "./SnapshotStore";

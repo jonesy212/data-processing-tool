@@ -1,5 +1,6 @@
 // useUIRealtimeData.tsx
-import { AppActions, AppActionsType } from '@/core/actions/AppActions';
+import type { AppActionsType } from '@/core/actions/AppActions';
+import { AppActions } from '@/core/actions/AppActions';
 import { EventActions } from '@/core/actions/EventActions';
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
@@ -8,11 +9,12 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
 import type { BaseData } from '@/core/models/data/Data';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { DocumentActionTypes } from '@/core/tokens/DocumentActions';
-import { TokenActionTypes } from '@/core/tokens/TokenActions';
-import { RealtimeData, RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { DocumentActionTypes } from '@/core/tokens/DocumentActions';
+import type { TokenActionTypes } from '@/core/tokens/TokenActions';
+import type { RealtimeData, RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { fetchData } from '@/utils/web3/dataAnalysisUtils';
-import { Dispatch, useEffect, useState } from 'react';
+import type { Dispatch } from 'react';
+import { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';

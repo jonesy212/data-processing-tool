@@ -7,7 +7,8 @@ import { addNotification } from '@/core/components/notifications/Notification';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { Snapshot, Snapshots } from '@/core/snapshots/Snapshot';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { useDispatch } from 'react-redux';
 

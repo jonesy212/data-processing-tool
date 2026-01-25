@@ -1,8 +1,8 @@
 // generateRoadmaps.ts
-import { DomainStructure } from '@/core/config/appStructure/DomainStructure';
+import type { DomainStructure } from '@/core/config/appStructure/DomainStructure';
 import type { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
 import PackageRecommendationGenerator from '@/core/generators/PackageRecommendationGenerator';
-import { PackageJson } from '@/core/scripts/generate-commands-doc';
+import type { PackageJson } from '@/core/scripts/generate-commands-doc';
 import { ProjectTreeAnalyzer } from '@/core/scripts/generateTree';
 import fs from 'fs';
 import path from 'path';

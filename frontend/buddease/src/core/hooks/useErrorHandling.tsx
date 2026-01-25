@@ -6,7 +6,7 @@ import { ParsedData } from "@/core/dataIntegration/parseData";
 import { FileLogger } from "@/core/logging/Logger";
 import ErrorHandler from '@/core/shared/ErrorHandler';
 import type { AppEntity } from "@/core/typings/entities/AppEntity";
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { useState } from 'react';
 // Most practical solution
 // Create a factory function that returns configured hooks

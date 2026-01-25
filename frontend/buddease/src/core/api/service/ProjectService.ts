@@ -10,7 +10,7 @@ import { Project, ProjectData } from '@/core/models/projects/Project';
 import type { Task } from "@/core/models/tasks/Task";
 import { Product } from "@/core/products/Product";
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { makeAutoObservable } from 'mobx';
 
 const API_BASE_URL = endpoints.projects;

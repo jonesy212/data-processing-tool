@@ -7,7 +7,7 @@ import { MessageType } from "@/core/generators/MessaageType";
 import AnimationTypeEnum from "@/core/libraries/animations/AnimationLibrary";
 import { DataStatus, NotificationStatus, PriorityTypeEnum, ProjectPhaseTypeEnum, StatusType, TaskStatus, TeamStatus } from "@/core/models/data/StatusType";
 import { UserRoleEnum } from '@/core/models/UserRoles';
-import {
+import type { ActivityLevelEnum, CollaborationPhaseEnum, CollaborationToolEnum, CommunicationTypeEnum, CreativityLevelEnum, CryptoAssetTypeEnum, EngagementTypeEnum, FeedbackTypeEnum, InnovationTypeEnum, InvestmentStrategyEnum, MarketTrendEnum, MilestoneStatusEnum, PerformanceStatusEnum, PhaseDurationEnum, TechnologyEnum } from '@/core/pages/searches/CriteriaEnums';
     ActivityLevelEnum,
     CollaborationPhaseEnum,
     CollaborationToolEnum,
@@ -26,7 +26,7 @@ import {
 } from '@/core/pages/searches/CriteriaEnums';
 import { FilterCriteria } from "@/core/pages/searches/FilterCriteria";
 import { SearchCriteria } from "@/core/pages/searches/SearchCriteria";
-import {
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
     DocumentTypeEnum
 } from "@/core/typings/documentTypes";
 

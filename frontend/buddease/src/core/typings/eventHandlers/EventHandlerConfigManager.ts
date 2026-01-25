@@ -1,7 +1,7 @@
 // EventHandlerConfigManager.ts
 import { debounce } from "@/core/pages/searches/Debounce";
 
-import { EventHandlerConfig } from "@/core/typings/eventHandlers/eventTypes";
+import type { EventHandlerConfig } from "@/core/typings/eventHandlers/eventTypes";
 import { PlatformTimeout, clearPlatformTimeout } from '@/core/typings/timeoutTypes';
 
 

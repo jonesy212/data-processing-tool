@@ -6,7 +6,8 @@ import { sharedBaseData } from '@/core/config/metadata/MetadataHooks';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Task } from '@/core/models/tasks/Task';
 import type { ExampleAttachment, ExampleEntity, ExampleExcludedFields, ExampleIncludedFields, ExampleK, ExampleMeta } from "@/core/typings/entities/ExampleEntity";
-import {
+import type { ProjectAttachment, ProjectEntity, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
+import { ProjectExcludedFields, ProjectIncludedFields, ProjectK } from '@/core/typings/entities/ProjectEntity';
     ProjectAttachment,
     ProjectEntity,
     ProjectExcludedFields,

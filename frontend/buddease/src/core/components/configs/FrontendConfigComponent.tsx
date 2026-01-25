@@ -1,5 +1,5 @@
 // FrontendConfigComponent.tsx
-import { FrontendConfig } from "@/core/config/FrontendConfig";
+import type { FrontendConfig } from "@/core/config/FrontendConfig";
 import React from "react";
 
 interface FrontendConfigComponentProps {

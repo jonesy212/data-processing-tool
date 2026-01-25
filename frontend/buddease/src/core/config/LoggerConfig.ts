@@ -1,5 +1,5 @@
 // LoggerConfig.ts
-import {
+import type { AnalyticsLogger, BugLogger, CommunityLogger, ContentLogger, ErrorLogger, ExchangeLogger, IntegrationLogger, PaymentLogger, SecurityLogger, TenantLogger, WebLogger } from '@/core/logging/Logger';
     AnalyticsLogger,
     BugLogger,
     CommunityLogger,

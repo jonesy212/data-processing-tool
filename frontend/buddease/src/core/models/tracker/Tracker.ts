@@ -1,7 +1,7 @@
 // FileTracker.ts
 import type { HighlightColor } from "@/core/components/styling/Palette";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { detectMetadataChanges } from "@/core/config/metadata/detectMetadataChanges";
+import type { detectMetadataChanges } from "@/core/config/metadata/detectMetadataChanges";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import type { FileData } from "@/core/models/data/FileData";

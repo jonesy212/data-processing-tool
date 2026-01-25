@@ -3,7 +3,7 @@ import type { AppEntity } from '@/core/typings/entities/AppEntity';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ExchangeData } from "@/core/models/data/ExchangeData";
+import type { ExchangeData } from "@/core/models/data/ExchangeData";
 
 export interface Exchange<
   T extends BaseDataEntity = AppEntity,

@@ -10,7 +10,7 @@ import type { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/c
 import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { Content } from '@/core/models/content/AddContent';
 import type { BaseData, Data, DataDetails } from '@/core/models/data/Data';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import type { Tag } from '@/core/models/tracker/Tag';
 import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { CriteriaType } from '@/core/pages/searches/CriteriaType';

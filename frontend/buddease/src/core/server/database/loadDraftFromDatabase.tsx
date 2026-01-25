@@ -1,6 +1,6 @@
 // loadDraftFromDatabase.tsx
 import { Client } from "@/core/client/Client";
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 
 const loadDraftFromDatabase = async (
   config: DatabaseConfig,

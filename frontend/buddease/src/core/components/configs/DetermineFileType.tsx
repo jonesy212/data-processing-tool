@@ -1,5 +1,5 @@
 // DetermineFileType.tsx
-import { FileTypeEnum } from "@/core/documents/FileType";
+import type { FileTypeEnum } from "@/core/documents/FileType";
 import React from "react";
 
 interface DetermineFileTypeProps {

@@ -1,5 +1,5 @@
 // detectBrowserSpecific.ts
-import { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
+import type { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
 
 const detectBrowserSpecific = (): BrowserBehaviorConfig["browserSpecific"] => {
   const userAgent = navigator.userAgent;

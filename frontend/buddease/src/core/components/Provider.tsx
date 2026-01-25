@@ -16,9 +16,8 @@ import type {
 } from '@/core/typings/entities/UserEntity';
 
 import type { LanguageEnum } from "@/core/communications/LanguageEnum";
-import type { AuthContext } from '@/core/state/context/AuthContext';;
-import { initialState } from '@/core/state/redux/slices/FilteredEventsSlice';
-import { authReducer } from '@/src/core/state/context/AuthContext'
+import { AuthContext } from '@/core/state/context/AuthContext';
+import type { initialState } from '@/core/state/redux/slices/FilteredEventsSlice';
 import { useAuthStore } from "@/core/state/stores/AuthStore";
 
 export interface AuthProviderProps {

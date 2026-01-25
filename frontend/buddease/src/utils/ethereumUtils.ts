@@ -5,7 +5,8 @@ import type {
   ContractTransaction,
   TransactionRequest, Wallet, ethers,
 } from "ethers";
-import { ContractAbi, default as Web3 } from "web3";
+import { default as Web3 } from "web3";
+import type { ContractAbi } from "web3";
 import { Contract } from "web3-eth-contract";
 import type { EventLog } from "web3-eth-contract";
 

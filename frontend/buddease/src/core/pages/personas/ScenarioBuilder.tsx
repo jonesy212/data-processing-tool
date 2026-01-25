@@ -367,7 +367,7 @@ function generateFormsComponent(
   // Generate validation rules code
   const validationRulesCode = generateValidationRulesCode(validationRules); // Generate component code
   const componentCode = `
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
       interface ${componentName}Props {
         ${formFieldsCode}

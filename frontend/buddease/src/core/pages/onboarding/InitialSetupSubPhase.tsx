@@ -6,7 +6,7 @@ import DynamicForm from '@/core/pages/forms/DynamicForm';
 import TempUserData from '@/core/pages/onboarding/OnboardingPhase';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useNotification } from "@/core/state/context/NotificationContext";
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import { AxiosError } from 'axios'; // Import AxiosError
 import React, { useEffect } from 'react';
 

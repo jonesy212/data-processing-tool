@@ -4,8 +4,8 @@ import { MarketTrendEnum } from '@/core/pages/searches/CriteriaEnums'
 import type { InvestmentStrategy } from '@/core/components/crypto/InvestmentStrategy';
 import { ContentManagementPhaseEnum } from '@/core/components/phases/ContentManagementPhase';
 import { FeedbackPhaseEnum } from '@/core/components/phases/FeedbackPhase';
-import { StatusType } from "@/core/models/data/StatusType";
-import { CryptoAssetTypeEnum, InvestmentStrategyEnum, PerformanceStatusEnum } from '@/core/pages/searches/CriteriaEnums';
+import type { StatusType } from "@/core/models/data/StatusType";
+import type { CryptoAssetTypeEnum, InvestmentStrategyEnum, PerformanceStatusEnum } from '@/core/pages/searches/CriteriaEnums';
 import type { CryptoManagementCriteria } from '@/core/pages/searches/CriteriaOptions';
 import type { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
 import type { SearchCriteria } from '@/core/pages/searches/SearchCriteria';

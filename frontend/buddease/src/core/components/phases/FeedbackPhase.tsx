@@ -4,7 +4,8 @@ import FeedbackLoop from '@/core/features/feedback/FeedbackLoop';
 import { Feedback } from "@/core/features/support/Feedback";
 import type { FeedbackReport } from '@/core/generators/FeedbackReportGenerator';
 import FeedbackReportGenerator from '@/core/generators/FeedbackReportGenerator';
-import { Channel, ChannelType } from "@/core/interfaces/chat/Channel";
+import type { ChannelType } from '@/core/interfaces/chat/Channel';
+import { Channel } from '@/core/interfaces/chat/Channel';
 import FeedbackForm from "@/core/pages/forms/FeedbackForm";
 import React, { useState } from "react";
 

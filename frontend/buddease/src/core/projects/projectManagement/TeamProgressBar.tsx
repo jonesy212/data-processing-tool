@@ -1,6 +1,7 @@
 // TeamProgressBar.tsx
 import { Team } from '@/core/components/teams/Team';
-import { AnimatedComponent, AnimatedComponentRef } from '@/core/libraries/animations/AnimationComponent';
+import type { AnimatedComponent } from '@/core/libraries/animations/AnimationComponent';
+import { AnimatedComponentRef } from '@/core/libraries/animations/AnimationComponent';
 import React from 'react';
 
 const TeamProgressBar = ({ team }: {team: Team}) => {

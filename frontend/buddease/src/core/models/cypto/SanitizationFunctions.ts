@@ -2,9 +2,9 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { decryptedData } from '@/core/server/security/decryptedData';
-import { Encryption } from '@/core/server/security/Encryption';
-import { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
-import { User } from '@/core/users/User';
+import type { Encryption } from '@/core/server/security/Encryption';
+import type { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { User } from '@/core/users/User';
 import DOMPurify from 'dompurify';
 
 

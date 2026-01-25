@@ -1,5 +1,5 @@
 // ProjectProgress.tsx
-import ProgressBar, { Progress } from "@/core/models/tracker/ProgressBar";
+import type { ProgressBar, Progress } from "@/core/models/tracker/ProgressBar";
 import React from "react";
 
 interface ProjectProgressProps {

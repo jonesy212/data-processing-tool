@@ -2,7 +2,7 @@
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import type { SnapshotContainerType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import type { DataStore } from '@/core/state/stores/DataStore';
@@ -11,7 +11,7 @@ import { Subscription } from '@/core/subscriptions/Subscription';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { Snapshot, SnapshotStoreConfig } from "@/core/snapshots/Snapshot";
+import type { Snapshot, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import SnapshotStore from "./SnapshotStore";
 

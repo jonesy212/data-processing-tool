@@ -6,7 +6,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot, SnapshotData } from '@/core/snapshots/Snapshot';
+import { Snapshot, SnapshotData } from '@/core/snapshots/SnapshotData';
 import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";

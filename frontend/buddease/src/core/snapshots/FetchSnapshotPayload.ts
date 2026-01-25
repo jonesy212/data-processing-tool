@@ -3,7 +3,7 @@ import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import { simulateFetch } from "@/core/simulate/simulateFetch";
 import type { Snapshot } from '@/core/snapshots/Snapshot';

@@ -15,7 +15,7 @@ import { SearchLogger } from '@/core/logging/Logger';
 import { SupportedData } from '@/core/models/CommonData';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { SearchComponent } from '@/core/pages/searches/SearchComponent';
-import { useSearchOptions } from '@/core/pages/searches/useSearchOptions';
+import type { useSearchOptions } from '@/core/pages/searches/useSearchOptions';
 import { fuzzyMatchEntities } from '@/core/routing/FuzzyMatch';
 
 // Import types
@@ -27,7 +27,7 @@ import { TaskPhaseEnum } from '@/core/components/phases/TaskProcess';
 import { TenantManagementPhaseEnum } from '@/core/components/phases/TenantManagementPhase';
 import { Team } from '@/core/components/teams/Team';
 import type { Entity } from '@/core/config/BaseConfig';
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { FileTypeEnum } from '@/core/documents/FileType';
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { MessageType } from '@/core/generators/MessaageType';
@@ -44,7 +44,7 @@ import { selectEventLoading } from '@/core/state/redux/slices/EventSlice';
 import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import { DocumentTypeEnum } from '@/core/typings/documentTypes';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { IdeaCreationPhaseEnum } from '@/core/users/userJourney/IdeaCreationPhase';
 
 interface SearchCriteria extends BaseData {

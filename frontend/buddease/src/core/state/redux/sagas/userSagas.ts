@@ -3,7 +3,7 @@ userSaga.ts
 import { UserActions } from "@/core/actions/UserActions";
 import UserService, { userService } from "@/core/api/ApiUser";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { call, put, takeLatest } from "redux-saga/effects";
 
 // Worker Saga: Fetch User

@@ -6,11 +6,11 @@ import type { transformProjectToUnifiedMetadata } from '@/core/config/MetaDataOp
 import type { projectMetadata, StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
-import { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
+import type { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
 import type { Member } from '@/core/models/members/Member';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
-import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
+import type { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
 import type { VideoData } from '@/core/typings/videoTypes/Video';
 import { useState } from 'react';
@@ -209,10 +209,10 @@ const event: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtta
   attendees: [],
   location: "Event location",
   getData: () => Promise.resolve({}) as Promise<Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>>,
-  meta: {} as StructuredMetadata<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields, , string>
+  meta: {} as StructuredMetadata<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields, CalendarIncludedFields>
 };
 
-const calendarManagerState: CalendarManagerState = {
+const calendarManagerState: CalendarManagerState<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields, CalendarIncludedFields> = {
   attendeeAvailabilityAnalysis: {
     ...useAttendeeAvailabilityAnalysis(event),
     event, // Include the event property

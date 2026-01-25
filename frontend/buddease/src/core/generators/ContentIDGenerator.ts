@@ -1,6 +1,6 @@
 // ContentIDGenerator.ts
 
-import {
+import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultMeta
 } from '@/core/config/BaseConfig';

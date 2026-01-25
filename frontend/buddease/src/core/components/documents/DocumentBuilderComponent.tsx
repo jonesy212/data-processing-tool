@@ -5,7 +5,7 @@ import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
 import DocumentBuilder, { saveDocument } from "@/core/documents/editing/DocumentBuilder";
-import { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
+import type { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
 import { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";
 import AccessHistory from '@/core/versions/AccessHistory';
 import { useState } from 'react';

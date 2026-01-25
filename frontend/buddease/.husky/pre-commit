@@ -1,11 +1,32 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-bash scripts/pre-commit.sh
+# =========================================
+# PRE-COMMIT QUALITY GATES
+# Runs in order: fastest checks first
+# =========================================
 
-# Run header fixer before commit
+# 1. Header Fixer Check (Fastest - basic file structure)
 pnpm fix:headers:dry-run
 if [ $? -ne 0 ]; then
   echo "❌ Header issues found. Run: pnpm fix:headers"
   exit 1
 fi
+
+# 2. TypeScript Interface Validation (Critical - prevents compilation errors)
+pnpm analyze:interfaces --fail-on-critical
+if [ $? -ne 0 ]; then
+  echo "❌ Critical TypeScript interface errors found!"
+  echo "Run 'pnpm analyze:interfaces' to see details"
+  exit 1
+fi
+
+# 3. CSS Coverage Check (Styling consistency)
+pnpm analyze:css-coverage --fail-threshold 70
+if [ $? -ne 0 ]; then
+  echo "❌ CSS coverage below 70% threshold"
+  echo "Run 'pnpm analyze:css-coverage' to see details"
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"

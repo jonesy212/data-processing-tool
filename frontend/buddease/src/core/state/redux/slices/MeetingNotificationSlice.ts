@@ -1,5 +1,6 @@
 // MeetingNotificationSlice.ts
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 
 // Define interface for meeting notification state

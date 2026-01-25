@@ -5572,7 +5572,7 @@
 - **`src/core/snapshots/refreshUI.ts:87`**: `Function to refresh UI for a specific file`
 - **`src/core/snapshots/refreshUI.ts:87`**: `Function to refresh UI for a specific file`
 - **`src/core/snapshots/SnapshotImplementation.ts:18`**: ` Example usage`
-- **`src/core/snapshots/SnapshotStoreConfig.ts:13`**: `import type type { SnapshotManager } from "@/core/hooks/useSnapshotManager";`
+- **`src/core/snapshots/SnapshotStoreConfig.ts:13`**: `import type { SnapshotManager } from "@/core/hooks/useSnapshotManager";`
 - **`src/core/snapshots/SnapshotTypeDefs.ts:22`**: `Utility types that maintain 6 parameters`
 - **`src/core/snapshots/SnapshotTypeDefs.ts:22`**: `Utility types that maintain 6 parameters`
 - **`src/core/snapshots/SnapshotTypeDefs.ts:22`**: `Utility types that maintain 6 parameters`
@@ -5602,7 +5602,7 @@
 - **`src/core/snapshots/transformStoreConfigOptions.ts:77`**: `Helper function to transform the initial state if necessary`
 - **`src/core/snapshots/updateSubscribersAndSnapshots.ts:23`**: ` Example of asynchronous function using async/await`
 - **`src/core/snapshots/updateSubscribersAndSnapshots.ts:23`**: ` Example of asynchronous function using async/await`
-- **`src/core/snapshots/useSnapshotStore.tsx:19`**: `import type type { SnapshotStoreProps, storeProps } from '@/core/snapshots/Snaps`
+- **`src/core/snapshots/useSnapshotStore.tsx:19`**: `import type { SnapshotStoreProps, storeProps } from '@/core/snapshots/Snaps`
 - **`src/core/snapshots/useSnapshotVersioningSystem.ts:49`**: `Fix the useState type annotation`
 - **`src/core/snapshots/useSnapshotVersioningSystem.ts:49`**: `Fix the useState type annotation`
 - **`src/core/snapshots/useSnapshotVersioningSystem.ts:49`**: `Fix the useState type annotation`
@@ -6967,11 +6967,11 @@
 - **`src/core/users/SocialLinks.ts:3`**: `Define the social links interface`
 - **`src/core/users/SocialLinks.ts:3`**: `Define the social links interface`
 - **`src/core/users/SocialLinks.ts:3`**: `Define the social links interface`
-- **`src/core/users/User.tsx:2`**: `import type type { NotificationPreferences } from "@/core/cards/modal/ChatSettin`
-- **`src/core/users/User.tsx:3`**: `import type type { RealtimeUpdates } from "@/core/components/community/ActivityF`
-- **`src/core/users/User.tsx:5`**: `import type type { Team } from "@/core/components/teams/Team";`
-- **`src/core/users/User.tsx:11`**: `import type type { UserPreferences } from "@/core/config/UserPreferences";`
-- **`src/core/users/User.tsx:12`**: `import type type { UserSettings } from "@/core/config/UserSettings";`
+- **`src/core/users/User.tsx:2`**: `import type { NotificationPreferences } from "@/core/cards/modal/ChatSettin`
+- **`src/core/users/User.tsx:3`**: `import type { RealtimeUpdates } from "@/core/components/community/ActivityF`
+- **`src/core/users/User.tsx:5`**: `import type { Team } from "@/core/components/teams/Team";`
+- **`src/core/users/User.tsx:11`**: `import type { UserPreferences } from "@/core/config/UserPreferences";`
+- **`src/core/users/User.tsx:12`**: `import type { UserSettings } from "@/core/config/UserSettings";`
 - **`src/core/users/userJourney/IdeaLifecycle.tsx:2`**: `Updated IdeaLifecycle component`
 - **`src/core/users/userJourney/IdeaLifecycle.tsx:2`**: `Updated IdeaLifecycle component`
 - **`src/core/versions/AccessHistory.ts:24`**: `Converter function`

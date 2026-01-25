@@ -2,7 +2,7 @@
 import { VideoActions } from "@/core/actions/VideoActions";
 import { videoService } from "@/core/api/ApiVideo";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { select } from "@/core/state/redux/sagas/UndoRedoSaga";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";

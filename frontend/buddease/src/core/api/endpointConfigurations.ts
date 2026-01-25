@@ -83,6 +83,7 @@ import { userSettingsConfig } from '@/core/config/endpoints/userSettingsConfig';
 import { videosConfig } from '@/core/config/endpoints/videosConfig';
 import { createMergedEndpoints } from '@/utils/endpointMerger';
 import { buildUrl } from '@/utils/urlBuilder';
+import type { EndpointDefinition } from '@/core/config/EndpointConfig';
 
 // Main endpoint configurations
 export const endpointConfigurations: EndpointConfigurations = {

@@ -3,14 +3,14 @@ import { Communication } from '@/core/components/communications/CommunicationPag
 import { Meeting } from '@/core/components/communications/scheduler/Meeting';
 import { Task } from '@/core/components/models/tasks/Task';
 import type { BaseMetaDataOptions } from "@/core/config/MetaDataOptions";
-import { CollaborationOptions } from '@/core/interfaces/options/CollaborationOptions';
+import type { CollaborationOptions } from '@/core/interfaces/options/CollaborationOptions';
 import type { BaseData } from '@/core/models/data/Data';
 import { Member } from '@/core/models/members/Member';
 import { Project } from '@/core/models/projects/Project';
 import Milestone from '@/core/state/redux/slices/CalendarSlice';
 import { Resource } from '@/core/state/redux/slices/CollaborationSlice';
 import type { AllStatus } from '@/core/state/stores/DetailsListStore';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
 // Define CollaborationData interface by extending BaseData and adding specific properties
 interface CollaborationData extends BaseData {

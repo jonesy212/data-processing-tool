@@ -6,7 +6,7 @@ import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
 import { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
 import { isUserLoggedIn } from "@/core/pages/forms/utils/CommonLoginLogic";
 import useSettingManagerStore from '@/core/state/hybrid/SettingsManagerStore';
-import { resetState } from "@/core/state/redux/slices/AppSlice";
+import type { resetState } from "@/core/state/redux/slices/AppSlice";
 import { useDispatch } from "react-redux";
 
 

@@ -1,5 +1,5 @@
 // ChildComponent.tsx
-import { BrandingSettings } from '@/core/branding/BrandingSettings';
+import type { BrandingSettings } from '@/core/branding/BrandingSettings';
 import { Router } from 'next/router';
 import React from 'react';
 

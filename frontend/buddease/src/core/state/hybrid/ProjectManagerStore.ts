@@ -3,30 +3,28 @@ import internalApiService from '@/core/api/ApiClient';
 import { ApiProject } from "@/core/api/ApiProject";
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Project } from "@/core/models/projects/Project";
+import type { Project } from "@/core/models/projects/Project";
 import type { Task } from "@/core/models/tasks/Task";
-import { Product } from "@/core/products/Product";
+import type { Product } from "@/core/products/Product";
 import type { BaseDataEntity } from "@/core/snapshots/ValidationRule";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import {
-    ProjectAttachment,
-    ProjectEntity,
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { ProjectAttachment, ProjectEntity, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
+import type { 
     ProjectExcludedFields,
     ProjectIncludedFields,
     ProjectK,
     ProjectMeta
 } from '@/core/typings/entities/ProjectEntity';
-import Milestone from "@/core/typings/milestoneTypes";
-import { YourSettingsResponseType } from '@/core/typings/responseTypes';
-import { StateType } from "@/core/typings/StateType";
-import { User } from "@/core/users/User";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { makeAutoObservable } from "mobx";
-import { useRouter } from "next/router";
+import type { Milestone } from "@/core/typings/milestoneTypes";
+import type { YourSettingsResponseType } from '@/core/typings/responseTypes';
+import type { StateType } from "@/core/typings/StateType";
+import type { User } from "@/core/users/User";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import type { makeAutoObservable } from "mobx";
+import type { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-state/hybrid/ProjectManagerStore.ts
 /**
  * Project Manager Store
  * ---------------------

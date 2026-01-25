@@ -4,7 +4,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { ConvertMeta } from '@/core/models/data/dataStoreMethods';
 import { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 type ConvertSnapshotWithCriteria<
   T extends BaseDataEntity,

@@ -1,5 +1,5 @@
 // AliasToken.ts
-import { DesignSystemConfig } from '@/core/libraries/ui/theme/MapProperties';
+import type { DesignSystemConfig } from '@/core/libraries/ui/theme/MapProperties';
 import type * as React from 'react';
 
 export interface AliasProperties extends DesignSystemConfig {

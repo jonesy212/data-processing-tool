@@ -1,5 +1,5 @@
 // browserConfig.ts
-import { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
+import type { BrowserBehaviorConfig } from "@/core/state/BrowserBehaviorManager";
 import { detectBrowserSpecific } from '@/core/state/detectBrowserSpecific';
 
 // Use the utility function

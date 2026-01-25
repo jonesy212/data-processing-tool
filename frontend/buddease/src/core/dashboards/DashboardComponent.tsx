@@ -2,7 +2,7 @@
 import React from "react";
 
 import MediaDashboard from "@/core/components/socialMedia/MediaDashboard";
-import { DashboardSettings, DashboardTypeEnum } from "@/core/dashboards/DashboardSettings";
+import type { DashboardSettings, DashboardTypeEnum } from "@/core/dashboards/DashboardSettings";
 import AdapterDashboard from "@/core/pages/dashboards/AdapterDashboard";
 import BugTrackingDashboard from "@/core/pages/dashboards/BugTrackingDashboard";
 import ChatDashboard from "@/core/pages/dashboards/ChatDashboard";

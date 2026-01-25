@@ -10,17 +10,17 @@ import { createBaseData, useSnapshotManager } from '@/core/hooks/useSnapshotMana
 import { Payload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { displayToast } from '@/core/models/display/ShowToast';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import {
+import '@/core/snapshots/LocalStorageSnapshotStore';
     Snapshots,
     SnapshotsArray,
     SnapshotUnion
 } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import type { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig, SnapshotData } from '@/core/snapshots/SnapshotData';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotEventBase } from '@/core/snapshots/SnapshotEvents';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";

@@ -4,11 +4,11 @@ import {
     fetchJsonDocumentByIdAPI,
     fetchXmlDocumentByIdAPI,
 } from "@/core/api/ApiDocument";
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { BaseData } from '@/core/models/data/Data';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import {
+import type { CustomDocxtemplater, DocumentPath } from '@/core/documents/DocumentPath';
     CustomDocxtemplater,
     DocumentPath,
 } from "@/core/typings/documentTypes";

@@ -5,7 +5,8 @@ import { Theme } from "@/core/libraries/ui/theme/Theme";
 import { ThemeLogger } from '@/core/logging/Logger';
 import ThemeValidator from "@/core/server/security/validateTheme";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import React from "react";
 import { useDispatch } from "react-redux";
 

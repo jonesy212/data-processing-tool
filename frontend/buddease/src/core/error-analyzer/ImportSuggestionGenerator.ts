@@ -1,6 +1,6 @@
 // ImportSuggestionGenerator.ts
 
-import type { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { TSCompilerError } from '@/core/error-analyzer/TypeScriptErrorFixSystem';
 import type { ImportFixStrategy } from '@/core/error-analyzer/index';
 import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import fs from 'fs';

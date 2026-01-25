@@ -1,10 +1,11 @@
 // DataSlice.ts
 import type { Data } from '@/core/models/data/Data';
 import { DataStatus } from "@/core/models/data/StatusType";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import { implementThen } from "@/core/state/stores/CommonEvent";
-import { VideoData } from "@/core/typings/videoTypes/Video";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { VideoData } from "@/core/typings/videoTypes/Video";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface DataSliceState {
   data: Data[];

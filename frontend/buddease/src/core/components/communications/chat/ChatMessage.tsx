@@ -1,7 +1,7 @@
 // ChatMessage.tsx
 import { ChatMessageActions } from '@/core/actions/ChatMessageActions';
 import { ChatApi } from '@/core/api/ChatApi';
-import { FileUploadModalProps } from '@/core/cards/modal/FileUploadModal';
+import type { FileUploadModalProps } from '@/core/cards/modal/FileUploadModal';
 import ChatCard from '@/core/components/cards/ChatCard';
 import { AquaChat } from '@/core/components/communications/chat/AquaChat';
 import { closeChatSettingsPanel } from "@/core/components/communications/chat/features/closeChatSettingsPanel";

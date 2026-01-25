@@ -2,7 +2,7 @@
 import { SubscriptionPayload } from "@/core/actions/SubscriptionActions";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import { Payload } from '@/core/interfaces/payload/payloadTypes';
 import { determineCategory } from "@/core/libraries/categories/determineCategory";
 import type { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/core/models/data/StatusType";

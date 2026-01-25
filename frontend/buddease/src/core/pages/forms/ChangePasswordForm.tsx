@@ -1,7 +1,7 @@
 // ChangePasswordForm.tsx
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/core/state/context/AuthContext';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import React, { useState } from "react";
 
 interface ChangePasswordFormProps {

@@ -4,7 +4,7 @@ import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import type { Data } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import {
+import type { CustomSnapshotData, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
     CustomSnapshotData,
     Snapshot,
     SnapshotConfig,

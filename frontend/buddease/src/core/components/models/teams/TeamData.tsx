@@ -1,16 +1,19 @@
 // TeamData.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
-import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
-import { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
-import BrandingSettings from '@/core/libraries/theme/BrandingService';
-import { CommonData } from '@/core/models/CommonData';
+import type { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
+import type { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
+import type { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
+import type { BrandingSettings } from '@/core/branding/BrandingSettings';
+import type { CommonData } from '@/core/models/CommonData';
 import type { BaseData } from '@/core/models/data/Data';
-import { Member } from '@/core/models/members/Member';
-import { Project } from '@/core/models/projects/Project';
-import { Progress } from '@/core/models/tracker/ProgressBar';
-import { User } from '@/core/users/User';
+import type { Member } from '@/core/models/members/Member';
+import type { Project } from '@/core/models/projects/Project';
+import type { Progress } from '@/core/models/tracker/ProgressBar';
+import type { User } from '@/core/users/User';
+import type { TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/core/typings/entities/TeamEntity';
+
+
 
 interface TeamData<  
   T extends BaseDataEntity,
@@ -62,7 +65,7 @@ const collaborationPreferences: CollaborationPreferences = {
   branding: {} as BrandingSettings
 };
 
-const teamData: TeamData<StringData, string> = {
+const teamData: TeamData<TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> = {
   // Other team data properties
   collaborationPreferences: collaborationPreferences,
   id: 0,

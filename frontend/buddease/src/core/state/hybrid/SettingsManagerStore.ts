@@ -3,7 +3,7 @@ import axiosInstance from '@/core/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { ThemeEnum } from '@/core/libraries/ui/theme/Theme';

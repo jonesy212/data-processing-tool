@@ -2,20 +2,18 @@
 import internalApiService from "@/core/api/ApiClient";
 import { fetchUserIdsFromDatabase } from "@/core/api/ApiDatabase";
 import { handleApiError } from '@/core/api/ApiLogs';
-import { Logger } from '@/core/logging/Logger';
+import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { notificationStore } from '@/core/features/support/NotificationProvider';
-import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import '@/core/features/support/UnifiedNotificationTypes';
 import type HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addLog } from '@/core/state/redux/slices/LogSlice';
 import type { useDataStore } from '@/core/state/stores/DataStore';
 import type { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
 
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;

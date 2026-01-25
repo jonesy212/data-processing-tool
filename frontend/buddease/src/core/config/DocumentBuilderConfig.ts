@@ -1,33 +1,29 @@
 // DocumentBuilderConfig.ts
-import {
-    CodingLanguageEnum,
-    LanguageEnum,
-} from "@/core/communications/LanguageEnum";
+import type { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
+    
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { MetadataEntry, StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
+import type { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
-import { ModifiedDate } from '@/core/documents/DocType';
+import type { ModifiedDate } from '@/core/documents/DocType';
 import type { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { Section } from '@/core/documents/Section';
+import type { Section } from '@/core/documents/Section';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Data } from '@/core/models/data/Data';
-import {
-    BorderStyle,
-    DocumentSize,
-    PrivacySettingEnum,
-} from '@/core/models/data/StatusType';
+import type { BorderStyle, DocumentSize, PrivacySettingEnum } from '@/core/models/data/StatusType';
+   
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import BackendStructure from '@/core/server/database/BackendStructure';
-import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
+import type { Settings } from '@/core/state/hybrid/SettingsManagerStore';
 import type { AlignmentOptions } from '@/core/state/redux/slices/toolbarSlice';
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import type { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
-import { UserIdea } from '@/core/users/Ideas';
-import { Version, Versions } from '@/core/versions/Version';
-import { VersionData } from '@/core/versions/VersionData';
-import { IHydrateResult } from 'mobx-persist';
+import type { UserIdea } from '@/core/users/Ideas';
+import type { Version } from '@/core/versions/Version';
+import type { Versions } from '@/core/versions/Version';
+import type { VersionData } from '@/core/versions/VersionData';
+import type { IHydrateResult } from 'mobx-persist';
 
 export interface DocumentBuilderConfig<
   T extends BaseDataEntity,
@@ -403,10 +399,10 @@ const versionInfo: Version<VersionEntity, VersionK, VersionMeta, VersionAttachme
   workspaceViewers: [],
   workspaceAdmins: [],
   workspaceMembers: [],
-  updatedAt: '',
-  generateChecksum: '',
-  transformToStructureItems: '',
-  bumpVersion: '',
+  updatedAt: new Date(),
+  generateChecksum: (version: Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>) => '',
+  transformToStructureItems: [],
+  bumpVersion: (type: "major" | "minor" | "patch", notes?: string | undefined) => {} as Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
   data: {} as Data<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
   _structure: {} as Record<string, AppStructureItem<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>[]>,
   versionHistory: {

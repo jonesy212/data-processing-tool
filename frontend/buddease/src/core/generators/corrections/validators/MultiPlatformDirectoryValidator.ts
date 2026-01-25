@@ -4,7 +4,8 @@ import type { Correction } from '@/core/generators/corrections/CorrectionGenerat
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { fromDatabase, toDatabase } from '@/core/server/repository/mappers';
 import AppTreeService from "@/core/services/AppTreeService";
-import type { FileTreeNode, FileTreeService } from '@/core/services/FileTreeService';
+import { FileTreeService } from '@/core/services/FileTreeService';
+import type { FileTreeNode  } from '@/core/services/FileTreeService';
 import { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
 import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 import fs from 'fs';

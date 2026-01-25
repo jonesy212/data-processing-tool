@@ -1,5 +1,5 @@
 // FileEntity.ts
-import { CommonData } from '@/core/models/CommonData';
+import type { CommonData } from '@/core/models/CommonData';
 import type { FileMetadata } from '@/core/typings/file/fileTypes';
 
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';

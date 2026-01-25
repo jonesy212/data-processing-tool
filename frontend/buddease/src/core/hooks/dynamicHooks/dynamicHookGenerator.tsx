@@ -1,12 +1,13 @@
 // dynamicHookGenerator.tsx
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ClipboardData, CustomEventExtensionConstructor } from "@/core/events/BaseCustomEvent";
+import type { ClipboardData } from '@/core/events/BaseCustomEvent';
+import { CustomEventExtensionConstructor } from '@/core/events/BaseCustomEvent';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import { updateCallback } from "@/core/hooks/commHooks/useUIRealtimeData";
 import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import useResizablePanels from "@/core/hooks/userInterface/useResizablePanels";
-import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
+import type { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 

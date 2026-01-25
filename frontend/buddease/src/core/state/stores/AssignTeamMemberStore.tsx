@@ -1,9 +1,10 @@
 // AssignTeamMemberStore.tsx
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
-import { TeamMember } from "@/core/models/teams/TeamMembers";
-import { AssignBaseStore, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { TeamMember } from "@/core/models/teams/TeamMembers";
+import { useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
+import type { AssignBaseStore } from "@/core/state/stores/AssignBaseStore";
 import type { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
 import { makeAutoObservable } from "mobx";
 

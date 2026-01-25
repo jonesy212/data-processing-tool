@@ -1,5 +1,6 @@
 // SliceGenerator.tsx
-import { PayloadAction, createSlice, Draft } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, Draft } from '@reduxjs/toolkit';
 
 interface GenericEntityState<T extends { id: string }> {
   entities: T[];

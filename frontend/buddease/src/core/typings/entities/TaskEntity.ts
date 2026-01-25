@@ -5,7 +5,7 @@ import type { Permission } from '@/core/permissions/Permission';
 import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import type { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import type { Task } from '@/core/models/tasks/Task';
 import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';

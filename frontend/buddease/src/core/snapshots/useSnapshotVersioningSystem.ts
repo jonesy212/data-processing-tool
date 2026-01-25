@@ -1,5 +1,5 @@
 // useSnapshotVersioningSystem.ts
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta

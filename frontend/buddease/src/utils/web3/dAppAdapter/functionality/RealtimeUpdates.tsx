@@ -16,7 +16,7 @@ import { initializeUserData } from "@/core/pages/onboarding/PersonaBuilderData";
 import router from "@/core/projects/projectManagement/ProjectManagementSimulator";
 
 import { useAuth } from '@/core/state/context/AuthContext';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 
 import { ChatSettings } from '@/core/notifications/NotificationChannelManager';
 import { BaseRouter } from "next/dist/shared/lib/router/router";
@@ -24,7 +24,7 @@ import { Router } from "next/router";
 import React, { useEffect, useState } from "react";
 
 /* ---------- Realtime entity imports ---------- */
-import {
+import type { AppRealtimeData } from '@/core/typings/entities/RealtimeDataEntity';
     AppRealtimeData
 } from "@/core/typings/entities/RealtimeDataEntity";
 

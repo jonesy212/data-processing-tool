@@ -3,7 +3,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta, AppAttachment } from '@/core/typings/entities/AppEntity';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Message } from "@/core/generators/GenerateChatInterfaces";
-import { TagsRecord } from '@/core/models/tracker/Tag';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
 import type { Tag } from '@/core/models/tracker/Tag';
 import type { User } from "@/core/users/User";
 import React from "react";

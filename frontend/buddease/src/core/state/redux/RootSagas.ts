@@ -4,7 +4,7 @@ import { calendarSagas } from '@/core/components/calendar/Calendar';
 import { detailsSagas } from '@/core/components/models/data/Details';
 import { teamSagas } from '@/core/components/teams/Team';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { apiSagas } from '@/core/state/redux/sagas/apiSagas';
 import { clientSagas } from '@/core/state/redux/sagas/clientSaga';

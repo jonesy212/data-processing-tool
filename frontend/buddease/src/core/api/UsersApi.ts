@@ -3,8 +3,8 @@ import UserService from '@/core/api/ApiUser';
 import { databaseConfig } from '@/core/config/endpoints/databaseConfig';
 import Logger from '@/core/logging/Logger';
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from '@/core/users/User';
-import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
+import type { User } from '@/core/users/User';
+import type { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 // Function to log API errors
 const handleApiError = (error: any) => {

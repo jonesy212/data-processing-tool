@@ -27,7 +27,8 @@ import type { ToolbarState } from '@/core/state/stores/ToolbarStore';
 import type { UIState } from '@/core/state/stores/UISlice';
 import type { TodoManagerState } from '@/core/todos/Todo';
 import type { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
-import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from "uuid";
 
 // Import your AppTask / TaskCollection types (6-param)

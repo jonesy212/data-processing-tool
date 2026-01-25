@@ -1,5 +1,5 @@
 // useNotificationManagerServiceProps.tsx
-import {
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
     NotificationType,
     NotificationTypeEnum,
 } from "@/core/features/support/UnifiedNotificationTypes";

@@ -9,7 +9,7 @@ import { getStoreId } from "@/core/api/service/ApiService";
 import { useTeamContext } from "@/core/components/context/TeamContext";
 import type { Team } from "@/core/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import {
     markTaskAsComplete,

@@ -17,7 +17,7 @@ import { DEXEnum, ExchangeEnum } from '@/core/models/cypto/exchangeIntegration';
 import type { BaseData } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
 import { processExchangeData } from '@/core/models/data/fetchExchangeData';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import createSnapshotOptions from '@/core/snapshots/createSnapshotOptions';
 import { updateSnapshot } from '@/core/snapshots/snapshotHandlers';
 import type { AppEntity, AppK } from '@/core/typings/entities/AppEntity';

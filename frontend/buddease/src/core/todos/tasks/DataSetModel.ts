@@ -1,18 +1,19 @@
 // DataSetModel.ts
-import { Team } from "@/core/components/teams/Team";
+import type { Team } from "@/core/components/teams/Team";
 import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from "@/core/documents/DocType";
-import { DocumentPath } from "@/core/documents/DocumentPath";
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
-import { Content } from "@/core/models/content/AddContent";
+import type { ModifiedDate } from "@/core/documents/DocType";
+import type { DocumentPath } from "@/core/documents/DocumentPath";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { Content } from "@/core/models/content/AddContent";
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { ProgressPhase } from '@/core/models/tracker/ProgressBar';
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";
-import { DocumentBase, PhaseTypeEnums } from "@/core/state/stores/DocumentStore";
-import { AllTypes } from "@/core/typings/PropTypes";
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { DocumentObject } from "@/core/state/redux/slices/DocumentSlice";
+import type { DocumentBase } from '@/core/state/stores/DocumentStore';
+import type { PhaseTypeEnums } from '@/core/state/stores/DocumentStore';
+import type { AllTypes } from "@/core/typings/PropTypes";
 
 
 interface DatasetModel<
@@ -22,7 +23,7 @@ interface DatasetModel<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends BaseEntity, DocumentBase<T, K> {
+> extends DocumentBase<T, K> {
   filePathOrUrl?: string;
   uploadedBy: string; // Assuming this is the user ID
   uploadedAt?: string; // Assuming the date is sent as a string
@@ -97,7 +98,9 @@ const dataset: DatasetModel<Data<BaseData>> = {
     items: [],
     data: undefined,
     contentItems: [],
-    schema: {}
+    schema: {},
+    apiEndpoint, apiKey, timeout, retryAttempts,
+
   }
 
 };export { dataset };

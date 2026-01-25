@@ -1,7 +1,8 @@
 // VersionEntityFactory.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import {
+import type { VersionEntityDataInterface } from '@/core/typings/entities/VersionEntity';
+import { createDefaultVersionData } from '@/core/typings/entities/VersionEntity';
     VersionEntityDataInterface,
     createDefaultVersionData
 } from '@/core/typings/entities/VersionEntity';

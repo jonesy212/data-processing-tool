@@ -1,8 +1,9 @@
 // SecurityEventSlice.ts
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { StatusUpdate, SubscriptionCriteria } from '@/core/generators/SubscriptionCriteria';
-import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { StatusUpdate, SubscriptionCriteria } from '@/core/generators/SubscriptionCriteria';
+import type { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface SecurityEvent {
   id: string;

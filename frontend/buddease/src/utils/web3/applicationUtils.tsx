@@ -21,11 +21,11 @@ import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificatio
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import type { Content } from '@/core/models/content/AddContent';
-import {
+import type { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum } from '@/core/models/data/StatusType';
+import type { StatusType,
     ActivityActionEnum,
     ActivityTypeEnum,
     ProjectStateEnum,
-    StatusType
 } from '@/core/models/data/StatusType';
 import type { Project, ProjectDetails } from '@/core/models/projects/Project';
 import type { Task } from '@/core/models/tasks/Task';
@@ -37,7 +37,7 @@ import type { AxiosResponse } from 'axios';
 import { useDispatch } from 'react-redux';
 
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import NotificationManager from "@/core/features/support/NotificationManager";
 import { useSecureUserId } from "@/core/hooks/useSecureUserId";
 import type { CombinedEvents } from "@/core/hooks/useSnapshotManager";
@@ -152,7 +152,7 @@ const notifyEventSystem = <
     AttachmentType,
     ExcludedFields,
     IncludedFields
-  > = useMeta<T, K>(area);
+  > = useMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(area);
   
   const currentMetadata: UnifiedMetadata<
     T,
@@ -237,14 +237,16 @@ const notifyEventSystem = <
         participants: [],
         teamMemberId: "",
         currentMeta: currentMeta,
-        currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<
-          T,
-          K,
-          Meta,
-          AttachmentType,
-          ExcludedFields,
-          IncludedFields
-        >,
+        currentMetadata: currentMetadata 
+        // as unknown as UnifiedMetadata<
+        //   T,
+        //   K,
+        //   Meta,
+        //   AttachmentType,
+        //   ExcludedFields,
+        //   IncludedFields
+        // >
+        ,
 
         getCalendarSnapshotStoreData: function (): Promise<
           CalendarEventWithCriteria[]

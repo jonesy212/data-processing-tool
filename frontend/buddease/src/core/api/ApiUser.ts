@@ -7,7 +7,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import Logger from "@/core/logging/Logger";
 import type { UserRole } from "@/core/models/UserRole";
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { buildUrl } from '@/utils/urlBuilder';
 import { useParams } from "react-router-dom";
 

@@ -4,7 +4,7 @@ import { ComponentActions } from '@/core/actions/ComponentActions';
 import ApiConfig from "@/core/api/ApiConfigService";
 import axiosInstance from '@/core/api/csrfToken';
 import '@/core/hooks/userInterface/InputFields';
-import { selectApiConfigs } from "@/core/state/redux/slices/ApiSlice";
+import type { selectApiConfigs } from "@/core/state/redux/slices/ApiSlice";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -25,13 +25,13 @@ import DeleteComponent from "@/core/libraries/ui/components/DeleteComponent";
 import UpdateComponent from "@/core/libraries/ui/components/UpdateComponent";
 
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
-import { backendConfig } from "@/core/config/BackendConfig";
-import { frontendConfig } from "@/core/config/FrontendConfig";
+import type { backendConfig } from "@/core/config/BackendConfig";
+import type { frontendConfig } from "@/core/config/FrontendConfig";
 import MainConfig from "@/core/config/MainConfig";
 import DataVersionsConfig from "@/core/configs/DataVersionsConfig";
 import BackendStructure from '@/core/server/database/BackendStructure';
 
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import ErrorBoundary from "@/core/shared/ErrorBoundary";
 
 import { userPreferences } from "@/core/config/UserPreferences";

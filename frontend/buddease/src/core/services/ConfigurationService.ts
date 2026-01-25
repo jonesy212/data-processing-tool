@@ -5,13 +5,13 @@ import { getConfigsData } from '@/core/api/getConfigsApi';
 
 import { createSystemConfigs } from '@/core/api/systemConfigs';
 import { UserConfigs } from '@/core/api/userConfigs';
-import {
-    BackendConfig
-} from '@/core/config/BackendConfig';
+import type { BackendConfig } from '@/core/config/BackendConfig';
+
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { CacheConfig } from "@/core/config/CacheConfig";
 import { EndpointCategory, EndpointConfigurations, EndpointKey } from '@/core/config/EndpointConfig';
-import {
+import type { FrontendConfig } from '@/core/config/FrontendConfig';
+import { frontendConfig } from '@/core/config/FrontendConfig';
     FrontendConfig,
     frontendConfig,
 } from '@/core/config/FrontendConfig';

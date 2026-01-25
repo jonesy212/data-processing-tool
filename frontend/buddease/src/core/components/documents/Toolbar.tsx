@@ -1,5 +1,5 @@
 // Toolbar.tsx
-import { Progress } from "@/core/models/tracker/ProgressBar";
+import type { Progress } from "@/core/models/tracker/ProgressBar";
 import { EditorState } from "draft-js";
 import { useState } from 'react';
 import ToolbarItem from "./ToolbarItem";

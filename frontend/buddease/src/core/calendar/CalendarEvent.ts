@@ -9,7 +9,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import type { CalendarEntity } from '@/core/typings/entities/CalendarEntity';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentOptions } from "@/core/documents/DocumentOptions";

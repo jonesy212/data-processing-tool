@@ -1,7 +1,8 @@
 // appPath.ts
 import * as path from "path";
 
-import {
+import type { AppAttachment, AppEntity, AppMeta } from '@/core/typings/entities/AppEntity';
+import { AppExcludedFields, AppIncludedFields, AppK } from '@/core/typings/entities/AppEntity';
     AppAttachment,
     AppEntity,
     AppExcludedFields,

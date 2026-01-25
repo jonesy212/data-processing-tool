@@ -2,7 +2,7 @@
 import axiosInstance from '@/core/api/csrfToken';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
 import { NOTIFICATION_TYPES } from "@/core/features/support/NotificationTypes";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { useState } from 'react';
 

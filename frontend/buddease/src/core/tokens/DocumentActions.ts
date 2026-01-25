@@ -1,10 +1,10 @@
 // DocumentActions.ts
-import { DocumentStatus } from "@/core/components/documents/types";
-import { DocumentOptions } from "@/core/documents/DocumentOptions";
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { DocumentStatus } from "@/core/components/documents/types";
+import type { DocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { Meta } from '@/core/models/data/dataStoreMethods';
-import { DocumentEditingPermissions } from "@/core/permissions/Permission";
-import { UserIdea } from "@/core/users/Ideas";
+import type { DocumentEditingPermissions } from "@/core/permissions/Permission";
+import type { UserIdea } from "@/core/users/Ideas";
 import { createAction } from "@reduxjs/toolkit";
 
 export const DocumentActions = {

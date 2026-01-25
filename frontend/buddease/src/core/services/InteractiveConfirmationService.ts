@@ -1,7 +1,7 @@
 // InteractiveConfirmationService.ts
-confirmation/InteractiveConfirmationService.ts
-import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
-import { ConfirmationService } from '@/core/services/ConfirmationService';
+// confirmation/InteractiveConfirmationService.ts
+import type { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import type { ConfirmationService } from '@/core/services/ConfirmationService';
 import { ConsoleConfirmationService } from '@/core/services/ConsoleConfirmationService';
 
 import chalk from 'chalk';

@@ -40,7 +40,7 @@ function updateFile(filePath: string) {
     // Add import if not present
     const updatedContent = newLines.join('\n');
     if (!updatedContent.includes('from \'@/app/scripts/types/import-fixes\'')) {
-        const importLine = "import type { FixResult, TypeImportError } from '@/app/scripts/types/import-fixes';";
+        const importLine = "import type { FixResult, ImportFix } from '@/app/scripts/import-utils';";
         const linesWithImport = updatedContent.split('\n');
         
         // Find the first import line and insert after it
@@ -74,5 +74,5 @@ if (require.main === module) {
   main().catch(error => {
     console.error('Fatal error:', getErrorMessage(error));
     process.exit(1);
-  });
+  })
 }

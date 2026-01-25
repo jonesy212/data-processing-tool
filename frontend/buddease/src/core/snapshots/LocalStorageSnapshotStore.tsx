@@ -8,7 +8,8 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { SnapshotManager } from '@/core/hooks/useSnapshotManager';
 import { isCategoryProperties } from '@/core/libraries/categories/generateCategoryProperties';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import {
+import type { AppAttachment, AppEntity, AppMeta } from '@/core/typings/entities/AppEntity';
+import { AppExcludedFields, AppK } from '@/core/typings/entities/AppEntity';
     AppAttachment,
     AppEntity,
     AppExcludedFields,
@@ -19,7 +20,8 @@ import {
 import { Task, TaskData } from '@/core/components/models/tasks/Task';
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import type { Data } from '@/core/models/data/Data';
-import {
+import type { ProjectPhaseTypeEnum, SubscriberTypeEnum } from '@/core/models/data/StatusType';
+import type { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
     PriorityTypeEnum,
     ProjectPhaseTypeEnum,
     StatusType,
@@ -29,7 +31,7 @@ import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimen
 import createSnapshotOptions from '@/core/snapshots/createSnapshotOptions';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { useSnapshotStore } from '@/core/snapshots/useSnapshotStore';
-import { NotificationType } from '@/core/state/context/NotificationContext';
+import type { NotificationType } from '@/core/state/context/NotificationContext';
 import type { EventManager } from '@/core/state/stores/DataStore';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { SnapshotEvents } from '@/core/typings/snapshotTypes';
@@ -40,15 +42,15 @@ import { CoreSnapshot } from '@/core/snapshots/CoreSnapshot';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
-import { AddReport, AddReportType } from '@/core/api/ApiReport';
+import type { AddReport, AddReportType } from '@/core/api/ApiReport';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import { ChatRoom } from '@/core/communications/ChatRoom';
 import { Sender } from '@/core/components/communications/CommunicationPage';
-import {
+import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     BaseEntity,
     DefaultExcludedFields,
@@ -59,7 +61,7 @@ import { SharedSnapshotProperties } from '@/core/documents/RelatedProps';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { K, Meta, T } from '@/core/models/data/dataStoreMethods';
 import { PhaseData } from '@/core/models/phases/Phase';
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import {
     createCompleteSnapshot,
@@ -96,7 +98,7 @@ import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { NoteAttachment } from '@/core/documents/NoteData';
 import baseMeta from '@/core/server/database/baseMeta';
 import { SnapshotIdentity } from '@/core/snapshots/SnapshotIdentity';
-import { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
+import type { snapshotStoreConfigInstance } from '@/core/snapshots/snapshotStoreConfigInstance';
 import { subscription } from '@/core/subscriptions/SubscriptionService';
 import { FC } from 'react';
 

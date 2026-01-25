@@ -1,5 +1,5 @@
 // ShowToast.ts
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import { toast } from 'react-toastify';
 
 async function showToast(

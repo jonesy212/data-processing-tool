@@ -1,4 +1,5 @@
 // ImportFixServicies.ts
+import type { ImportFix } from '@/app/scripts/import-fix-types';
 import { applyAppSpecificRules } from '@/core/error-analyzer/rules/app-specific-rules';
 import type { ComplexFix, Correction, ImportCorrection } from '@/core/generators/corrections/CorrectionGenerator';
 import type { ImportAnalysis } from '@/core/generators/corrections/reports/ImportReport';
@@ -7,7 +8,6 @@ import { ConsoleConfirmationService } from '@/core/services/ConsoleConfirmationS
 import { FileConfirmationService } from '@/core/services/FileConfirmationService';
 import { InteractiveConfirmationService } from '@/core/services/InteractiveConfirmationService';
 import type { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
-import type { ImportFix } from '@/app/scripts/import-fixes'
 import fs from 'fs';
 import path from 'path';
 
@@ -198,20 +198,20 @@ export class ImportFixerService {
     ]);
 
     private scoreFix(fix: {
-    originalPath: string;
-    suggestedPath: string;
-    symbolMatch: boolean;
-    exactFileMatch: boolean;
-    aliasUsed: boolean;
-    }): number {
-    let score = 0;
+        originalPath: string;
+        suggestedPath: string;
+        symbolMatch: boolean;
+        exactFileMatch: boolean;
+        aliasUsed: boolean;
+        }): number {
+        let score = 0;
 
-    if (fix.exactFileMatch) score += 50;          // file exists exactly
-    if (fix.symbolMatch) score += 30;             // export symbol confirmed
-    if (fix.aliasUsed) score += 10;               // @/ alias consistent
-    if (fix.originalPath.includes('..')) score -= 10; // risky relative import
+        if (fix.exactFileMatch) score += 50;          // file exists exactly
+        if (fix.symbolMatch) score += 30;             // export symbol confirmed
+        if (fix.aliasUsed) score += 10;               // @/ alias consistent
+        if (fix.originalPath.includes('..')) score -= 10; // risky relative import
 
-    return Math.min(100, Math.max(0, score));
+        return Math.min(100, Math.max(0, score));
     }
 
     private classifyConfidence(score: number): 'high' | 'medium' | 'low' {
@@ -224,7 +224,7 @@ export class ImportFixerService {
         // Pattern 1: import { A, B } from 'path';
         NAMED_IMPORT: /import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"];?/,
 
-        // Pattern 2: import A, { B } from 'path';
+
         MIXED_IMPORT: /import\s+([^,{]+),\s*{([^}]+)}\s+from\s+['"]([^'"]+)['"];?/,
 
         // Pattern 3: import A from 'path';

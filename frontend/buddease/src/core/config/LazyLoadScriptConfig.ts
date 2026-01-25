@@ -1,12 +1,14 @@
 // LazyLoadScriptConfig.ts
-import { ApiConfig } from '@/core/api/ApiConfigService';
-import { createSystemConfigs } from '@/core/api/systemConfigs';
+import type { ApiConfig } from '@/core/api/ApiConfigService';
+import type { createSystemConfigs } from '@/core/api/systemConfigs';
 import { traverseFrontendDirectory } from '@/core/api/traverse/route';
-import { UserConfigs } from '@/core/api/userConfigs';
-import { BackendConfig, backendConfig } from '@/core/config/BackendConfig';
+import type { UserConfigs } from '@/core/api/userConfigs';
+import type { BackendConfig } from '@/core/config/BackendConfig';
+import type { backendConfig } from '@/core/config/BackendConfig';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { DocumentBuilderConfig } from '@/core/config/DocumentBuilderConfig';
-import { FrontendConfig, frontendConfig } from '@/core/config/FrontendConfig';
+import type { DocumentBuilderConfig } from '@/core/config/DocumentBuilderConfig';
+import type { FrontendConfig } from '@/core/config/FrontendConfig';
+import type { frontendConfig } from '@/core/config/FrontendConfig';
 import MainConfig from '@/core/config/MainConfig';
 import { AppStructureItem } from '@/core/config/appStructure/AppStructure';
 import { DataVersions } from '@/core/configs/DataVersionsConfig';

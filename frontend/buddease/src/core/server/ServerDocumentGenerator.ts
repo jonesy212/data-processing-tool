@@ -5,7 +5,7 @@ import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import type { BaseData } from '@/core/models/data/Data';
 import { ServerFileSystem } from '@/core/server/serverFileSystem';
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 

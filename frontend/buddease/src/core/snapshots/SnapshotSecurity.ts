@@ -1,7 +1,7 @@
 // SnapshotSecurity.ts
-import { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
-import { Permission } from '@/core/permissions/Permission';
-import { AuditRecord } from '@/core/subscribers/Subscriber';
+import type { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
+import type { Permission } from '@/core/permissions/Permission';
+import type { AuditRecord } from '@/core/subscribers/Subscriber';
 import type { SecurityMeasureHeader, SecurityMeasureLogger, SecurityMeasureType, SecurityMeasureUnion, SecurityReport, SecurityScanResult } from '@/core/typings/securityMeasureTypes';
 import crypto from 'crypto';
 

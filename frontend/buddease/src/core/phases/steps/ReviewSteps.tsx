@@ -1,6 +1,6 @@
 // ReviewSteps.tsx
 import { TradeData } from "@/core/components/trading/TradeData";
-import { ButtonProps } from "@/core/libraries/ui/buttons/ReusableButton";
+import type { ButtonProps } from "@/core/libraries/ui/buttons/ReusableButton";
 import React from 'react';
 
 interface StepProps {

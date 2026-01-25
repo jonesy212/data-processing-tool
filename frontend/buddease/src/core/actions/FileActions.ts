@@ -1,7 +1,7 @@
 // FileActions.ts
 
 import CustomFile from "@/core/documents/File";
-import { FileTypeEnum } from "@/core/documents/FileType";
+import type { FileTypeEnum } from "@/core/documents/FileType";
 import { createAction } from "@reduxjs/toolkit";
 
 export const FileActions = {

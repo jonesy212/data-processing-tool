@@ -3,7 +3,8 @@ import { fetchUserFromDatabase } from '@/core/api/ApiDatabase';
 import { Sender } from '@/core/components/communications/CommunicationPage';
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/core/state/context/AuthContext';
-import {
+import type { ClientSender, CryptoSender, EducatorSender, FreelancerSender, StudentSender } from '@/core/users/SenderTypes';
+import { ProjectOwnerSender, ResearchAnalystSender } from '@/core/users/SenderTypes';
     ClientSender,
     CryptoSender,
     EducatorSender,
@@ -12,7 +13,7 @@ import {
     ResearchAnalystSender,
     StudentSender,
 } from '@/core/users/SenderTypes';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import { useEffect, useState } from 'react';
 
 type SenderBase = Pick<

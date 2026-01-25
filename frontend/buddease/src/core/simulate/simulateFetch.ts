@@ -1,8 +1,8 @@
 // simulateFetch.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { StatusType } from "@/core/models/data/StatusType";
-import { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
+import type { StatusType } from "@/core/models/data/StatusType";
+import type { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
 
 async function simulateFetch<
   T extends BaseDataEntity,

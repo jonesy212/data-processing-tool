@@ -1,5 +1,5 @@
 // getUserConfigs.ts
-import { UserConfigs } from "@/core/api/userConfigs";
+import type { UserConfigs } from "@/core/api/userConfigs";
 import { userPreferences } from "@/core/config/UserPreferences";
 import userSettings from "@/core/config/UserSettings";
 

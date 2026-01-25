@@ -1,5 +1,5 @@
 // PropTypes.ts
-import {
+import type {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
@@ -7,27 +7,27 @@ import {
 import TextType from "@/core/documents/TextType";
 import type { Attachment, FileType } from '@/core/documents/attachment/Attachment';
 import { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { MessageType } from "@/core/generators/MessaageType";
-import { DataType } from "@/core/models/CommonData";
-import { LogData } from "@/core/models/LogData";
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { MessageType } from "@/core/generators/MessaageType";
+import type { DataType } from "@/core/models/CommonData";
+import type { LogData } from "@/core/models/LogData";
+import type {
+    CustomNotificationType,
+    MessageNotificationStatusType
+} from "@/core/models/data/StatusType";
 import {
     CalendarStatus,
     ChatType,
-    CustomNotificationType,
-    MessageNotificationStatusType,
     PriorityTypeEnum,
     StatusType,
     TeamStatus
 } from "@/core/models/data/StatusType";
-import {
-    ProgressBarAnimationType,
-    ProgressBarProps,
-    ProgressPhase,
-} from "@/core/models/tracker/ProgressBar";
+import type { ProgressBarAnimationType, ProgressBarProps } from '@/core/models/tracker/ProgressBar';
+import {ProgressPhase } from '@/core/models/tracker/ProgressBar';
+
 import type { SendStatus } from "@/core/state/redux/slices/NofiticationsSlice";
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
-import { DocumentTypeEnum } from "@/core/typings/documentTypes";
+import type { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import React from "react";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";

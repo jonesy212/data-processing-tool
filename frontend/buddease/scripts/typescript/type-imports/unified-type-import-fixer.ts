@@ -1,38 +1,20 @@
 #!/usr/bin/env tsx
-// unified-type-import-fixer.ts
-// Comprehensive solution that ties everything together
+// unified-type-import-fixer.ts - CORRECTED with built-in multi-line support
 
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { TypeImportFixerWithBackup } from '@/scripts/typescript/type-imports/shared-imports'
+import { fixMixedImports } from '@/app/scripts/fix-mixed-type-imports'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Import shared types
-import type {
-    FixResult,
-    TypeImportError,
-    BackupInfo,
-    GeneralFixResult,
-    ImportPattern
-} from './types/import-fixes';
-
-// Import utility functions
+// Import the WORKING multi-line logic
 import {
-    shouldBeTypeImport,
-    fixImportStatement,
-    findInterfaceExports,
-    createBackup,
-    groupFixesByFile,
-    sortFixesDescending,
-    getContextTips
-} from './import-utils';
-
-// Import specialized fixers
-import { verifyNamespaceImports } from './verify-namespace-imports';
-import { TypeImportFixerWithBackup } from './fix-type-imports-with-backup';
+    detectMixedImportFromText,
+    MixedImport,
+    isTrulyMixedImport,
+    splitMixedImportProperly,
+    getCompleteImportBlock
+} from '@/scripts/typescript/type-imports/mixed-import-fixer';
 
 interface FixStats {
     totalErrors: number;
@@ -43,11 +25,13 @@ interface FixStats {
     timeSaved: number;
 }
 
+
 class UnifiedTypeImportFixer {
     private backupDir: string;
     private fixStats: FixStats;
     private dryRun: boolean;
     private verbose: boolean;
+    private typeImportFixer: TypeImportFixerWithBackup;
 
     constructor(dryRun: boolean = false, verbose: boolean = false) {
         this.backupDir = path.join(process.cwd(), '.unified-type-fixes');
@@ -61,108 +45,83 @@ class UnifiedTypeImportFixer {
             filesAffected: 0,
             timeSaved: 0
         };
+        this.typeImportFixer = new TypeImportFixerWithBackup();
 
-        // Create backup directory
         if (!fs.existsSync(this.backupDir)) {
             fs.mkdirSync(this.backupDir, { recursive: true });
         }
     }
 
-    
-
-async run() {
-    console.log('🚀 UNIFIED TYPE IMPORT FIXER');
-    console.log('='.repeat(60));
-    
-    if (this.dryRun) {
-        console.log('🔍 DRY RUN MODE - No changes will be made');
-    }
-
-    // Step 1: Run comprehensive diagnostics
-    console.log('\n📊 Step 1: Running diagnostics...');
-    const diagnostics = await this.runDiagnostics();
-    
-    if (diagnostics.totalErrors === 0) {
-        console.log('✅ No type import errors found!');
-        return { success: true, stats: this.fixStats };
-    }
-
-    // Step 2: Show analysis
-    console.log('\n📋 Step 2: Analysis Report');
-    console.log('='.repeat(40));
-    this.showDiagnostics(diagnostics);
-
-    // Step 3: Fix namespace imports first
-    console.log('\n🔧 Step 3: Fixing namespace imports...');
-    const namespaceFixed = await this.fixNamespaceImports();
-    
-    // Step 4: Fix mixed imports (do these first as they're more complex)
-    console.log('\n🔧 Step 4: Fixing mixed imports...');
-    const mixedFixed = await this.fixMixedImports();
-
-    // Step 5: Fix regular type imports
-    console.log('\n🔧 Step 5: Fixing regular type imports...');
-    const typeFixed = await this.fixRegularTypeImports();
-
-    // Step 6: Fix simple type imports
-    console.log('\n🔧 Step 6: Fixing simple type imports...');
-    const simpleFixed = await this.fixSimpleTypeImports();
-
-    // Step 7: Verify fixes
-    console.log('\n🔍 Step 7: Verifying fixes...');
-    const verification = await this.verifyFixes();
-
-    // Step 8: Show summary
-    console.log('\n📊 FINAL SUMMARY');
-    console.log('='.repeat(60));
-    this.showFinalSummary();
-
-    return {
-        success: verification.allFixed,
-        stats: this.fixStats,
-        verification
-    };
-}
-
-
-    private async fixRegularTypeImports(): Promise<number> {
-    if (this.fixStats.typeErrors === 0) {
-        console.log('   ✅ No regular type imports to fix');
-        return 0;
-    }
-
-    console.log(`   🔧 Fixing ${this.fixStats.typeErrors} regular type imports...`);
-    
-    try {
-        // Use the fix-interface-imports.ts script for regular type imports
-        const output = execSync(
-            `tsx ${path.join(__dirname, 'fix-interface-imports.ts')} core-types ${this.dryRun ? '--dry-run' : ''}`,
-            { encoding: 'utf8' }
-        );
+    async run() {
+        console.log('🚀 UNIFIED TYPE IMPORT FIXER');
+        console.log('='.repeat(60));
         
-        // Parse output to count fixes
-        const lines = output.split('\n');
-        const appliedLine = lines.find(line => line.includes('Applied:') || line.includes('Fixed:'));
-        
-        if (appliedLine) {
-            const match = appliedLine.match(/(\d+)/);
-            return match ? parseInt(match[1]) : 0;
+        if (this.dryRun) {
+            console.log('🔍 DRY RUN MODE - No changes will be made\n');
         }
-        
-        // Alternative: call the function directly
-        if (!this.dryRun) {
-            const fixesApplied = await fixTypeOnlyImportsFromCore(this.dryRun ? ['--dry-run'] : []);
-            return fixesApplied || 0;
-        }
-        
-        return 0;
-    } catch (error) {
-        console.error('   ❌ Failed to fix regular type imports:', error);
-        return 0;
-    }
-}
 
-    // Update the fixMixedImports method:
+        // Step 1: Run diagnostics
+        console.log('\n📊 Step 1: Running diagnostics...');
+        const diagnostics = await this.runDiagnostics();
+        
+        if (diagnostics.totalErrors === 0) {
+            console.log('✅ No type import errors found!');
+            return { success: true, stats: this.fixStats };
+        }
+
+        // Step 2: Show analysis
+        console.log('\n📋 Step 2: Analysis Report');
+        console.log('='.repeat(40));
+        this.showDiagnostics(diagnostics);
+
+        // Step 3: Fix namespace imports
+        console.log('\n🔧 Step 3: Fixing namespace imports...');
+        const namespaceFixed = await this.fixNamespaceImports();
+        
+        // Step 4: Fix mixed imports
+        console.log('\n🔧 Step 4: Fixing mixed imports...');
+        const mixedFixed = await fixMixedImports();
+
+        // Step 5: Fix regular type imports (WITH MULTI-LINE SUPPORT)
+        console.log('\n🔧 Step 5: Fixing regular type imports...');
+        const typeFixed = await this.fixRegularTypeImports();
+
+        // Step 6: Verify fixes
+        console.log('\n🔍 Step 6: Verifying fixes...');
+        const verification = await this.verifyFixes();
+
+        // Step 7: Show summary
+        console.log('\n📊 FINAL SUMMARY');
+        console.log('='.repeat(60));
+        this.showFinalSummary();
+
+        return {
+            success: verification.allFixed,
+            stats: this.fixStats,
+            verification
+        };
+    }
+
+    private async fixNamespaceImports(): Promise<number> {
+        if (this.fixStats.namespaceErrors === 0) {
+            console.log('   ✅ No namespace imports to fix');
+            return 0;
+        }
+
+        console.log(`   🔧 Fixing ${this.fixStats.namespaceErrors} namespace imports...`);
+        
+        const errors = await this.typeImportFixer.detectNamespaceImportErrors();
+        
+        if (this.dryRun) {
+            console.log(`   🔍 Would fix ${errors.length} namespace imports`);
+            return 0;
+        }
+
+        const backups = await this.typeImportFixer.applyNamespaceFixes(errors, false);
+        console.log(`   ✅ Fixed ${backups.length} namespace imports`);
+        return backups.length;
+    }
+
     private async fixMixedImports(): Promise<number> {
         if (this.fixStats.mixedImports === 0) {
             console.log('   ✅ No mixed imports to fix');
@@ -171,55 +130,150 @@ async run() {
 
         console.log(`   🔧 Fixing ${this.fixStats.mixedImports} mixed imports...`);
         
-        try {
-            // Use the fix-mixed-type-imports.ts script
-            const output = execSync(
-                `tsx ${path.join(__dirname, 'fix-mixed-type-imports.ts')} ${this.dryRun ? '--dry-run' : ''}`,
-                { encoding: 'utf8' }
-            );
-            
-            // Parse output to count fixes
-            const lines = output.split('\n');
-            const totalFixed = lines
-                .filter(line => line.includes('✅ Fixed') || line.includes('✅ Split') || line.includes('import(s) to fix'))
-                .reduce((count, line) => {
-                    const match = line.match(/(\d+)/);
-                    return match ? count + parseInt(match[1]) : count;
-                }, 0);
-            
-            console.log(`   ✅ Fixed ${totalFixed || 0} mixed imports`);
-            return totalFixed || 0;
-            
-        } catch (error) {
-            console.error('   ❌ Failed to fix mixed imports:', error);
+        const mixedImports = await this.typeImportFixer.detectMixedImports();
+        if (mixedImports.length === 0) {
             return 0;
         }
+        
+        if (this.dryRun) {
+            console.log(`   🔍 Would fix ${mixedImports.length} mixed imports`);
+            return 0;
+        }
+
+        const backups = await this.typeImportFixer.applyMixedImportFixes(mixedImports, false);
+        console.log(`   ✅ Fixed ${backups.length} mixed imports`);
+        return backups.length;
     }
 
-    // Also add a new method to handle simple type-only imports:
-    private async fixSimpleTypeImports(): Promise<number> {
-        console.log(`   🔧 Fixing simple type imports...`);
-        
+    private getCompleteImportBlock(filePath: string, lineNum: number): { text: string; startLine: number; endLine: number } | null {
         try {
-            // Use fix-interface-imports.ts in safe mode (high-confidence)
-            const output = execSync(
-                `tsx ${path.join(__dirname, 'fix-interface-imports.ts')} safe ${this.dryRun ? '--dry-run' : ''}`,
-                { encoding: 'utf8' }
-            );
+            const content = fs.readFileSync(filePath, 'utf8');
+            const lines = content.split('\n');
             
-            const lines = output.split('\n');
-            const fixedLine = lines.find(line => line.includes('Fixed:') || line.includes('Applied:'));
-            
-            if (fixedLine) {
-                const match = fixedLine.match(/(\d+)/);
-                return match ? parseInt(match[1]) : 0;
+            // Find the start of the import
+            let startLine = lineNum - 1;
+            while (startLine > 0) {
+                const line = lines[startLine];
+                if (line.includes('import') && line.includes('{')) {
+                    break;
+                }
+                startLine--;
             }
             
-            return 0;
+            // Find the end of the import
+            let endLine = startLine;
+            let braceCount = 0;
+            while (endLine < lines.length) {
+                const line = lines[endLine];
+                braceCount += (line.match(/{/g) || []).length;
+                braceCount -= (line.match(/}/g) || []).length;
+                
+                if (braceCount === 0 && line.includes('from')) {
+                    break;
+                }
+                endLine++;
+                
+                // Safety limit
+                if (endLine - startLine > 50) break;
+            }
+            
+            const importLines = lines.slice(startLine, endLine + 1);
+            return {
+                text: importLines.join('\n'),
+                startLine: startLine + 1,
+                endLine: endLine + 1
+            };
         } catch (error) {
-            console.error('   ❌ Failed to fix simple type imports:', error);
+            return null;
+        }
+    }
+    
+    private async fixRegularTypeImports(): Promise<number> {
+        if (this.fixStats.typeErrors === 0) {
+            console.log('   ✅ No regular type imports to fix');
             return 0;
         }
+
+        console.log(`   🔧 Fixing ${this.fixStats.typeErrors} regular type imports...`);
+        
+        let totalFixed = 0;
+        const diagnostics = await this.runDiagnostics();
+        
+        // Group by file
+        const errorsByFile = new Map<string, any[]>();
+        diagnostics.errors.forEach(error => {
+            if (error.type === 'type') {
+                if (!errorsByFile.has(error.file)) {
+                    errorsByFile.set(error.file, []);
+                }
+                errorsByFile.get(error.file)!.push(error);
+            }
+        });
+        
+        for (const [filePath, fileErrors] of errorsByFile) {
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                const lines = content.split('\n');
+                let fileFixed = 0;
+                
+                // Sort descending to avoid line number issues
+                const sortedErrors = [...fileErrors].sort((a, b) => b.line - a.line);
+                
+                for (const error of sortedErrors) {
+                    const lineIndex = error.line - 1;
+                    if (lineIndex < 0 || lineIndex >= lines.length) continue;
+                    
+                    // Get the COMPLETE import block (handles multi-line)
+                    const importBlock = this.getCompleteImportBlock(filePath, error.line);
+                    if (!importBlock) continue;
+                    
+                    // Check if it's a mixed import
+                    const isMixed = isTrulyMixedImport(importBlock.text);
+                    
+                    if (isMixed) {
+                        // Split into type/value imports
+                        const mixedDetect = detectMixedImportFromText(importBlock.text, error.line, filePath);
+                        const splitImports = splitMixedImportProperly(mixedDetect);
+                        
+                        if (!this.dryRun) {
+                            // Replace the entire block
+                            lines.splice(
+                                importBlock.startLine - 1,
+                                importBlock.endLine - importBlock.startLine + 1,
+                                ...splitImports
+                            );
+                            fileFixed++;
+                        }
+                    } else {
+                        // Simple type-only import - just add 'type' keyword
+                        const fixedImport = importBlock.text.replace(
+                            /^import\s+{/m,
+                            'import type {'
+                        );
+                        
+                        if (fixedImport !== importBlock.text && !this.dryRun) {
+                            lines.splice(
+                                importBlock.startLine - 1,
+                                importBlock.endLine - importBlock.startLine + 1,
+                                fixedImport
+                            );
+                            fileFixed++;
+                        }
+                    }
+                }
+                
+                if (!this.dryRun && fileFixed > 0) {
+                    fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
+                    console.log(`   ✅ Fixed ${fileFixed} imports in ${path.relative(process.cwd(), filePath)}`);
+                }
+                
+                totalFixed += fileFixed;
+            } catch (error) {
+                console.error(`   ❌ Error processing ${filePath}:`, error);
+            }
+        }
+        
+        return totalFixed;
     }
 
     private async runDiagnostics() {
@@ -240,7 +294,6 @@ async run() {
             const lines = output.split('\n');
             
             for (const line of lines) {
-                // Check for namespace imports
                 if (line.includes("'*' is a type")) {
                     const match = line.match(/(.*\.(?:ts|tsx))\((\d+),/);
                     if (match) {
@@ -252,9 +305,7 @@ async run() {
                         });
                         this.fixStats.namespaceErrors++;
                     }
-                }
-                // Check for regular type imports
-                else if (line.includes('is a type and must be imported')) {
+                } else if (line.includes('is a type and must be imported')) {
                     const match = line.match(/(.*\.(?:ts|tsx))\((\d+),.*error TS1484: '([^']+)' is a type/);
                     if (match) {
                         errors.push({
@@ -268,32 +319,6 @@ async run() {
                 }
             }
 
-            // Check for mixed imports by analyzing the actual files
-            for (const error of errors.filter(e => e.type === 'type')) {
-                try {
-                    const filePath = path.resolve(process.cwd(), error.file);
-                    const content = fs.readFileSync(filePath, 'utf8');
-                    const lines = content.split('\n');
-                    
-                    if (error.line <= lines.length) {
-                        const importLine = lines[error.line - 1];
-                        const imports = this.extractImports(importLine);
-                        
-                        if (imports && imports.length > 1) {
-                            // Check if this line has other imports that might be values
-                            const hasValues = await this.lineHasValueImports(filePath, error.line, imports);
-                            if (hasValues) {
-                                error.type = 'mixed';
-                                this.fixStats.mixedImports++;
-                                this.fixStats.typeErrors--;
-                            }
-                        }
-                    }
-                } catch {
-                    // Skip files we can't read
-                }
-            }
-
         } catch (error) {
             console.error('❌ Diagnostics failed:', error);
         }
@@ -304,33 +329,83 @@ async run() {
         return { errors, totalErrors: errors.length };
     }
 
-    private extractImports(line: string): string[] | null {
-        const match = line.match(/import\s+{([^}]+)}/);
-        if (!match) return null;
+    // THE CRITICAL FIX: Use the working multi-line logic
+    private getFullMultiLineImport(filePath: string, startLine: number): string | null {
+        try {
+            const content = fs.readFileSync(filePath, 'utf8');
+            const lines = content.split('\n');
+            
+            let currentLine = startLine - 1;
+            let importText = '';
+            let braceCount = 0;
+            let foundImportStart = false;
+            
+            // Find the start of the import (might be on an earlier line)
+            for (let i = currentLine; i >= 0; i--) {
+                const line = lines[i];
+                if (line.includes('import') && line.includes('{')) {
+                    currentLine = i;
+                    foundImportStart = true;
+                    break;
+                }
+            }
+            
+            if (!foundImportStart) return null;
+            
+            // Read forward to get the complete import
+            for (let i = currentLine; i < lines.length; i++) {
+                const line = lines[i];
+                importText += line + '\n';
+                
+                // Count braces
+                const openBraces = (line.match(/{/g) || []).length;
+                const closeBraces = (line.match(/}/g) || []).length;
+                braceCount += openBraces - closeBraces;
+                
+                // Check if we found the complete import
+                if (braceCount === 0 && line.includes('from')) {
+                    return importText.trim();
+                }
+                
+                // Safety limit to prevent infinite loops
+                if (i - currentLine > 20) break;
+            }
+        } catch (error) {
+            console.error(`Error reading file for multi-line import: ${error}`);
+        }
         
-        return match[1].split(',').map(i => i.trim()).filter(Boolean);
+        return null;
     }
 
-    private async lineHasValueImports(filePath: string, lineNum: number, imports: string[]): Promise<boolean> {
-        // Simple heuristic: if any import doesn't look like a type name
-        const valuePatterns = [
-            /^[a-z]/,  // Starts with lowercase
-            /^(get|set|is|has|use|create|update|delete)/i,  // Common function prefixes
-            /Handler$|Helper$|Service$/  // Common suffixes for values
-
-            /^[A-Z][a-z]+[A-Z][a-z]+$/, // PascalCase multi-word (likely components)
-            /Modal$/, // ChatSettingsModal, UserModal, etc. (components)
-            /Button$/,
-            /Input$/,
-            /Form$/,
-            /Dialog$/,
-            /Card$/,
-            /Panel$/,
-        ];
-
-        return imports.some(imp => 
-            valuePatterns.some(pattern => pattern.test(imp))
-        );
+    private getImportLineRange(filePath: string, startLine: number): { start: number; count: number } {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const lines = content.split('\n');
+        
+        let start = startLine - 1;
+        let end = startLine - 1;
+        
+        // Find start
+        for (let i = startLine - 1; i >= 0; i--) {
+            if (lines[i].includes('import') && lines[i].includes('{')) {
+                start = i;
+                break;
+            }
+        }
+        
+        // Find end
+        let braceCount = 0;
+        for (let i = start; i < lines.length; i++) {
+            const line = lines[i];
+            braceCount += (line.match(/{/g) || []).length;
+            braceCount -= (line.match(/}/g) || []).length;
+            
+            if (braceCount === 0 && line.includes('from')) {
+                end = i;
+                break;
+            }
+        }
+        
+        return { start, count: end - start + 1 };
     }
 
     private showDiagnostics(diagnostics: any) {
@@ -340,104 +415,6 @@ async run() {
         console.log(`  • Namespace imports: ${this.fixStats.namespaceErrors}`);
         console.log(`  • Type-only imports: ${this.fixStats.typeErrors}`);
         console.log(`  • Mixed imports: ${this.fixStats.mixedImports}`);
-        
-        if (this.verbose && diagnostics.errors.length > 0) {
-            console.log('\n🔍 Top 10 errors:');
-            const fileGroups = new Map<string, number>();
-            
-            diagnostics.errors.forEach((error: any) => {
-                const count = fileGroups.get(error.file) || 0;
-                fileGroups.set(error.file, count + 1);
-            });
-            
-            Array.from(fileGroups.entries())
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10)
-                .forEach(([file, count], i) => {
-                    console.log(`${i + 1}. ${path.relative(process.cwd(), file)}: ${count} errors`);
-                });
-        }
-    }
-
-    private async fixNamespaceImports(): Promise<number> {
-        if (this.fixStats.namespaceErrors === 0) {
-            console.log('   ✅ No namespace imports to fix');
-            return 0;
-        }
-
-        console.log(`   🔧 Fixing ${this.fixStats.namespaceErrors} namespace imports...`);
-        
-        const fixer = new TypeImportFixerWithBackup();
-        const errors = await fixer.detectNamespaceImportErrors();
-        
-        if (this.dryRun) {
-            console.log(`   🔍 Would fix ${errors.length} namespace imports`);
-            return 0;
-        }
-
-        const backups = await fixer.applyNamespaceFixes(errors, false);
-        console.log(`   ✅ Fixed ${backups.length} namespace imports`);
-        return backups.length;
-    }
-
-    private async fixRegularTypeImports(): Promise<number> {
-        if (this.fixStats.typeErrors === 0) {
-            console.log('   ✅ No regular type imports to fix');
-            return 0;
-        }
-
-        console.log(`   🔧 Fixing ${this.fixStats.typeErrors} regular type imports...`);
-        
-        try {
-            // Use the comprehensive fixer for regular imports
-            const output = execSync(
-                `tsx ${path.join(__dirname, 'fix-all-type-imports.ts')} ${this.dryRun ? '--dry-run' : ''}`,
-                { encoding: 'utf8' }
-            );
-            
-            // Parse output to count fixes
-            const lines = output.split('\n');
-            const appliedLine = lines.find(line => line.includes('Applied:') || line.includes('Fixed:'));
-            
-            if (appliedLine) {
-                const match = appliedLine.match(/(\d+)/);
-                return match ? parseInt(match[1]) : 0;
-            }
-            
-            return 0;
-        } catch (error) {
-            console.error('   ❌ Failed to fix regular type imports:', error);
-            return 0;
-        }
-    }
-
-    private async fixMixedImports(): Promise<number> {
-        if (this.fixStats.mixedImports === 0) {
-            console.log('   ✅ No mixed imports to fix');
-            return 0;
-        }
-
-        console.log(`   🔧 Fixing ${this.fixStats.mixedImports} mixed imports...`);
-        
-        try {
-            // Use the enhanced mixed import fixer
-            const output = execSync(
-                `tsx ${path.join(__dirname, 'fix-mixed-type-imports.ts')} ${this.dryRun ? '--dry-run' : ''}`,
-                { encoding: 'utf8' }
-            );
-            
-            // Parse output to count fixes
-            const lines = output.split('\n');
-            const totalFixed = lines
-                .filter(line => line.includes('✅ Fixed') || line.includes('✅ Split'))
-                .length;
-            
-            console.log(`   ✅ Fixed ${totalFixed} mixed imports`);
-            return totalFixed;
-        } catch (error) {
-            console.error('   ❌ Failed to fix mixed imports:', error);
-            return 0;
-        }
     }
 
     private async verifyFixes(): Promise<{ allFixed: boolean; remainingErrors: number }> {
@@ -449,9 +426,9 @@ async run() {
                 { encoding: 'utf8' }
             );
 
-            const remainingErrors = output.split('\n')
-                .filter(line => line.includes('is a type and must be imported'))
-                .length;
+            const remainingErrors = output.split('\n').filter(line => 
+                line.includes('is a type and must be imported')
+            ).length;
 
             if (remainingErrors === 0) {
                 console.log('   ✅ All type import errors fixed!');
@@ -502,9 +479,9 @@ async run() {
 
 async function main() {
     const args = process.argv.slice(2);
-    const dryRun = args.includes('--dry-run') || args.includes('--dryrun');
-    const verbose = args.includes('--verbose') || args.includes('-v');
-    const help = args.includes('--help') || args.includes('-h');
+    const dryRun = args.includes('--dry-run');
+    const verbose = args.includes('--verbose');
+    const help = args.includes('--help');
 
     if (help) {
         console.log(`
@@ -515,24 +492,9 @@ Usage:
   pnpm fix:types:all [options]
 
 Options:
-  --dry-run, --dryrun    Preview changes without applying
-  --verbose, -v          Show detailed output
-  --help, -h             Show this help message
-
-Examples:
-  pnpm fix:types:all                 # Fix all type import errors
-  pnpm fix:types:all --dry-run       # Preview what would be fixed
-  pnpm fix:types:all --verbose       # Show detailed diagnostics
-
-What it fixes:
-  • Namespace imports (import * as)
-  • Type-only imports missing 'import type'
-  • Mixed imports (types and values in same statement)
-
-Backup & Safety:
-  • Creates backups in .unified-type-fixes/
-  • Shows preview before making changes
-  • Can be rolled back manually
+  --dry-run    Preview changes without applying
+  --verbose    Show detailed output
+  --help       Show this help message
         `);
         return;
     }
@@ -543,10 +505,9 @@ Backup & Safety:
     process.exit(result.success ? 0 : 1);
 }
 
-// ES Module entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
     main().catch(error => {
-        console.error('Fatal error:', error);
+        console.error('❌ Fatal error:', error);
         process.exit(1);
     });
 }

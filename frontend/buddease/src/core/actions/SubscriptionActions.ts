@@ -5,7 +5,7 @@ import type { NotificationType } from '@/core/features/support/UnifiedNotificati
 import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { Content } from '@/core/models/content/AddContent';
 import type { BaseData } from '@/core/models/data/Data';
-import { NotificationPosition, ProjectStateEnum } from "@/core/models/data/StatusType";
+import type { NotificationPosition, ProjectStateEnum } from "@/core/models/data/StatusType";
 import type { Project } from '@/core/models/projects/Project';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";

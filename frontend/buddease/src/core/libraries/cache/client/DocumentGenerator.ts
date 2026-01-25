@@ -4,7 +4,7 @@
 import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import type { BaseData } from '@/core/models/data/Data';
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
 
 export class ClientDocumentGenerator {
   async createTextDocument(

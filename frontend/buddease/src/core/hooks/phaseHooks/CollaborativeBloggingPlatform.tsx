@@ -1,6 +1,6 @@
 // CollaborativeBloggingPlatform.tsx
 import BlogAndContentEditor from '@/core/components/models/content/BlogAndContentEditor';
-import { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
+import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';
 import DynamicContent from '@/core/documents/DynamicContent';
 import CollaborationDashboard from '@/core/pages/dashboards/CollaborationDashboard';
 import AdapterContent from '@/utils/web3/dAppAdapter/AdapterContent';

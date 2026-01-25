@@ -1,27 +1,30 @@
 // AssignBaseStore.tsx
-import { Config } from '@/core/api/ConfigManager';
-import { HeadersConfig } from '@/core/api/headers/HeadersConfig';
+import type { Config } from '@/core/api/ConfigManager';
+import type { HeadersConfig } from '@/core/api/headers/HeadersConfig';
 import teamApiService from '@/core/api/TeamApi';
 import type { ExtendedCalendarEvent } from '@/core/calendar/CalendarEventTimingOptimization';
 import CalendarEventTimingOptimization from '@/core/calendar/CalendarEventTimingOptimization';
-import { Team } from '@/core/components/teams/Team';
+import type { Team } from '@/core/components/teams/Team';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from '@/core/generators/GenerateChatInterfaces';
-import { AnalyticsLogger, AssignBaseStoreLogger } from '@/core/logging/Logger';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from '@/core/generators/GenerateChatInterfaces';
+import { AnalyticsLogger } from '@/core/logging/Logger';
+import TeamLogger from '@/core/logging/Logger';
+import { AssignBaseStoreLogger } from '@/core/logging/Logger';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';
+import type { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';
 import { useAssignTeamMemberStore } from '@/core/state/stores/AssignTeamMemberStore';
 import { AuthStore } from '@/core/state/stores/AuthStore';
-import { PresentationStore, presentationStore } from '@/core/state/stores/presentationStore';
-import { Todo, UserAssignee } from '@/core/todos/Todo';
+import { presentationStore } from '@/core/state/stores/presentationStore';
+import type { PresentationStore } from '@/core/state/stores/presentationStore';
+import type { Todo, UserAssignee } from '@/core/todos/Todo';
 import { todoService } from '@/core/todos/TodoService';
 import type { AppUser } from '@/core/typings/entities/UserEntity';
-import { User } from '@/core/users/User';
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import type { User } from '@/core/users/User';
+import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { makeAutoObservable } from 'mobx';
 
 const { notify } = useNotification();
@@ -1032,9 +1035,21 @@ const useAssignBaseStore = (): AssignBaseStore<AppUser> => {
  
 
 
-    getAuthStore, unassignNoteFromTeam, assignContactToTeam, assignEventToTeam,
-    assignGoalToTeam, assignBookmarkToTeam, assignCalendarEventToTeam, assignBoardItemToTeam,
-    assignBoardColumnToTeam, assignBoardListToTeam, assignBoardCardToTeam, assignBoardViewToTeam, 
+    getAuthStore: useAssignAssignBaseStore().getAuthStore,
+    unassignNoteFromTeam: useAssignTeamMemberStore().unassignNoteFromTeam,
+    assignContactToTeam: useAssignTeamMemberStore().assignContactToTeam,
+    assignEventToTeam: useAssignTeamMemberStore().assignEventToTeam,
+  
+    assignGoalToTeam: useAssignTeamMemberStore().assignGoalToTeam,
+    assignBookmarkToTeam: useAssignTeamMemberStore().assignBookmarkToTeam,
+    assignCalendarEventToTeam: useAssignTeamMemberStore().assignCalendarEventToTeam,
+    assignBoardItemToTeam: useAssignTeamMemberStore().assignBoardItemToTeam,
+  
+    assignBoardColumnToTeam: useAssignTeamMemberStore().assignBoardColumnToTeam,
+    assignBoardListToTeam: useAssignTeamMemberStore().assignBoardListToTeam,
+    assignBoardCardToTeam: useAssignTeamMemberStore().assignBoardCardToTeam,
+    assignBoardViewToTeam: useAssignTeamMemberStore().assignBoardViewToTeam,
+    
     
     // Add more properties or methods as needed
   });

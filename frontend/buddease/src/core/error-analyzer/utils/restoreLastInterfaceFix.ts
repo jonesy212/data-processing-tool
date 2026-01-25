@@ -1,5 +1,5 @@
 // restoreLastInterfaceFix.ts
-import { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { PhaseBackupSystem } from '@/core/error-analyzer/phases/PhaseBackupSystem';
 
 async function restoreLastInterfaceFix(projectRoot: string): Promise<void> {
   const backupSystem = new PhaseBackupSystem(projectRoot);

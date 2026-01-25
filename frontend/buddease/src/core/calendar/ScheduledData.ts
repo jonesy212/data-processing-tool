@@ -3,12 +3,13 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Data } from '@/core/models/data/Data';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import type { Task } from "@/core/models/tasks/Task";
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import type { Todo, UserAssignee } from '@/core/todos/Todo';
 import TodoImpl from '@/core/todos/Todo';
-import {
+import type { TaskAttachment, TaskEntity, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import { TaskExcludedFields, TaskIncludedFields, TaskK } from '@/core/typings/entities/TaskEntity';
     TaskAttachment,
     TaskEntity,
     TaskExcludedFields,

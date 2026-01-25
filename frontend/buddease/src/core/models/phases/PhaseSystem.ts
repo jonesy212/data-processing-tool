@@ -1,8 +1,7 @@
 // PhaseSystem.ts
 src/core/error-analyzer/phases/PhaseSystem.ts
 import type{ PhaseContext } from '@/core/error-analyzer/phases/DynamicPhaseSystem'
-import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
-import { PhaseBackupSystemImpl } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import '@/core/error-analyzer/phases/PhaseBackupSystem';
 
 export interface PhaseDefinition {
     id: string;

@@ -2,11 +2,13 @@
 
 import { SnapshotCategory } from '@/core/api/getSnapshotEndpoint';
 import { Label } from '@/core/branding/BrandingSettings';
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedProps';
+import { SharedStatusFlags } from '@/core/documents/RelatedProps';
 import type { Data } from '@/core/models/data/Data';
 import type { CriteriaType, PriorityValue } from '@/core/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/core/pages/searches/FilterCriteria';
-import { U, WrappedU } from '@/core/snapshots/isCompatibleTempData';
+import type { U } from '@/core/snapshots/isCompatibleTempData';
+import { WrappedU } from '@/core/snapshots/isCompatibleTempData';
 import { FilterMethods } from '@/core/snapshots/methods/FilterMethods';
 import { MethodBinder, bindAllMethods } from '@/core/snapshots/methods/methodBinder';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
@@ -43,13 +45,14 @@ import { SearchCriteria } from '@/core/pages/searches/SearchCriteria';
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { defaultSubscribeToSnapshots } from '@/core/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import {
+import type { SnapshotUnion, SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
     SnapshotUnion,
     Snapshots,
     SnapshotsArray,
     SnapshotsObject
 } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { ConfigMethods, applyStoreConfig } from '@/core/snapshots/methods/configMethods';
+import type { ConfigMethods, applyStoreConfig } from '@/core/snapshots/methods/configMethods';
 import { UtilMethods } from '@/core/snapshots/methods/utilMethods';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import type { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/core/state/stores/DataStore';
@@ -63,7 +66,7 @@ import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreC
 import { SnapshotOperation } from '@/core/actions/SnapshotActions';
 import { TagsRecord } from '@/core/models/tracker/Tag';
 import { createSnapshotStores } from '@/core/snapshots/newStoreUtils';
-import { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import type { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { delegate, notifySubscribers, subscribeToSnapshot, subscribeToSnapshots } from '@/core/snapshots/snapshotHandlers';
@@ -95,7 +98,7 @@ import * as VersionMethods from '@/core/snapshots/methods/versionMethods';
 import { SnapshotDataParams } from "@/core/snapshots/SnapshotDataParams";
 import { SnapshotSubscriptionMethods } from '@/core/snapshots/SnapshotMethods';
 import { SnapshotSecurity } from "@/core/snapshots/SnapshotSecurity";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotContext } from "@/core/snapshots/SnapshotSubscriberManagement";
 
 interface UnsubscribeEvent extends UnsubscribeDetails {

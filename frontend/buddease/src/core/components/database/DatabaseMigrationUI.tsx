@@ -1,5 +1,5 @@
 // DatabaseMigrationUI.tsx
-import { ProjectConfig } from '@/core/config/ProjectConfig';
+import type { ProjectConfig } from '@/core/config/ProjectConfig';
 import type { useButtonGeneratorProps } from '@/core/generators/GenerateButtons';
 import React, { useEffect, useState } from 'react';
 import { DatabaseMigrationService } from './DatabaseMigrationService';

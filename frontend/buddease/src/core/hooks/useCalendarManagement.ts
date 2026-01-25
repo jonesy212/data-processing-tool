@@ -1,6 +1,7 @@
 // useCalendarManagement.ts
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import {
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import { useCalendarManagerStore } from '@/core/state/stores/CalendarManagerStore';
     CalendarEvent,
     useCalendarManagerStore,
 } from "@/core/state/stores/CalendarStore";

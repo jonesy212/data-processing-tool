@@ -803,13 +803,13 @@ export class TypeImportFixer {
     // Check for double "type" issue
     HumanMessages.step('Checking for double "type" issues...');
     try {
-      const doubleTypeCmd = `grep -r "import type type" src/ --include="*.ts" --include="*.tsx" | wc -l`;
+      const doubleTypeCmd = `grep -r "import type" src/ --include="*.ts" --include="*.tsx" | wc -l`;
       const doubleTypeCount = parseInt(execSync(doubleTypeCmd, { encoding: 'utf8' }).trim()) || 0;
       
       if (doubleTypeCount > 0) {
-        HumanMessages.error(`Found ${doubleTypeCount} instances of "import type type"!`);
+        HumanMessages.error(`Found ${doubleTypeCount} instances of "import type"!`);
         HumanMessages.info('These need to be fixed manually:');
-        execSync(`grep -n "import type type" src/ --include="*.ts" --include="*.tsx" | head -5`, { 
+        execSync(`grep -n "import type" src/ --include="*.ts" --include="*.tsx" | head -5`, { 
           encoding: 'utf8',
           stdio: 'inherit'
         });

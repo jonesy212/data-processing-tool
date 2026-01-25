@@ -4,7 +4,7 @@ import React from 'react';
 
 import TextEditor from '@/core/components/documents/TextEditor';
 
-import { DocumentType } from '@/core/server/ServerDocumentGenerator';
+import type { DocumentType } from '@/core/server/ServerDocumentGenerator';
  
 const BlogEditor: React.FC = () => {
   return (

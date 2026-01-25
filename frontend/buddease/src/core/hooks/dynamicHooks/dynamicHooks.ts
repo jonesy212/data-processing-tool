@@ -1,15 +1,15 @@
 // dynamicHooks.ts
 // DynamicHooks.tsx
-import { loadDashboardState } from "@/core/api/ApiDashboard";
+import type { loadDashboardState } from "@/core/api/ApiDashboard";
 import Web3Provider from '@/core/components/web3/Web3Provider';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from '@/core/documents/DocType';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
+import type { ModifiedDate } from '@/core/documents/DocType';
 import { myPhaseHook } from "@/core/hooks/phaseHooks/EnhancePhase";
 import useAsyncHookLinker, { LibraryAsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import { performLogin } from "@/core/pages/forms/utils/CommonLoginLogic";
 import { generatePrompt } from "@/core/prompts/promptGenerator";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import useFluence from "@/utils/web3/fluenceProtocoIntegration/src/fluence/useFuence";
 import useAqua from "@/utils/web3/useAqua";
 import { useEffect, useState } from "react";

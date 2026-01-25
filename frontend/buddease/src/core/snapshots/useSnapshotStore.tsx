@@ -8,7 +8,7 @@ import type {
     SnapshotStoreOptions
 } from "@/core/hooks/useSnapshotManager";
 import type { BaseData, Data } from '@/core/models/data/Data';
-import {
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from '@/core/models/data/StatusType';
     SubscriberTypeEnum,
     SubscriptionTypeEnum
 } from "@/core/models/data/StatusType";
@@ -16,7 +16,7 @@ import type {
     DataStoreWithSnapshotMethods
 } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
-// import type type { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
+// import type { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { triggerOnSnapshot } from '@/core/snapshots/snapshotTrigger';
 import { getSubscriptionLevel } from '@/core/subscriptions/SubscriptionLevel';
 import { useCallback, useEffect, useRef, useState } from "react";

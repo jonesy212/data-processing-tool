@@ -1,10 +1,11 @@
 // AssignTaskStore.tsx
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import type { Task } from "@/core/models/tasks/Task";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { AssignBaseStore, useAssignBaseStore } from '@/core/state/stores/AssignBaseStore';
+import { useAssignBaseStore } from '@/core/state/stores/AssignBaseStore';
+import type { AssignBaseStore } from '@/core/state/stores/AssignBaseStore';
 import type { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
 import { makeAutoObservable } from "mobx";
 

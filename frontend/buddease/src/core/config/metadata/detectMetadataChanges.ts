@@ -1,7 +1,7 @@
 // detectMetadataChanges.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import FileData from "@/core/models/data/FileData";
+import type { FileData} from "@/core/models/data/FileData";
 
 function detectMetadataChanges<  
   T extends BaseDataEntity = BaseDataEntity,

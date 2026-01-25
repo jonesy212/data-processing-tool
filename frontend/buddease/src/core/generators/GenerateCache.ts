@@ -4,7 +4,7 @@ import { FileTypeEnum } from "@/core/documents/FileType";
 import { updateCallback } from "@/core/pages/blog/UpdateCallbackUtils";
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
-import { BackendStructure } from "@/core/database/server/BackendStructure";
+import BackendStructure from '@/core/server/database/BackendStructure';
 import { backendConfig } from "@/core/config/BackendConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { frontendConfig } from "@/core/config/FrontendConfig";
@@ -35,8 +35,8 @@ import {
 } from "@/core/hooks/userInterface/UIPhaseHooks";
 import type { Data } from '@/core/models/data/Data';
 import { sanitizeCallback, sanitizeInitialData } from '@/core/server/security/DOMPurify';
-import { RealtimeData } from "@/core/typings/realtimeTypes";
-import { VersionHistory } from "@/core/versions/VersionData";
+import type { RealtimeData } from "@/core/typings/realtimeTypes";
+import type { VersionHistory } from "@/core/versions/VersionData";
 
 const initialData: any = {}; 
 

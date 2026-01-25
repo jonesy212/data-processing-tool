@@ -3,55 +3,55 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { EventFilter, EventHandler } from '@/core/typings/eventHandlers/eventTypes';
+import type { EventFilter, EventHandler } from '@/core/typings/eventHandlers/eventTypes';
 
 
 export interface RegisteredCallback<
-  Entity extends BaseDataEntity = BaseDataEntity,
-  K extends Entity = Entity,
-  Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-  IncludedFields extends keyof Entity = keyof Entity
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   id: string;
   eventType: string;
-  handler: EventHandler<Entity>; // Always receives Entity
-  filter?: EventFilter<Entity>;
+  handler: EventHandler<T>; // Always receives T
+  filter?: EventFilter<T>;
   priority: number;
   context?: any;
   isActive: boolean;
   storeName?: string;
-  store?: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 export class CallbackRegistry {
-  private callbacks: Map<string, RegisteredCallback<any>[]> = new Map();
-  private callbackById: Map<string, RegisteredCallback<any>> = new Map();
+  private callbacks: Map<string, RegisteredCallback<any, any, any, any, any, any>[]> = new Map();
+  private callbackById: Map<string, RegisteredCallback<any, any, any, any, any, any>> = new Map();
 
   register<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
     eventType: string,
-    handler: EventHandler<Entity>,
+    handler: EventHandler<T>,
     options: {
-      filter?: EventFilter<Entity>;
+      filter?: EventFilter<T>;
       priority?: number;
       context?: any;
       id?: string;
       storeName?: string;
-      store?: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     } = {}
   ): string {
     const callbackId = options.id || UniqueIDGenerator.generateId("callback");
     const priority = options.priority || 0;
 
-    const callback: RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+    const callback: RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       id: callbackId,
       eventType,
       handler,
@@ -107,25 +107,25 @@ export class CallbackRegistry {
   }
 
   getCallbacks<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(eventType: string): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(eventType: string): RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     const callbacks = this.callbacks.get(eventType);
     return callbacks?.filter(cb => cb.isActive) || [];
   }
 
   getCallback<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(callbackId: string): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(callbackId: string): RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
     return this.callbackById.get(callbackId);
   }
 
@@ -140,14 +140,14 @@ export class CallbackRegistry {
 
   // Execute callbacks for an event
   async executeCallbacks<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(eventType: string, eventData: Entity): Promise<void> {
-    const callbacks = this.getCallbacks<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(eventType);
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(eventType: string, eventData: T): Promise<void> {
+    const callbacks = this.getCallbacks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(eventType);
     const executionPromises: Promise<void>[] = [];
 
     for (const callback of callbacks) {
@@ -193,14 +193,14 @@ export class CallbackRegistry {
   }
 
   getCallbacksByStore<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(storeName: string): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    const allCallbacks: RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(storeName: string): RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const allCallbacks: RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
     
     for (const callbacks of this.callbacks.values()) {
       allCallbacks.push(
@@ -212,14 +212,14 @@ export class CallbackRegistry {
   }
 
   getCallbacksByStoreInstance<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(store: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    const allCallbacks: RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const allCallbacks: RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
     
     for (const callbacks of this.callbacks.values()) {
       allCallbacks.push(
@@ -243,13 +243,13 @@ export class CallbackRegistry {
   }
 
   unregisterByStoreInstance<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(store: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     for (const [eventType, callbacks] of this.callbacks.entries()) {
       const filteredCallbacks = callbacks.filter(cb => cb.store !== store);
       this.callbacks.set(eventType, filteredCallbacks);
@@ -263,13 +263,13 @@ export class CallbackRegistry {
 
   // Get all active callbacks for a specific store (both by name and instance)
   getAllCallbacksForStore<
-    Entity extends BaseDataEntity = BaseDataEntity,
-    K extends Entity = Entity,
-    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
-    IncludedFields extends keyof Entity = keyof Entity
-  >(storeNameOrInstance: string | SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(storeNameOrInstance: string | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): RegisteredCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     const isInstance = typeof storeNameOrInstance !== 'string';
     
     if (isInstance) {

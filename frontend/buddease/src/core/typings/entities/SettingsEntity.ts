@@ -1,14 +1,13 @@
 // SettingsEntity.ts
 // SettingsEntity
-import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import type { DefaultMeta } from '@/core/config/BaseConfig';
+import '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { User } from '@/core/users/User';
 import type { Task } from '@/core/models/tasks/Task';
-import type { TrackerProps } from '@/core/trackers/Tracker';
+import type { TrackerProps } from '@/core/models/tracker/Tracker';
 import type { Todo } from '@/core/todos/Todo';
-import type { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from './TaskEntity';
-import type { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from './UserEntity';
+import type { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/core/typings/entities/TaskEntity';
+import type { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/core/typings/entities/UserEntity';
 
 // Settings entity interface
 interface SettingsEntity extends BaseDataEntity {

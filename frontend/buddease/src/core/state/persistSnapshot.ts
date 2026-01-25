@@ -2,11 +2,11 @@
 import { handleApiError } from '@/core/api/ApiLogs';
 import DatabaseClient from "@/core/api/DatabaseClient";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/core/config/BaseConfig";
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
-import { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 const { notify } = useNotification(); 

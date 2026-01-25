@@ -1,6 +1,6 @@
 // ReminderExamples.ts
 import type { ReminderTypes, createReminderTypeFromEnum } from '@/core/typings/ReminderTypes';
-import type { Reminder } from './Reminder';
+import type { Reminder } from '@/core/settings/Reminder';
 
 // Example 1: Simple usage with enum
 const standardReminder: Reminder = {

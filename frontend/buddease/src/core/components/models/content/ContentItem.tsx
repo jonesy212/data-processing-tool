@@ -1,7 +1,7 @@
 // ContentItem.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { FileType } from '@/core/documents/attachment/Attachment';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { Tag } from "@/core/models/tracker/Tag";
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
 import React, { useState } from "react";

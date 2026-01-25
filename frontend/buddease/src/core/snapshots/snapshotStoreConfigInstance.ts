@@ -4,41 +4,43 @@ import { endpoints } from "@/core/api/endpointConfigurations";
 import * as snapshotApi from '@/core/api/SnapshotApi';
 import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import { FileCategory } from "@/core/documents/FileType";
 import { useSnapshotManager } from '@/core/hooks/useSnapshotManager';
 import determineFileCategory, { fetchFileSnapshotData } from "@/core/libraries/categories/determineFileCategory";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData, Data } from '@/core/models/data/Data';
 
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/core/interfaces/payload/payloadTypes";
+import type { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/core/interfaces/payload/payloadTypes";
 import type { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
-import { Snapshots, SnapshotsArray, SnapshotUnion, } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
+import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { TransformMethods } from "@/core/snapshots/methods/transformMethods";
 import type { Snapshot, snapshotConfig } from '@/core/snapshots/Snapshot';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { CustomSnapshotData, SnapshotData } from "@/core/snapshots/SnapshotData";
 import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
-import { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SnapshotStoreReference } from "@/core/snapshots/SnapshotStoreReference";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore } from "@/core/state/stores/DataStore";
-import { AuditRecord, Subscriber } from "@/core/subscribers/Subscriber";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { Subscription } from '@/core/subscriptions/Subscription';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { ExtendedVersionData } from "@/core/versions/VersionData";
+import type { AuditRecord } from '@/core/subscribers/Subscriber';
+import { Subscriber } from '@/core/subscribers/Subscriber';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { Subscription } from '@/core/subscriptions/Subscription';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { ExtendedVersionData } from "@/core/versions/VersionData";
 import { generateSnapshotId } from "@/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/utils/web3/applicationUtils";
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import {
+import type {
     AppAttachment,
     AppEntity,
     AppExcludedFields,
@@ -50,7 +52,7 @@ import {
     AppSnapshotsArray,
     AppSnapshotStoreConfig,
 } from '@/core/typings/entities/AppEntity';
-import { SnapshotEvent } from '@/core/typings/snapshotTypes';
+import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 
 import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess, handleSnapshotSuccess } from "@/core/snapshots/index";
@@ -61,7 +63,7 @@ import SnapshotList from '@/core/snapshots/SnapshotList';
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { subscribeToSnapshotImpl } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import SnapshotStore from "./SnapshotStore";
-import SnapshotStoreSubset from "./SnapshotStoreSubset";
+import type { SnapshotStoreSubset } from "./SnapshotStoreSubset";
 
 function createSnapshotStoreConfig<
   T extends BaseDataEntity,

@@ -1,8 +1,8 @@
 // NotificationComponent.tsx
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
 import useNotificationManagerService from "@/core/services/NotificationService";
 import { randomBytes } from "ethers";
 import React from "react";

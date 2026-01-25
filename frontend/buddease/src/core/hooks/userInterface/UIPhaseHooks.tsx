@@ -8,12 +8,12 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/core/features/support/NotificationMessagesFactory";
 import useNotificationBar from "@/core/hooks/commHooks/useNotificationBar";
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { createPhaseHook } from "@/core/hooks/phaseHooks/PhaseHooks";
-import { LogData } from "@/core/models/LogData";
+import type { LogData } from "@/core/models/LogData";
 import { isUserLoggedIn } from "@/core/pages/forms/utils/CommonLoginLogic";
 import useDarkModeToggle from "./useDarkModeToggle";
 

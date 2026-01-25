@@ -2,7 +2,7 @@
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
 
 // Conditional Utility Types
 export type SnapshotConfigArgs<

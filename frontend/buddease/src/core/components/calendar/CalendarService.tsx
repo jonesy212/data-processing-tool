@@ -3,7 +3,7 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';

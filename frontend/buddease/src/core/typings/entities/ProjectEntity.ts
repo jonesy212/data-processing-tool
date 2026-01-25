@@ -3,19 +3,18 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Project } from "@/core/models/projects/Project";
-import { SnapshotsArray, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Project } from "@/core/models/projects/Project";
+import type { SnapshotsArray, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from "@/core/snapshots/SnapshotConfigBuilder";
+import type { SnapshotConfigParams } from "@/core/snapshots/SnapshotConfigBuilder";
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { Resource } from '@/core/state/redux/slices/CollaborationSlice';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { Resource } from '@/core/state/redux/slices/CollaborationSlice';
 import type { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
-import { ProjectData } from '@/core/typings/projectTypes';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-;
+import type { ProjectData } from '@/core/typings/projectTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 // -------------------
 // Project Entity Type

@@ -3,7 +3,7 @@ import useSearchPagination from '@/core/hooks/commHooks/useSearchPagination';
 import useFiltering from '@/core/hooks/useFiltering';
 import { usePagination } from '@/core/hooks/userInterface/usePagination';
 import Filter from '@/core/pages/searches/Filter';
-import { SearchOptions, SortingOption } from '@/core/pages/searches/SearchOptions';
+import type { SearchOptions, SortingOption } from '@/core/pages/searches/SearchOptions';
 import React from 'react';
 
 // Define the type for the filter column

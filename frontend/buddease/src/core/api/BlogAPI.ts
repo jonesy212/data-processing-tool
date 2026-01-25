@@ -6,7 +6,7 @@ import { Message } from "@/core/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { useNotification } from "@/core/state/context/NotificationContext";
 import { addLog } from "@/core/state/redux/slices/LogSlice";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 

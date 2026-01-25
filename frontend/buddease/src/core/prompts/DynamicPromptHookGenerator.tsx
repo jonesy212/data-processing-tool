@@ -1,6 +1,7 @@
 // DynamicPromptHookGenerator.tsx
 DynamicPromptHook.ts
-import createDynamicHook, { DynamicHookParams } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import type { DynamicHookParams } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { processAutoGPTOutputWithSpaCy } from '@/core/intelligence/AutoGPTSpaCyIntegration';
 import { useEffect } from 'react';
 

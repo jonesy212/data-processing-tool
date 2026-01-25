@@ -1,7 +1,7 @@
 // TeamDetailsComponent.tsx
 "use client";
 
-import { FileTypeEnum } from "@/core/documents/FileType";
+import type { FileTypeEnum } from "@/core/documents/FileType";
 import useFiltering from "@/core/hooks/useFiltering";
 import { CommonData } from "@/core/models/CommonData";
 import type { BaseData } from '@/core/models/data/Data';
@@ -10,7 +10,7 @@ import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator
 import dynamic from 'next/dynamic';
 import React from "react";
 
-import {
+import type { LanguageEnum } from '@/core/communications/LanguageEnum';
     LanguageEnum
 } from "@/core/communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "@/core/components/notifications/Notification";

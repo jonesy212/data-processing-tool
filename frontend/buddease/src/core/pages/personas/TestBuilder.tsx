@@ -1,5 +1,6 @@
 // TestBuilder.tsx
-import { TestScenario, TestScenarioBuilder } from "@/core/hooks/useTestPhaseHooks";
+import type { TestScenario } from '@/core/hooks/useTestPhaseHooks';
+import { TestScenarioBuilder } from '@/core/hooks/useTestPhaseHooks';
 import TestPhaseManager from "@/core/models/phases/Phase";
 import { useState } from "react";
 import TestBuilder from "./TestBuilder"; // Import the TestBuilder JavaScript module

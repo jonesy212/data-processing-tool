@@ -4,7 +4,7 @@ import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useSecurityAudit } from "@/core/hooks/useSecurityAudit";
 import type { BaseData } from '@/core/models/data/Data';
-import { UserConfigData } from '@/core/models/data/dataStoreMethods';
+import type { UserConfigData } from '@/core/models/data/dataStoreMethods';
 
 const createMeta = <
   T extends BaseDataEntity,

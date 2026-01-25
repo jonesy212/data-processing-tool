@@ -1,9 +1,10 @@
 // FilteredEvents.tsx
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { initialState } from "@/core/state/redux/slices/FilteredEventsSlice";
-import { FilterState } from "@/core/state/redux/slices/FilterSlice";
+import type { initialState } from "@/core/state/redux/slices/FilteredEventsSlice";
+import type { FilterState } from "@/core/state/redux/slices/FilterSlice";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 // Define a selector function to get filtered events from the state
 // Define your selector to get the filtered events from the state

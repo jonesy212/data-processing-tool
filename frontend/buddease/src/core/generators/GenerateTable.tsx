@@ -1,5 +1,6 @@
 // GenerateTable.tsx
-import { Table, TableProps } from 'antd';
+import type { TableProps } from 'antd';
+import { Table } from 'antd';
 import React from 'react';
 
 interface TableGeneratorProps<T> {

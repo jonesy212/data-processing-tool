@@ -1,5 +1,5 @@
 // StepComponent.tsx
-import { StepProps } from "@/core/phases/steps/steps";
+import type { StepProps } from "@/core/phases/steps/steps";
 import { useStepContext } from "@/core/state/context/StepContext";
 
 

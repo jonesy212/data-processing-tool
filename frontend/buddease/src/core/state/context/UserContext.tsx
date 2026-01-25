@@ -4,7 +4,7 @@ import useAuthentication from "@/core/hooks/useAuthentication";
 import UserRoles from '@/core/models/UserRoles';
 import { DataSharingPreferences } from '@/core/settings/PrivacySettings';
 import { refreshUI } from '@/core/snapshots/refreshUI';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface UserContextType {

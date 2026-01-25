@@ -1,5 +1,5 @@
 // DatabaseServiceFactory.ts
-import { DatabaseConfig } from '@/core/config/DatabaseConfig';
+import type { DatabaseConfig } from '@/core/config/DatabaseConfig';
 import { BaseDatabaseService } from '@/core/server/database/DatabaseService';
 import { DatabaseType } from '@/core/server/database/DatabaseServiceFactory';
 import { MysqlDatabaseService } from '@/core/server/database/MysqlDatabaseService';
@@ -38,4 +38,3 @@ export class DatabaseServiceFactory {
 }
 
 
-export { DatabaseType };

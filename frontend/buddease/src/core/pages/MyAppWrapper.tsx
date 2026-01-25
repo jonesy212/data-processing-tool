@@ -1,20 +1,20 @@
 // MyAppWrapper.tsx
-import { BrandingSettings } from "@/core/branding/BrandingSettings";
+import type { BrandingSettings } from "@/core/branding/BrandingSettings";
 import CaptionManagementPageComponent from "@/core/features/videos/CaptionManagementComponent";
 import { generateUtilityFunctions } from "@/core/generators/GenerateUtilityFunctions";
 import {
     PhaseHookConfig,
     createPhaseHook,
 } from "@/core/hooks/phaseHooks/PhaseHooks";
-import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
+import type { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import { useThemeCustomization } from "@/core/hooks/useThemeCustomization";
-import { Theme } from "@/core/libraries/ui/theme/Theme";
+import type { Theme } from "@/core/libraries/ui/theme/Theme";
 import { useTheme } from "@/core/libraries/ui/useTheme";
 import { EnhancedThemeProvider } from '@/core/platform/styles/EnhancedThemeContextType';
-import { AppProps } from "next/app";
-import { NextRouter, Router } from "next/router";
+import type { AppProps } from "next/app";
+
 import React from "react";
-import MyApp from "./_app";
+import type MyApp from "./_app";
 import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
 
@@ -28,7 +28,7 @@ type ExtendedRouter = NextRouter & {
   pageLoader: any;
   _bps: any;
   _wrapApp: any;
-  hooks: AsyncHook[];
+  hooks: AsyncHook<T>[];
   utilities: ReturnType<typeof generateUtilityFunctions>;
   router: ExtendedRouter & Router;
   brandingSettings: BrandingSettings;

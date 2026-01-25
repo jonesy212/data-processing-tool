@@ -1,7 +1,8 @@
 // useToolbarActions.ts
 app/communications/documents/hooks/useToolbarActions.ts
 import { ToolbarActions } from '@/core/actions/ToolbarActions';
-import { EditorState, RichUtils } from 'draft-js';
+import type { EditorState } from 'draft-js';
+import { RichUtils } from 'draft-js';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 

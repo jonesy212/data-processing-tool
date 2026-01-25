@@ -2,7 +2,7 @@
 
 import { extractCriteria } from '@/core/api/SnapshotApi';
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import {
+import type { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
     CodingLanguageEnum,
     LanguageEnum,
 } from "@/core/communications/LanguageEnum";
@@ -19,7 +19,8 @@ import { FileTypeEnum } from "@/core/documents/FileType";
 import { MessageType } from "@/core/generators/MessaageType";
 import AnimationTypeEnum from "@/core/libraries/animations/AnimationLibrary";
 import { CategoryIdentifier } from "@/core/libraries/categories/generateCategoryProperties";
-import { StatusTrackable, Timestamped } from "@/core/models/CommonData";
+import type { StatusTrackable } from '@/core/models/CommonData';
+import { Timestamped } from '@/core/models/CommonData';
 import type { BaseData } from '@/core/models/data/Data';
 import {
     BookmarkStatus,
@@ -44,9 +45,9 @@ import { SecurityFeatureEnum } from "@/core/server/security/SecurityFeatureEnum"
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
-import { FilterState } from "@/core/state/redux/slices/FilterSlice";
+import type { FilterState } from "@/core/state/redux/slices/FilterSlice";
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import {
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
     DocumentTypeEnum
 } from "@/core/typings/documentTypes";
 import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";

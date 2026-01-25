@@ -18,6 +18,8 @@ import type {
 import { internalCache } from '@/utils/cache/InternalCache';
 
 
+
+
 export interface BaseDataEntity {
   id?: string | number;
   createdAt?: string | Date;
@@ -76,6 +78,41 @@ export interface ValidationRule<
   customProperties?: Record<string, any>;
 }
 
+
+export interface ValidationResult {
+  // Core properties (common across all uses)
+  isValid: boolean;
+  message: string;
+  
+  // Error details
+  errors?: Array<{
+    field?: string;
+    message: string;
+    rule?: string;
+    severity?: 'error' | 'warning' | 'info';
+    code?: string;
+  }>;
+  
+  // Additional metadata
+  warnings?: string[];
+  details?: Record<string, any> | string;
+  metadata?: Record<string, any>;
+  
+  // Specific context properties (make optional)
+  testType?: string;
+  check?: string;
+  field?: string;
+  value?: any;
+  output?: string;
+  passed?: boolean; // Alias for isValid
+  
+  // Utility methods (optional)
+  addError?: (field: string, message: string, rule?: string) => void;
+  addWarning?: (message: string) => void;
+  hasErrors?: () => boolean;
+  hasWarnings?: () => boolean;
+}
+
 // Factory function to create validation rules with defaults
 function createValidationRule<T extends BaseDataEntity, K extends T = T>(
   rule: Omit<ValidationRule<T, K>, 'priority' | 'async' | 'severity' | 'when'> &
@@ -112,28 +149,7 @@ interface ValidationMeta<T extends BaseDataEntity, K extends T = T> {
   };
 }
 
-// ValidationResult interface
-interface ValidationResult {
-  isValid: boolean;
-  message: string;
-  details?: Record<string, any>;
 
-  // Combined error structure
-  errors?: Array<{
-    field: string;
-    message: string;
-    rule: string;
-  }>;
-
-  // Additional properties from first interface
-  field?: string;
-  value?: any;
-  severity?: 'error' | 'warning' | 'info';
-  code?: string; // Error code for programmatic handling
-  metadata?: Record<string, any>;
-}
-
-// Common validation rule examples
 // Common validation rule examples using the factory
 export const CommonValidationRules = {
   /** Requires field to not be null/undefined/empty */
@@ -243,23 +259,6 @@ export const CommonValidationRules = {
       message: message ?? rule.message,
     }),
 };
-
-// First, let's fix the ValidationResult interface to include all needed properties
-interface ValidationResult {
-  isValid: boolean;
-  message: string; // Make this required, not optional
-  details?: Record<string, any>;
-  errors?: Array<{
-    field: string;
-    message: string;
-    rule: string;
-  }>;
-  field?: string;
-  value?: any;
-  severity?: 'error' | 'warning' | 'info';
-  code?: string;
-  metadata?: Record<string, any>;
-}
 
 // Now fix the ValidationEngine class
 export class ValidationEngine {
@@ -427,14 +426,12 @@ const exampleConfig: SnapshotStoreConfig<
 };
 
 // Then use it in storeProps
-const storeProps: SnapshotStoreProps<
-  StorePropEntityTemplate['T'],
-  StorePropEntityTemplate['K'],
-  StorePropEntityTemplate['Meta'],
-  StorePropEntityTemplate['AttachmentType'],
-  StorePropEntityTemplate['ExcludedFields'],
-  StorePropEntityTemplate['IncludedFields']
-> = {
+const storeProps: SnapshotStoreProps<StorePropEntity, 
+      StorePropK, 
+      StorePropMeta, 
+      StorePropAttachment, 
+      StorePropExcludedFields, 
+      StorePropIncludedFields> = {
   storeId: "store-prop-store-001",
   name: "StoreProp Snapshot Store",
   endpointCategory: "store-props",
@@ -449,3 +446,36 @@ const storeProps: SnapshotStoreProps<
     console.log("Initialized StorePropSnapshotStore:", snapshotStore);
   },
 };
+
+
+
+// Helper functions
+export function createValidationResult(
+  isValid: boolean,
+  message: string,
+  options?: Partial<ValidationResult>
+): ValidationResult {
+  return {
+    isValid,
+    message,
+    passed: isValid, // Add alias
+    ...options
+  };
+}
+
+export function createErrorResult(message: string, details?: any): ValidationResult {
+  return {
+    isValid: false,
+    passed: false,
+    message,
+    errors: details ? [{ message: String(details) }] : undefined
+  };
+}
+
+export function createSuccessResult(message: string = 'Validation passed'): ValidationResult {
+  return {
+    isValid: true,
+    passed: true,
+    message
+  };
+}

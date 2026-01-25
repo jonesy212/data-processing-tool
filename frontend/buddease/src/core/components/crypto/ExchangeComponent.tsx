@@ -1,7 +1,7 @@
 // ExchangeComponent.tsx
 import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import useRealtimeExchangeData from '@/core/hooks/commHooks/useRealtimeExchangeData';
-import { ExchangeDataTypeEnum, ExchangeEnum } from "@/core/models/cypto/exchangeIntegration";
+import type { ExchangeDataTypeEnum, ExchangeEnum } from "@/core/models/cypto/exchangeIntegration";
 import type { Data } from '@/core/models/data/Data';
 import { ExchangeData } from '@/core/models/data/ExchangeData';
 import { processExchangeData } from '@/core/models/data/fetchExchangeData';

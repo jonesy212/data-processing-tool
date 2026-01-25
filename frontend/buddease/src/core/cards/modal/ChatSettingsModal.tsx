@@ -1,10 +1,10 @@
 // ChatSettingsModal.tsx
 import { CryptoPreferences } from '@/core/config/UserPreferences';
 import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
-import { GeneralNotificationTypes } from '@/core/notifications/NotificationChannels';
+import type { GeneralNotificationTypes } from '@/core/notifications/NotificationChannels';
 import { DocumentEditingPermissions } from '@/core/permissions/Permission';
 import { PrivacySettings } from '@/core/settings/PrivacySettings';
-import { SecuritySettings } from '@/core/settings/SecuritySettings';
+import type { SecuritySettings } from '@/core/settings/SecuritySettings';
 
 // Define the ChatSettingsModal type
 type ChatSettingsModal = {

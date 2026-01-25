@@ -3,11 +3,11 @@ import { default as ExtendedCryptoNotificationMessages, default as internalApiSe
 import { getMarketPrice } from '@/core/api/service/PriceApiService';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { TradeLogger } from "@/core/logging/TradeLogger";
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';;
+import type { TradeLogger } from '@/core/logging/TradeLogger';;
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';;
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';;
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 
 

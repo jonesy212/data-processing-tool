@@ -7,7 +7,7 @@ import useRealtimeData, {
 import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
 import type { Data } from '@/core/models/data/Data';
 import { K, T } from "@/core/models/data/dataStoreMethods";
-import {
+import type { SubscriberTypeEnum, SubscriptionTypeEnum } from '@/core/models/data/StatusType';
     SubscriberTypeEnum,
     SubscriptionTypeEnum,
 } from "@/core/models/data/StatusType";

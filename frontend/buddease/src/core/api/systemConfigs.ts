@@ -77,5 +77,5 @@ export const createSystemConfigs = <
   ...configOverrides,
 });
 
-Usage:
+// Usage:
 const configs = createSystemConfigs<MyEntityType>({ maxConnections: 20 });

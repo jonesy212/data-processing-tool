@@ -9,7 +9,7 @@ import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/core/config/appStructure/FrontendStructure";
 import getAppPath from "@/core/config/appStructure/appPath";
 import { AppThunk } from "@/core/configs/appThunk";
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import type { DocumentOptions } from "@/core/documents/DocumentOptions";
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
@@ -17,7 +17,7 @@ import DocumentBuilder, {
     DocumentData, WritableTodoSubtasks
 } from "@/core/documents/editing/DocumentBuilder";
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import { K, Meta, T } from '@/core/models/data/dataStoreMethods';
 import { performSearch } from "@/core/pages/searches/SearchComponent";
@@ -27,14 +27,15 @@ import { useNotification } from '@/core/state/context/NotificationContext';
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { Document } from "@/core/state/stores/DocumentStore";
-import { DocumentStatusEnum, DocumentTypeEnum } from "@/core/typings/documentTypes";
+import type { DocumentStatusEnum, DocumentTypeEnum } from "@/core/typings/documentTypes";
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import type { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
 import type { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/core/typings/entities/MetaEntity";
 import { Version, version } from "@/core/versions/Version";
 import { VersionData } from "@/core/versions/VersionData";
 import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()

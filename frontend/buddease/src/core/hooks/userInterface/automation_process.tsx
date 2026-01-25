@@ -1,7 +1,7 @@
 // automation_process.tsx
 import { ErrorHandlingActions } from '@/core/api/ErrorHandlingActions';
 import errorHandlingStore from '@/core/components/state/stores/ErrorHandlingStore';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import RandomWalkSuggestions from '@/core/hooks/userInterface/RandomWalkSuggestions';
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';

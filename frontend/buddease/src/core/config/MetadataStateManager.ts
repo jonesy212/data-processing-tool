@@ -1,23 +1,24 @@
 // MetadataStateManager.ts
 import type { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { createMetadata } from '@/core/config/metadata/createMetadata';
-import { SchemaField } from '@/core/config/metadata/SchemaField';
+import type { SchemaField } from '@/core/config/metadata/SchemaField';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { MetadataEntriesType, StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SharedIdentifiers } from '@/core/documents/RelatedProps';
+import type { SharedIdentifiers } from '@/core/documents/RelatedProps';
 import type { SharedRelationshipData } from '@/core/models/data/Data';
-import { Taggable, TagsRecord } from '@/core/models/tracker/Tag';
-import { Permission } from "@/core/permissions/Permission";
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { Taggable } from '@/core/models/tracker/Tag';
+import type { Permission } from "@/core/permissions/Permission";
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import type { EventManager, InitializedState } from "@/core/state/stores/DataStore";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
-import { Version } from "@/core/versions/Version";
-import { VersionData, VersionHistory } from "@/core/versions/VersionData";
-;
+import type { Version } from "@/core/versions/Version";
+import type { VersionData, VersionHistory } from "@/core/versions/VersionData";
+
 
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 

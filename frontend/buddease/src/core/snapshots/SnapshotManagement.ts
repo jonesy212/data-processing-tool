@@ -3,7 +3,8 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData } from '@/core/models/data/Data';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { Snapshot, Snapshots, UpdateSnapshotPayload } from '@/core/snapshots/Snapshot';
+import type { Snapshot, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";

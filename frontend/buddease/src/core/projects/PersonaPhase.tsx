@@ -1,5 +1,5 @@
 // PersonaPhase.tsx
-import { PersonaBuilder, PersonaTypeEnum } from "@/core/pages/personas/PersonaBuilder";
+import type { PersonaBuilder, PersonaTypeEnum } from "@/core/pages/personas/PersonaBuilder";
 import React, { useState } from "react";
 
 const PersonaPhase: React.FC = () => {

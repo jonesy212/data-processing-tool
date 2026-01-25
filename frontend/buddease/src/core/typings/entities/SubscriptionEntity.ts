@@ -1,5 +1,5 @@
 // SubscriptionEntity.ts
-import { SubscriptionPayload } from '@/core/actions/SubscriptionActions';
+import type { SubscriptionPayload } from '@/core/actions/SubscriptionActions';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Data } from '@/core/models/data/Data';

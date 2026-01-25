@@ -1,9 +1,9 @@
 // ProgressBar.tsx
   import { UIActions } from "@/core/actions/UIActions";
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { AnimationLogger } from "@/core/logging/Logger";
-import {
+import type { ProgressBarProps } from '@/core/models/tracker/ProgressBar';
     ProgressBarProps
 } from '@/core/models/tracker/ProgressBar';
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";

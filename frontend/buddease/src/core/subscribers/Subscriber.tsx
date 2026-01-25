@@ -2,29 +2,27 @@
 import { SubscriptionActions } from "@/core/actions/SubscriptionActions";
 import apiNotificationsService from "@/core/api/NotificationsService";
 import addSnapshot, * as snapshotApi from "@/core/api/SnapshotApi";
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import {
-    SnapshotStoreOptions,
-    convertSnapshotToContent
-} from "@/core/hooks/useSnapshotManager";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { Content } from "@/core/models/content/AddContent";
+import type { SnapshotStoreOptions } from "@/core/hooks/useSnapshotManager";
+import  { convertSnapshotToContent } from "@/core/hooks/useSnapshotManager";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Content } from "@/core/models/content/AddContent";
 import type { BaseData, Data } from '@/core/models/data/Data';
-import {
-    NotificationStatus,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
-} from "@/core/models/data/StatusType";
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import {
+import type { NotificationStatus, SubscriberTypeEnum, SubscriptionTypeEnum } from '@/core/models/data/StatusType';
+
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type {
     CustomSnapshotData,
     SnapshotConfig,
     SnapshotData,
     SnapshotItem,
+    
+} from "@/core/snapshots/SnapshotData";
+import type {
     SnapshotStoreConfig,
-    SnapshotWithCriteria
-} from "@/core/snapshots";
+} from "@/core/snapshots/SnapshotStoreConfig,";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
 import { SnapshotsArray } from "@/core/snapshots/LocalStorageSnapshotStore";
 import createSnapshotOptions from '@/core/snapshots/createSnapshotOptions';
@@ -32,11 +30,11 @@ import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStorePublicMethods } from "@/core/snapshots/SnapshotStorePublicMethods";
-import SnapshotStoreSubset from "@/core/snapshots/SnapshotStoreSubset";
+import type { SnapshotStorePublicMethods } from "@/core/snapshots/SnapshotStorePublicMethods";
+import type { SnapshotStoreSubset } from "@/core/snapshots/SnapshotStoreSubset";
 import {
     addSnapshotSuccess,
     createInitSnapshot,
@@ -50,7 +48,8 @@ import {
 } from "@/core/snapshots/snapshotHandlers";
 ;
 
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import {  NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { BaseDatabaseService } from "@/core/server/database/DatabaseService";
 import {
     clearSnapshots,
@@ -58,29 +57,23 @@ import {
 } from "@/core/state/redux/slices/SnapshotSlice";
 import { sendNotification } from "@/core/state/redux/slices/UserSlice";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
-import {
-    FetchSnapshotByIdCallback,
-    Subscription,
-} from "@/core/subscriptions/Subscription";
-import { SubscriptionLevel } from "@/core/subscriptions/SubscriptionLevel";
-import {
-    YourSpecificSnapshotType,
-    convertMapToSnapshot
-} from "@/core/typings/YourSpecificSnapshotType";
+import type { FetchSnapshotByIdCallback, Subscription } from "@/core/subscriptions/Subscription";
+import type { SubscriptionLevel } from "@/core/subscriptions/SubscriptionLevel";
+import type { YourSpecificSnapshotType, convertMapToSnapshot } from "@/core/typings/YourSpecificSnapshotType";
 import type { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
-import {
-    SnapshotAttachment,
+import type { 
     SnapshotEntity,
+    SnapshotK,
+    SnapshotMeta,
+    SnapshotAttachment,
     SnapshotExcludedFields,
     SnapshotIncludedFields,
-    SnapshotK,
-    SnapshotMeta
 } from '@/core/typings/entities/SnapshotEntity';
 import type { SubscriberAttachment, SubscriberEntity, SubscriberExcludedFields, SubscriberIncludedFields, SubscriberK, SubscriberMeta } from '@/core/typings/entities/SubscriberEntity';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { isSnapshotStoreConfig } from "@/utils/snapshotUtils";
 import { config } from "process";
-import { AllStatus } from "../state/stores/DetailsListStore";
+import type { AllStatus } from "../state/stores/DetailsListStore";
 
 type SnapshotStoreDelegate<
   T extends BaseDataEntity,

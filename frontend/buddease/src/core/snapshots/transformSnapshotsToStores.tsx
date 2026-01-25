@@ -3,8 +3,8 @@ import { initialSnapshot } from "@/core/models/cypto/exchangeIntegration";
 import type { BaseData } from '@/core/models/data/Data';
 import type { snapshotType } from "@/core/typings/YourSpecificSnapshotType";
 import { data } from "@/core/snapshots/SnapshotWithCriteria";
-import type {  Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotStoreConfig, snapshotConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import '@/core/snapshots/Snapshot';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import SnapshotStore from "./SnapshotStore";
 import { delegate, subscribeToSnapshots } from "@/core/snapshots/index";
 

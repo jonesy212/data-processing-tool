@@ -1,6 +1,6 @@
 // SecurityAPI.ts
 import axiosInstance from '@/core/api/csrfToken';
-import { SecuritySettings } from '@/core/settings/SecuritySettings';
+import type { SecuritySettings } from '@/core/settings/SecuritySettings';
 
 export default class SecurityAPI {
   private static API_BASE_URL = 'https://example.com/api';

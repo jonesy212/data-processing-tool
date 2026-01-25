@@ -14,11 +14,11 @@ import {
     ProjectStateEnum,
     SortingType, StatusType, SubscriberTypeEnum,
     SubscriptionTypeEnum, TaskStatus, TeamStatus,
-    TodoStatus
+    TodoStatus, FixNotificationType
 } from "@/core/models/data/StatusType";
-import { LogData } from '@/core/models/LogData';
-import { NotificationChannels } from '@/core/notifications/NotificationChannels';
-import { DocumentTypeEnum } from "@/core/typings/documentTypes";
+import type { LogData } from '@/core/models/LogData';
+import type { NotificationChannels } from '@/core/notifications/NotificationChannels';
+import type { DocumentTypeEnum } from "@/core/typings/documentTypes";
 
 
 export const NotificationTypeEnum = NOTIFICATION_TYPES;
@@ -32,7 +32,7 @@ export type NotificationType =
 export type MainNotificationType = NotificationType;
 
 
-DataTypeEnums.ts
+// DataTypeEnums.ts
 export const DataTypeEnums = {
   Notification: NotificationTypeEnum,
   Document: DocumentTypeEnum,
@@ -71,6 +71,7 @@ export const DataTypeEnums = {
   Team: TeamStatus,
   Todo: TodoStatus,
   Meeting: MeetingStatus,
+  Fix: FixNotificationType 
   DEFAULT: "Default" as const,
 } as const;
 

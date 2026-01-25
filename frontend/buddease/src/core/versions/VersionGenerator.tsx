@@ -1,6 +1,6 @@
 // VersionGenerator.tsx
 
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 
 import { useNotification } from '@/core/state/context/NotificationContext';
 

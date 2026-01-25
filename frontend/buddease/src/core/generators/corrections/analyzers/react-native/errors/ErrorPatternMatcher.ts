@@ -2,7 +2,7 @@
 
 import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
-import { CorrectionCategory } from '@/core/typings/correctionTypes';
+import type { CorrectionCategory } from '@/core/typings/correctionTypes';
 import fs from 'fs';
 
 interface ErrorPattern {

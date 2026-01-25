@@ -1,5 +1,5 @@
 // DocumentFormattingOptions.tsx
-import { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
+import type { DocumentFormattingOptions } from '@/core/components/documents/DocumentFormattingOptionsComponent';
 import React from 'react';
 
 interface DocumentFormattingOptionsProps {

@@ -92,12 +92,6 @@ export interface TestPhaseHooks<
   ) => Promise<TransitionTestResult>;
 }
 
-// Validation Result
-export interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-  warnings: string[];
-}
 
 // Transition Test Result
 export interface TransitionTestResult {

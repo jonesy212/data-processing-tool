@@ -2,13 +2,13 @@
 import internalApiService from "@/core/api/ApiClient";
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from "@/core/api/endpointConfigurations";
-import { MeetingData } from "@/core/calendar/MeetingData";
+import type { MeetingData } from "@/core/calendar/MeetingData";
 import type { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import type { Task } from "@/core/components/models/tasks/Task";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { NotificationSettings } from "@/core/features/support/NotificationSettings";
-import FileData from "@/core/models/data/FileData";
+import type FileData from "@/core/models/data/FileData";
 import type { Project, ProjectData } from '@/core/models/projects/Project';
 import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type {

@@ -1,17 +1,24 @@
 // NotificationProvider.tsx
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import type { MediaMetadata } from "@/core/config/MetaDataOptions";
+import type { ProjectMetadata } from "@/core/config/StructuredMetadata";
+import type { TaskMetadata } from "@/core/config/MetaDataOptions";
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import type { MeetingMetadata } from '@/core/calendar/ScheduledData';
 import type { VideoMetadata } from '@/core/config/StructuredMetadata';
+import { CustomMediaSession } from '@/core/client/ClientInformation';
 import { useMeta } from '@/core/config/useMeta';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from '@/core/generators/GenerateChatInterfaces';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { AuthNotificationTypes } from '@/core/features/support/NotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from '@/core/generators/GenerateChatInterfaces';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { logData } from '@/core/services/NotificationService';
 import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
 import { notificationStoreInstance } from '@/core/state/stores/NotificationStore';
-import {
+import type {
     NotificationAttachment,
     NotificationEntity,
     NotificationExcludedFields, NotificationIncludedFields,
@@ -79,8 +86,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     area: "dashboard",
     currentMeta: {
       // Core metadata properties
-      metadataEntries: [],
-      // Other required properties from Meta
     },
     tags: ["important", "urgent"],
     childIds: [],
@@ -88,9 +93,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     projectId: 123,
     overrides: {},
     relatedKeys: [],
-    metadataEntries: [],
+    metadataEntries: {} as Record<string, MetadataEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     videoMetadata: {} as VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    mediaMetadata: {} as MediaMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    mediaMetadata: {} as MediaMetadata,
     projectMetadata: {} as ProjectMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     taskMetadata: {} as TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     meetingMetadata: {} as MeetingMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

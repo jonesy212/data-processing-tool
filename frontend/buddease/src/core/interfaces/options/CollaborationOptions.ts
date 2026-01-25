@@ -1,5 +1,5 @@
 // CollaborationOptions.ts
-interface CollaborationOptions {
+export interface CollaborationOptions {
   id: string;
   name: string;
   description: string;

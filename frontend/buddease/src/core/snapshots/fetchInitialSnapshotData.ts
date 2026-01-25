@@ -8,7 +8,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { BaseData } from '@/core/models/data/Data';
 import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { DataStore, InitializedState } from "@/core/state/stores/DataStore";
 import useDocumentStore from "@/core/state/stores/DocumentStore";
 import { Subscriber } from '@/core/subscribers/Subscriber';

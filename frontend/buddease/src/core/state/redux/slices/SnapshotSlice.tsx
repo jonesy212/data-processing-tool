@@ -1,6 +1,7 @@
 // SnapshotSlice.tsx
 
-import { SnapshotManager, useSnapshotManager } from "@/core/hooks/useSnapshotManager";
+import type { SnapshotManager } from '@/core/hooks/useSnapshotManager';
+import { useSnapshotManager } from '@/core/hooks/useSnapshotManager';
 import {
     createAndAddSnapshot,
     fetchDataStores,
@@ -9,16 +10,16 @@ import {
 import { CreateSnapshotsPayload, Payload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
+import type { NotificationPosition, StatusType } from "@/core/models/data/StatusType";
 import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots } from "@/core/snapshots/LocalStorageSnapshotStore";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
@@ -28,7 +29,7 @@ import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { Content } from "@/core/models/content/AddContent";
 import { K, Meta, T } from "@/core/models/data/dataStoreMethods";
 import { Tag } from '@/core/models/tracker/Tag';
@@ -39,7 +40,8 @@ import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Subscription } from '@/core/subscriptions/Subscription';
 import { findCorrectSnapshotStore, isSnapshot } from "@/utils/snapshotUtils";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 
 type PayloadActionWithMeta<T, M = never> = PayloadAction<T, string, M>;

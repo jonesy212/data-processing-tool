@@ -1,29 +1,29 @@
 // AdminDashboard.tsx
 import { useDynamicComponents } from "@/core/components/DynamicComponentsContext";
 import ConfigurationServiceComponent from "@/core/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
-import { AppConfig } from "@/core/config/AppConfig";
+import type { AppConfig } from "@/core/config/AppConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { YourComponentProps } from '@/core/hooks/YourComponent';
 import YourComponent from '@/core/hooks/YourComponent';
 import { subscriptionServiceInstance } from "@/core/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/core/hooks/idleTimeoutHooks";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
-import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { Theme } from "@/core/libraries/ui/theme/Theme";
 import type { UserRole } from "@/core/models/UserRole";
 import type { Data } from '@/core/models/data/Data';
 import SecureFieldManager from '@/core/server/security/SecureFieldManager';
 import useNotificationManagerService from "@/core/services/NotificationService";
 import { useFeatureContext } from "@/core/state/context/FeatureContext";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
-import { ApiConfig } from '@/core/api/ApiConfigService';
+import type { ApiConfig } from '@/core/api/ApiConfigService';
 import SecurityAudit from "@/core/server/security/SecurityAudit";
 
-import { ConfigCard } from "@/core/components/admin/AdminDashboard";
+import type { ConfigCard } from "@/core/components/admin/AdminDashboard";
 import NotificationManager from '@/core/features/support/NotificationManager';
 import { BytesLike } from "ethers";
 import React, { useEffect, useState } from "react";

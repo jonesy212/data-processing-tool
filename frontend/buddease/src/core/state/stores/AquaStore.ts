@@ -1,7 +1,7 @@
 // AquaStore.ts
-components/state/stores/AquaStore.ts
-import { AquaSession } from '@/core/state/AquaState';
-import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+// components/state/stores/AquaStore.ts
+import type { AquaSession } from '@/core/state/AquaState';
+import type { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 import { action, makeAutoObservable } from 'mobx';
 
 export class AquaStore {

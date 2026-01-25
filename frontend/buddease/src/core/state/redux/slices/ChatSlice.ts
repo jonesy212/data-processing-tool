@@ -6,12 +6,13 @@ import { Message } from "@/core/generators/GenerateChatInterfaces";
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { Channel } from "@/core/interfaces/chat/Channel";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import { AllTypes } from "@/core/typings/PropTypes";
-import {
+import type { AllTypes } from "@/core/typings/PropTypes";
+import type { AppUser, UserData } from '@/core/typings/entities/UserEntity';
+import type { User } from '@/core/users/User';
     AppUser,
     User, UserData
 } from "@/core/user/User";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import '@reduxjs/toolkit';
 
 
 

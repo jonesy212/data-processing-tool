@@ -5,7 +5,7 @@ import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import { frontend } from "@/core/config/appStructure/FrontendStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { hashString } from "@/core/generators/HashUtils";
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';

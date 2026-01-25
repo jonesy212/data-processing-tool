@@ -17,7 +17,7 @@ import {
     StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
     TodoStatus
 } from "@/core/models/data/StatusType";
-import { TaskType, TodoType } from "@/core/typings/responseTypes";
+import type { TaskType, TodoType } from "@/core/typings/responseTypes";
 
 
 

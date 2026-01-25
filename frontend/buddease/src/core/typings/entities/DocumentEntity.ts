@@ -13,10 +13,10 @@ import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 
 // Core Document type definitions

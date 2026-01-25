@@ -1,5 +1,5 @@
 // MysqlDatabaseService.tsx
-import { DatabaseConfig } from "@/core/config/DatabaseConfig";
+import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import { BaseDatabaseService } from "@/core/server/database/DatabaseService";
 import mysql from "mysql";
 

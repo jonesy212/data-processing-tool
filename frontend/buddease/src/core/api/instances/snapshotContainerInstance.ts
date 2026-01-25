@@ -17,14 +17,16 @@ import { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import { Snapshots, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotContainer, SnapshotContainerData, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps, storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore } from '@/core/state/stores/DataStore';
@@ -32,7 +34,7 @@ import { Subscriber } from '@/core/subscribers/Subscriber';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import { Subscription } from '@/core/subscriptions/Subscription';
-import {
+import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
     SnapshotAttachment,
     SnapshotEntity,
     SnapshotExcludedFields,

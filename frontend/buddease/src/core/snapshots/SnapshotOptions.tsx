@@ -7,7 +7,7 @@ import { Category } from '@/core/libraries/categories/generateCategoryProperties
 import type { BaseData } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 
   interface CreateOptions<

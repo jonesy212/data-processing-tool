@@ -1,6 +1,6 @@
 // ArticleStore.ts
 import { handleApiError } from "@/core/api/ApiLogs";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { createMessage } from "@/utils/web3/createMessage";
 import type { AxiosError, AxiosResponse } from 'axios';

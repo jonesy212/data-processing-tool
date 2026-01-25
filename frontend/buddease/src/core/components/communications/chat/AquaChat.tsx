@@ -1,7 +1,7 @@
 // AquaChat.tsx
 'use client';
 
-import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import type { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 import { useEffect, useState } from 'react';
 
 export class AquaChat {

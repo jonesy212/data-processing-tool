@@ -1,29 +1,33 @@
 // UserStore.ts
 //UserStore.ts
-import CalendarEventTimingOptimization, {
+import CalendarEventTimingOptimization from "@/core/calendar/CalendarEventTimingOptimization";
+import type {
     ExtendedCalendarEvent,
 } from "@/core/calendar/CalendarEventTimingOptimization";
 import { tasksDataSource } from "@/core/components/models/tasks/TaskDataSource";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
+import type { BaseCustomEvent } from "@/core/events/BaseCustomEvent";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useSecureUserId } from "@/core/hooks/useSecureUserId";
 import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions';
 import type { Task } from "@/core/models/tasks/Task";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AssignBaseStore, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
-import {
+import type { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';
+import { useAssignEventStore } from '@/core/state/stores/AssignEventStore';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
+import type {
     AssignEventStore,
     ReassignEventResponse,
     useAssignEventStore,
 } from "@/core/state/stores/AssignEventStore";
 import { useAssignTeamMemberStore } from "@/core/state/stores/AssignTeamMemberStore";
 import { useUndoRedoStore } from "@/core/state/stores/UndoRedoStore";
-import { Todo } from "@/core/todos/Todo";
-import { User } from "@/core/users/User";
+import type { Todo } from "@/core/todos/Todo";
+import type { User } from "@/core/users/User";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 
@@ -55,7 +59,7 @@ const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
 // todo incorporate
 // Define the necessary types and interfaces
-type UserStoreSubset = Pick<AssignBaseStore, "snapshotStore" | "events">;
+type UserStoreSubset = Pick<AssignBaseStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "snapshotStore" | "events">;
 
 export interface UserStore<
   T extends BaseDataEntity = BaseDataEntity,

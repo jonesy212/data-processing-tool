@@ -1,5 +1,6 @@
 // SpecializedHandlers.ts
-import { KeyboardEventListener, MouseEventListener, ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
+import type { ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
+import { KeyboardEventListener, MouseEventListener } from '@/core/typings/eventHandlers/eventTypes';
 
 
 import React from 'react';

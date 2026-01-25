@@ -8,7 +8,7 @@ import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { fetchSnapshot } from '@/core/snapshots/snapshotHandlers';
-import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import type { useDataStore } from '@/core/state/stores/DataStore';
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { addToSnapshotList } from '@/utils/snapshotUtils';

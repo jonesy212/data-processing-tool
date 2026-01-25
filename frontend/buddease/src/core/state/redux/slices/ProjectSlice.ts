@@ -1,28 +1,26 @@
 // ProjectSlice.ts
-import { Meeting } from "@/core/components/communications/scheduler/Meeting";
-import { Team } from "@/core/components/teams/Team";
+import type { Team } from "@/core/components/teams/Team";
+import type { Meeting } from "@/core/components/communications/scheduler/Meeting";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ProjectFeedback } from "@/core/features/support/ProjectFeedback";
-import { StatusType } from "@/core/models/data/StatusType";
-import { Member } from "@/core/models/members/Member";
-import { Project } from '@/core/models/projects/Project';
+import type { ProjectFeedback } from "@/core/features/support/ProjectFeedback";
+import type { StatusType } from "@/core/models/data/StatusType";
+import type { Member } from "@/core/models/members/Member";
+import type { Project } from '@/core/models/projects/Project';
 import type { Task } from "@/core/models/tasks/Task";
-import { Contributor } from "@/core/models/teams/Contributor";
-import { JobRole } from '@/core/models/UserRoles';
-import { Product } from "@/core/products/Product";
-import { IdentifiedNeed } from "@/core/projects/IdentifiedNeed";
-import { JobDescription } from "@/core/projects/JobDescription";
+import type { Contributor } from "@/core/models/teams/Contributor";
+import type { JobRole } from '@/core/models/UserRoles';
+import type { Product } from "@/core/products/Product";
+import type { IdentifiedNeed } from "@/core/projects/IdentifiedNeed";
+import type { JobDescription } from "@/core/projects/JobDescription";
 import ProjectProgress from '@/core/projects/projectManagement/ProjectProgress';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
-import Milestone, {
-  ProductMilestone,
-} from "@/core/state/redux/slices/CalendarSlice";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { ProductMilestone } from "@/core/state/redux/slices/CalendarSlice";
+import type { Milestone } from "@/core/typings/milestoneTypes";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import {
-  MeetingEntity
-} from '@/core/typings/entities/MeetingEntity';
-import {
+import type { MeetingEntity } from '@/core/typings/entities/MeetingEntity';
+ 
+ import type { 
   ProjectManagerAttachment,
   ProjectManagerEntity,
   ProjectManagerExcludedFields,
@@ -31,9 +29,11 @@ import {
   ProjectManagerMeta
 } from '@/core/typings/entities/ProjectManagerEntity';
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/core/typings/entities/TaskEntity';
-import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Draft, produce } from "immer";
+import type { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { produce } from "immer";
+import type { Draft } from "immer";
 import { useDispatch } from "react-redux";
 
 interface ProjectState<

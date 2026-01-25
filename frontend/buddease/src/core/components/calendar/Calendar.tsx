@@ -15,7 +15,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Project } from '@/core/models/projects/Project';
 import { Progress } from "@/core/models/tracker/ProgressBar";
-import { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
+import type { CalendarManagerState } from '@/core/state/redux/slices/CalendarSlice';
 import { Resource } from '@/core/state/redux/slices/CollaborationSlice';
 import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { ContentPost } from '@/core/typings/contentTypes';

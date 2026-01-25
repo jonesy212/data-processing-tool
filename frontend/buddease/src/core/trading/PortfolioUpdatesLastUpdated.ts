@@ -1,7 +1,7 @@
 // PortfolioUpdatesLastUpdated.ts
 // Import necessary types
 
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 
 // Define the portfolioUpdatesLastUpdated type
 type PortfolioUpdatesLastUpdated = number | ModifiedDate | null;

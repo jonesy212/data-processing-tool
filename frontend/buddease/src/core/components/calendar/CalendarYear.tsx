@@ -1,6 +1,7 @@
 // CalendarYear.tsx
 
-import { Month, MonthInfo } from "@/core/components/calendar/Month";
+import type { MonthInfo } from '@/core/components/calendar/Month';
+import { Month } from '@/core/components/calendar/Month';
 
 // Define a type for representing a year in the calendar
 interface CalendarYear {

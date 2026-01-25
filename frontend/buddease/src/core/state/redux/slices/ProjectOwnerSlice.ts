@@ -1,16 +1,17 @@
 // ProjectOwnerSlice.ts
-import { Meeting } from "@/core/components/communications/scheduler/Meeting";
-import { Team } from "@/core/components/teams/Team";
+import type { Meeting } from "@/core/components/communications/scheduler/Meeting";
+import type { Team } from "@/core/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { ProjectDetails } from '@/core/models/projects/Project';
+import type { ProjectDetails } from '@/core/models/projects/Project';
 import type { Task } from "@/core/models/tasks/Task";
-import { TeamMember } from "@/core/models/teams/TeamMembers";
-import { DeveloperPersona } from "@/core/pages/personas/DeveloperPersona";
+import type { TeamMember } from "@/core/models/teams/TeamMembers";
+import type { DeveloperPersona } from "@/core/pages/personas/DeveloperPersona";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { User } from '@/core/users/User';
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { User } from '@/core/users/User';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface ProjectOwnerState {
   // Define the state structure here

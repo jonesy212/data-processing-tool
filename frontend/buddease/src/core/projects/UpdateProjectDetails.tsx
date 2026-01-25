@@ -1,5 +1,5 @@
 // UpdateProjectDetails.tsx
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { Project } from '@/core/models/projects/Project';
 import React from 'react';
 

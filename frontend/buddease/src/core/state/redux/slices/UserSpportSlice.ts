@@ -1,6 +1,7 @@
 // UserSpportSlice.ts
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface UserSupportFeedbackPreferencesState {
   feedbackEnabled: boolean;

@@ -1,6 +1,6 @@
 // ProjectManager.tsx
 import { additionalHeaders } from "@/core/api/headers/generateAllHeaders";
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
@@ -10,12 +10,12 @@ import { useSnapshotManager } from "@/core/hooks/useSnapshotManager";
 import useStorageManager from "@/core/hooks/useStorageManager";
 import type { BaseData } from "@/core/models/data/Data";
 import type { Task } from "@/core/models/tasks/Task";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
 import { SnapshotContainer } from "@/core/snapshots/SnapshotContainer";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import {
     deleteSnapshot,
@@ -23,7 +23,8 @@ import {
 } from "@/core/snapshots/snapshotHandlers";
 import { getSnapshot } from "@/core/snapshots/snapshotOperations";
 import { useSnapshotStore } from "@/core/snapshots/useSnapshotStore";
-import {
+import type { ProjectAttachment, ProjectEntity, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
+import { ProjectExcludedFields, ProjectIncludedFields, ProjectK } from '@/core/typings/entities/ProjectEntity';
     ProjectAttachment,
     ProjectEntity,
     ProjectExcludedFields,

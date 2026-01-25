@@ -709,7 +709,7 @@ ${this.generateRecommendations(workflow)}
     }
   }
 
-  private checkMilestoneImpact(fileInfo: any): void {
+  private async checkMilestoneImpact(fileInfo: any): Promise<void> {
     const affectedMilestones = [];
     
     if (fileInfo.path.includes('src/') && fileInfo.path.endsWith('.ts')) {

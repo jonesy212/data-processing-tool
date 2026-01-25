@@ -1,5 +1,5 @@
 // SubscriptionLevel.ts
-import { SubscriberTypeEnum } from "@/core/models/data/StatusType";
+import type { SubscriberTypeEnum } from "@/core/models/data/StatusType";
 
 
 interface SubscriptionLevel {

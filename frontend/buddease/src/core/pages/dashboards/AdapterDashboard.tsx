@@ -4,16 +4,17 @@ import FallbackIcon from "@/core/components/icons/FallbackIcon";
 import WebIcon from "@/core/components/icons/WebIcon";
 import { loadFavoriteIcon, loadSettingsIcon, loadShareIcon } from "@/core/components/icons/androidIcons";
 import { loadAppStoreIcon, loadApplePayIcon, loadAppleTouchIcon, loadAppleWatchIcon, loadNotificationIcon } from "@/core/components/icons/iOsIcons";
-import { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
+import type { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
 import ColorPalette, {
     ColorSwatchProps,
 } from "@/core/components/styling/ColorPalette";
 import responsiveDesignStore from "@/core/components/styling/ResponsiveDesign";
-import { DocxGeneratorOptions } from "@/core/generators/docxGenerator";
+import type { DocxGeneratorOptions } from "@/core/generators/docxGenerator";
 import useLayoutGenerator, {
     DocumentGenerationResult,
 } from "@/core/hooks/GenerateUserLayout";
-import {
+import type { AnimatedComponent } from '@/core/libraries/animations/AnimationComponent';
+import { AnimatedComponentRef } from '@/core/libraries/animations/AnimationComponent';
     AnimatedComponent,
     AnimatedComponentRef,
 } from "@/core/libraries/animations/AnimationComponent";

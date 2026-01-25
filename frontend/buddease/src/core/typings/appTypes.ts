@@ -6,10 +6,10 @@ import { Category } from '@/core/libraries/categories/generateCategoryProperties
 import { Member } from '@/core/models/members/Member';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { Subscription } from '@/core/subscriptions/Subscription';
 
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta

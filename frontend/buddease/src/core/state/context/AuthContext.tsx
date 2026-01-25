@@ -1,5 +1,5 @@
 // AuthContext.tsx
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
@@ -8,11 +8,12 @@ import { UserPreferences } from "@/core/config/UserPreferences";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { NFT } from "@/core/models/cypto/NFT";
 import { AuthenticationProvider } from '@/core/server/auth/AuthService';
-import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession } from "@/core/state/stores/AuthStore";
+import type { UserSession } from '@/core/state/stores/AuthStore';
+import { AuthStore, UserContactInfo, UserNotificationPreferences } from '@/core/state/stores/AuthStore';
 import { SubscriptionPlan } from "@/core/subscriptions/SubscriptionPlan";
-import { DashboardConfig } from '@/core/typings/authTypes';
+import type { DashboardConfig } from '@/core/typings/authTypes';
 import type { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import React, { createContext, useContext } from "react";
 
 // Keep AuthMethods as the source of truth for all auth methods
@@ -254,5 +255,5 @@ const useAuth = (): AuthContextPropss<AuthEntity, AuthEntity, AuthMeta, Attachme
   return context;
 };
 
-export { AuthContext, fetchDataWithToken, useAuth };
+export { AuthContext, fetchDataWithToken, useAuth, authReducer };
 

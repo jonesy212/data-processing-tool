@@ -1,11 +1,11 @@
 // MultimediaContentCustomization.tsx
 import ContentDetailsListItem from "@/core/components/models/content/ContentDetailsListItem";
 import { Task } from "@/core/components/models/tasks/Task";
-import { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
+import type { AnimatedComponentProps } from "@/core/components/styling/AnimationsAndTansitions";
 import ColorPalette, {
     ColorSwatchProps,
 } from "@/core/components/styling/ColorPalette";
-import { ChildComponentProps } from "@/core/hooks/ChildComponent";
+import type { ChildComponentProps } from "@/core/hooks/ChildComponent";
 import NavigationGenerator, {
     NavigationItem,
 } from "@/core/hooks/userInterface/NavigationGenerator";

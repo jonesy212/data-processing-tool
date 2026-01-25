@@ -1,5 +1,5 @@
 // dataProviderInstance.ts
-import {
+import '@/core/models/data/dataContracts';
     CreateManyResponse, CreateResponse,
     CustomBaseRecord, CustomCreateManyParams,
     CustomCreateParams, CustomGetListParams,
@@ -9,7 +9,7 @@ import {
     GetOneResponse, InternalCustomParams, UpdateManyResponse, UpdateResponse
 } from '@/core/models/data/dataContracts';
 import axiosInstance from "@/core/server/security/axiosInstance";
-import {
+import type { BaseRecord, DataProvider } from '@/core/state/context/DataContext';
     BaseRecord,
     DataProvider,
 } from "@refinedev/core";

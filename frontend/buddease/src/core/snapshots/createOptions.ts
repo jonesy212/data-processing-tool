@@ -7,14 +7,14 @@ import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { Data } from '@/core/models/data/Data';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { displayToast } from "@/core/models/display/ShowToast";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { convertSnapshotsObjectToArray } from '@/core/snapshots/createSnapshotStoreOptions';
 import { handleSnapshotOperation } from "@/core/snapshots/handleSnapshotOperation";
-import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import '@/core/snapshots/LocalStorageSnapshotStore';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { DataStore, EventRecord, useDataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
@@ -31,10 +31,10 @@ import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { SnapshotStoreProps } from "@/core/snapshots/useSnapshotStore";
-import { Callback, MultipleEventsCallbacks } from "@/core/subscribers/subscribeToSnapshotsImplementation";
+import '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { addToSnapshotList } from "@/utils/snapshotUtils";
 import SnapshotStore from "./SnapshotStore";
-import {
+import type { InitializedDelegate, MetaDataOptions, SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
     InitializedDelegate,
     MetaDataOptions,
     SnapshotStoreOptions

@@ -1,5 +1,5 @@
 // errorRecovery.ts
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import {
     getFromLocalStorage,
     saveToLocalStorage

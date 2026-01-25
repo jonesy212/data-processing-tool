@@ -5,7 +5,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import BackendStructure from '@/core/server/database/BackendStructure';
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { DocumentTypeEnum } from "@/core/typings/documentTypes";
+import type { DocumentTypeEnum } from "@/core/typings/documentTypes";
 import { VersionData } from "@/core/versions/VersionData";
 import { getCurrentAppInfo } from '@/core/versions/VersionGenerator';
 

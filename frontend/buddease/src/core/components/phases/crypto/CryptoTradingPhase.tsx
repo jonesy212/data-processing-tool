@@ -11,7 +11,7 @@ import ProfessionalTraderContentManagement from '@/core/pages/personas/Professio
 import ProfessionalTraderDashboard from '@/core/pages/personas/ProfessionalTraderDashboard';
 import ProfessionalTraderDocuments from '@/core/pages/personas/ProfessionalTraderDocuments';
 import ProfessionalTraderProfile from '@/core/pages/personas/ProfessionalTraderProfile';
-import { TraderCallsProps } from '@/core/trading/Trades';
+import type { TraderCallsProps } from '@/core/trading/Trades';
 import React, { useState } from "react";
 
 enum TradingPhase {

@@ -3,7 +3,7 @@ import type { Data } from '@/core/models/data/Data';
 import { OnboardingPhase } from "@/core/pages/personas/UserJourneyManager";
 import snapshotStore from "@/core/snapshots/SnapshotStore";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { VideoData } from "@/core/typings/videoTypes/Video";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";

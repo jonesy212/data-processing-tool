@@ -1,11 +1,11 @@
 // SnapshotList.tsx
-import { Label } from "@/core/branding/BrandingSettings";
-import { ContentItem } from "@/core/cards/DummyCardLoader";
-import { ChatRoom } from "@/core/communications/ChatRoom";
-import { Sender } from "@/core/components/communications/CommunicationPage";
-import { SharedIdentifiers } from "@/core/documents/RelatedProps";
+import type { Label } from "@/core/branding/BrandingSettings";
+import type { ContentItem } from "@/core/cards/DummyCardLoader";
+import type { ChatRoom } from "@/core/communications/ChatRoom";
+import type { Sender } from "@/core/components/communications/CommunicationPage";
+import type { SharedIdentifiers } from "@/core/documents/RelatedProps";
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 
 
@@ -13,17 +13,18 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/core/hooks/useSecureUserId';
-import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { Data } from "@/core/models/data/Data";
 import { createSnapshot } from '@/core/snapshots/createSnapshot';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
-import { User } from "@/core/users/User";
-import { createMessage, MessageProps } from "@/utils/web3/createMessage";
+import type { User } from "@/core/users/User";
 
+import { createMessage } from "@/utils/web3/createMessage";
+import type { MessageProps } from "@/utils/web3/createMessage";
 interface SnapshotItem<
   T extends BaseDataEntity,
   K extends T = T,
@@ -39,7 +40,7 @@ interface SnapshotItem<
     content: string, 
     additionalData?: string, 
     userId?: number, 
-    sender?: Sender, 
+    sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     channel?: ChatRoom
   ) => Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   itemContent?: ContentItem; 
@@ -299,7 +300,7 @@ const createSnapshotItem = <
   const message = createMessage(
     type,
     content,
-    Number(userId),
+    userId,
     sender,
     channel,
     additionalData
@@ -308,6 +309,7 @@ const createSnapshotItem = <
  
     // Extend baseSnapshot with additional properties for SnapshotItem
     const snapshotItem: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+      initializedState,
       ...baseSnapshot, // must already have deleted, initialState, etc.
       ...snapshotStoreConfig,
       // required SnapshotItem props

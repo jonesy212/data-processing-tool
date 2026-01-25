@@ -1,7 +1,7 @@
 // AppStore.ts
-import { UserProfile } from '@/core/api/ApiUser';
+import type { UserProfile } from '@/core/api/ApiUser';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
-import { ProjectData } from '@/core/models/projects/Project';
+import type { ProjectData } from '@/core/models/projects/Project';
 import type { PagingState } from '@/core/pages/Paging';
 import type { ApiManagerState } from '@/core/state/redux/slices/ApiSlice';
 import type { AppState } from '@/core/state/redux/slices/AppSlice';
@@ -31,7 +31,7 @@ import type { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes'
 import { makeAutoObservable } from 'mobx';
 
 // Define the initial state
-const initialState: AppState = {
+const initialState: AppState<BaseDataRoot> = {
   progress: 0,
   user: {} as UserProfile,
   currentPage: null,

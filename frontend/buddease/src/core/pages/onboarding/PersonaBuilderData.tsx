@@ -14,7 +14,8 @@ import generateTimeBasedCode from "@/core/models/realtime/TimeBasedCodeGenerator
 import { TeamMember } from '@/core/models/teams/TeamMembers';
 import { Question } from "@/core/pages/onboarding/Question";
 import { useNotification } from "@/core/state/context/NotificationContext";
-import { DocumentTree, User, UserData, VisualizationData } from "@/core/users/User";
+import type { DocumentTree, UserData, VisualizationData } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
 const { notify } = useNotification(); 
 

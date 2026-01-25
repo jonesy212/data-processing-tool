@@ -1,19 +1,18 @@
 // RealTimeDataCollection.tsx
-import {
+import type { BaseDataEntity } from '@/core/config/BaseConfig';
     BaseDataEntity
 } from "@/core/a_analysis/frontend/buddease/src/app/configs/BaseConfig";
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { RealtimeUpdateCallback } from "@/core/hooks/commHooks/useRealtimeData";
 import useRealtimeDextData from "@/core/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/core/hooks/commHooks/useRealtimeExchangeData";
 import { DEX } from "@/core/models/cypto/DEX";
 import { Exchange } from "@/core/models/cypto/Exchange";
-import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/core/models/cypto/exchangeIntegration";
+import type { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/core/models/cypto/exchangeIntegration";
 import type { Data } from '@/core/models/data/Data';
-import type { SnapshotItem } from '@/core/snapshots/SnapshotList';
-import SnapshotList from '@/core/snapshots/SnapshotList';
+import '@/core/snapshots/SnapshotList';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { RealtimeData, RealtimeDataItem } from "@/core/typings/realtimeTypes";
 import React, { useEffect, useState } from 'react';

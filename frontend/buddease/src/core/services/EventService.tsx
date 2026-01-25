@@ -4,12 +4,12 @@ import { UIActions } from '@/core/actions/UIActions';
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
-import { createMetaState } from '@/core/config/MetadataStateManager';
+import type { createMetaState } from '@/core/config/MetadataStateManager';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { useMeta } from '@/core/config/useMeta';
 import type { useMetadata } from '@/core/config/useMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
+import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import { CustomEventExtension } from '@/core/events/BaseCustomEvent';
 import type { BaseData } from '@/core/models/data/Data';
 import { Member } from '@/core/models/members/Member';
@@ -26,7 +26,7 @@ import type { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFi
 import { VideoData } from '@/core/typings/videoTypes/Video';
 import { Version } from '@/core/versions/Version';
 import { VersionHistory } from '@/core/versions/VersionData';
-import {
+import type { BaseSyntheticEvent, ModifierKey, MouseEvent, SyntheticEvent } from 'react';
     BaseSyntheticEvent,
     ModifierKey,
     MouseEvent,

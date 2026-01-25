@@ -5,7 +5,7 @@ import { subscriptionServiceInstance } from "@/core/hooks/dynamicHooks/dynamicHo
 import type { BaseData } from '@/core/models/data/Data';
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { Subscription } from '@/core/subscriptions/Subscription';
-import { determineSubscriberType } from "@/core/subscriptions/SubscriptionLevel";
+import type { determineSubscriberType } from "@/core/subscriptions/SubscriptionLevel";
 
  // Helper function to generate a unique event name based on user and snapshot
 const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapshotId}`;

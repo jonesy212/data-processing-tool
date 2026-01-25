@@ -9,17 +9,18 @@ import {
 } from "@/core/calendar/CalendarEventTimingOptimization";
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from "@/core/generators/GenerateChatInterfaces";
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { Message } from "@/core/generators/GenerateChatInterfaces";
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { ExtendedTodo, useAssignBaseStore } from "@/core/state/stores/AssignBaseStore";
+import type { ExtendedTodo } from '@/core/state/stores/AssignBaseStore';
+import { useAssignBaseStore } from '@/core/state/stores/AssignBaseStore';
 import { AuthStore } from "@/core/state/stores/AuthStore";
-import { PresentationEventAssignment } from "@/core/state/stores/UserPresentationsStore";
+import type { PresentationEventAssignment } from "@/core/state/stores/UserPresentationsStore";
 import type { MeetingAttachment, MeetingEntity, MeetingExcludedFields, MeetingIncludedFields, MeetingMeta } from '@/core/typings/entities/MeetingEntity';
 import type { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/core/typings/entities/MessageEntity';
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
-import { EventData } from "@/utils/ethereumUtils";
+import type { User } from "@/core/users/User";
+import type { EventData } from "@/utils/ethereumUtils";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";
 import { makeObservable } from "mobx";
 

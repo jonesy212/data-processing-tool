@@ -3,9 +3,9 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { BaseEntityProperties, SharedTimestamps } from '@/core/documents/RelatedProps';
-import { Content } from '@/core/models/content/AddContent';
+import type { Content } from '@/core/models/content/AddContent';
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { TagsRecord } from '@/core/models/tracker/Tag';
+import type { TagsRecord } from '@/core/models/tracker/Tag';
 
 // Base comment shared by all comment types
 interface BaseComment<T extends BaseDataEntity> extends BaseEntityProperties, SharedTimestamps {

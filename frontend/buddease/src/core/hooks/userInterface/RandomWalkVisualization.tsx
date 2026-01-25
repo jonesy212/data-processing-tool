@@ -3,7 +3,7 @@ import React from 'react';
 
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import type { DocumentData } from "@/core/documents/editing/DocumentBuilder";
 import { DatasetModel } from "@/core/todos/tasks/DataSetModel";
 import Visualization from "./Visualization"; // Assuming you have the Visualization component
 

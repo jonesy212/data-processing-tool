@@ -1,9 +1,9 @@
 // fetchUserAreaDimensions.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { UILogger } from '@/core/logging/Logger';
-import { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 
 interface AreaDimensions {

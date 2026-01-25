@@ -52,7 +52,8 @@ import { DocumentTree } from "@/core/users/User";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
 import { useParams } from "next/navigation";
-import React, { SetStateAction, useState } from "react";
+import type { SetStateAction } from 'react';
+import React from 'react';
 import {
     Navigator, Route,
     Router, Routes, useLocation,
@@ -74,7 +75,7 @@ import SearchComponent from "./searches/SearchComponent";
 import { ChatSidebarProvider } from "@/core/api/ChatSidebarProvider";
 import DetermineFileType from "@/core/components/configs/DetermineFileType";
 import FilePreview from "@/core/components/documents/FilePreview";
-import { ToolbarOptions } from "@/core/components/documents/ToolbarOptions";
+import type { ToolbarOptions } from "@/core/components/documents/ToolbarOptions";
 import StepComponent from "@/core/components/phases/steps/StepComponent";
 import RouteGuard from "@/core/components/routing/RouteGuard";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
@@ -86,7 +87,7 @@ import ToolbarItemsContext from "@/core/libraries/toolbar/ToolbarItemsProvider";
 import steps from "@/core/phases/steps/steps";
 import useNotificationManagerService from "@/core/services/NotificationService";
 import StepProvider, { useStepContext } from "@/core/state/context/StepContext";
-import { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
+import type { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/core/versions/createLatestVersion";
 import { EditorState } from "draft-js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";

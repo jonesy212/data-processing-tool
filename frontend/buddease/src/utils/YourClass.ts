@@ -4,8 +4,9 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import UserRoles from '@/core/models/UserRoles';
-import { CustomDocumentOptionProps } from "@/utils/web3/dAppAdapter/DApp";
-import { DappProps, fluenceApiKey } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
+import type { CustomDocumentOptionProps } from "@/utils/web3/dAppAdapter/DApp";
+import { fluenceApiKey } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
+import type { DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 
 // Example implementation of YourClass with combined functionality
 class YourClass<

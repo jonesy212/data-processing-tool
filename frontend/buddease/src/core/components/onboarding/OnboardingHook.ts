@@ -7,7 +7,7 @@ import { initializeUserData } from '@/core/pages/onboarding/PersonaBuilderData';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { rootStores } from '@/core/state/stores/RootStores';
 import TrackerStore from '@/core/state/stores/TrackerStore';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 import { makeAutoObservable } from 'mobx';
 import { useEffect } from 'react';
 

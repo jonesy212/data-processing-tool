@@ -60,7 +60,7 @@ import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
 
 // Subscribers and notifications
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { Subscriber } from '@/core/subscribers/Subscriber';
 import { Subscription } from '@/core/subscriptions/Subscription';
@@ -68,15 +68,17 @@ import { Subscription } from '@/core/subscriptions/Subscription';
 // Additional types
 import { Content } from "@/core/models/content/AddContent";
 import type { BaseData } from '@/core/models/data/Data';
-import { PriorityTypeEnum, ProjectStateEnum } from "@/core/models/data/StatusType";
+import type { ProjectStateEnum } from '@/core/models/data/StatusType';
+import type { PriorityTypeEnum } from '@/core/models/data/StatusType';
 import { Member } from '@/core/models/members/Member';
-import { ProjectType } from '@/core/models/projects/Project';
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
-import { FilterState } from "@/core/state/redux/slices/FilterSlice";
+import type { ProjectType } from '@/core/models/projects/Project';
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { FilterState } from "@/core/state/redux/slices/FilterSlice";
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 // Config and metadata
-import { AppConfig, getAppConfig } from "@/core/config/AppConfig";
+import type { AppConfig } from '@/core/config/AppConfig';
+import { getAppConfig } from '@/core/config/AppConfig';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import configData from "@/core/config/endpoints/configData";
@@ -89,7 +91,7 @@ import { createLatestVersion } from '@/core/versions/createLatestVersion';
 import { isSnapshotFunction } from '@/core/snapshots/SnapshotMap';
 import { addToSnapshotList, isSnapshot } from "@/utils/snapshotUtils";
 
-import { CreateOptions, FetchAllOptions } from '@/core/snapshots/SnapshotOptions';
+import type { CreateOptions, FetchAllOptions } from '@/core/snapshots/SnapshotOptions';
 
 import {
     createMockSnapshot,

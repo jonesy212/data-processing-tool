@@ -1,55 +1,57 @@
 // CoreSnapshot.tsx
 
-import { ContentItem } from "@/core/cards/DummyCardLoader";
-import { ChatRoom } from '@/core/communications/ChatRoom';
-import { Sender } from '@/core/components/communications/CommunicationPage';
-import { Task } from '@/core/components/models/tasks/Task';
+import type { SnapshotManager } from "@/app/hooks/useSnapshotManager"
+import type { ContentItem } from "@/core/cards/DummyCardLoader";
+import type { ChatRoom } from '@/core/communications/ChatRoom';
+import type { Sender } from '@/core/components/communications/CommunicationPage';
+import type { Task } from '@/core/components/models/tasks/Task';
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Message } from '@/core/generators/GenerateChatInterfaces';
-import { CombinedEvents } from '@/core/hooks/useSnapshotManager';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import { Content } from "@/core/models/content/AddContent";
+import type { Message } from '@/core/generators/GenerateChatInterfaces';
+import type { CombinedEvents } from '@/core/hooks/useSnapshotManager';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Content } from "@/core/models/content/AddContent";
 import type { Data } from '@/core/models/data/Data';
-import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { SnapshotBase } from "@/core/snapshots/SnapshotContainer";
+import type { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import type { SnapshotBase } from "@/core/snapshots/SnapshotContainer";
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
-import { SnapshotIdentity } from '@/core/snapshots/SnapshotIdentity';
+import type { SnapshotIdentity } from '@/core/snapshots/SnapshotIdentity';
 import type { InitializedState } from '@/core/state/stores/DataStore';
-import { PhaseDefault } from '@/core/typings/phaseTypes';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { PhaseDefault } from '@/core/typings/phaseTypes';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 
-import { Label } from "@/core/branding/BrandingSettings";
+import type { Label } from "@/core/branding/BrandingSettings";
 import type { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SharedIdentifiers } from '@/core/documents/RelatedProps';
-import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { SharedTimestamps } from '@/core/models/CommonData';
+import type { SharedIdentifiers } from '@/core/documents/RelatedProps';
+import type { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { SharedTimestamps } from '@/core/models/CommonData';
 import type { ProjectPhaseTypeEnum, StatusType } from "@/core/models/data/StatusType";
-import { TagsRecord } from '@/core/models/tracker/Tag';
-import { SnapshotOperation } from "@/core/snapshots/index";
-import {
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { SnapshotOperation } from "@/core/snapshots/index";
+import type { 
+    Snapshots,
     SnapshotEquality,
     Snapshots,
     SnapshotsArray
 } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
-import { SnapshotItem } from "@/core/snapshots/SnapshotList";
-import { SnapshotMethods } from "@/core/snapshots/SnapshotMethods";
-import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
+import type { SnapshotItem } from "@/core/snapshots/SnapshotList";
+import type { SnapshotMethods } from "@/core/snapshots/SnapshotMethods";
+import type { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
+import type { SnapshotStoreMethods } from "@/core/snapshots/SnapshotStoreMethods";
 import type { InitializedDataStore } from "@/core/snapshots/SnapshotStoreOptions";
-import { SnapshotCRUD } from "@/core/snapshots/SnapshotSubscriberManagement";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SnapshotCRUD } from "@/core/snapshots/SnapshotSubscriberManagement";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import type { AllTypes } from "@/core/typings/PropTypes";
-import { SnapshotEvents } from '@/core/typings/snapshotTypes';
-import { User } from "@/core/users/User";
+import type { SnapshotEvents } from '@/core/typings/snapshotTypes';
+import type { User } from "@/core/users/User";
 import { default as SnapshotStore } from "./SnapshotStore";
 
 interface CoreSnapshot<
@@ -61,9 +63,7 @@ interface CoreSnapshot<
   IncludedFields extends keyof T = keyof T
 > extends Partial<SharedIdentifiers<T, K>>,
           Partial<SnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-          // Partial<SnapshotRelationships<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SnapshotCRUD<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-          // Partial<Omit<SnapshotInitialization<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'onInitialize'>>,
           Partial<SnapshotEquality<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SnapshotBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SharedTimestamps>

@@ -4,7 +4,7 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { CustomFile } from "@/core/documents/File";
 import type { Theme } from "@/core/libraries/ui/theme/Theme";
-import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import type { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import type { AppNotificationData } from '@/core/typings/entities/CommonEntities';
 import type { AppCalendarEvent } from '@/core/typings/meetingTypes';
 import { createAction } from "@reduxjs/toolkit";

@@ -27,11 +27,11 @@ import type { TodoManagerState } from '@/core/state/redux/slices/TodoSlice';
 import type { AlignmentOptions, ToolbarState } from '@/core/state/redux/slices/toolbarSlice';
 import type { TrackerManagerState } from '@/core/state/redux/slices/TrackerSlice';
 import type { UserManagerState } from '@/core/state/redux/slices/UserSlice';
-import { VersionState } from '@/core/state/redux/slices/VersionSlice';
-import { VideoState } from '@/core/state/redux/slices/VideoSlice';
-import { UIState } from '@/core/state/stores/UISlice';
+import type { VersionState } from '@/core/state/redux/slices/VersionSlice';
+import type { VideoState } from '@/core/state/redux/slices/VideoSlice';
+import type { UIState } from '@/core/state/stores/UISlice';
 import type { AppEntity } from '@/core/typings/entities/AppEntity';
-import { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
+import type { DataAnalysisState } from '@/core/typings/phases/dataAnalysisTypes';
 import { UserData } from '@/core/users/User';
 import { EntityId } from '@reduxjs/toolkit';
 

@@ -2,7 +2,8 @@
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import type { CommonCalendarProps } from "@/core/components/calendar/Calendar";
 import { YearInfo } from "@/core/components/calendar/CalendarYear";
-import { Month, MonthInfo } from "@/core/components/calendar/Month";
+import type { MonthInfo } from '@/core/components/calendar/Month';
+import { Month } from '@/core/components/calendar/Month';
 import { useCryptoManager } from "@/core/components/crypto/CryptoManager";
 import { Task } from "@/core/components/models/tasks/Task";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';

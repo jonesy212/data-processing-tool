@@ -5,12 +5,12 @@ import { ASTParserUtils } from '@/core/error-analyzer/utils/ASTParserUtils';
 import { CodePatternDetector } from '@/core/error-analyzer/utils/CodePatternDetector';
 import { ImportErrorSummaryGenerator } from '@/core/generators/corrections/ImportErrorSummary';
 import type { ExecutionContext, PhaseDefinition } from '@/core/models/phases/PhaseSystem';
-import type { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
-import { PhaseBackupSystemImpl } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import '@/core/error-analyzer/phases/PhaseBackupSystem';
 import fs from 'fs';
 import path from 'path';
 
-import {
+import type { BasePatternAnalysis, PatternOccurrence, PatternCompatibility, EntityPatternAnalysis } from '@/core/generators/corrections/reports/PatternReport';
+import { PatternDetectionResult } from '@/core/shared/pattern-types';
   BasePatternAnalysis,
   PatternOccurrence,
   PatternDetectionResult,

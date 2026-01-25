@@ -1,5 +1,5 @@
 // useVideoLifecycle.ts
-import { videoLifecycleConfig } from "@/core/config/VideoLifecycleConfig";
+import type { videoLifecycleConfig } from "@/core/config/VideoLifecycleConfig";
 import { useLifecycle } from "@/core/hooks/useLifecycle.ts";
 import { VideoLifecyclePhase } from "@/core/phases/VideoLifecyclePhase";
 import useVideoStore from "@/core/state/stores/VideoStore"; // ← connects to your state store

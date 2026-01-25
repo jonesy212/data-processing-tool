@@ -2,7 +2,8 @@
 // FrontendStructureViewer with action-level permission checks
 import { useCurrentUser, useRoleAccess } from '@/core/hooks/useRoleAccess';
 import type { UserRole } from '@/core/models/UserRole';
-import UserRoles, { UserRoleEnum } from '@/core/models/UserRoles';
+import type { UserRoleEnum } from '@/core/models/UserRoles';
+import UserRoles from '@/core/models/UserRoles';
 import AccessDenied from '@/core/pages/AccessDenied';
 import React, { useState } from 'react';
 

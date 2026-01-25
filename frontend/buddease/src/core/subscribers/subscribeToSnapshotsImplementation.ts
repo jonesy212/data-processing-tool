@@ -3,7 +3,8 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { Subscriber } from "@/core/subscribers/Subscriber";

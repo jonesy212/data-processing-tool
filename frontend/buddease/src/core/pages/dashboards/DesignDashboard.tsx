@@ -12,7 +12,7 @@ import DynamicTypography, {
 import FrontendStructure from "@/core/config/appStructure/FrontendStructureComponent";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { LogData } from '@/core/models/LogData';
 import DataPreview, {
     DataPreviewProps,

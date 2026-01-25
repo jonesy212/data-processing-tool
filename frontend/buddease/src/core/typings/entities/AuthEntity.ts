@@ -5,22 +5,24 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { AccessControlEntry } from '@/core/permissions/AccessControlEntry';
+import type { type  } from '@/core/permissions/AccessControlEntry';
 import { PermissionLevel, VisibilityLevel } from '@/core/permissions/PermissionEnums';
-import { AuthenticationProvider } from '@/core/server/auth/AuthService';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { AuthenticationProvider } from '@/core/server/auth/AuthService';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import { SecurityEvent } from '@/core/state/redux/slices/SecurityEventSlice';
-import { UserContactInfo, UserNotificationPreferences, UserSession } from '@/core/state/stores/AuthStore';
+import '@/core/state/stores/AuthStore';
 import { SubscriptionPlan } from '@/core/subscriptions/SubscriptionPlan';
-import { DashboardConfig } from '@/core/typings/authTypes';
-import { ApplyFieldFilters } from '@/core/typings/entities/AppEntity';
-import { PublicUserProfile } from '@/core/typings/entities/UserEntity';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { DashboardConfig } from '@/core/typings/authTypes';
+import type { ApplyFieldFilters } from '@/core/typings/entities/AppEntity';
+import type { PublicUserProfile } from '@/core/typings/entities/UserEntity';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { UserPreferences } from '@/core/typings/userTypes';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 
 // Define sensitive fields that should never be exposed
 const SensitiveAuthFields = [

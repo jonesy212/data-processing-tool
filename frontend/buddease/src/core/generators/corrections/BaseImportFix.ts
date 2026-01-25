@@ -1,8 +1,8 @@
 // BaseImportFix.ts
+import type { ImportFix as BaseImportFix } from '@/app/scripts/import-fix-types';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import type { ImportFix as BaseImportFix } from '@/app/scripts/import-fixes'
 
 // Assuming ImportFix is defined as in Option 4 from previous answer
 export interface BaseImportFix {

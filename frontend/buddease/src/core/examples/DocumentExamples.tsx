@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import {
+import type { AppDocument, DocumentContext as DocumentContextType, DocumentFilterOptions, DocumentPermissions, DocumentVersion } from '@/core/typings/entities/CommonEntities';
     AppDocument,
     DocumentContext as DocumentContextType,
     DocumentFilterOptions,

@@ -3,7 +3,8 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { BlogActions } from "@/core/components/models/blogs/BlogAction";
-import createDynamicHook, { DynamicHookParams } from "@/core/hooks/dynamicHooks/dynamicHookGenerator";
+import type { DynamicHookParams } from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
 import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import type { BlogPost } from '@/core/pages/blog/BlogPost';
 import BlogPostComponent from '@/core/pages/blog/BlogPost';

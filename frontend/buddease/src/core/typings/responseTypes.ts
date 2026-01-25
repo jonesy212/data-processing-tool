@@ -1,33 +1,33 @@
 // responseTypes.ts
-import { NestedEndpoints } from '@/core/api/ApiEndpoints';
-import { SearchNotesResponse } from '@/core/api/ApiNote';
+import type { NestedEndpoints } from '@/core/api/ApiEndpoints';
+import type { SearchNotesResponse } from '@/core/api/ApiNote';
 import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
-import { Attendee } from '@/core/components/calendar/Attendee';
-import { Team } from '@/core/components/teams/Team';
+import type { Attendee } from '@/core/components/calendar/Attendee';
+import type { Team } from '@/core/components/teams/Team';
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { DataWithComment } from '@/core/dataIntegration/SafeParseData';
+import type { DataWithComment } from '@/core/dataIntegration/SafeParseData';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import HighlightEvent from '@/core/highlighting/screenFunctionality/HighlightEvent';
-import { Exchange } from '@/core/models/cypto/Exchange';
+import type { HighlightEvent} from '@/core/highlighting/screenFunctionality/HighlightEvent';
+import type { Exchange } from '@/core/models/cypto/Exchange';
 import type { Data } from '@/core/models/data/Data';
-import { ExchangeData } from '@/core/models/data/ExchangeData';
-import { Phase } from '@/core/models/phases/Phase';
-import { Project } from '@/core/models/projects/Project';
+import type { ExchangeData } from '@/core/models/data/ExchangeData';
+import type { Phase } from '@/core/models/phases/Phase';
+import type { Project } from '@/core/models/projects/Project';
 import type { Task } from '@/core/models/tasks/Task';
-import { DataAnalysisResult } from '@/core/projects/DataAnalysisPhase/DataAnalysisResult';
+import type { DataAnalysisResult } from '@/core/projects/DataAnalysisPhase/DataAnalysisResult';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import type { BaseDataEntity } from '@/core/snapshots/ValidationRule';
-import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
+import type { Settings } from '@/core/state/hybrid/SettingsManagerStore';
 import BrowserCheckStore from '@/core/state/stores/BrowserCheckStore';
-import { CalendarManagerStore } from '@/core/state/stores/CalendarManagerStore';
-import { IconStore } from '@/core/state/stores/IconStore';
-import { TaskManagerStore } from '@/core/state/stores/TaskStore';
-import { TodoManagerStore } from '@/core/state/stores/TodoStore';
-import { TrackerStore } from '@/core/state/stores/TrackerStore';
-import { Todo } from '@/core/todos/Todo';
-import { BaseResponseType } from '@/core/typings/baseResponseTypes';
-import { User } from '@/core/users/User';
+import type { CalendarManagerStore } from '@/core/state/stores/CalendarManagerStore';
+import type { IconStore } from '@/core/state/stores/IconStore';
+import type { TaskManagerStore } from '@/core/state/stores/TaskStore';
+import type { TodoManagerStore } from '@/core/state/stores/TodoStore';
+import type { TrackerStore } from '@/core/state/stores/TrackerStore';
+import type { Todo } from '@/core/todos/Todo';
+import type { BaseResponseType } from '@/core/typings/baseResponseTypes';
+import type { User } from '@/core/users/User';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo

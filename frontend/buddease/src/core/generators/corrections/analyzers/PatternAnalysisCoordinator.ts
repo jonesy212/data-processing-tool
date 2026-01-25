@@ -1,7 +1,7 @@
 // PatternAnalysisCoordinator.ts
 import { PatternReport } from '@/core/generators/corrections/reports/PatternReport';
 import { DynamicPhaseExecutor } from '@/core/error-analyzer/phases/DynamicPhaseSystem';
-import { ComponentPatternAnalyzer } from '@/core/analyzers/ComponentPatternAnalyzer';
+import { ComponentPatternAnalyzer } from '@/core/generators/corrections/analyzers/ComponentPatternAnalyzer';
 import { UnifiedPatternReport } from '@/core/shared/pattern-types';
 import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
 

@@ -2,7 +2,8 @@
 app/features/support/hooks/useSupportTickets.ts
 import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { provideCustomerSupport } from '@/core/state/slices/ApiManagerSlice';
-import { SupportTicket, SupportTicketStatus } from '@/core/features/support/SupportTicketComponent';
+import type { SupportTicket } from '@/core/features/support/SupportTicketComponent';
+import { SupportTicketStatus } from '@/core/features/support/SupportTicketComponent';
 import { useDispatch, useSelector } from 'react-redux';
 
 export const useSupportTickets = () => {

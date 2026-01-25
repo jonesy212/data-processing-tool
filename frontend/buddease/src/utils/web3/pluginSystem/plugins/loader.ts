@@ -1,5 +1,5 @@
 // loader.ts
-import { DAppPlugin } from "@/utils/web3/pluginSystem/plugins/PluginInterface";
+import type { DAppPlugin } from "@/utils/web3/pluginSystem/plugins/PluginInterface";
 
 const loadPlugins = async (): Promise<DAppPlugin[]> => {
   const plugins = ["fluence", "custom"]; // List of plugins to load

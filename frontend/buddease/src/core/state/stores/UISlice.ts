@@ -1,10 +1,11 @@
 // UISlice.ts
 import { UIActions } from "@/core/actions/UIActions";
-import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import type { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { CollaborationState } from "@/core/state/redux/slices/CollaborationSlice";
 import { setIsDrawing } from "@/core/state/redux/slices/DrawingSlice";
 import { resetMilestones, resetTrackers } from "@/core/state/redux/slices/TrackerSlice";
-import {
+import type { CollaboratorAttachment, CollaboratorEntity, CollaboratorMeta } from '@/core/typings/entities/CollaboratorEntity';
+import type { 
     CollaboratorAttachment,
     CollaboratorEntity,
     CollaboratorExcludedFields,
@@ -12,7 +13,8 @@ import {
     CollaboratorK,
     CollaboratorMeta
 } from '@/core/typings/entities/CollaboratorEntity';
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { useDispatch } from "react-redux";
 
 // Create a type alias for the collaboration state with concrete types

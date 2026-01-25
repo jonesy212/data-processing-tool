@@ -1,7 +1,8 @@
 // apiSagas.ts
 import { ApiActions } from "@/core/actions/ApiActions";
 import ApiConfig from '@/core/api/ApiConfigManager';
-import { Config, configManager } from "@/core/api/ConfigManager";
+import type { Config } from '@/core/api/ConfigManager';
+import { configManager } from '@/core/api/ConfigManager';
 import { call, put, select, takeLatest } from "@/core/state/redux/sagas/UndoRedoSaga";
 import type { AxiosResponse } from 'axios';
 import axios from 'axios';

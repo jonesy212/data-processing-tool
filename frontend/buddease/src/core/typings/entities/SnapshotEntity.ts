@@ -4,19 +4,20 @@ import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Data } from '@/core/models/data/Data';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
+import type { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
-import { data, SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import {data } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
-import { ExtendedVersionData } from "@/core/versions/VersionData";
+import type { ExtendedVersionData } from "@/core/versions/VersionData";
 
 // --- Core Snapshot type definitions ---
 type SnapshotEntity = BaseDataEntity 

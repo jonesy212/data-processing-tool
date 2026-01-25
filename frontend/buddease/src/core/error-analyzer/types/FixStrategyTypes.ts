@@ -1,5 +1,5 @@
 // FixStrategyTypes.ts
-import type { FixPlan, StrategyCore } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+import type { FixPlan, StrategyCore } from '@/core/error-analyzer/ErrorFixManager';
 
 // Create a unified type that includes ALL fix types from both FixPlan and your new ones
 export type FixStrategyTypeDef = 

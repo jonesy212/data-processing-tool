@@ -6,10 +6,11 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import { DataVersions } from "@/core/configs/DataVersionsConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { hashString } from "@/core/generators/HashUtils";
-import { UserConfigData } from "@/core/models/data/dataStoreMethods";
+import type { UserConfigData } from "@/core/models/data/dataStoreMethods";
 import UserRoles from '@/core/models/UserRoles';
 import { Permission } from '@/core/permissions/Permission';
-import {
+import type { UserAttachment, UserEntity, UserMeta } from '@/core/typings/entities/UserEntity';
+import { UserExcludedFields, UserIncludedFields, UserK } from '@/core/typings/entities/UserEntity';
   UserAttachment,
   UserEntity,
   UserExcludedFields,

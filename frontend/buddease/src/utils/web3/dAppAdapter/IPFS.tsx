@@ -9,10 +9,10 @@ import { DocumentSize } from "@/core/models/data/StatusType";
 import { useAuth } from '@/core/state/context/AuthContext';
 import type { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/core/typings/entities/ExtendedDappEntity';
 import { CustomDAppAdapter } from '@/utils/web3/dAppAdapter/DApp';
-import { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
+import type { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { ethers } from 'ethers';
 import { create } from 'ipfs-core';
-import { PoolConfig } from 'mysql';
+import type { PoolConfig } from 'mysql';
 
 
 // Get configs data and handle the case where it returns undefined
@@ -52,28 +52,31 @@ if (currentUser) {
   // Ensure that currentUser is properly structured according to DappProps['currentUser']
   const currentUserForDapp: DappProps<
     ExtendedDappEntity,
-    ExtendedDappK,     
-    ExtendedDappMeta,  
+    ExtendedDappK,
+    ExtendedDappMeta,
     ExtendedDappAttachment,
     ExtendedDappExcludedFields,
-    ExtendedDappIncludedFields>['currentUser'] = {
-    id: currentUser.id, // Assign the user's ID
-    username: currentUser.username, // Assign the user's name
-    role: String(currentUser.role), // Convert UserRole to string and assign it as the user's role
-    teams: currentUser.teams, // Assign the user's teams
-    projects: currentUser.projects, // Assign the user's projects
-    teamMembers: currentUser.teamMembers, // Assign the user's team members
-  },
-
-   // Now you can use `currentUser` in your DAppAdapterConfig
-   dappAdapterConfig = {
-    // Other properties...
-    dappProps: {
-      // Include other DappProps configurations...
-      currentUser: currentUserForDapp,
-
-      // Include other DappProps configurations...
-    },
+    ExtendedDappIncludedFields
+  >['currentUser'] = {
+    id: currentUser.id,
+    username: currentUser.username,
+    role: currentUser.role,
+    teams: currentUser.teams?.map(team => ({
+      ...team,
+      // Ensure team has the correct type parameters
+      children: team.children,
+      // Add any other properties needed
+    })) as Team<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>[],
+    
+    projects: currentUser.projects?.map(project => ({
+      ...project,
+      // Ensure project has the correct type parameters
+    })) as Project<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>[],
+    
+    teamMembers: currentUser.teamMembers?.map(member => ({
+      ...member,
+      // Ensure teamMember has the correct type parameters
+    })) as TeamMember<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>[]
   };
 }
 
@@ -244,7 +247,6 @@ export class ExtendedDAppAdapter<
         },
       };
     }
-
     return dappAdapterConfig?.dappProps as ExtendedDappProps;
   }
 

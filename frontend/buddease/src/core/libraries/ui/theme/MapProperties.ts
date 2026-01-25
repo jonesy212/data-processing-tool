@@ -1,6 +1,6 @@
 // MapProperties.ts
-    import { UserSettings } from "@/core/config/UserSettings";
-import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { UserSettings } from "@/core/config/UserSettings";
+import type { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
 
     // Define color properties for the design system
     interface ColorProperties {

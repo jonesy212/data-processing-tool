@@ -1,6 +1,7 @@
 // toolbarSlice.ts
 import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 
 interface Toolbar {

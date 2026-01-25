@@ -8,7 +8,8 @@ import { AuthenticationProvider } from '@/core/server/auth/AuthService';
 import type { RootState } from '@/core/state/redux/slices/RootSlice';
 import { AuthStore } from "@/core/state/stores/AuthStore";
 import type { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/core/typings/entities/AuthEntity';
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 interface AuthState<
   T extends BaseDataEntity,

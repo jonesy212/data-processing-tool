@@ -1,9 +1,10 @@
 // CallSlice.ts
-import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import type { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import { Tag } from "@/core/models/tracker/Tag";
 import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 export interface Call {
   id: string;

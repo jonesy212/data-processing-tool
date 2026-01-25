@@ -1,6 +1,6 @@
 // ComponentConfig.ts
 // For individual component instances (new)
-import { ComponentsConfig } from '@/core/config/ComponentsConfig';
+import type { ComponentsConfig } from '@/core/config/ComponentsConfig';
 export type ComponentType = keyof ComponentsConfig;
 
 export interface ComponentConfig {

@@ -2,7 +2,7 @@
 import type { JWT_SECRET } from "@/core/server/JwtConfig";
 import type { DatabaseConfig } from "@/core/config/DatabaseConfig";
 import type { ClientDatabaseService } from "@/core/config/DatabaseTypes";
-import { databaseConfig } from '@/core/config/endpoints/databaseConfig';
+import type { databaseConfig } from '@/core/config/endpoints/databaseConfig';
 import { PostgresDatabaseService } from "@/core/server/database/PostgresDatabaseService";
 
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';

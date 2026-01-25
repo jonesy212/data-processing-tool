@@ -3,7 +3,7 @@
 import axiosInstance from '@/core/api/csrfToken';
 import { endpoints } from '@/core/api/endpointConfigurations';
 import CalendarEventCollaborator from '@/core/calendar/CalendarEventCollaborator';
-import { NotificationType, useNotification } from '@/core/state/context/NotificationContext';
+import type { NotificationType, useNotification } from '@/core/state/context/NotificationContext';
 import InvitationData from '@/core/state/redux/slices/InvitationData';
 import { AxiosError } from 'axios';
 

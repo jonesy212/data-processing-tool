@@ -9,8 +9,8 @@ import type {
   Attachment,
   DefaultExcludedFields 
 } from '@/core/config/BaseConfig';
-import type { User } from '@/core/models/User';
-import type { Project } from '@/core/models/Project';
+import type { User } from '@/core/users/User';
+import type { Project } from '@/core/models/projects/Project';
 
 // Define type parameters that match your User and Project interfaces
 type T = BaseDataRoot;

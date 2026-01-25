@@ -1,6 +1,7 @@
 // ContentList.tsx
-import { ContentItem } from '@/core/components/models/content/ContentItem';
-import ListGenerator, { DetailsItemCommon } from '@/core/generators/ListGenerator';
+import type { ContentItem } from '@/core/components/models/content/ContentItem';
+import type { DetailsItemCommon } from '@/core/generators/ListGenerator';
+import ListGenerator from '@/core/generators/ListGenerator';
 import type { Data } from '@/core/models/data/Data';
 import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import React from 'react';

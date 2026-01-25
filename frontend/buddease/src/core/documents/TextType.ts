@@ -1,6 +1,6 @@
 // TextType.ts
 import * as ApiDataAnalysis from "@/core/api/ApiDataAnalysis";
-import { TextProps } from "@/core/libraries/animations/DraggableAnimation/useText";
+import type { TextProps } from "@/core/libraries/animations/DraggableAnimation/useText";
 import generateSecretKey from "@/utils/generateSecretKey";
 import crypto from "crypto";
 
@@ -11,9 +11,9 @@ class TextType {
 
   constructor(props: TextProps) {
     this.text = props.text;
-      this.secretKey = generateSecretKey();
-      this.onTextDragEnd = props.onTextDragEnd;
-    }
+    this.secretKey = generateSecretKey();
+    this.onTextDragEnd = props.onTextDragEnd;
+  }
 
   getText(): string {
     return this.text;

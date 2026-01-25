@@ -5,7 +5,6 @@
 import { ErrorFixManager } from '@/core/error-analyzer/ErrorFixManager';
 import { FileRelationshipAnalyzer } from '@/core/error-analyzer/FileRelationshipAnalyzer';
 import { TypeScriptErrorFixSystem } from '@/core/error-analyzer/TypeScriptErrorFixSystem';
-import type { TSCompilerError, FixPlan } from '@/core/error-analyzer/ErrorFixManager';
 import type { AnalyzedError, RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import { execSync } from 'child_process';
 import fs from 'fs';

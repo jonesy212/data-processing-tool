@@ -3,7 +3,7 @@
 
 import internalApiService from '@/core/api/ApiClient';
 import { updateFilteredNewsUI } from '@/core/features/news/updateFilteredNewsUI';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 import { categorizeNews, identifyTrendingTopics } from "@/core/components/community/articleKeywords";

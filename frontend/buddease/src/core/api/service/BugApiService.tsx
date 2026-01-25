@@ -5,7 +5,7 @@ import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken'; // Assuming you have an axios instance configured
 import { endpoints } from '@/core/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { AxiosError, AxiosResponse } from 'axios';
 
 const API_BASE_URL = endpoints.client;

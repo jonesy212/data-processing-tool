@@ -1,5 +1,5 @@
 // openSecuritySettingsModal.ts
-import { SecuritySettings } from '@/core/settings/SecuritySettings';
+import type { SecuritySettings } from '@/core/settings/SecuritySettings';
 
 const openSecuritySettingsModal = async (
     currentSettings: SecuritySettings,

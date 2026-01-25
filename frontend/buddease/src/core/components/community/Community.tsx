@@ -8,7 +8,8 @@ import CommunityProjectsPage from '@/core/pages/community/CommunityProjectsPage'
 import { Product } from '@/core/products/Product';
 import ProjectManagementApp from '@/core/projects/projectManagement/ProjectManagementApp';
 import ProjectManagementSimulation from '@/core/projects/projectManagement/ProjectManagementSimulation';
-import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/utils/web3/dAppAdapter/IPFS';
+import type { ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/utils/web3/dAppAdapter/IPFS';
+import { ExtendedDAppAdapter } from '@/utils/web3/dAppAdapter/IPFS';
 import React from 'react';
 
 

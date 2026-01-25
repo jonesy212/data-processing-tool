@@ -1,7 +1,7 @@
 // clientSaga.ts
 import { ClientActions } from "@/core/actions/ClientActions";
 import internalApiService from '@/core/api/ApiClient'; // Import the internalApiService
-import { ClientConfig } from "@/core/client/Client";
+import type { ClientConfig } from "@/core/client/Client";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 

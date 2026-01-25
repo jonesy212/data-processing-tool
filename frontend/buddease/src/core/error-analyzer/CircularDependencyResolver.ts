@@ -1,7 +1,7 @@
 // CircularDependencyResolver.ts
 //app/error-analyzer/CircularDependencyResolver.ts
 
-import type { FixPlan, TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { FixPlan, TSCompilerError } from '@/core/error-analyzer/TypeScriptErrorFixSystem';
 import type { CircularBreakStrategy } from '@/core/error-analyzer/index';
 import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 

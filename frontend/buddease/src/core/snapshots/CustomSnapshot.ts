@@ -7,7 +7,7 @@ import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
-import { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import type { InitializedState } from '@/core/state/stores/DataStore';
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
 import { ExtendedVersionData } from '@/core/versions/VersionData';

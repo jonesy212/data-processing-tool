@@ -3,7 +3,7 @@ import { ContentItem } from '@/core/components/models/content/ContentItem';
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { CommonData } from '@/core/models/CommonData';
+import type { CommonData } from '@/core/models/CommonData';
 import { Content } from '@/core/models/content/AddContent';
 import type { Task } from "@/core/models/tasks/Task";
 import { ItemUnion } from '@/core/snapshots/SnapshotContainer';

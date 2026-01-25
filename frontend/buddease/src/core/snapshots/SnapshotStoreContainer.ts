@@ -4,12 +4,13 @@ import type { snapshotStoreConfig, SnapshotStoreProps } from '@/core/snapshots/S
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
 
 import { LanguageEnum } from "@/core/communications/LanguageEnum";
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from '@/core/config/BaseConfig';
-import { Category, generateCategoryProperties } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import { generateCategoryProperties } from '@/core/libraries/categories/generateCategoryProperties';
 import { SimulatedDataSource } from '@/core/snapshots/createSnapshotOptions';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';

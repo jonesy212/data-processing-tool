@@ -1,9 +1,10 @@
 // DynamicComponentsContext.tsx
 import React, { createContext, useContext, useState } from 'react';
-interface DynamicConfigActionType {
+
+
+export interface DynamicConfigActionType {
   type: string; // Action type string
   payload?: any; // Payload type (can be any)
-  
 }
 
 // Define a specific type or interface for dynamicConfig
@@ -88,5 +89,4 @@ export const DynamicComponentsProvider: React.FC<DynamicComponentContextProps> =
   );
 };
 
-export default DynamicConfigActionType;
 export type { DynamicConfigType };

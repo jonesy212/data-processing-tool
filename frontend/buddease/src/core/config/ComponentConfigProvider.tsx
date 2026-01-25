@@ -1,5 +1,6 @@
 // ComponentConfigProvider.tsx
-import { ComponentsConfig, defaultComponentConfig } from "@/core/config/ComponentsConfig";
+import type { ComponentsConfig } from '@/core/config/ComponentsConfig';
+import type { defaultComponentConfig } from '@/core/config/ComponentsConfig';
 import React, { createContext, useContext, useState } from "react";
 
 type ConfigContextValue = {

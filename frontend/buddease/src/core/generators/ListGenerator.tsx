@@ -4,7 +4,8 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Data } from '@/core/models/data/Data';
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";
-import {
+import type { DetailsAttachment, DetailsEntity, DetailsMeta } from '@/core/typings/entities/DetailsEntity';
+import { DetailsExcludedFields, DetailsIncludedFields, DetailsK } from '@/core/typings/entities/DetailsEntity';
     DetailsAttachment,
     DetailsEntity,
     DetailsExcludedFields,

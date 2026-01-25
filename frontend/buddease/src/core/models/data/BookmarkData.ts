@@ -1,6 +1,6 @@
 // BookmarkData.ts
 
-import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
+import type { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
 import type { AllStatus } from "@/core/state/stores/DetailsListStore";
 import { PhaseDefault } from '@/core/typings/phaseTypes';
 // Define the interface for BookmarkData

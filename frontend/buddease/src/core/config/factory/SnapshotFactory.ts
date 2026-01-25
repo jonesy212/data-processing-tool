@@ -1,8 +1,8 @@
 // SnapshotFactory.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotConfigBuilder } from '@/core/snapshots/SnapshotConfigBuilder';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 // =========================
 // CONFIG FACTORY COMPANION

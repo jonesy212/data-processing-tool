@@ -1,7 +1,7 @@
 // ProductEntity.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CommonData } from '@/core/models/CommonData';
+import type { CommonData } from '@/core/models/CommonData';
 import { VisualizationData } from '@/core/users/User';
 
 // Define the actual ProductEntity interface

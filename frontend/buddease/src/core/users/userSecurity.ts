@@ -1,6 +1,6 @@
 // userSecurity.ts
 import bcrypt from 'bcrypt';
-import { UserEntity } from './UserEntity';
+import type { UserEntity } from '@/core/typings/entities/UserEntity';
 
 export class UserSecurity {
   private static readonly SALT_ROUNDS = 12;

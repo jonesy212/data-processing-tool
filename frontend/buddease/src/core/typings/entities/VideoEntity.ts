@@ -4,10 +4,10 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 // --- Core Video Type Definitions ---
 

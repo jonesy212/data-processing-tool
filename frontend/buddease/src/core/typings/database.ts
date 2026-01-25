@@ -1,5 +1,5 @@
 // database.ts
-import { DatabaseConfig } from '@/core/config/DatabaseConfig';
+import type { DatabaseConfig } from '@/core/config/DatabaseConfig';
 
 export interface BackendDatabaseService {
   connect(): Promise<void>;

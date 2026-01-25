@@ -4,7 +4,7 @@ import internalApiService from '@/core/api/ApiClient';
 import { getEndpointUrl } from '@/core/api/getConfiguredEndpoint';
 import { useAuth } from '@/core/state/context/AuthContext';
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { observable, runInAction } from 'mobx';
 
 const handleSuccess = <T>(action: (payload: T) => void) => async (

@@ -1,29 +1,31 @@
 // SnapshotStoreSubset.ts
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Payload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { SnapshotOperation } from "@/core/snapshots/index";
-import { Snapshots, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotOperation } from "@/core/snapshots/snapshotOperation";
+import type { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
+import type { SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
-import { SnapshotEvent } from '@/core/typings/snapshotTypes';
+import type { RealtimeDataItem } from "@/core/typings/realtimeTypes";
+import type { SnapshotEvent } from '@/core/typings/snapshotTypes';
 
 import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { DataStore } from '@/core/state/stores/DataStore';
 
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
-import { SnapshotContext } from '@/core/snapshots/SnapshotSubscriberManagement';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { SnapshotContext } from '@/core/snapshots/SnapshotSubscriberManagement';
 
-interface SnapshotStoreSubset<
+export interface SnapshotStoreSubset<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -250,6 +252,3 @@ interface SnapshotStoreSubset<
   // Gets a custom store for snapshots.
   getCustomStore: () => SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
-
-
-export default SnapshotStoreSubset;

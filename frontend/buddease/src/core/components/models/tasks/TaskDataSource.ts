@@ -1,15 +1,15 @@
 // TaskDataSource.ts
-// TaskEntitySource.ts
 import { PriorityTypeEnum, TaskStatus } from "@/core/models/data/StatusType";
-import { Phase, PhaseData } from "@/core/models/phases/Phase";
-import { Task } from "@/core/models/tasks/Task";
-import { DetailsItem } from "@/core/state/stores/DetailsListStore";
+import type { Phase, PhaseData } from "@/core/models/phases/Phase";
+import type { Task } from '@/core/models/tasks/Task';
+import type { DetailsItem } from '@/core/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/core/typings/entities/TaskEntity";
-import { VideoData } from "@/core/typings/videoTypes/Video";
-import { Idea } from "@/core/users/Ideas";
+import type { TaskAttachment, TaskEntity, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import type { TaskExcludedFields, TaskIncludedFields, TaskK } from '@/core/typings/entities/TaskEntity';
+import type { VideoData } from "@/core/typings/videoTypes/Video";
+import type { Idea } from "@/core/users/Ideas";
+import type { Data } from '@/core/models/data/Data';
 
-// Define the tasks data source as an object where keys are task IDs and values are task objects
 // Define the tasks data source with proper generic parameters
 const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> = {
   "1": {
@@ -35,7 +35,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     dependencies: [],
     previouslyAssignedTo: [],
     done: false,
-    data: {} as TaskEntity,
+    data: {} as Data<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     source: "user",
     
     // Timeline properties
@@ -100,7 +100,11 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     },
     
     // Array method implementation
-    some: function(callbackfn, thisArg?) {
+    some: function(callbackfn: (
+      value: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 
+      index: number, 
+      array: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]) => boolean, 
+      thisArg?: any) {
       return callbackfn(this, 0, [this]);
     }
   },
@@ -128,7 +132,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     dependencies: [],
     previouslyAssignedTo: [],
     done: false,
-    data: {} as TaskEntity,
+    data: {} as Data<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     source: "system",
     
     // Timeline properties
@@ -175,8 +179,8 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     analysisResults: [1, 2, 3],
     
     // Complex type properties
-    phase: {} as Phase<PhaseData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
-    videoData: {} as VideoData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    phase: {} as Phase<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    videoData: {} as VideoData<TaskEntity, TaskK>,
     ideas: [] as Idea[],
     details: {} as DetailsItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     
@@ -207,12 +211,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
         updatedAt: new Date(), 
         createdBy: "creator1",
         timestamp: new Date().getTime(),
-        nulltype: {
-          relatedTags: {},
-          color: "",
-          description: "",
-          enabled: "",
-        }
+        nulltype: 'none'
       }
     },
     
@@ -222,7 +221,11 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     },
     
     // Array method implementation
-    some: function(callbackfn, thisArg?) {
+    some: function(callbackfn: (
+      value: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 
+      index: number, 
+      array: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]) => boolean, 
+      thisArg?: any) {
       return callbackfn(this, 0, [this]);
     }
   }

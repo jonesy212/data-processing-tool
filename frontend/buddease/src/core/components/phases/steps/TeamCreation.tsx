@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import * as TeamCreationAPI from "@/core/api/ApiTeam";
 import axiosInstance from '@/core/api/csrfToken';
 import { TeamCreationPhase } from "@/core/components/phases/steps/TeamCreation";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import TeamCreationConfirmationPage from "@/core/pages/teams/TeamCreationConfirmationPage";
 import TeamCreationQuestionnaire from "@/core/pages/teams/TeamCreationQuestionnaire";
 import { useNotification } from "@/core/state/context/NotificationContext";

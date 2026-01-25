@@ -1,11 +1,12 @@
 // EventSlice.ts
 
 import axiosInstance from '@/core/api/csrfToken';
-import { AppThunk } from "@/core/configs/appThunk";
-import { CustomEventExtension } from '@/core/events/BaseCustomEvent';
+import type { AppThunk } from "@/core/configs/appThunk";
+import type { CustomEventExtension } from '@/core/events/BaseCustomEvent';
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
-import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
-import { fetchEvents } from "./SecurityEventSlice";
+import type { Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import type { fetchEvents } from "./SecurityEventSlice";
 
 // Define the initial state for the EventSlice
 interface EventState {

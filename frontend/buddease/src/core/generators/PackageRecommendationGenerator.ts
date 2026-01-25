@@ -1,5 +1,5 @@
 // PackageRecommendationGenerator.ts
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 
 interface PackageRecommendation {
   name: string;

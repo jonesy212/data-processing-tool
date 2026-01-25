@@ -1,6 +1,6 @@
 // createSnapshotStore.ts
 import getSnapshotId from "@/core/api/SnapshotApi";
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta

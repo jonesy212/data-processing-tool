@@ -1,19 +1,20 @@
 // SnapshotActions.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { CreateSnapshotsPayload, Payload } from '@/core/interfaces/payload/payloadTypes';
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
-import { CriteriaType } from "@/core/pages/searches/CriteriaType";
+import type { NotificationPosition, PriorityTypeEnum, StatusType } from "@/core/models/data/StatusType";
+import type { CriteriaType } from "@/core/pages/searches/CriteriaType";
 import type { DataStoreMethods } from "@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshots, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 
 import { FetchSnapshotPayload } from "@/core/snapshots/FetchSnapshotPayload";
@@ -28,7 +29,8 @@ import type { AppEntity } from "@/core/typings/entities/AppEntity";
 import type { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskSnapshotsArray, TaskSnapshotStore, TaskSnapshotWithCriteria } from '@/core/typings/entities/TaskEntity';
 import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 import { SnapshotEvent } from '@/core/typings/snapshotTypes';
-import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
+import type { ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import { createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 
 const dispatch = useDispatch()

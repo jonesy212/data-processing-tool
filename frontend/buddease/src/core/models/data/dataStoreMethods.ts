@@ -1,10 +1,10 @@
 // dataStoreMethods.ts
 import { CustomHydrateResult } from "@/core/config/DocumentBuilderConfig";
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import type { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/core/snapshots/SnapshotData';
 import type { DataStore } from "@/core/state/stores/DataStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
 import { addToSnapshotList, isBaseData, isSnapshot } from '@/utils/snapshotUtils';
@@ -18,15 +18,15 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useSecureStoreId from "@/core/hooks/useSecureStoreId";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { Data } from "@/core/models/data/Data";
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { convertToArray } from '@/core/snapshots/createSnapshotStoreOptions';
 import { SnapshotContainer } from "@/core/snapshots/SnapshotContainer";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreConfig, UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { SnapshotStoreConfig, UserConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore } from "@/core/snapshots/useSnapshotStore";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { Version } from "@/core/versions/Version";
 
 // Assuming T is defined in your context

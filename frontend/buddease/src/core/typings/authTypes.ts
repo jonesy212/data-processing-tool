@@ -1,6 +1,6 @@
 // authTypes.ts
-types/auth.ts (shared between frontend and backend)
-import { Permission } from '@/core/permissions/Permission';
+// types/auth.ts (shared between frontend and backend)
+import type { Permission } from '@/core/permissions/Permission';
 
 export interface LoginResult {
   success: boolean;

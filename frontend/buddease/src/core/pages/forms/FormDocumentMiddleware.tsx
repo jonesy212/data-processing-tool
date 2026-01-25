@@ -1,6 +1,6 @@
 // FormDocumentMiddleware.tsx
 
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import type { DocumentBuilderProps } from '@/core/documents/SharedDocumentProps';
 import DocumentBuilder from '@/core/documents/SharedDocumentProps';
 import DynamicForm from '@/core/pages/forms/DynamicForm';

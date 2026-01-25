@@ -2,7 +2,7 @@
 ChatRoom.tsx
 import axiosInstance from '@/core/api/csrfToken';
 import connectToChatWebSocket, { retryConfig } from "@/core/components/communications/WebSocket";
-import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { ChatLogger } from '@/core/logging/Logger';
 import DynamicTextArea from "@/core/ts/DynamicTextArea";
 import React, { useEffect, useState } from "react";

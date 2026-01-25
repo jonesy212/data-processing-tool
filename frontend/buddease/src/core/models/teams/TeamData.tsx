@@ -4,7 +4,6 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
 import type { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
 import type { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
-import type { BrandingSettings } from '@/core/libraries/theme/BrandingService';
 import type { BrandingSettings } from '@/core/branding/BrandingSettings';
 
 import type { CommonData } from '@/core/models/CommonData';
@@ -19,6 +18,9 @@ TeamAttachment,
 TeamExcludedFields,
 TeamIncludedFields, } from '@/core/typings/entities/TeamEntity';
 
+
+import type { TeamPermission } from '@/core/permissions/Permission'
+
 interface TeamData<  
   T extends BaseDataEntity,
   K extends T = T,
@@ -26,8 +28,7 @@ interface TeamData<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-  Partial<BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+> extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>{
   id: number | string;
   teamName: string
   description?: string;
@@ -113,7 +114,7 @@ const teamData: TeamData<
   isActive: false,            // Required (boolean)
   members: [],                // Required (Members<...> - need proper type)
   createdDate: new Date(),    // Required (Date)
-  Finterface TeamPermission : createTeamPermissions("team-123", "user-1"),
+  TeamPermission : createTeamPermissions("team-123", "user-1"),
 
   // Team-specific fields (from TeamData interface)
   collaborationPreferences: collaborationPreferences,

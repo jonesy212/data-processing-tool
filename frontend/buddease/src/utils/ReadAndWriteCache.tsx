@@ -6,14 +6,17 @@ import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import {
     frontendStructure,
 } from "@/core/config/appStructure/FrontendStructure";
-import { BackendConfig, backendConfig } from "@/core/config/BackendConfig";
+import type { BackendConfig } from '@/core/config/BackendConfig';
+import { backendConfig } from '@/core/config/BackendConfig';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { FrontendConfig, frontendConfig } from "@/core/config/FrontendConfig";
+import type { FrontendConfig } from '@/core/config/FrontendConfig';
+import { frontendConfig } from '@/core/config/FrontendConfig';
 import type { UserSettings } from '@/core/config/UserSettings';
 import userSettings from '@/core/config/UserSettings';
 import { DataVersions, dataVersions } from "@/core/configs/DataVersionsConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CacheData, realtimeData } from "@/core/generators/GenerateCache";
+import type { CacheData } from '@/core/generators/GenerateCache';
+import { realtimeData } from '@/core/generators/GenerateCache';
 import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
 import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import { K, T } from '@/core/models/data/dataStoreMethods';

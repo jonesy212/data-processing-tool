@@ -1,7 +1,7 @@
 // TradingSummaryStep.tsx
 import { TradeData } from "@/core/components/trading/TradeData";
 import SummaryStep from "@/core/phases/steps/SummaryStep";
-import { StepProps } from "@/core/phases/steps/steps";
+import type { StepProps } from "@/core/phases/steps/steps";
 import React from "react";
 
 

@@ -1,9 +1,10 @@
 // ToolbarOptions.tsx
 import type { toolbarOptions } from "@/core/components/documents/Toolbar";
 import CustomModifier from "@/core/documents/CustomModifier";
-import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
-import { DocumentTypeEnum } from '@/core/typings/documentTypes';
-import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
+import type { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { DocumentTypeEnum } from '@/core/typings/documentTypes';
+import type { EditorState } from 'draft-js';
+import { DraftInlineStyle, RichUtils } from 'draft-js';
 import React, { useState } from "react";
 import ToolbarItem from "./ToolbarItem";
 

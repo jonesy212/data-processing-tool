@@ -10,7 +10,7 @@ import type { PersonaBuilder } from '@/core/pages/personas/PersonaBuilder';
 import PersonaTypeEnum from '@/core/pages/personas/PersonaBuilder';
 import useDocumentManagerSlice from '@/core/state/redux/slices/DocumentSlice';
 import type { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/core/typings/entities/DocumentEntity';
-import { Version } from '@/core/versions/Version';
+import type { Version } from '@/core/versions/Version';
 import { useState } from 'react';
 
 // ---------------------------

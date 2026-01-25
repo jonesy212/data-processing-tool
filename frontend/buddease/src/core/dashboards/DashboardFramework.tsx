@@ -1,5 +1,5 @@
 // DashboardFramework.tsx
-import { AdminDashboard, AdminDashboardProps } from "@/core/components/admin/AdminDashboard";
+import type { AdminDashboard, AdminDashboardProps } from "@/core/components/admin/AdminDashboard";
 import MeetingScheduler from "@/core/components/communications/scheduler/Meeting";
 import DynamicSpacingAndLayout from "@/core/components/styling/DynamicSpacingAndLayout";
 import {

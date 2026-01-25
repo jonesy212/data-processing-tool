@@ -1,5 +1,5 @@
 // createSnapshotExample.ts
-// import type { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotData';
+// import type { SnapshotData, SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 
 // import type {  Snapshot } from '@/core/snapshots/Snapshot';
 

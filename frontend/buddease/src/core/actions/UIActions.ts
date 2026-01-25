@@ -3,7 +3,7 @@ import { SearchResultWithQuery } from "@/core/components/routing/SearchResult";
 import { K } from '@/core/models/data/dataStoreMethods';
 import { Progress } from "@/core/models/tracker/ProgressBar";
 import { CollaborationData } from "@/core/pages/community/CollaborationData";
-import { CollaborationState } from "@/core/state/redux/slices/CollaborationSlice";
+import type { CollaborationState } from "@/core/state/redux/slices/CollaborationSlice";
 import { createAction } from "@reduxjs/toolkit";
 import React from "react";
 

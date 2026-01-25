@@ -1,16 +1,16 @@
 // SearchResult.tsx
 import { searchDocumentAPI } from '@/core/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/core/components/models/data/SearchResultItem';
-import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta, Entity } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import ListGenerator from '@/core/generators/ListGenerator';
-import FolderData from '@/core/models/data/FolderData';
+import type { FolderData } from '@/core/models/data/FolderData';
 import SearchHistory from '@/core/versions/SearchHistory';
-import { Version } from '@/core/versions/Version';
+import type { Version } from '@/core/versions/Version';
 import { React } from 'react';
-
+import { useState } from 'react';
 
 // Define the SearchResultWithQuery interface that extends SearchResult
 interface SearchResultWithQuery<
@@ -116,6 +116,9 @@ const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => 
               key={result.id ?? index}  
               items={result.items}
               id={result.id}
+              userId={result.userId}
+              path={result.path}
+              draft={result.draft}
               title={result.title}
               description={result.description}
               source={result.source}

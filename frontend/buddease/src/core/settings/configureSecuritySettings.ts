@@ -25,8 +25,6 @@ const configureSecuritySettings = async (securitySettings: SecuritySettings): Pr
     console.error("Error updating security settings:", error);
     throw error;
   }
-};
-
 // Helper function to check if the value is of type SecuritySettings
 // function isSecuritySettings(value: any): value is SecuritySettings {
   return (

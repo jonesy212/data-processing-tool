@@ -1,12 +1,15 @@
 // NotificationChannels.ts
-import { CalendarIntegrationSettings, ScreenShareSettings, VideoSettings, VoiceSettings } from '@/core/components/communications/chat/CalendarIntegrationSettings';
+import type { VideoSettings, VoiceSettings } from '@/core/components/communications/chat/CalendarIntegrationSettings';
+import { CalendarIntegrationSettings, ScreenShareSettings } from '@/core/components/communications/chat/CalendarIntegrationSettings';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { UserPreferences } from '@/core/config/UserPreferences';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { BaseNotificationSettings } from "@/core/features/support/NotificationSettings";
 import ChatSettings from '@/core/hooks/userInterface/ChatSettings';
 import { Project } from '@/core/models/projects/Project';
-import {
+import type { EmailSettings, SmsSettings, WebhookSettings } from '@/core/settings/Reminder';
+import type { EmailSettings, SmsSettings, WebhookSettings } from '@/core/settings/Reminder';
+import { InAppSettings, PushNotificationSettings } from '@/core/settings/Reminder';
     EmailSettings,
     InAppSettings,
     PushNotificationSettings,

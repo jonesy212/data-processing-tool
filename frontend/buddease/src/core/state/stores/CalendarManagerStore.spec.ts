@@ -9,7 +9,7 @@ import { Member } from '@/core/models/members/Member';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from '@/core/snapshots/Snapshot';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { NotificationType } from '@/core/state/context/NotificationContext';
+import type { NotificationType } from '@/core/state/context/NotificationContext';
 import { ReassignEventResponse } from '@/core/state/stores/AssignEventStore';
 import CalendarManagerStoreClass, {
     CalendarEvent,

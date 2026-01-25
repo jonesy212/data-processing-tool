@@ -2,9 +2,6 @@
 // BootstrappingWorkflowManager.ts
 // Build workflow system WHILE fixing app errors - a bootstrapping approach
 
-import type { WorkflowTransition } from '@/core/models/phases/WorkflowTransition'
-import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
-import type { TypeImportError } from '@/app/scripts/import-fixes';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -1051,16 +1048,6 @@ interface PhaseExecutionResult {
   error?: string;
 }
 
-interface FixResult {
-  category: string;
-  description: string;
-  errorsFixed: number;
-  timeSaved: number;
-  success: boolean;
-  actualCount?: number;
-  error?: string;
-}
-
 interface BuildResult {
   name: string;
   type: string;
@@ -1203,4 +1190,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 
-export { BootstrappingWorkflowManager, bootstrapPhases };
+export { bootstrapPhases, BootstrappingWorkflowManager };

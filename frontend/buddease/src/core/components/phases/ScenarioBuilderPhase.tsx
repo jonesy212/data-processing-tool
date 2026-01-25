@@ -2,7 +2,7 @@
 import { useTeamBuildingPhase } from '@/core/hooks/phaseHooks/CollaborationPhaseHooks';
 import TeamBuildingPhase from '@/core/projects/TeamBuildingPhase';
 import React, { useEffect } from 'react';
-import { usePhaseStore } from '@/core/state/phaseStore'; 
+import { usePhaseStore } from '@/core/state/context/AppContext'; 
 interface ScenarioBuilderPhaseProps {
   startPhase: () => void;
   endPhase: () => void;

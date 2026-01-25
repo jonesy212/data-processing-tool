@@ -1,24 +1,24 @@
 // Version.ts
 import HashGenerator from '@/core/generators/HashGenerator';
-import { Comment } from '@/core/models/comments/Comments';
+import type { Comment } from '@/core/models/comments/Comments';
 import SharedContent from '@/core/versions/Version';
 
-import { IBackendStructure } from '@/core/config/appStructure/IBackendStructure';
+import BackendStructure from '@/core/server/database/BackendStructure';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
 import metadata from '@/core/layout';
 import UserRoles from '@/core/models/UserRoles';
-import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import { snapshotContainer } from '@/core/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
-import { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
+import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import type { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
+import type { SnapshotWithCriteria } from '@/core/snapshots/SnapshotWithCriteria';
 import { useAuth } from "@/core/state/context/AuthContext";
 import type { InitializedState } from '@/core/state/stores/DataStore';
 import { createLatestVersion } from "@/core/versions/createLatestVersion";
 import { sha256 } from 'js-sha256';
       
 import getAppPath from "@/core/config/appStructure/appPath";
-import { AppStructureItem } from "@/core/config/appStructure/AppStructure";
+import type { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/core/config/appStructure/FrontendStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { dataVersions } from "@/core/config/DocumentBuilderConfig";
@@ -27,18 +27,19 @@ import type { MetadataEntriesType, StructuredMetadata } from "@/core/config/Stru
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DocumentPermissions from "@/core/documents/DocumentPermissions";
 import { createBaseData } from "@/core/hooks/useSnapshotManager";
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import type { BaseData, Data, SharedRelationshipData } from '@/core/models/data/Data';
-import { Member } from "@/core/models/members/Member";
-import { Taggable, TagsRecord } from '@/core/models/tracker/Tag';
+import type { Member } from "@/core/models/members/Member";
+import type { TagsRecord } from '@/core/models/tracker/Tag';
+import type { Taggable } from '@/core/models/tracker/Tag';
 import { Persona } from "@/core/pages/personas/Persona";
 import PersonaTypeEnum from "@/core/pages/personas/PersonaBuilder";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { HistoryEntry } from '@/core/state/stores/HistoryStore';
+import type { HistoryEntry } from '@/core/state/stores/HistoryStore';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import type { BumpVersionOptions } from "@/core/versions/BumpVersionOptions";
-import { VersionData, VersionHistory } from "@/core/versions/VersionData";
+import type { VersionData, VersionHistory } from "@/core/versions/VersionData";
 import { fluenceApiKey } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 
 interface ExtendedVersion<
@@ -67,7 +68,7 @@ interface BuildVersion<
 > {
   data: Data<T> | undefined,
   baseData: BaseData<T> | undefined,
-  backend: IBackendStructure | undefined,
+  backend: BackendStructure | undefined,
   frontend: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
 }
 
@@ -168,7 +169,7 @@ interface Versions<
   currentVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   latestVersionNumber: number | string;
   history: HistoryEntry[];
-  backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
@@ -960,7 +961,7 @@ static createVersion<
     );
     this.frontendStructure = Promise.resolve(frontendStructureInstance.getStructureAsArray());
 
-    const backendStructureInstance = new IBackendStructure(
+    const backendStructureInstance = new BackendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
     this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());

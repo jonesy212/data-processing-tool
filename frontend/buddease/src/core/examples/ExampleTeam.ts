@@ -8,12 +8,12 @@ import UserRoles from '@/core/models/UserRoles';
 import { Persona } from '@/core/pages/personas/Persona';
 import { ProfileAccessControl } from '@/core/pages/profile/Profile';
 import { DataProcessingTask } from '@/core/todos/tasks/DataProcessingTask';
-import { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
+import type { AnalysisTypeEnum } from '@/core/typings/AnalysisType';
 import type { AppTeamEntity, TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/core/typings/entities/TeamEntity';
 import { VideoData } from '@/core/typings/videoTypes/Video';
 import { Settings } from '@/core/state/hybrid/SettingsManagerStore';
 
-import {
+import type { CodingLanguageEnum, LanguageEnum } from '@/core/communications/LanguageEnum';
     CodingLanguageEnum,
     LanguageEnum,
 } from '@/core/communications/LanguageEnum';

@@ -3,12 +3,12 @@ import internalApiService from '@/core/api/ApiClient';
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import DATA_NOTIFICATIONS from '@/core/features/support/DataNotifications';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from '@/core/models/data/StatusType';
 import { useAuth } from '@/core/state/context/AuthContext';
 import type { NotificationContextProps } from '@/core/state/context/NotificationContext';
 import type { DataState } from '@/core/state/DataState';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { action, observable, runInAction } from 'mobx';
 
 class DataService<
@@ -263,19 +263,22 @@ class DataService<
 }
 
 // Create entity-specific instances using the generic parameters
-import {
+import type { NoteAttachment, NoteEntity, NoteMeta } from '@/core/typings/entities/NoteEntity';
+import { NoteExcludedFields, NoteIncludedFields } from '@/core/typings/entities/NoteEntity';
     NoteAttachment,
     NoteEntity,
     NoteExcludedFields, NoteIncludedFields,
     NoteMeta
 } from '@/core/typings/entities/NoteEntity';
-import {
+import type { TaskAttachment, TaskEntity, TaskMeta } from '@/core/typings/entities/TaskEntity';
+import { TaskExcludedFields, TaskIncludedFields } from '@/core/typings/entities/TaskEntity';
     TaskAttachment,
     TaskEntity,
     TaskExcludedFields, TaskIncludedFields,
     TaskMeta
 } from '@/core/typings/entities/TaskEntity';
-import {
+import type { UserAttachment, UserEntity, UserMeta } from '@/core/typings/entities/UserEntity';
+import { UserExcludedFields, UserIncludedFields } from '@/core/typings/entities/UserEntity';
     UserAttachment,
     UserEntity,
     UserExcludedFields, UserIncludedFields,

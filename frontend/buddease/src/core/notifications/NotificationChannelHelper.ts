@@ -1,5 +1,5 @@
 // NotificationChannelHelper.ts
-import { NotificationChannels } from '@/core/notifications/NotificationChannels';
+import type { NotificationChannels } from '@/core/notifications/NotificationChannels';
 
 type BasicChannels = 'email' | 'push' | 'sms' | 'inApp' | 'webhook';
 type AdvancedChannelKeys = 'chat' | 'calendar' | 'audioCall' | 'videoCall' | 'screenShare';

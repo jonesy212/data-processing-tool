@@ -1,9 +1,9 @@
 // createMappingConfig.ts
 import type { DefaultMeta } from '@/core/config/BaseConfig';
-import { MappingConfig } from "@/core/config/MappingConfig";
+import type { MappingConfig } from "@/core/config/MappingConfig";
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import { ParsedData } from '@/core/dataIntegration/parseData';
-import { CommonData } from '@/core/models/CommonData';
+import type { CommonData } from '@/core/models/CommonData';
 
 const createMappingConfig = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,

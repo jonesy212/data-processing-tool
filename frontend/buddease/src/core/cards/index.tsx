@@ -8,7 +8,7 @@ import { authToken } from "@/core/server/auth/authToken";
 import { useAuth } from "@/core/state/context/AuthContext";
 import { rootStores } from "@/core/state/stores/RootStores";
 import type { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/core/typings/entities/UserEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { create } from "mobx-persist";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

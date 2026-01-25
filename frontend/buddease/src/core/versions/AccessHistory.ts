@@ -1,5 +1,5 @@
 // AccessHistory.ts
-import { AccessRecord } from "@/core/documents/DocumentOptions";
+import type { AccessRecord } from "@/core/documents/DocumentOptions";
 
 class AccessHistory {
   // Properties

@@ -1,6 +1,6 @@
 // BackendConfigComponent.tsx
 // components/configs/BackendConfigComponent.tsx
-import { BackendConfig } from '@/core/config/BackendConfig';
+import type { BackendConfig } from '@/core/config/BackendConfig';
 import { useAuth } from '@/core/state/context/AuthContext';
 import { useDashboard } from '@/core/state/context/DashboardContext';
 import React from 'react';

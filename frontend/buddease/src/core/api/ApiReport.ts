@@ -5,7 +5,8 @@ import { FinancialMetrics, processFinancialMetrics } from '@/core/components/met
 import { processTechnicalSpecifications, TechnicalSpecifications } from '@/core/components/metrics/TechnicalSpecifications';
 import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import {
+import type { BaseReport, FinancialReport, ReportOptions, ResearchReport, TechnicalReport } from '@/core/documents/Report';
+import { AddReportBase } from '@/core/documents/Report';
     AddReportBase,
     BaseReport, FinancialReport, ReportOptions,
     ResearchReport,

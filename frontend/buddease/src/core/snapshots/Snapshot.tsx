@@ -13,14 +13,14 @@ import { Category } from "@/core/libraries/categories/generateCategoryProperties
 import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
 import type { BaseData, Data } from '@/core/models/data/Data';
 import FileData from "@/core/models/data/FileData";
-import {
+import type { ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
     ProjectPhaseTypeEnum
 } from "@/core/models/data/StatusType";
 import UserRoles from '@/core/models/UserRoles';
 import { Persona } from "@/core/pages/personas/Persona";
 import PersonaTypeEnum from "@/core/pages/personas/PersonaBuilder";
 import { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
-import {
+import type { SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
     SnapshotsArray,
     SnapshotsObject
 } from '@/core/snapshots/LocalStorageSnapshotStore';
@@ -30,7 +30,7 @@ import type { SnapshotConfigProps } from "@/core/snapshots/SnapshotConfigProps";
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { InitializedConfig, SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
-import {
+import '@/core/state/stores/DataStore';
     DataStore,
     EventRecord,
     InitializedState,
@@ -39,7 +39,7 @@ import { Subscriber } from "@/core/subscribers/Subscriber";
 import { CustomTransaction } from "@/core/typings/cryptoTypes/SmartContractInteraction";
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/core/typings/entities/AppEntity";
 import type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from "@/core/typings/entities/DataEntity";
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { isSnapshotStoreConfig } from "@/utils/snapshotUtils";
 import { updateFileMetadata } from "@/utils/web3/fileUtils";
 import { id, Signature } from "ethers";
@@ -61,13 +61,13 @@ import { Label } from "@/core/branding/BrandingSettings";
 import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import { ExcludedFields } from "@/core/components/routing/Fields";
 import { HighlightColor } from "@/core/components/styling/Palette";
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from '@/core/config/BaseConfig';
 import { SchemaField } from "@/core/config/metadata/SchemaField";
-import {
+import type { UnifiedMetaDataOptions } from '@/core/config/MetaDataOptions';
     UnifiedMetaDataOptions
 } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
@@ -103,12 +103,12 @@ import { version } from '@/core/versions/Version';
 import { ExtendedVersionData } from "@/core/versions/VersionData";
 import operation from "antd/es/transfer/operation";
 import { config } from "process";
-import {
+import type { CustomSnapshotData, SnapshotContainer, SnapshotData } from '@/core/snapshots/SnapshotData';
     CustomSnapshotData,
     SnapshotContainer,
     SnapshotData
 } from ".";
-import {
+import type { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
     ConfigureSnapshotStorePayload,
     SnapshotConfig,
 } from "./SnapshotConfig";

@@ -1,16 +1,16 @@
 // UIStore.ts
-import { UserProfile } from '@/core/api/ApiUser';
+import type { UserProfile } from '@/core/api/ApiUser';
 
 import { UIActions } from '@/core/actions/UIActions';
 import { handleApiError } from '@/core/api/ApiLogs';
 import axiosInstance from '@/core/api/csrfToken';
 import safeParseData from '@/core/dataIntegration/SafeParseData';
-import { ParsedData } from '@/core/dataIntegration/parseData';
-import { Theme } from '@/core/libraries/ui/theme/Theme';
+import type { ParsedData } from '@/core/dataIntegration/parseData';
+import type { Theme } from '@/core/libraries/ui/theme/Theme';
 import { FileLogger } from '@/core/logging/Logger';
 import { displayToast } from '@/core/models/display/ShowToast';
 import ErrorHandler from '@/core/shared/ErrorHandler';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { createMessage } from '@/utils/web3/createMessage';
 import { action, makeObservable, observable } from 'mobx';
 

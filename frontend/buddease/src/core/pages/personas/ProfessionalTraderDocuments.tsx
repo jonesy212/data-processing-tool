@@ -1,6 +1,7 @@
 // ProfessionalTraderDocuments.tsx
 import CustomFile from '@/core/documents/File';
-import { ChangeEvent, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useState } from 'react';
 
 const ProfessionalTraderDocuments = () => {
   const [documents, setDocuments] = useState<CustomFile[]>([]);

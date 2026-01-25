@@ -1,5 +1,5 @@
 // BlogAndContentEditor.tsx
-import { DetailsItemCommon } from "@/core/generators/ListGenerator";
+import type { DetailsItemCommon } from "@/core/generators/ListGenerator";
 import { EditorState } from "draft-js";
 
 import Toolbar from "@/core/components/documents/Toolbar";

@@ -1,11 +1,12 @@
 // RichTextEditor.jsx
-import { sanitizeData } from '@/security/SanitizationFunctions';
+import { sanitizeData } from '@/core/models/cypto/SanitizationFunctions'
 import { useEffect, useState } from 'react';
 import Quill from 'react-quill';
 
 if (typeof window !== 'undefined') {
   import("quill/dist/quill.snow.css");
 }
+
 const RichTextEditor = ({ editorState, onChange, fontSize, bold, italic, underline, image, link, strikeThrough, highlightColor, alignment, listType, indent, fontColor, fontFamily, imageInsert, linkInsert, undo, redo }) => {
   const [quill, setQuill] = useState(null);
 

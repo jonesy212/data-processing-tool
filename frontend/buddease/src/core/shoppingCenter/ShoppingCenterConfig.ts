@@ -2,7 +2,7 @@
 import type { ShippingOption } from "@/core/shoppingCenter/ShippingOption";
 import type { AffiliateMarketingConfig } from "@/core/shoppingCenter/shopping_config/AffiliateMarketingConfig";
 
-interface ShoppingCenterConfig {
+export interface ShoppingCenterConfig {
     name: string;
     description: string;
     logoUrl?: string;
@@ -14,5 +14,4 @@ interface ShoppingCenterConfig {
   
   
   
-  export default ShoppingCenterConfig;
   

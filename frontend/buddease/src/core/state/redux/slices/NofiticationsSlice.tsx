@@ -2,23 +2,25 @@
 import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { DocumentOptions } from '@/core/documents/DocumentOptions';
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
+import { createSlice } from '@reduxjs/toolkit';
 import SnapshotStore from '@/core/snapshots/SnapshotStore';
-import { WritableDraft } from '@/core/state/redux/ReducerGenerator';
-import {
-    NotificationAttachment,
+import type { WritableDraft } from '@/core/state/redux/ReducerGenerator';
+
+import type { 
     NotificationEntity,
-    NotificationExcludedFields,
-    NotificationIncludedFields,
     NotificationK,
     NotificationMeta,
+    NotificationAttachment,
+    NotificationExcludedFields,
+    NotificationIncludedFields,
     NotificationSnapshotData,
     NotificationSnapshotStore,
     NotificationSnapshotWithCriteria,
     NotificationUnifiedMetadata
 } from '@/core/typings/entities/NotificationEntity';
-import { Dispatch, PayloadAction } from "@reduxjs/toolkit";
+import type { Dispatch, PayloadAction } from "@reduxjs/toolkit";
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";

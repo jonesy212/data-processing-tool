@@ -1,6 +1,6 @@
 // ChatDashboard.tsx
 import { Team } from '@/core/components/teams/Team';
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentSize } from "@/core/models/data/StatusType";
 import { Project } from '@/core/models/projects/Project';
 import { TeamMember } from '@/core/models/teams/TeamMembers';

@@ -1,6 +1,7 @@
 // AsyncEventHandler.ts
 app/utils/eventHandlers/AsyncEventHandler.ts
-import {
+import type { ReactiveEventHandler } from '@/core/typings/eventHandlers/eventTypes';
+import { AppEventListener, DragDropEventListener, EventHandlerFactory, FocusEventListener, GestureEventListener, KeyboardEventListener, LifecycleEventListener, MouseEventListener, TouchEventListener, UIComponentEventListener } from '@/core/typings/eventHandlers/eventTypes';
     AppEventListener,
     DragDropEventListener,
     EventHandlerFactory,

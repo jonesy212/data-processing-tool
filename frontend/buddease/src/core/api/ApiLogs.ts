@@ -3,7 +3,7 @@ Apilogs.ts
 import axiosInstance from "@/core/api/csrfToken";
 import { endpoints } from '@/core/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { addLog } from "@/core/state/redux/slices/LogSlice";
 import type { AxiosError, AxiosResponse } from 'axios';

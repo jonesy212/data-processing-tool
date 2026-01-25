@@ -5,7 +5,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import ListGenerator from "@/core/generators/ListGenerator";
 import { Content } from '@/core/models/content/AddContent';
 import type { Data, SharedRelationshipData } from '@/core/models/data/Data';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { Phase } from '@/core/models/phases/Phase';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { DetailsItem } from "@/core/state/stores/DetailsListStore";

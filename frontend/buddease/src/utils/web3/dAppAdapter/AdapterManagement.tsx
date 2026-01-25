@@ -1,5 +1,5 @@
 // AdapterManagement.tsx
-import { ShareProps } from '@/core/components/shared/Share';
+import type { ShareProps } from '@/core/components/shared/Share';
 import { generateNewTask } from "@/core/generators/GenerateNewTask";
 import type { Task } from "@/core/models/tasks/Task";
 

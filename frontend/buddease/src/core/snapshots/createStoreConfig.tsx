@@ -1,6 +1,6 @@
 // createStoreConfig.tsx
 import { ConvertMeta } from '@/core/models/data/dataStoreMethods';
-import {
+import type { SnapshotUnion, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
     SnapshotUnion,
     SnapshotsArray
 } from "@/core/snapshots/LocalStorageSnapshotStore";

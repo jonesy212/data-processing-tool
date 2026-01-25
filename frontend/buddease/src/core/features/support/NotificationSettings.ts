@@ -1,5 +1,5 @@
 // NotificationSettings.ts
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 
 interface BaseNotificationSettings {
   enabled: boolean;

@@ -4,7 +4,8 @@ import {
     FileCategory // Move this from separate import
 } from '@/core/documents/FileType';
 
-import { DiagnosticResult, TypeScriptDiagnosticPhase } from '@/core/error-analyzer/phases/TypeScriptDiagnosticPhase';
+import type { DiagnosticResult } from '@/core/error-analyzer/phases/TypeScriptDiagnosticPhase';
+import { TypeScriptDiagnosticPhase } from '@/core/error-analyzer/phases/TypeScriptDiagnosticPhase';
 import {
     fileCategoryMapping,
     suggestCorrectionCategoryFromFile

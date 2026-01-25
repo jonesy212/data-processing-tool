@@ -13,7 +13,7 @@ import { refreshUI } from '@/core/snapshots/refreshUI';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import { Stroke } from "@/core/state/redux/slices/DrawingSlice";
 import type { FileAttachment, FileEntity, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/core/typings/entities/FileEntity';
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import { createLatestVersion } from '@/core/versions/createLatestVersion';
 import { AnyAction, Reducer } from 'react-redux';
 

@@ -1,6 +1,7 @@
 // LessonEntity.ts
 import type { BaseDataEntity } from '@/core/config/BaseConfig';
-import {
+import type { BaseEntityProperties, SharedTimestamps } from '@/core/documents/RelatedProps';
+import { SharedStatusFlags } from '@/core/documents/RelatedProps';
     BaseEntityProperties,
     SharedStatusFlags,
     SharedTimestamps

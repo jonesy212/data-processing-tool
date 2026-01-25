@@ -8,7 +8,7 @@ import { useLogManagement } from "@/core/hooks/useLogManagement";
 import RootLayoutContent from "@/core/layout/RootLayoutContent";
 import { useAnimatedRoot } from "@/core/layout/useAnimatedRoot";
 import { useAppThemeInit } from "@/core/layout/useAppThemeInit";
-import { useLayoutState } from "@/core/layout/useLayoutState";
+import type { useLayoutState } from "@/core/layout/useLayoutState";
 import { BackgroundService } from "@/core/services/BackgroundService";
 import React, { useEffect } from "react";
 

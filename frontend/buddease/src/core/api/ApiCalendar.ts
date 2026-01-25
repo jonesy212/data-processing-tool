@@ -2,15 +2,13 @@
 import internalApiService from '@/core/api/ApiClient';
 import { handleApiError } from '@/core/api/ApiLogs';
 import { endpoints } from "@/core/api/endpointConfigurations";
-import {
-    CalendarEvent,
-    useCalendarContext
-} from '@/core/calendar/CalendarEvent';
-import { SimpleCalendarEvent } from '@/core/components/calendar/CalendarContext';
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import { useCalendarContext } from '@/core/components/calendar/CalendarContext';
+
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { CalendarNotificationTypes } from '@/core/features/support/NotificationTypes';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { CalendarNotificationTypes } from '@/core/features/support/NotificationTypes';
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { AxiosResponse } from "axios";

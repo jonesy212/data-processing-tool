@@ -1,32 +1,33 @@
 // VersionData.ts
 
 import getAppPath from '@/core/config/appStructure/appPath';
-import { AppStructureItem, AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
+import type { AppStructureItem } from '@/core/config/appStructure/AppStructure';
+import type { AppStructurePermissions } from '@/core/config/appStructure/AppStructure';
 import FrontendStructure, { frontendStructure } from '@/core/config/appStructure/FrontendStructure';
-import { IBackendStructure } from '@/core/config/appStructure/IBackendStructure';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { UnifiedMetadata } from '@/core/config/MetaDataOptions';
-import { DataVersions } from '@/core/configs/DataVersionsConfig';
+import type { DataVersions } from '@/core/configs/DataVersionsConfig';
 import type { Attachment, FileType } from '@/core/documents/attachment/Attachment';
-import { SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedProps';
 import { createBaseData } from '@/core/hooks/useSnapshotManager';
-import { Comment } from '@/core/models/comments/Comments';
-import { Content } from '@/core/models/content/AddContent';
+import type { Comment } from '@/core/models/comments/Comments';
+import type { Content } from '@/core/models/content/AddContent';
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { Permission } from '@/core/permissions/Permission';
+import type { Permission } from '@/core/permissions/Permission';
 import { data } from '@/core/snapshots/SnapshotWithCriteria';
 import type { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/core/typings/entities/VersionEntity';
 
 import { fetchUserAreaDimensions } from '@/core/pages/layouts/fetchUserAreaDimensions';
 import BackendStructure from '@/core/server/database/BackendStructure';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
-import type { storeProps } from '@/core/snapshots/SnapshotStoreProps';
-import { CustomComment } from '@/core/state/redux/slices/BlogSlice';
-import { HistoryEntry } from '@/core/state/stores/HistoryStore';
+import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
+import type { CustomComment } from '@/core/state/redux/slices/BlogSlice';
+import type { HistoryEntry } from '@/core/state/stores/HistoryStore';
 import MobXEntityStore from '@/core/state/stores/MobXEntityStore';
 import type { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 import { createLatestVersion } from '@/core/versions/createLatestVersion';
-import { BuildVersion, Version, version } from '@/core/versions/Version';
+import type { BuildVersion, Version } from '@/core/versions/Version';
+import { version } from '@/core/versions/Version';
 import { getCurrentAppInfo } from '@/core/versions/VersionGenerator';
 
 const { snapshotData } = storeProps
@@ -265,7 +266,7 @@ interface VersionData<
   // Structure
   source: string | undefined;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
-  backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Misc

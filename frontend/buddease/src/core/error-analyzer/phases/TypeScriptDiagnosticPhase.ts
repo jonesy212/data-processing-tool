@@ -1,8 +1,7 @@
 // TypeScriptDiagnosticPhase.ts
 // src/core/error-analyzer/phases/TypeScriptDiagnosticPhase.ts
-import type { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { TSCompilerError } from '@/core/error-analyzer/TypeScriptErrorFixSystem';
 import { execSync } from 'child_process';
-import type { ExecSyncOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 

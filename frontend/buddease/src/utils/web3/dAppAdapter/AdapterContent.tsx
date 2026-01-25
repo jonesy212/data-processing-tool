@@ -1,6 +1,6 @@
 // AdapterContent.tsx
 import Link from "@/core/components/routing/Link";
-import {
+import type { AnimatedComponentProps } from '@/core/components/styling/AnimationsAndTansitions';
     AnimatedComponentProps,
 } from "@/core/components/styling/AnimationsAndTansitions";
 import type { ColorSwatchProps } from '@/core/components/styling/ColorPalette';

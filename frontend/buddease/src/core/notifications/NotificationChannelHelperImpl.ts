@@ -1,5 +1,6 @@
 // NotificationChannelHelperImpl.ts
-import {
+import type { NotificationChannels } from '@/core/notifications/NotificationChannels';
+import { BasicNotificationChannels, NotificationChannelHelper } from '@/core/notifications/NotificationChannelHelper';
     BasicNotificationChannels,
     NotificationChannelHelper,
     NotificationChannels

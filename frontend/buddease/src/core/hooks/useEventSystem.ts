@@ -4,7 +4,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { CallbackRegistry } from '@/core/libraries/eventSystem/callbackRegistry';
 import { SnapshotEventHandlers } from '@/core/libraries/eventSystem/eventHandlers';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import {
+import type { ErrorEvent, EventContext, EventHandler, SnapshotEvent } from '@/core/typings/snapshotTypes';
     ErrorEvent,
     EventContext,
     EventHandler,

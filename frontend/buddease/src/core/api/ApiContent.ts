@@ -6,12 +6,12 @@ import { headersConfig } from '@/core/components/shared/SharedHeaders';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import { NotificationPosition } from '@/core/models/data/StatusType';
 import { useNotification } from '@/core/state/context/NotificationContext';
 import { NotificationService } from '@/core/state/stores/NotificationServiceClass';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { AxiosError } from 'axios';
 import { ContentState } from 'draft-js';
 

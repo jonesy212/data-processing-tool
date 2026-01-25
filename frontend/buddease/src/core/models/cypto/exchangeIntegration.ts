@@ -3,23 +3,18 @@ import { getAppSubscriberIdAPI } from '@/core/api/subscriberApi';
 import type { DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import updateUI, { updateUIWithSearchResults } from "@/core/documents/editing/updateUI";
 import type { BaseData, Data } from '@/core/models/data/Data';
-import { ExchangeData } from "@/core/models/data/ExchangeData";
+import type { ExchangeData } from "@/core/models/data/ExchangeData";
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { updateUIWithSnapshotStore } from "@/core/snapshots/updateUIWithSnapshotStore";
 import { ClientSubscriber } from '@/core/subscriptions/ClientSubscriber';
-import {
-    DEXEnum,
-    ExchangeDataTypeEnum,
-    ExchangeEnum
-} from "@/core/typings/exchangeTypes";
+import type { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from '@/core/models/cypto/exchangeIntegration';
+
 import OrderBookUpdater from "../../components/crypto/OrderBookUpdater";
 import TickerUpdater from "../../components/crypto/TickerUpdater";
 
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import {
-    OrderBookEntity,
-    OrderBookSnapshot
-} from '@/core/typings/ExchangeTypes';
+import type { OrderBookEntity, OrderBookSnapshot } from '@/core/typings/exchangeTypes';
+
 
 // Client-side instances
 const orderBookUpdater = new OrderBookUpdater();

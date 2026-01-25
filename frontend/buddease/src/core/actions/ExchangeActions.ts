@@ -1,7 +1,7 @@
 // ExchangeActions.ts
 import DEXData from "@/core/models/data/DEXData";
 import { ExchangeData } from "@/core/models/data/ExchangeData";
-import { AllTypes } from "@/core/typings/PropTypes";
+import type { AllTypes } from "@/core/typings/PropTypes";
 import { createAction } from "@reduxjs/toolkit";
 
 export const ExchangeActions = {

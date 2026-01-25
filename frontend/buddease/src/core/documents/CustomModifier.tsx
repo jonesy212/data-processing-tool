@@ -1,6 +1,7 @@
 // CustomModifier.tsx
-import { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
-import { ContentBlock, ContentState, DraftInlineStyle, EditorState, Modifier, SelectionState } from "draft-js";
+import type { ThemeConfigProps } from "@/core/hooks/userInterface/ThemeConfigContext";
+import type { ContentBlock, ContentState, EditorState, SelectionState } from 'draft-js';
+import { DraftInlineStyle, Modifier } from 'draft-js';
 
 class CustomModifier extends Modifier {
   static setInlineStyle(

@@ -5,7 +5,8 @@ import ChatMessage from '@/core/components/communications/chat/ChatMessage';
 import ChatMessageData from '@/core/components/communications/chat/ChatRoomDashboard';
 import FeedbackLoop from '@/core/features/feedback/FeedbackLoop';
 import { Feedback } from '@/core/features/support/Feedback';
-import { Channel, ChannelRole, ChannelType } from '@/core/interfaces/chat/Channel';
+import type { ChannelRole, ChannelType } from '@/core/interfaces/chat/Channel';
+import { Channel } from '@/core/interfaces/chat/Channel';
 import ChatEventService from '@/core/services/ChatEventService';
 import React, { useEffect, useState } from 'react';
 

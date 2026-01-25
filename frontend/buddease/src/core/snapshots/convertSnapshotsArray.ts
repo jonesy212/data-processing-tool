@@ -1,14 +1,14 @@
 // convertSnapshotsArray.ts
 // import { SnapshotData } from '@/core/snapshots/SnapshotData';
 // import { Attachment } from '@/core/documents/attachment/Attachment';
-// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+// import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/snapshots/ValidationRule';
 
 
 // import { useSnapshotManager } from '@/core/hooks/useSnapshotManager';
 // import { BaseData, Data } from '@/core/models/data/Data';
 // import { K, T } from "@/core/models/data/dataStoreMethods";
 // import useSecureStoreId from '@/core/hooks/useSecureStoreId';
-// import { Snapshot, SnapshotsArray } from '@/core/snapshots/Snapshot'
+// import { Snapshot, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore'
 // import SnapshotStore from "./SnapshotStore";
 
 // // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

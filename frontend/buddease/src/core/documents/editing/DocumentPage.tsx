@@ -1,7 +1,8 @@
 // DocumentPage.tsx
  
 import { DocumentBuilderConfig } from "@/core/config/DocumentBuilderConfig";
-import { DocumentOptions, getDefaultDocumentOptions } from "@/core/documents/DocumentOptions";
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { getDefaultDocumentOptions } from '@/core/documents/DocumentOptions';
 import DocumentBuilder from "@/core/documents/editing/DocumentBuilder";
 import { ReactNode, useState } from "react";
 

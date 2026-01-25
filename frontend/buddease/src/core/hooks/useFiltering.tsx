@@ -2,21 +2,22 @@
 import { TaskActions } from "@/core/actions/TaskActions";
 import endpointConfigurations from "@/core/api/endpointConfigurations";
 import { Task } from "@/core/components/models/tasks/Task";
-import {
+import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/core/config/BaseConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from "@/core/features/support/UnifiedNotificationTypes";
-import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import type { NotificationTypeEnum } from "@/core/features/support/UnifiedNotificationTypes";
+import type { PriorityTypeEnum } from "@/core/models/data/StatusType";
 import type { SearchOptions } from "@/core/pages/searches/SearchOptions";
 import { useNotification } from "@/core/state/context/NotificationContext";
 import type { RootState } from "@/core/state/redux/slices/RootSlice";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Dispatch, useCallback, useState } from "react";
+import type { Dispatch } from 'react';
+import { useCallback, useState } from 'react';
 
 const { notify } = useNotification();
 

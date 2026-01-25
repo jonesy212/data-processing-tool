@@ -14,7 +14,7 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData } from "@/core/snapshots/SnapshotData";
 import { SnapshotIdentity } from "@/core/snapshots/SnapshotIdentity";
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import type { InitializedState, initializeState } from "@/core/state/stores/DataStore";

@@ -1,5 +1,5 @@
 // reportTypeGuards.ts
-import { AddReportType } from "@/core/api/ApiReport";
+import type { AddReportType } from "@/core/api/ApiReport";
 import { ResearchReport, TechnicalReport } from '@/core/documents/Report';
 
 function isFinancialReport(report: AddReportType): report is FinancialReport {

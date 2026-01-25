@@ -1,45 +1,52 @@
 // DocumentStore.ts
-import axiosInstance from '@/core/api/csrfToken';
+
 import { endpoints } from '@/core/api/endpointConfigurations';
-import { ClientInformation } from '@/core/client/ClientInformation';
-import { Team } from '@/core/components/teams/Team';
+import type { ClientInformation } from '@/core/client/ClientInformation';
+import internalApiService from '@/core/api/ApiClient';
+import { handleApiError } from '@/core/api/ApiLogs';
+import type { Team } from '@/core/components/teams/Team';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta, Entity } from '@/core/config/BaseConfig';
+import { AxiosError } from "axios";
 import type { UnifiedMetadata } from "@/core/config/MetaDataOptions";
 import { useMeta } from "@/core/config/useMeta";
-import type { useMetadata } from "@/core/config/useMetadata";
+import { useMetadata } from "@/core/config/useMetadata";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from '@/core/documents/DocType';
-import type { DocumentOptions, DocumentSize } from '@/core/documents/DocumentOptions';
-import { DocumentPath } from "@/core/documents/DocumentPath";
+import type { ModifiedDate } from '@/core/documents/DocType';
+import type { DocumentSize } from '@/core/models/data/StatusType';
+import type { DocumentOptions } '@/core/documents/DocumentOptions'
+import type { DocumentPath } from "@/core/documents/DocumentPath";
 import DocumentPermissions from '@/core/documents/DocumentPermissions';
-import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
-import { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
-import { SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedProps';
-import { FinancialReport, ResearchReport, TechnicalReport } from '@/core/documents/Report';
+import type { DocumentData } from '@/core/documents/editing/DocumentBuilder';
+import type { DocumentPhaseTypeEnum } from "@/core/documents/editing/DocumentPhaseType";
+import type { SharedIdentifiers, SharedTimestamps } from '@/core/documents/RelatedProps';
+import type { FinancialReport, ResearchReport, TechnicalReport } from '@/core/documents/Report';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import type { DocumentWithBuilderProps } from '@/core/hooks/userScenarioCreation';
-import { Category } from '@/core/libraries/categories/generateCategoryProperties';
-import { Comment } from "@/core/models/comments/Comments";
-import { Content } from "@/core/models/content/AddContent";
+import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import type { Comment } from "@/core/models/comments/Comments";
+import type { Content } from "@/core/models/content/AddContent";
 import type { TodoSubtasks } from '@/core/models/data/Data';
-import FileData from '@/core/models/data/FileData';
-import FolderData from '@/core/models/data/FolderData';
+import type { FileData } from '@/core/models/data/FileData';
+import type { FolderData } from '@/core/models/data/FolderData';
 import { ProgressPhase } from "@/core/models/tracker/ProgressBar";
 import { UserRoleEnum } from '@/core/models/UserRoles';
 import { useNotification } from '@/core/state/context/NotificationContext';
-import { CustomComment } from "@/core/state/redux/slices/BlogSlice";
-import { DocumentObject } from '@/core/state/redux/slices/DocumentSlice';
-import { DocumentTypeEnum } from "@/core/typings/documentTypes";
-import { AllTypes } from "@/core/typings/PropTypes";
+import type { CustomComment } from "@/core/state/redux/slices/BlogSlice";
+import type { DocumentObject } from '@/core/state/redux/slices/DocumentSlice';
+import type { DocumentTypeEnum } from "@/core/typings/documentTypes";
+import type { AllTypes } from "@/core/typings/PropTypes";
 import AccessHistory from '@/core/versions/AccessHistory';
-import { Version } from '@/core/versions/Version';
-import { VersionData } from '@/core/versions/VersionData';
-import { ContentState } from 'draft-js';
+import type { Version } from '@/core/versions/Version';
+import type { VersionData } from '@/core/versions/VersionData';
+import type { ContentState } from 'draft-js';
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-import { WritableDraft } from './../redux/ReducerGenerator';
-import { AllStatus } from './DetailsListStore';
+import { ProjectPhaseTypeEnum } from "@/core/models/data/StatusType";
+import type { WritableDraft } from '@/app/core/state/redux/ReducerGenerator';
+import type { AllStatus } from './DetailsListStore';
+import { useErrorHandling } from '@/core/hooks/useErrorHandling';
+import { DocumentPhaseEnum } from '@/core/models/data/StatusType'
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 
@@ -396,7 +403,7 @@ const useDocumentStore = <
 
     try {
       // Pass string ID directly to API
-      await axiosInstance.delete(`${endpoints.documents.deleteDocument}/${id}`);
+      await internalApiService.delete(`${endpoints.documents.deleteDocument}/${id}`);
       
       notify({
         id: "deletedDocumentSuccess",
@@ -431,7 +438,7 @@ const useDocumentStore = <
     area?: string
   ): Promise<DocumentContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     try {
-      const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
+      const response = await internalApiService.get(`/api/calendar-events/${eventId}/document-content`);
       const meta: Meta = useMeta<T, K>(area);
       const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(area);
 
@@ -478,7 +485,7 @@ const useDocumentStore = <
     }));
 
     try {
-      await axiosInstance.put(
+      await internalApiService.put(
         `${endpoints.documents.updateDocument}/${id}`,
         updates
       );
@@ -612,7 +619,7 @@ const convertDocumentToDocumentData = <
     id: document.id,
     title: document.title,
     // ... other properties
-  } as Document<T, K, Meta>;
+  } as Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 

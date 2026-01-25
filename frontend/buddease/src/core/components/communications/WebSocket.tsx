@@ -1,5 +1,5 @@
 // WebSocket.tsx
-import { RetryConfig } from "@/core/services/ConfigurationService";
+import type { RetryConfig } from "@/core/services/ConfigurationService";
 import { useEffect, useState } from "react";
 
 const connectToChatWebSocket = (roomId: any, retryConfig: RetryConfig) => {

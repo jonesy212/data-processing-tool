@@ -6,7 +6,7 @@ import SearchBar from "@/core/components/routing/SearchBar";
 import Sidebar from "@/core/libraries/toolbar/Sidebar";
  
 import RealTimeChart from "@/core/components/models/realtime/RealTimeChart"; // Import a real-time chart component
-import { User } from "@/core/users/User";
+import type { User } from "@/core/users/User";
 import React, { useState } from "react";
 import VisualFlowDashboard from "./VisualFlowDashboard"; // Import your specific dashboard component
 interface RealTimeDashboardPageProps {

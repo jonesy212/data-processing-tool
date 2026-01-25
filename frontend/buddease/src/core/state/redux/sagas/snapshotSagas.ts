@@ -2,7 +2,7 @@
 import { SnapshotActions } from '@/core/actions/SnapshotActions';
 import type { Data } from '@/core/models/data/Data';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { YourResponseType } from '@/core/typings/responseTypes';
+import type { YourResponseType } from '@/core/typings/responseTypes';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 // Replace with the actual API endpoints or functions

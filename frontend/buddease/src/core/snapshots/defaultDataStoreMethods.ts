@@ -14,7 +14,8 @@ import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import type { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import { category } from '@/core/snapshots/isValidFileCategory';
-import { Payload, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { Payload, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import { mapToSnapshotStore } from '@/core/snapshots/mappings/mapToSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
@@ -28,7 +29,7 @@ import { Subscriber } from '@/core/subscribers/Subscriber';
 import type { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
 import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/core/subscriptions/Subscription';
-import {
+import type { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
     SnapshotAttachment,
     SnapshotEntity,
     SnapshotExcludedFields,

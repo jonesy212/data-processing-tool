@@ -1,5 +1,5 @@
 // route.ts
-import { DocumentOptions } from '@/core/documents/DocumentOptions';
+import type { DocumentOptions } from '@/core/documents/DocumentOptions';
 import { DocumentData } from '@/core/documents/editing/DocumentBuilder';
 import type { BaseData } from '@/core/models/data/Data';
 import { readServerCache, writeServerCache } from '@/core/server/CacheManager';

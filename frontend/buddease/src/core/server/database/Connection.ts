@@ -1,5 +1,5 @@
 // Connection.ts
-import { ClientConfig } from '@/core/client/Client';
+import type { ClientConfig } from '@/core/client/Client';
 
 class Connection {
   private client: PostgresClient | null = null;

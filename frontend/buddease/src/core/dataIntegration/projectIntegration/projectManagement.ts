@@ -2,12 +2,14 @@
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
 import { Logger } from '@/core/dataIntegration/projectIntegration/activityLogger';
-import { ProjectConversionResult, ProjectConverter } from "@/core/dataIntegration/projectIntegration/projectConverter";
+import type { ProjectConverter } from '@/core/dataIntegration/projectIntegration/projectConverter';
+import { ProjectConversionResult } from '@/core/dataIntegration/projectIntegration/projectConverter';
 import type { BaseData } from '@/core/models/data/Data';
 import { ProjectData } from '@/core/models/projects/Project';
 import type { Task } from "@/core/models/tasks/Task";
 import { ProjectPhase } from '@/core/projects/projectManagement/ProjectManager';
-import {
+import type { ProjectAttachment, ProjectEntity, ProjectMeta } from '@/core/typings/entities/ProjectEntity';
+import { ProjectIncludedFields, ProjectK } from '@/core/typings/entities/ProjectEntity';
     ProjectAttachment,
     ProjectEntity,
     ProjectIncludedFields,

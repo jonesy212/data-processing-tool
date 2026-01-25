@@ -10,11 +10,11 @@ import type { CombinedEvents, SnapshotManager } from '@/core/hooks/useSnapshotMa
 import type { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
 import type { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import type { BaseData } from '@/core/models/data/Data';
-import { K, T } from '@/core/models/data/dataStoreMethods';
+import type { K, T } from '@/core/models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from '@/core/models/data/StatusType';
 import type { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
 import type { DataStoreWithSnapshotMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
+import type { SnapshotStoreProps } from '@/core/snapshots//useSnapshotStore';
 import type { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
 import type { SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshots, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
@@ -22,7 +22,7 @@ import type { Snapshot } from '@/core/snapshots/Snapshot';
 import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import type { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import type { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotItem } from '@/core/snapshots/SnapshotList';
+import type { SnapshotItem } from '@/core/snapshots/SnapshotList';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { Data } from '@/core/models/data/Data';
 import type { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
@@ -256,7 +256,7 @@ const convertSnapshotStore = <
   storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
-  const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory, core, security, storage, isExpired} = storeProps
+  const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory, core, security, storage, isExpired, timestamp } = storeProps
   const snapshotData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
     initialState, storeId, name, version,
     schema, options, category, config,

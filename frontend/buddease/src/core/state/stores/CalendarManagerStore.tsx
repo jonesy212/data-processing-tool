@@ -8,7 +8,7 @@ import {
     getDefaultDocumentOptions,
 } from "@/core/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import createSubscriber from '@/core/models/cypto/exchangeIntegration';
 import type { BaseData, Data } from '@/core/models/data/Data';
@@ -25,7 +25,7 @@ import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
 import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
 import ScheduleEventModal from "@/core/ts/ScheduleEventModal";
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { SnapshotEntity, SnapshotK } from "@/core/typings/entities/SnapshotEntity";
 import { VideoData } from '@/core/typings/videoTypes/Video';
 
@@ -35,7 +35,7 @@ import { useNotification } from "@/core/state/context/NotificationContext";
 import { useStore } from "@/core/hooks/useStore";
 import { implementThen } from "@/core/state/stores/CommonEvent";
 import { makeAutoObservable } from "mobx";
-import {
+import '@/core/state/stores/AssignEventStore';
     AssignEventStore,
     ReassignEventResponse,
     useAssignEventStore,
@@ -44,19 +44,19 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import { AllStatus } from "./DetailsListStore";
 
 import { EventActions } from "@/core/actions/EventActions";
-import {
+import type { SnapshotOperation, SnapshotOperationType } from '@/core/actions/SnapshotActions';
     SnapshotOperation,
     SnapshotOperationType,
 } from "@/core/actions/SnapshotActions";
 import type { CalendarEvent } from "@/core/calendar/CalendarEvent";
 import { combinedEvents } from "@/core/events/Event";
-import {
+import '@/core/hooks/useSnapshotManager';
     createSnapshotStore,
     SnapshotStoreOptions,
     useSnapshotManager,
 } from "@/core/hooks/useSnapshotManager";
 import { Category } from "@/core/libraries/categories/generateCategoryProperties";
-import {
+import type { AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload } from '@/core/server/database/CalendarActionPayload';
     AddEventPayload,
     CalendarActionPayload,
     CalendarActionType,
@@ -75,13 +75,13 @@ import {
 } from '@/core/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/core/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/core/libraries/categories/CategoryManager";
-import { dataStoreMethods, K, T } from '@/core/models/data/dataStoreMethods';
+import '@/core/models/data/dataStoreMethods';
 import { allCategories } from "@/core/models/data/DataStructureCategories";
 import type { getCurrentSnapshotConfigOptions } from "@/core/snapshots/getCurrentSnapshotConfigOptions";
 import type { SnapshotConfigProps } from "@/core/snapshots/SnapshotConfigProps";
 import SnapshotManagerOptions from "@/core/snapshots/SnapshotManagerOptions";
 import { configureSnapshot } from '@/core/snapshots/snapshotOperations';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { FilterState } from "@/core/state/redux/slices/FilterSlice";
 import type { EventRecord } from "@/core/state/stores/DataStore";

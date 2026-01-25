@@ -1,7 +1,8 @@
 // SnapshotWithCriteria.ts
 import type { BaseData } from '@/core/models/data/Data';
 import { FetchSnapshotPayload } from '@/core/snapshots/FetchSnapshotPayload';
-import { processSnapshot, Snapshot } from '@/core/snapshots/Snapshot';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { processSnapshot } from '@/core/snapshots/Snapshot';
 import type { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
 import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
@@ -15,7 +16,7 @@ import { SchemaField } from "@/core/config/metadata/SchemaField";
 import type { sharedMetadata } from '@/core/config/MetadataStateManager';
 import type { MetadataEntriesType } from '@/core/config/StructuredMetadata';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { ModifiedDate } from "@/core/documents/DocType";
+import type { ModifiedDate } from "@/core/documents/DocType";
 import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
 import { CombinedEvents, SnapshotManager } from "@/core/hooks/useSnapshotManager";
 import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
@@ -28,7 +29,8 @@ import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
 import { FilterCriteria } from "@/core/pages/searches/FilterCriteria";
 import { SearchCriteria } from "@/core/pages/searches/SearchCriteria";
 import { handleSnapshotSuccess } from '@/core/snapshots/index';
-import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
 import { SnapshotData } from '@/core/snapshots/SnapshotData';
 import { SnapshotItem } from "@/core/snapshots/SnapshotList";
@@ -45,7 +47,7 @@ import { Subscriber } from "@/core/subscribers/Subscriber";
 import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
 import { Callback } from "@/core/subscribers/subscribeToSnapshotsImplementation";
 import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
-import {
+import type { SnapshotAttachment, SnapshotEntity, SnapshotEntityData, SnapshotEntityWithCriteria, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
     SnapshotAttachment,
     SnapshotEntity,
     SnapshotEntityData,

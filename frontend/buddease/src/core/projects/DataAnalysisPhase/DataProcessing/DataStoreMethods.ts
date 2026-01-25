@@ -3,8 +3,9 @@ import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { Category } from '@/core/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import { Snapshots, SnapshotsArray, SnapshotsObject } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type { SnapshotsArray, SnapshotsObject } from '@/core/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import { SnapshotContainer } from '@/core/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from '@/core/snapshots/SnapshotData';

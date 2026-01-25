@@ -11,7 +11,7 @@ import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { SharedMetadata } from '@/core/shared/SharedMetadata';
 import type { CoreSnapshot } from "@/core/snapshots/CoreSnapshot";
 import type { CustomSnapshot } from '@/core/snapshots/CustomSnapshot';
-import type { Snapshot, SnapshotDataType } from '@/core/snapshots/SnapshotContainer';
+import type { Snapshot, SnapshotDataType } from '@/core/snapshots/Snapshot';
 import type { SnapshotBaseProperties, SnapshotData } from '@/core/snapshots/SnapshotData';
 import type { SnapshotOperations } from '@/core/snapshots/snapshotOperations';
 import type { SnapshotSecurity } from '@/core/snapshots/SnapshotSecurity';

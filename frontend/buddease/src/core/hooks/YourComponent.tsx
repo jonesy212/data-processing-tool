@@ -9,14 +9,15 @@ import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import useDocumentManagement from '@/core/hooks/documents/useDocumentManagement';
 import type { BaseData, Data } from '@/core/models/data/Data';
 import { K, T } from '@/core/models/data/dataStoreMethods';
-import { StatusType } from "@/core/models/data/StatusType";
+import type { StatusType } from "@/core/models/data/StatusType";
 import { ComponentMethods } from '@/core/page';
 import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
 import type { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/core/typings/entities/CalendarEntity';
 
 import type { Snapshot } from '@/core/snapshots/Snapshot';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { SnapshotStoreProps, storeProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotStoreProps } from '@/core/snapshots/SnapshotStoreProps';
+import { storeProps } from '@/core/snapshots/SnapshotStoreProps';
 import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 

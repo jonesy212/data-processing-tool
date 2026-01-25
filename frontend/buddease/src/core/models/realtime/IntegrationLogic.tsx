@@ -2,7 +2,8 @@
 import { Label } from "@/core/branding/BrandingSettings";
 import type { CommonCalendarProps } from "@/core/components/calendar/Calendar";
 import { YearInfo } from "@/core/components/calendar/CalendarYear";
-import { Month, MonthInfo } from "@/core/components/calendar/Month";
+import type { MonthInfo } from '@/core/components/calendar/Month';
+import { Month } from '@/core/components/calendar/Month';
 import { Task } from "@/core/components/models/tasks/Task";
 import type { BaseData } from '@/core/models/data/Data';
 import { Progress } from "@/core/models/tracker/ProgressBar";

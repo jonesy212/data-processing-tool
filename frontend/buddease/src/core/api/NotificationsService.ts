@@ -3,8 +3,8 @@ import { endpoints } from "@/core/api/endpointConfigurations";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
-import { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
-import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import type { NotificationType, NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import type { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { useNotification } from '@/core/state/context/NotificationContext';
 
 // Define API base URL

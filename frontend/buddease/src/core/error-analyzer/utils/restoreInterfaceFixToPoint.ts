@@ -1,5 +1,5 @@
 // restoreInterfaceFixToPoint.ts
-import { PhaseBackupSystem } from '@/src/core/error-analyzer/phases/PhaseBackupSystem';
+import { PhaseBackupSystem } from '@/core/error-analyzer/phases/PhaseBackupSystem';
 
 export async function restoreInterfaceFixToPoint(
   projectRoot: string,

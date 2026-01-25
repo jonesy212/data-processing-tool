@@ -1,5 +1,6 @@
 // PlanningSubPhase.tsx
-import {
+import type { Attachment, BaseDataEntity, DefaultExcludedFields, DefaultMeta, PhaseData, SubPhase } from '@/core/documents/attachment/Attachment';
+import { SubPhaseImpl } from '@/core/models/phases/SubPhase';
     Attachment,
     BaseDataEntity,
     DefaultExcludedFields,

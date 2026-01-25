@@ -1,9 +1,10 @@
 // ThemeCustomization.tsx
 import { NotificationData } from '@/core/hooks/useNotificationSystem';
 import { TableStyle } from "@/core/hooks/userInterface/TableStyle";
-import { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
-import { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
-import React, { SetStateAction } from "react";
+import type { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
+import type { ThemeState } from "@/core/state/redux/slices/ThemeSlice";
+import type { SetStateAction } from 'react';
+import React from 'react';
 interface ThemeCustomizationProps {
   themeState: ThemeConfig;
   infoColor: string;

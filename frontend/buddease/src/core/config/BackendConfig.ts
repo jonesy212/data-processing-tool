@@ -1,7 +1,7 @@
 // BackendConfig.ts
-import { ApiConfig } from '@/core/api/ApiConfigService';
-import { CacheConfig } from "@/core/config/CacheConfig";
-import { RetryConfig } from "@/core/services/ConfigurationService";
+import type { ApiConfig } from '@/core/api/ApiConfigService';
+import type { CacheConfig } from "@/core/config/CacheConfig";
+import type { RetryConfig } from "@/core/services/ConfigurationService";
 
 
 

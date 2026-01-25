@@ -14,7 +14,7 @@ import type { PriorityValue } from '@/core/pages/searches/CriteriaType';
 import type { SharedMetadata } from "@/core/shared/SharedMetadata";
 import type { AllStatus, DetailsItem } from "@/core/state/stores/DetailsListStore";
 import TodoImpl from '@/core/todos/Todo';
-import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import type { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 import type { TaskEntity } from '@/core/typings/entities/TaskEntity';
 import type { AllTypes } from "@/core/typings/PropTypes";
 import type { User } from "@/core/users/User";

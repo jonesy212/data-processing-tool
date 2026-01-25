@@ -1,11 +1,11 @@
 // FolderData.ts
-import { ScheduledData } from '@/core/calendar/ScheduledData';
+import type { ScheduledData } from '@/core/calendar/ScheduledData';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
   
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { User } from '@/core/users/User';
+import type { User } from '@/core/users/User';
 
-interface FolderData<
+export interface FolderData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -15,10 +15,10 @@ interface FolderData<
 > extends ScheduledData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   folderSize: number;
   folderPath: string;
-  uploader: User;
+  uploader: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   attachments?: AttachmentType[];
   folderName: string;
   uploadDate: Date;
 }
 
-export default FolderData;
+ 

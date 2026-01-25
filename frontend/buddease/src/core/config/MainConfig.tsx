@@ -1,7 +1,7 @@
 // MainConfig.tsx
-import { BackendConfig } from "@/core/config/BackendConfig";
+import type { BackendConfig } from "@/core/config/BackendConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { FrontendConfig } from "@/core/config/FrontendConfig";
+import type { FrontendConfig } from "@/core/config/FrontendConfig";
 import {
     ButtonGenerator,
     useButtonGeneratorProps,
